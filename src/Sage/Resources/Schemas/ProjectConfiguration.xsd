@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="ProjectConfiguration" elementFormDefault="qualified"
+		targetNamespace="http://www.cycle99.com/projects/sage/configuration/project"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:p="http://www.cycle99.com/projects/sage/configuration/project"
+		xmlns="http://www.cycle99.com/projects/sage/configuration/project">
+
+	<xs:import namespace="http://www.w3.org/2003/XInclude" schemaLocation="XInclude.xsd"/>
+	
+	<xs:element name="configuration">
+		<xs:annotation>
+			<xs:documentation>
+				Contain a single element, the project to which the configuration applies.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="project" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Defines the various project configuration options.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="paths" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="ResourcePath" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="View" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="Module" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="ViewTemplate" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="ViewConfiguration" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="Dictionary" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="DefaultStylesheet" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="DefaultCategoryStylesheet" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="CategoryConfiguration" type="config.path" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="GlobalizedDirectory" type="text.element" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Defines the directory in which globalized resources will be saved, and from which they will be read.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="GlobalizedDirectoryForNonFileResources" type="text.element" minOccurs="0" maxOccurs="1"/>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="assets" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="prefix" type="config.prefix" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="metaViews" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="view" type="config.view" minOccurs="1" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="modules" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="module" type="config.module" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+								<xs:unique name="uniqueModuleName">
+									<xs:selector xpath="p:module"/>
+									<xs:field xpath="@name"/>
+								</xs:unique>
+							</xs:element>
+							<xs:element name="links" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="internal" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="link" type="config.link.internal" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="external" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="link" type="config.link.external" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="rewritePrefix" use="optional" type="nonEmptyString"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="routing" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="route" type="config.route" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+									<xs:attribute name="defaultNamespace" use="optional">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:pattern value=".*[\S]+.*"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+								<xs:unique name="uniqueRouteName">
+									<xs:selector xpath="p:route"/>
+									<xs:field xpath="@name"/>
+								</xs:unique>
+							</xs:element>
+							<xs:element name="categories" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="category" type="config.category" minOccurs="1" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="globalization" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="locale" type="config.locale" minOccurs="1" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="developers" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:documentation>
+										Configures IP addresses and address ranges of computers that should be considered as developers.
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ip" type="config.ip" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:any namespace="##other" processContents="skip"/>
+						</xs:choice>
+						<xs:attribute name="resourcesPregenerated" use="optional" default="false" type="xs:boolean"/>
+						<xs:attribute name="mergeResources" use="optional" default="false" type="xs:boolean"/>
+						<xs:attribute name="debugMode" use="optional" default="false" type="xs:boolean"/>
+						<xs:attribute name="defaultLocale" use="optional" type="nonEmptyString"/>
+						<xs:attribute name="defaultCategory" use="optional" type="nonEmptyString"/>
+						<xs:attribute name="sharedCategory" use="optional" type="nonEmptyString"/>
+						<xs:attribute name="multiCategory" use="optional" type="xs:boolean"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="config.path" mixed="true">
+		<xs:simpleContent>
+			<xs:extension base="nonEmptyString"/>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="config.url" mixed="true">
+		<xs:simpleContent>
+			<xs:extension base="nonEmptyString"/>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="config.authenticatedurl" mixed="true">
+		<xs:attribute name="username" use="optional"/>
+		<xs:attribute name="password" use="optional"/>
+	</xs:complexType>
+
+	<xs:complexType name="text.element" mixed="true">
+	</xs:complexType>
+
+	<xs:complexType name="config.prefix">
+		<xs:attribute name="key" use="required" type="nonEmptyString"/>
+		<xs:attribute name="value" use="required" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.view">
+		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="contentType" use="required" type="nonEmptyString"/>
+		<xs:attribute name="type" use="required" type="nonEmptyString"/>
+		<xs:attribute name="path" use="optional" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.module">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="tags" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="tag" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" use="required" type="xs:Name"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="stylesheets" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="stylesheet" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="path" use="required" type="nonEmptyString"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="resources" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="script" minOccurs="1" maxOccurs="unbounded" type="config.module.resource"/>
+						<xs:element name="style" minOccurs="1" maxOccurs="unbounded" type="config.module.resource"/>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="name" use="required" type="xs:Name"/>
+		<xs:attribute name="type" use="optional" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.module.resource">
+		<xs:attribute name="location" use="optional" type="resourceLocation" default="head"/>
+		<xs:attribute name="path" use="required" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.link.internal">
+		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="pattern" use="required" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.link.external">
+		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="url" use="required" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.route">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="constraint" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="name" use="required" type="nonEmptyString"/>
+					<xs:attribute name="expression" use="required" type="nonEmptyString"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="default" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="name" use="required" type="nonEmptyString"/>
+					<xs:attribute name="value" use="required" type="nonEmptyString"/>
+					<xs:attribute name="type" use="optional" type="nonEmptyString"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="path" use="required" type="xs:string"/>
+		<xs:attribute name="controller" use="required" type="nonEmptyString"/>
+		<xs:attribute name="action" use="required" type="nonEmptyString"/>
+		<xs:attribute name="namespace" use="optional" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.category">
+		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="locales" use="required" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.locale">
+		<xs:all>
+			<xs:element name="format" type="config.format" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="dictionaryNames" use="required" type="nonEmptyString"/>
+		<xs:attribute name="resourceNames" use="required" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.format">
+		<xs:attribute name="culture" use="required" type="nonEmptyString"/>
+		<xs:attribute name="longDate" use="required" type="nonEmptyString"/>
+		<xs:attribute name="shortDate" use="required" type="nonEmptyString"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.ip">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies either a single IP address (if only the address attribute is used) or an IP
+				address range (if both the address and to attributes are used).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="address" use="required" type="xs:string"/>
+		<xs:attribute name="to" use="optional" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="config.credentials">
+		<xs:sequence>
+			<xs:element name="default" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="username">
+							<xs:complexType mixed="true"/>
+						</xs:element>
+						<xs:element name="password">
+							<xs:complexType mixed="true"/>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="nonEmptyString">
+		<xs:restriction base="xs:string">
+			<xs:pattern value=".*[\S]+.*"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="minificationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="none"/>
+			<xs:enumeration value="conservative"/>
+			<xs:enumeration value="aggressive"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="sendMailCondition">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="always"/>
+			<xs:enumeration value="publicOnly"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="resourceLocation">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="head"/>
+			<xs:enumeration value="body"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+</xs:schema>

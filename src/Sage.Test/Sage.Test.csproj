@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{543D3F4E-E4E1-4EBF-B7A1-CFED434A3EA6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sage.Test</RootNamespace>
+    <AssemblyName>Sage.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Machine.Specifications">
+      <HintPath>..\..\lib\Machine.Specifications.dll</HintPath>
+    </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\lib\Rhino.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Categories.cs" />
+    <Compile Include="Configuration\CategoryConfigurationTest.cs" />
+    <Compile Include="Configuration\CategoryInfoTest.cs" />
+    <Compile Include="Configuration\ControllerViewInfoTest.cs" />
+    <Compile Include="Configuration\IpAddressTests.cs" />
+    <Compile Include="Configuration\ProjectConfigurationTests.cs" />
+    <Compile Include="ControllerFactoryExtensions.cs" />
+    <Compile Include="Dev\PackageManagerTests.cs" />
+    <Compile Include="MockController.cs" />
+    <Compile Include="Modules\IO\DirectoryTreeModuleTest.cs" />
+    <Compile Include="Mother.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceManagement\GlobalizerTest.cs" />
+    <Compile Include="ResourceManagement\LocaleInfoTest.cs" />
+    <Compile Include="ResourceManagement\PathResolverTest.cs" />
+    <Compile Include="ResourceManagement\ResourceManagerTest.cs" />
+    <Compile Include="ResourceManagement\ResourceNameTest.cs" />
+    <Compile Include="ResourceManagement\XmlResourceTest.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="XsltRegistryTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kelp\Kelp.csproj">
+      <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
+      <Name>Kelp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sage\Sage.csproj">
+      <Project>{E647EBD1-64CF-48EB-B20D-0133C24899F6}</Project>
+      <Name>Sage</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="log4net.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="Resources\index.xml" />
+    <EmbeddedResource Include="Resources\included.xml" />
+    <Content Include="Resources\TestSite\assets\default\configuration\dictionary\de.xml" />
+    <Content Include="Resources\TestSite\assets\default\configuration\dictionary\en.xml" />
+    <Content Include="Resources\TestSite\assets\default\configuration\dictionary\jp.xml" />
+    <Content Include="Resources\TestSite\assets\default\configuration\tests\internationalization-test1.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\controller\action-A.xslt" />
+    <Content Include="Resources\TestSite\assets\default\views\controller\action-B.xsl" />
+    <Content Include="Resources\TestSite\assets\default\views\controller\action-C.htm" />
+    <Content Include="Resources\TestSite\assets\default\views\controller\action-D.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Resources\TestSite\assets\default\views\controller\action-C.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\controller\group\action-E.xslt" />
+    <Content Include="Resources\TestSite\assets\default\views\controller\group\action-E.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\gallery\index.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\gallery\index.xsl" />
+    <Content Include="Resources\TestSite\assets\default\views\home\index-de.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\home\index-fr.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\home\index.xml" />
+    <Content Include="Resources\TestSite\assets\default\views\home\index.xsl" />
+    <Content Include="Resources\TestSite\assets\default\xslt\global.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Resources\TestSite\assets\default\xslt\tree.xsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Content Include="Project.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\TestSite\assets\default\configuration\Category.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)Resources" "$(TargetDir)Resources\" /S /Y</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

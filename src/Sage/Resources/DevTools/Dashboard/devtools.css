@@ -1,0 +1,221 @@
+html
+	{ height: 100%; overflow: hidden; }
+body
+	{ height: 100%; margin: 0; overflow: hidden; }
+body, td, th
+	{ font-family: verdana; font-size: 10px; }
+a, a:visited
+	{ color: blue; }
+
+#dev_wrapper
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
+#dev_commands
+	{ position: absolute; top: 0; left: 0; bottom: 0; width: 0; z-index: 1; border-right: 1px solid #999; display: none; }
+#dev_content
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; z-index: 0; }
+
+#dev_wrapper.dashboard #dev_commands
+	{ width: 229px; display: block; }
+#dev_wrapper.dashboard #dev_content
+	{ left: 230px; }
+
+#maintoolbar
+	{ position: absolute; top: 0; left: 0; bottom: 0; width: 24px; background-color: #ddd; }
+#contentbox
+	{ position: absolute; top: 0; left: 24px; right: 0; bottom: 0; background: #fff; border-left: 1px solid #999; }
+#content_container
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
+#tools_container
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
+
+#viewtoolbar
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; padding: 1px; background-color: #ddd; border: 1px solid #999; }
+#toolframe
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: #fff; z-index: 1; }
+#toolpreloader
+	{ position: absolute; z-index: 2; top: 0; left: 0; right: 0; bottom: 0; opacity: .6;
+	  background: url(images/preloader2.gif) #ccc no-repeat center; display: none; }
+
+#contenttoolbar
+	{ position: absolute; z-index: 0; top: 0; left: -1px; right: 0; height: 24px; background-color: #ddd; border-bottom: 1px solid #999; }
+#contentframe
+	{ position: absolute; z-index: 1; top: 25px; left: 0; right: 0; bottom: 0; }
+#contentpreloader
+	{ position: absolute; z-index: 2; top: 0; left: 0; right: 0; bottom: 0; opacity: .6;
+	  background: url(images/preloader1.gif) #fff no-repeat center; display: none; }
+
+#contentbox.vertical #content_container
+	{ right: auto; width: 50%; height: auto !important; }
+#contentbox.vertical #tools_container
+	{ left: auto; width: 50%; height: auto !important; }
+#contentbox.vertical #viewtoolbar
+	{ right: auto; width: 24px; border-width: 0 1px; }
+#contentbox.vertical #toolframe
+	{ left: 28px; }
+#contentbox.vertical #toolpreloader
+	{ left: 28px; }
+
+#contentbox.horizontal #content_container
+	{ bottom: auto; height: 50%; width: auto !important; }
+#contentbox.horizontal #tools_container
+	{ top: auto; height: 50%; width: auto !important; }
+#contentbox.horizontal #viewtoolbar
+	{ bottom: auto; left: -1px; height: 24px; border-width: 1px 0; }
+#contentbox.horizontal #toolframe
+	{ top: 28px; }
+#contentbox.horizontal #toolpreloader
+	{ top: 28px; }
+
+#contentbox.horizontal.single #content_container
+	{ height: auto !important; bottom: 27px; }
+#contentbox.horizontal.single #tools_container
+	{ height: 27px !important; }
+
+#contentbox.vertical.single #content_container
+	{ width: auto !important; right: 27px; }
+#contentbox.vertical.single #tools_container
+	{ width: 27px !important; }
+
+/* Comand list */
+#dev_commands > .header
+	{ padding: 5px; position: absolute; z-index: 0; top: 0; left: 0; right: -1px; height: 14px;
+	  background-color: #ddd; border-bottom: 1px solid #999; }
+#dev_commands > .header h2
+	{ font-size: 11px; font-weight: normal; letter-spacing: 2px; margin: 0; padding: 0; }
+
+#dev_commands .category
+	{ margin: 2px 0 20px 0; }
+#dev_commands .category h5
+	{ background: #f0f0f0; text-transform: uppercase; color: #999; font-size: 11px; font-weight: bold; padding: 1px 2px; border: 1px solid #ccc; margin: 0 0 5px 0; }
+#dev_commands .category ul
+	{ padding: 0; margin: 0; list-style-type: none; }
+#dev_commands .category ul ul
+	{ margin-left: 10px; }
+
+#dev_commands .category ul .link span
+	{ text-decoration: underline; color: blue; cursor: pointer; }
+#dev_commands .category ul .link span:hover
+	{ color: #f30; }
+#dev_commands .category ul .link.active
+	{ font-weight: bold; }
+
+.toolbar
+	{ float: right; overflow: hidden; }
+.toolbar.left
+	{ float: left; }
+
+.toolbar.commands
+	{	padding-top: 20px; border-top: 3px solid #444; }
+#maintoolbar .toolbar
+	{ margin-bottom: 20px; }
+
+.button
+	{ float: left; width: 16px; height: 16px; padding: 2px; margin: 1px; border: 1px solid #999; background: #ddd no-repeat center; }
+.button:hover
+	{ background-color: #fff; }
+.button.active
+	{ background-color: #fff; border-color: #0033CC; }
+.button.disabled
+	{ opacity: .4; filter: alpha(opacity=40); }
+.button.disabled:hover
+	{ background-color: #ddd; border-color: #999; }
+
+.button.xml
+	{ background-image: url(images/xml.png); }
+.button.xmlx
+	{ background-image: url(images/xmlx.png); }
+.button.log
+	{ background-image: url(images/log.png); }
+.button.routes
+	{ background-image: url(images/routes.png); }
+.button.settings
+	{ background-image: url(images/settings.png); }
+.button.intl
+	{ background-image: url(images/summary.png); }
+.button.save
+	{ background-image: url(images/save.png); }
+.button.reload
+	{ background-image: url(images/refresh.png); }
+
+.button.views
+	{ background-image: url(images/view_commands.png); }
+.button.views.on
+	{ background-image: url(images/view_commands_on.png); }
+.button.singleframe
+	{ background-image: url(images/view_single.png); }
+.button.doubleframe
+	{ background-image: url(images/view_double.png); }
+.button.verticalframes
+	{ background-image: url(images/view_vertical.png); }
+.button.horizontalframes
+	{ background-image: url(images/view_horizontal.png); }
+.button.switchOff
+	{ background-image: url(images/switchOff.png); }
+
+.button.command
+	{ background-image: url(images/command_settings.png); }
+
+#tooltip
+	{ background-color: #FF6600 !important; color: #fff !important; border: 0 !important;
+	  padding: 4px !important; font-size: 12px !important; opacity: .9; }
+
+#dev_commands > .header
+	{ margin: 0; padding: 5px; position: absolute; z-index: 0; top: 0; left: 0; right: -1px; height: 14px;
+	  background-color: #ddd; border-bottom: 1px solid #999; font-size: 11px; letter-spacing: 2px; }
+
+#command_tree
+	{ position: absolute; overflow: auto; left: 0; right: 0; top: 18px; bottom: 0; padding-top: 10px; }
+#command_tree .header
+	{ height: 16px; background-color: transparent; white-space: nowrap; position: relative; }
+#command_tree .title
+	{ height: 16px; position: absolute; left: 38px; white-space: nowrap; }
+#command_tree .current
+	{ font-weight: bold; }
+#command_tree .icon
+	{ position: absolute; left: 18px; width: 18px; height: 16px; background: url(images/tree-item.gif) no-repeat; }
+#command_tree .children
+	{ min-height: 16px; }
+#command_tree .children > .loading
+	{ height: 16px; background: url(images/preloader3.gif) no-repeat 2px 2px !important; }
+
+#command_tree .control
+	{ position: absolute; left: 0px; width: 18px; height: 16px; background-repeat: no-repeat; }
+#command_tree .root > .header .control
+	{ display: none; }
+#command_tree .root > .header .icon
+	{ left: 0; background-image: url(images/unknown09.png); }
+#command_tree .root > .header .title
+	{ left: 20px; }
+#command_tree .root > .children
+	{ padding-left: 0 !important; display: block !important; }
+
+
+#command_tree .node.sg > .header .plus
+	{ background-image: url(images/tree-plus1.gif); }
+#command_tree .node.sg > .header .minus
+	{ background-image: url(images/tree-minus1.gif); }
+#command_tree .node.ss > .header .control
+	{ background-image: url(images/tree-line1.gif);  }
+#command_tree .node.lg > .header .plus
+	{ background-image: url(images/tree-plus2.gif); }
+#command_tree .node.lg > .header .minus
+	{ background-image: url(images/tree-minus2.gif); }
+#command_tree .node.ls > .header .control
+	{ background-image: url(images/tree-line2.gif);  }
+
+#command_tree .node > .children
+	{ display: none; padding-left: 18px; }
+#command_tree .node > .children.visible
+	{ display: block; }
+#command_tree .node.sg > .children
+	{ background: url(images/tree-line0.gif) repeat-y; }
+
+#command_tree .icon.folder
+	{ background-image: url(images/folder.png); background-position: -1px 0; }
+#command_tree .icon.file
+	{ background-image: url(images/command.png); }
+
+#command_tree .node.file > .header .title
+	{ color: blue; text-decoration: underline; cursor: pointer; }
+#command_tree .node.file > .header .title:hover
+	{ color: #f30; }

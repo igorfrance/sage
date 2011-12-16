@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<variables xmlns="http://www.cycle99.com/projects/sage/configuration/category">
+	<intl:variable id="aditvlocale" xmlns:intl="http://www.cycle99.com/projects/sage/internationalization">
+		<intl:value locale="default">FteCeO63vrn_Ch1DGYMh0_LC_o3_VNs1</intl:value>
+		<intl:value locale="de">Td__asklhA_iPMPRBHp18Aw3pXWmiqCu</intl:value>
+		<intl:value locale="es">l5KkYrq6RslOnGPN71MK1xlvkwQTiZiV</intl:value>
+		<intl:value locale="fr">KAwzSWjwDk8qXH0ZJG0fMx9x6qx2INBO</intl:value>
+		<intl:value locale="it">yVreyl1aeW7_tIFInL1LuPCu4dsD98PL</intl:value>
+		<intl:value locale="jp">8j2911cxratOivpVoyKDn_yTEWV1Pnsh</intl:value>
+		<intl:value locale="kr">6r_PVPgK_T9byFjvxIG1_uNj_DrvH7bX</intl:value>
+		<intl:value locale="br">DwlUM6vlt08WBHjIkpNEGVkL9wBuFQ_6</intl:value>
+		<intl:value locale="pt">VLqB0AMcJ4gqXdxFdoVW2pqQ_Gq9KjUL</intl:value>
+		<intl:value locale="ru">3itRQhO_EKvJDGVFh9ZRV5yDCrtQuQ2V</intl:value>
+		<intl:value locale="cn">3j57RUeW_iTRMwxAZbdTXcJEC1jqFUL8</intl:value>
+		<intl:value locale="hk">jGsYQp5pxNTAa4l49OnGCYs5Q2lDoBFg</intl:value>
+		<intl:value locale="tw">rqWuBtozt_Bq8xXbS8kRxQ817VsC9LOm</intl:value>
+		<intl:value locale="us">WFUHIMGFjOD6s32k01_e2w_O4wK9U9bR</intl:value>
+		<intl:value locale="uk">COQGG5Uh7NxNnJGfICzL2LO4V4CYS9yw</intl:value>
+		<intl:value locale="la">G__FEnLXWRt9QQc4QOIf_OL5f04BCPi9</intl:value>
+	</intl:variable>
+</variables>

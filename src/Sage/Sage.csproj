@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E647EBD1-64CF-48EB-B20D-0133C24899F6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sage</RootNamespace>
+    <AssemblyName>Sage</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>False</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>
+    </DocumentationFile>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;CONTRACTS_FULL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Mvp.Xml, Version=2.0.4366.26981, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Mvp.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Application.cs" />
+    <Compile Include="ApplicationExceptionHandler.cs" />
+    <Compile Include="CacheWrapper.cs" />
+    <Compile Include="Configuration\CategoryConfiguration.cs" />
+    <Compile Include="Configuration\CategoryInfo.cs" />
+    <Compile Include="Configuration\ConfigurationError.cs" />
+    <Compile Include="Configuration\IpAddress.cs" />
+    <Compile Include="Configuration\LinkConfiguration.cs" />
+    <Compile Include="Configuration\LinkInfo.cs" />
+    <Compile Include="Configuration\LocaleInfo.cs" />
+    <Compile Include="Configuration\MetaViewDictionary.cs" />
+    <Compile Include="Configuration\MetaViewInfo.cs" />
+    <Compile Include="Configuration\ModuleConfiguration.cs" />
+    <Compile Include="Configuration\ProjectConfiguration.cs" />
+    <Compile Include="Configuration\RouteInfo.cs" />
+    <Compile Include="Configuration\RoutingConfiguration.cs" />
+    <Compile Include="Configuration\PathTemplates.cs" />
+    <Compile Include="Configuration\UnconfiguredLocaleException.cs" />
+    <Compile Include="ResourceManagement\ResourceHandler.cs" />
+    <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
+    <Compile Include="Views\ViewConfiguration.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Controllers\ControllerMessage.cs" />
+    <Compile Include="Controllers\ControllerMessages.cs" />
+    <Compile Include="Controllers\Dev\DashboardController.cs" />
+    <Compile Include="Controllers\Dev\FileViewController.cs" />
+    <Compile Include="Controllers\Dev\InstallationController.cs" />
+    <Compile Include="Controllers\Dev\LogViewController.cs" />
+    <Compile Include="Controllers\Dev\RouteDebuggerController.cs" />
+    <Compile Include="Controllers\FileProxyController.cs" />
+    <Compile Include="Controllers\CacheableAttribute.cs" />
+    <Compile Include="Controllers\GenericController.cs" />
+    <Compile Include="Controllers\FileLastModifiedFilterAttribute.cs" />
+    <Compile Include="Controllers\SageController.cs" />
+    <Compile Include="Controllers\SageControllerFactory.cs" />
+    <Compile Include="Controllers\SharedControllerAttribute.cs" />
+    <Compile Include="Modules\IO\DirectoryTreeModule.cs" />
+    <Compile Include="Modules\ModuleResource.cs" />
+    <Compile Include="Modules\NullModule.cs" />
+    <Compile Include="Rewriters\LocalizePathRewriter.cs" />
+    <Compile Include="ResourceManagement\SageResourceProviderAttribute.cs" />
+    <Compile Include="ResourceManagement\SageResourceResolver.cs" />
+    <Compile Include="Views\Meta\DivertView.cs" />
+    <Compile Include="Views\Meta\JsonView.cs" />
+    <Compile Include="Views\Meta\MetaView.cs" />
+    <Compile Include="Views\Meta\RetransformView.cs" />
+    <Compile Include="Views\ViewInput.cs" />
+    <Compile Include="Controllers\ViewXmlFilterAttribute.cs" />
+    <Compile Include="LastModifiedCache.cs" />
+    <Compile Include="Modules\IModuleFactory.cs" />
+    <Compile Include="ResourceManagement\EntityResult.cs" />
+    <Compile Include="ResourceManagement\MappedAssetResolver.cs" />
+    <Compile Include="ResourceManagement\ISageXmlUrlResolver.cs" />
+    <Compile Include="ResourceManagement\NodeHandlerAttribute.cs" />
+    <Compile Include="ResourceManagement\TextHandlerAttribute.cs" />
+    <Compile Include="ResourceManagement\UrlResolver.cs" />
+    <Compile Include="ResourceManagement\UrlResolverAttribute.cs" />
+    <Compile Include="Xml\AbstractClass.cs" />
+    <Compile Include="Xml\TestClass.cs" />
+    <Compile Include="Xml\IXmlConvertible.cs" />
+    <Compile Include="Modules\IModule.cs" />
+    <Compile Include="Modules\SageModuleFactory.cs" />
+    <Compile Include="Modules\ModuleResult.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="ResourceManagement\PathResolver.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceManagement\CacheableXmlDocument.cs" />
+    <Compile Include="ResourceManagement\Constants.cs" />
+    <Compile Include="ResourceManagement\CacheableXslTransform.cs" />
+    <Compile Include="ResourceManagement\DictionaryFile.cs" />
+    <Compile Include="ResourceManagement\DictionaryFileCollection.cs" />
+    <Compile Include="ResourceManagement\EmbeddedResourceResolver.cs" />
+    <Compile Include="ResourceManagement\GlobalizationSummary.cs" />
+    <Compile Include="ResourceManagement\Globalizer.cs" />
+    <Compile Include="ResourceManagement\NamespaceDoc.cs" />
+    <Compile Include="ResourceManagement\ResourceManager.cs" />
+    <Compile Include="ResourceManagement\ResourceName.cs" />
+    <Compile Include="ResourceManagement\XmlIncludeResolver.cs" />
+    <Compile Include="ResourceManagement\XmlResource.cs" />
+    <Compile Include="ResourceManagement\CodeFileUnmergeResolver.cs" />
+    <Compile Include="Resources\DevTools\PackageManager.cs" />
+    <Compile Include="Routing\LowerCaseRoute.cs" />
+    <Compile Include="Routing\RouteCollectionExtensions.cs" />
+    <Compile Include="Routing\UrlRouteAttribute.cs" />
+    <Compile Include="Routing\UrlRouteParameterConstraintAttribute.cs" />
+    <Compile Include="Routing\UrlRouteParameterDefaultAttribute.cs" />
+    <Compile Include="Routing\UrlRoutingUtility.cs" />
+    <Compile Include="SageContext.cs" />
+    <Compile Include="UrlGenerator.cs" />
+    <Compile Include="Views\ViewInfo.cs" />
+    <Compile Include="Xml\XHtmlXmlWriter.cs" />
+    <Compile Include="Xml\XmlWrappingWriter.cs" />
+    <Compile Include="Xml\XsltRegistry.cs" />
+    <Compile Include="Xml\XsltTemplate.cs" />
+    <Compile Include="Views\XsltView.cs" />
+    <Compile Include="Views\XsltViewEngine.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Schemas\ProjectConfiguration.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Schemas\XInclude.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Xslt\Error.xslt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Xslt\Internationalization.xslt">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\DevTools\dashboard\dashboard.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\devtoolbar.js" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\devtools.js" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\devview.js" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\command.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\command_settings.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devtoolbar.css" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devtools.css" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devtools.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devview.css" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\divider.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\dropdown.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\expand.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\expanded.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\false.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\folder.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\gear.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\home.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\hs16.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\html.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\labels.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\loading-node.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\log.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\next.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\preloader1.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\preloader2.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\preloader3.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\refresh.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\save.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\settings.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\summary.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\switchOff.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-item.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-line0.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-line1.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-line2.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-minus1.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-minus2.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-plus1.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-plus2.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\true.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown01.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown02.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown03.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown04.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown06.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown07.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown08.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown09.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown10.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown12.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_commands.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_commands_on.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_command_xml.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_double.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_framestats.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_horizontal.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_single.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_vertical.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\watch.gif" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\xml.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\images\xmlx.png" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\index.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\intl-summary.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\login.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\save.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DevTools\dashboard\settings.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DevTools\dashboard\variables.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\logview\logview.css" />
+    <EmbeddedResource Include="Resources\DevTools\logview\view-complete-log.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\logview\view-thread-log.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\MetaViews\Xml.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\MetaViews\Xmlx.xsl" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\aeon.js" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\devtoolbar.css" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\devtools.css" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\devview.css" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\placeholder.js" />
+    <EmbeddedResource Include="Resources\DevTools\dashboard\tooltip.js" />
+    <EmbeddedResource Include="Resources\Xslt\Installer.xslt" />
+    <EmbeddedResource Include="Resources\Xslt\Tree.xsl" />
+    <EmbeddedResource Include="Resources\Xslt\Global.xslt" />
+    <EmbeddedResource Include="Resources\Xslt\Logic.xslt" />
+    <Content Include="System.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Schemas\CategoryConfiguration.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Schemas\Internationalization.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Schemas\ViewConfiguration.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Schemas\Module.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\Contextualization.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kelp\Kelp.csproj">
+      <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
+      <Name>Kelp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

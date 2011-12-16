@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<intl:dictionary xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"><intl:phrase id="test.homepage.label1" source="en">This node <intl:phrase ref="test.homepage.nested" /> in all locales</intl:phrase><intl:phrase id="test.homepage.nested" source="en">appears</intl:phrase><intl:phrase id="test.gallery.TestPhrase" source="en">Test phrase in english</intl:phrase></intl:dictionary>

@@ -1,0 +1,157 @@
+@font-face {
+	font-family: 'CaviarDreamsRegular';
+	src: url('../fonts/caviardreams.eot');
+	src: url('../fonts/caviardreams.eot?#iefix') format('embedded-opentype'),
+	     url('../fonts/caviardreams.ttf') format('truetype'),
+	     url('../fonts/caviardreams.woff') format('woff'),
+	     url('../fonts/caviardreams.svg#CaviarDreamsRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'CaviarDreamsBoldItalic';
+	src: url('../fonts/caviardreams_bolditalic.eot');
+	src: url('../fonts/caviardreams_bolditalic.eot?#iefix') format('embedded-opentype'),
+	     url('../fonts/caviardreams_bolditalic.ttf') format('truetype'),
+	     url('../fonts/caviardreams_bolditalic.woff') format('woff'),
+	     url('../fonts/caviardreams_bolditalic.svg#CaviarDreamsBoldItalic') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'CaviarDreamsBold';
+	src: url('../fonts/caviardreams_bold.eot');
+	src: url('../fonts/caviardreams_bold.eot?#iefix') format('embedded-opentype'),
+	     url('../fonts/caviardreams_bold.ttf') format('truetype'),
+	     url('../fonts/caviardreams_bold.woff') format('woff'),
+	     url('../fonts/caviardreams_bold.svg#CaviarDreamsBold') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'CaviarDreamsItalic';
+	src: url('../fonts/caviardreamsitalic.eot');
+	src: url('../fonts/caviardreamsitalic.eot?#iefix') format('embedded-opentype'),
+	     url('../fonts/caviardreamsitalic.ttf') format('truetype'),
+	     url('../fonts/caviardreamsitalic.woff') format('woff'),
+	     url('../fonts/caviardreamsitalic.svg#CaviarDreamsItalic') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: 'QuicksandLight';
+    src: url('../fonts/quicksand_light.eot');
+    src: url('../fonts/quicksand_light.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand_light.woff') format('woff'),
+         url('../fonts/quicksand_light.ttf') format('truetype'),
+         url('../fonts/quicksand_light.svg#QuicksandLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'QuicksandLightOblique';
+    src: url('../fonts/quicksand_light_oblique.eot');
+    src: url('../fonts/quicksand_light_oblique.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand_light_oblique.woff') format('woff'),
+         url('../fonts/quicksand_light_oblique.ttf') format('truetype'),
+         url('../fonts/quicksand_light_oblique.svg#QuicksandLightOblique') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'QuicksandBold';
+    src: url('../fonts/quicksand_bold.eot');
+    src: url('../fonts/quicksand_bold.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand_bold.woff') format('woff'),
+         url('../fonts/quicksand_bold.ttf') format('truetype'),
+         url('../fonts/quicksand_bold.svg#QuicksandBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'QuicksandBoldOblique';
+    src: url('../fonts/quicksand_bold_oblique.eot');
+    src: url('../fonts/quicksand_bold_oblique.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand_bold_oblique.woff') format('woff'),
+         url('../fonts/quicksand_bold_oblique.ttf') format('truetype'),
+         url('../fonts/quicksand_bold_oblique.svg#QuicksandBoldOblique') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'QuicksandBook';
+    src: url('../fonts/quicksand_book.eot');
+    src: url('../fonts/quicksand_book.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand_book.woff') format('woff'),
+         url('../fonts/quicksand_book.ttf') format('truetype'),
+         url('../fonts/quicksand_book.svg#QuicksandBook') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'QuicksandBookOblique';
+    src: url('../fonts/quicksand_book_oblique.eot');
+    src: url('../fonts/quicksand_book_oblique.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/quicksand_book_oblique.woff') format('woff'),
+         url('../fonts/quicksand_book_oblique.ttf') format('truetype'),
+         url('../fonts/quicksand_book_oblique.svg#QuicksandBookOblique') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TeXGyreAdventorBold';
+    src: url('../fonts/texgyreadventor-bold.eot');
+    src: url('../fonts/texgyreadventor-bold.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/texgyreadventor-bold.woff') format('woff'),
+         url('../fonts/texgyreadventor-bold.ttf') format('truetype'),
+         url('../fonts/texgyreadventor-bold.svg#TeXGyreAdventorBold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TeXGyreAdventorBoldItalic';
+    src: url('../fonts/texgyreadventor-bolditalic.eot');
+    src: url('../fonts/texgyreadventor-bolditalic.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/texgyreadventor-bolditalic.woff') format('woff'),
+         url('../fonts/texgyreadventor-bolditalic.ttf') format('truetype'),
+         url('../fonts/texgyreadventor-bolditalic.svg#TeXGyreAdventorBoldItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TeXGyreAdventorItalic';
+    src: url('../fonts/texgyreadventor-italic.eot');
+    src: url('../fonts/texgyreadventor-italic.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/texgyreadventor-italic.woff') format('woff'),
+         url('../fonts/texgyreadventor-italic.ttf') format('truetype'),
+         url('../fonts/texgyreadventor-italic.svg#TeXGyreAdventorItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TeXGyreAdventorRegular';
+    src: url('../fonts/texgyreadventor-regular.eot');
+    src: url('../fonts/texgyreadventor-regular.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/texgyreadventor-regular.woff') format('woff'),
+         url('../fonts/texgyreadventor-regular.ttf') format('truetype'),
+         url('../fonts/texgyreadventor-regular.svg#TeXGyreAdventorRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+

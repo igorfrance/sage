@@ -1,0 +1,72 @@
+﻿namespace Sage.Views.Meta
+{
+	using System;
+	using System.Diagnostics.Contracts;
+	using System.IO;
+	using System.Text;
+	using System.Web.Mvc;
+	using System.Xml;
+
+	using Sage.Configuration;
+	using Sage.Controllers;
+	using Sage.ResourceManagement;
+	using Sage.Xml;
+
+	/// <summary>
+	/// Provides an additional transform of the original view result.
+	/// </summary>
+	public class RetransformView : MetaView
+	{
+		private readonly XsltTemplate template;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RetransformView"/> class.
+		/// </summary>
+		/// <param name="viewInfo">The object that contains definition of this meta view.</param>
+		/// <param name="wrapped">The wrapped original view.</param>
+		public RetransformView(MetaViewInfo viewInfo, IView wrapped)
+			: base(viewInfo, wrapped)
+		{
+			this.template = new XsltTemplate(viewInfo.Transform.Processor);
+		}
+
+		/// <summary>
+		/// Renders the result of the original view with an additional <see cref="XsltTemplate"/>.
+		/// </summary>
+		/// <param name="viewContext">The view context.</param>
+		/// <param name="writer">The writer to write to.</param>
+		public override void Render(ViewContext viewContext, TextWriter writer)
+		{
+			Contract.Requires<ArgumentNullException>(viewContext != null);
+			Contract.Requires<ArgumentException>(viewContext.Controller is SageController);
+			Contract.Requires<ArgumentNullException>(writer != null);
+
+			if (this.View is XsltView)
+			{
+				XsltView view = (XsltView) this.View;
+				StringBuilder sb = new StringBuilder();
+
+				using (StringWriter sw = new StringWriter(sb))
+				{
+					view.Transform(viewContext, sw);
+
+					SageController controller = (SageController) viewContext.Controller;
+					UrlResolver resolver = new UrlResolver(controller.Context);
+					XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(resolver);
+					XmlReader reader = XmlReader.Create(new StringReader(sb.ToString()), settings);
+
+					XmlDocument viewXml = new XmlDocument();
+					viewXml.Load(reader);
+
+					template.Transform(viewXml, writer, controller.Context);
+				}
+
+				this.DisableCaching(viewContext);
+			}
+			else
+			{
+				base.Render(viewContext, writer);
+			}
+		}
+	}
+}

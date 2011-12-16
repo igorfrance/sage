@@ -1,0 +1,50 @@
+﻿html
+	{ height: 100%; overflow: hidden; }
+body
+	{ height: 100%; margin: 0; overflow: hidden; background-color: white; }
+body, td, th
+	{ font-family: verdana; font-size: 10px; }
+a, a:visited
+	{ color: blue; }
+th
+	{ text-align: left; cursor: default;  }
+table
+	{ border-collapse: collapse; table-layout: fixed; }
+
+#header
+	{ position: absolute; left: 0; right: 0; top: 0; height: 15px; background-color: #cecece; border-bottom: 1px solid #aaa; z-index: 1; }
+#log
+	{ position: absolute; left: 0; right: 0; top: 15px; bottom: 0; z-index: 0; overflow: auto; }
+
+#header_table, 
+#header_table th
+	{ padding: 1px; background-color: #CECECE; border: 1px solid #CECECE; color: #7F7F7F; }
+
+#log_table
+	{ min-width: 1000px; }
+#log_table td
+	{ border: 1px solid #eee; padding: 0px 1px; height: 14px; overflow: hidden; }
+#log_table td div
+	{ height: 12px; overflow: hidden; white-space: pre; }
+#log_table.dev
+	{ border-bottom: 2px solid #666; }
+	
+img.sql
+	{	cursor:pointer; }
+
+tr.DEBUG td
+	{ color: #7f7f7f; }
+tr.INFO td
+	{ color: #000; }
+tr.WARN td
+	{ color: #3333ff; }
+tr.ERROR td
+	{ color: #cc0000; }
+tr.FATAL td
+	{ color: #ff0000; font-weight: bold; font-style: italic; }
+
+#tooltip
+	{
+		background-color: #F5F5F5; color: black; border: 1px solid #4F5C71; padding: 2px;
+		position: absolute; left: 0; top: 0; height: 18; font-size: 10px;
+	}

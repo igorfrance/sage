@@ -1,0 +1,1992 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AForge.Math</name>
+    </assembly>
+    <members>
+        <member name="T:AForge.Math.FourierTransform">
+            <summary>
+            Fourier transformation.
+            </summary>
+            
+            <remarks>The class implements one dimensional and two dimensional
+            Discrete and Fast Fourier Transformation.</remarks>
+            
+        </member>
+        <member name="M:AForge.Math.FourierTransform.DFT(AForge.Math.Complex[],AForge.Math.FourierTransform.Direction)">
+            <summary>
+            One dimensional Discrete Fourier Transform.
+            </summary>
+            
+            <param name="data">Data to transform.</param>
+            <param name="direction">Transformation direction.</param>
+            
+        </member>
+        <member name="M:AForge.Math.FourierTransform.DFT2(AForge.Math.Complex[0:,0:],AForge.Math.FourierTransform.Direction)">
+            <summary>
+            Two dimensional Discrete Fourier Transform.
+            </summary>
+            
+            <param name="data">Data to transform.</param>
+            <param name="direction">Transformation direction.</param>
+            
+        </member>
+        <member name="M:AForge.Math.FourierTransform.FFT(AForge.Math.Complex[],AForge.Math.FourierTransform.Direction)">
+            <summary>
+            One dimensional Fast Fourier Transform.
+            </summary>
+            
+            <param name="data">Data to transform.</param>
+            <param name="direction">Transformation direction.</param>
+            
+            <remarks><para><note>The method accepts <paramref name="data"/> array of 2<sup>n</sup> size
+            only, where <b>n</b> may vary in the [1, 14] range.</note></para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Incorrect data length.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.FourierTransform.FFT2(AForge.Math.Complex[0:,0:],AForge.Math.FourierTransform.Direction)">
+            <summary>
+            Two dimensional Fast Fourier Transform.
+            </summary>
+            
+            <param name="data">Data to transform.</param>
+            <param name="direction">Transformation direction.</param>
+            
+            <remarks><para><note>The method accepts <paramref name="data"/> array of 2<sup>n</sup> size
+            only in each dimension, where <b>n</b> may vary in the [1, 14] range. For example, 16x16 array
+            is valid, but 15x15 is not.</note></para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Incorrect data length.</exception>
+            
+        </member>
+        <member name="T:AForge.Math.FourierTransform.Direction">
+            <summary>
+            Fourier transformation direction.
+            </summary>
+        </member>
+        <member name="F:AForge.Math.FourierTransform.Direction.Forward">
+            <summary>
+            Forward direction of Fourier transformation.
+            </summary>
+        </member>
+        <member name="F:AForge.Math.FourierTransform.Direction.Backward">
+            <summary>
+            Backward direction of Fourier transformation.
+            </summary>
+        </member>
+        <member name="T:AForge.Math.ContinuousHistogram">
+            <summary>
+            Histogram for continuous random values.
+            </summary>
+            
+            <remarks><para>The class wraps histogram for continuous stochastic function, which is represented
+            by integer array and range of the function. Values of the integer array are treated
+            as total amount of hits on the corresponding subranges, which are calculated by splitting the
+            specified range into required amount of consequent ranges.</para>
+            
+            <para>For example, if the integer array is equal to { 1, 2, 4, 8, 16 } and the range is set
+            to [0, 1], then the histogram consists of next subranges:
+            <list type="bullet">
+            <item>[0.0, 0.2] - 1 hit;</item>
+            <item>[0.2, 0.4] - 2 hits;</item>
+            <item>[0.4, 0.6] - 4 hits;</item>
+            <item>[0.6, 0.8] - 8 hits;</item>
+            <item>[0.8, 1.0] - 16 hits.</item>
+            </list>
+            </para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get mean and standard deviation values
+            System.Diagnostics.Debug.WriteLine( "mean = " + histogram.Mean + ", std.dev = " + histogram.StdDev );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.ContinuousHistogram.#ctor(System.Int32[],AForge.DoubleRange)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.ContinuousHistogram"/> class.
+            </summary>
+            
+            <param name="values">Values of the histogram.</param>
+            <param name="range">Range of random values.</param>
+            
+            <remarks>Values of the integer array are treated as total amount of hits on the
+            corresponding subranges, which are calculated by splitting the specified range into
+            required amount of consequent ranges (see <see cref="T:AForge.Math.ContinuousHistogram"/> class
+            description for more information).
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.ContinuousHistogram.GetRange(System.Double)">
+            <summary>
+            Get range around median containing specified percentage of values.
+            </summary>
+            
+            <param name="percent">Values percentage around median.</param>
+            
+            <returns>Returns the range which containes specifies percentage of values.</returns>
+            
+            <remarks><para>The method calculates range of stochastic variable, which summary probability
+            comprises the specified percentage of histogram's hits.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get 50% range
+            DoubleRange range = histogram.GetRange( 0.5 );
+            // show the range ([0.25, 0.75])
+            System.Diagnostics.Debug.WriteLine( "50% range = [" + range.Min + ", " + range.Max + "]" );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.ContinuousHistogram.Update">
+            <summary>
+            Update statistical value of the histogram.
+            </summary>
+            
+            <remarks>The method recalculates statistical values of the histogram, like mean,
+            standard deviation, etc. The method should be called only in the case if histogram
+            values were retrieved through <see cref="P:AForge.Math.ContinuousHistogram.Values"/> property and updated after that.
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.Values">
+            <summary>
+            Values of the histogram.
+            </summary>
+            
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.Range">
+            <summary>
+            Range of random values.
+            </summary>
+            
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.Mean">
+            <summary>
+            Mean value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve mean value of the histogram.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get mean value (= 0.505 )
+            System.Diagnostics.Debug.WriteLine( "mean = " + histogram.Mean.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.StdDev">
+            <summary>
+            Standard deviation.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve standard deviation value of the histogram.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get std.dev. value (= 0.215)
+            System.Diagnostics.Debug.WriteLine( "std.dev. = " + histogram.StdDev.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.Median">
+            <summary>
+            Median value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve median value of the histogram.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get median value (= 0.500)
+            System.Diagnostics.Debug.WriteLine( "median = " + histogram.Median.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.Min">
+            <summary>
+            Minimum value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve minimum value of the histogram with non zero
+            hits count.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get min value (= 0.250)
+            System.Diagnostics.Debug.WriteLine( "min = " + histogram.Min.ToString( "F3" ) );
+            </code>
+            </remarks>
+        </member>
+        <member name="P:AForge.Math.ContinuousHistogram.Max">
+            <summary>
+            Maximum value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve maximum value of the histogram with non zero
+            hits count.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            ContinuousHistogram histogram = new ContinuousHistogram(
+                new int[] { 0, 0, 8, 4, 2, 4, 7, 1, 0 }, new DoubleRange( 0.0, 1.0 ) );
+            // get max value (= 0.875)
+            System.Diagnostics.Debug.WriteLine( "max = " + histogram.Max.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="T:AForge.Math.Tools">
+            <summary>
+            Set of tool functions.
+            </summary>
+            
+            <remarks>The class contains different utility functions.</remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Tools.Pow2(System.Int32)">
+            <summary>
+            Calculates power of 2.
+            </summary>
+            
+            <param name="power">Power to raise in.</param>
+            
+            <returns>Returns specified power of 2 in the case if power is in the range of
+            [0, 30]. Otherwise returns 0.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Tools.IsPowerOf2(System.Int32)">
+            <summary>
+            Checks if the specified integer is power of 2.
+            </summary>
+            
+            <param name="x">Integer number to check.</param>
+            
+            <returns>Returns <b>true</b> if the specified number is power of 2.
+            Otherwise returns <b>false</b>.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Tools.Log2(System.Int32)">
+            <summary>
+            Get base of binary logarithm.
+            </summary>
+            
+            <param name="x">Source integer number.</param>
+            
+            <returns>Power of the number (base of binary logarithm).</returns>
+            
+        </member>
+        <member name="T:AForge.Math.Random.IRandomNumberGenerator">
+            <summary>
+            Interface for random numbers generators.
+            </summary>
+            
+            <remarks><para>The interface defines set of methods and properties, which should
+            be implemented by different algorithms for random numbers generatation.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.IRandomNumberGenerator.Next">
+            <summary>
+            Generate next random number.
+            </summary>
+            
+            <returns>Returns next random number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Random.IRandomNumberGenerator.SetSeed(System.Int32)">
+            <summary>
+            Set seed of the random numbers generator.
+            </summary>
+            
+            <param name="seed">Seed value.</param>
+            
+        </member>
+        <member name="P:AForge.Math.Random.IRandomNumberGenerator.Mean">
+            <summary>
+            Mean value of generator.
+            </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.IRandomNumberGenerator.Variance">
+            <summary>
+            Variance value of generator.
+            </summary>
+            
+        </member>
+        <member name="T:AForge.Math.Statistics">
+            <summary>
+            Set of statistics functions.
+            </summary>
+            
+            <remarks>The class represents collection of simple functions used
+            in statistics.</remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Statistics.Mean(System.Int32[])">
+            <summary>
+            Calculate mean value.
+            </summary>
+            
+            <param name="values">Histogram array.</param>
+            
+            <returns>Returns mean value.</returns>
+            
+            <remarks><para>The input array is treated as histogram, i.e. its
+            indexes are treated as values of stochastic function, but
+            array values are treated as "probabilities" (total amount of
+            hits).</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram array
+            int[] histogram = new int[10] { 1, 1, 2, 3, 6, 8, 11, 12, 7, 3 };
+            // calculate mean value
+            double mean = Statistics.Mean( histogram );
+            // output it (5.759)
+            System.Diagnostics.Debug.WriteLine( "mean = " + mean.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Statistics.StdDev(System.Int32[])">
+            <summary>
+            Calculate standard deviation.
+            </summary>
+            
+            <param name="values">Histogram array.</param>
+            
+            <returns>Returns value of standard deviation.</returns>
+            
+            <remarks><para>The input array is treated as histogram, i.e. its
+            indexes are treated as values of stochastic function, but
+            array values are treated as "probabilities" (total amount of
+            hits).</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram array
+            int[] histogram = new int[10] { 1, 1, 2, 3, 6, 8, 11, 12, 7, 3 };
+            // calculate standard deviation value
+            double stdDev = Statistics.StdDev( histogram );
+            // output it (1.999)
+            System.Diagnostics.Debug.WriteLine( "std.dev. = " + stdDev.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Statistics.Median(System.Int32[])">
+            <summary>
+            Calculate median value.
+            </summary>
+            
+            <param name="values">Histogram array.</param>
+            
+            <returns>Returns value of median.</returns>
+            
+            <remarks>
+            <para>The input array is treated as histogram, i.e. its
+            indexes are treated as values of stochastic function, but
+            array values are treated as "probabilities" (total amount of
+            hits).</para>
+            
+            <para><note>The median value is calculated accumulating histogram's
+            values starting from the <b>left</b> point until the sum reaches 50% of
+            histogram's sum.</note></para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram array
+            int[] histogram = new int[10] { 1, 1, 2, 3, 6, 8, 11, 12, 7, 3 };
+            // calculate median value
+            int median = Statistics.Median( histogram );
+            // output it (6)
+            System.Diagnostics.Debug.WriteLine( "median = " + median );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Statistics.GetRange(System.Int32[],System.Double)">
+            <summary>
+            Get range around median containing specified percentage of values.
+            </summary>
+            
+            <param name="values">Histogram array.</param>
+            <param name="percent">Values percentage around median.</param>
+            
+            <returns>Returns the range which containes specifies percentage
+            of values.</returns>
+            
+            <remarks>
+            <para>The input array is treated as histogram, i.e. its
+            indexes are treated as values of stochastic function, but
+            array values are treated as "probabilities" (total amount of
+            hits).</para>
+            
+            <para>The method calculates range of stochastic variable, which summary probability
+            comprises the specified percentage of histogram's hits.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram array
+            int[] histogram = new int[10] { 1, 1, 2, 3, 6, 8, 11, 12, 7, 3 };
+            // get 75% range around median
+            IntRange range = Statistics.GetRange( histogram, 0.75 );
+            // output it ([4, 8])
+            System.Diagnostics.Debug.WriteLine( "range = [" + range.Min + ", " + range.Max + "]" );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Statistics.Entropy(System.Int32[])">
+            <summary>
+            Calculate entropy value.
+            </summary>
+            
+            <param name="values">Histogram array.</param>
+            
+            <returns>Returns entropy value of the specified histagram array.</returns>
+            
+            <remarks><para>The input array is treated as histogram, i.e. its
+            indexes are treated as values of stochastic function, but
+            array values are treated as "probabilities" (total amount of
+            hits).</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram array with 2 values of equal probabilities
+            int[] histogram1 = new int[2] { 3, 3 };
+            // calculate entropy
+            double entropy1 = Statistics.Entropy( histogram1 );
+            // output it (1.000)
+            System.Diagnostics.Debug.WriteLine( "entropy1 = " + entropy1.ToString( "F3" ) );
+            
+            // create histogram array with 4 values of equal probabilities
+            int[] histogram2 = new int[4] { 1, 1, 1, 1 };
+            // calculate entropy
+            double entropy2 = Statistics.Entropy( histogram2 );
+            // output it (2.000)
+            System.Diagnostics.Debug.WriteLine( "entropy2 = " + entropy2.ToString( "F3" ) );
+            
+            // create histogram array with 4 values of different probabilities
+            int[] histogram3 = new int[4] { 1, 2, 3, 4 };
+            // calculate entropy
+            double entropy3 = Statistics.Entropy( histogram3 );
+            // output it (1.846)
+            System.Diagnostics.Debug.WriteLine( "entropy3 = " + entropy3.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="T:AForge.Math.Random.UniformGenerator">
+            <summary>
+            Uniform random numbers generator.
+            </summary>
+            
+            <remarks><para>The random numbers generator generates uniformly
+            distributed numbers in the <see cref="P:AForge.Math.Random.UniformGenerator.Range">specified range</see> - values
+            are greater or equal to minimum range's value and less than maximum range's
+            value.</para>
+            
+            <para>The generator uses <see cref="T:AForge.Math.Random.UniformOneGenerator"/> generator
+            to generate random numbers.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create instance of random generator
+            IRandomNumberGenerator generator = new UniformGenerator( new DoubleRange( 50, 100 ) );
+            // generate random number
+            double randomNumber = generator.Next( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformGenerator.#ctor(AForge.DoubleRange)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.UniformGenerator"/> class.
+            </summary>
+            
+            <param name="range">Random numbers range.</param>
+            
+            <remarks>Initializes random numbers generator with zero seed.</remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformGenerator.#ctor(AForge.DoubleRange,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.UniformGenerator"/> class.
+            </summary>
+            
+            <param name="range">Random numbers range.</param>
+            <param name="seed">Seed value to initialize random numbers generator.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformGenerator.Next">
+            <summary>
+            Generate next random number.
+            </summary>
+            
+            <returns>Returns next random number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformGenerator.SetSeed(System.Int32)">
+            <summary>
+            Set seed of the random numbers generator.
+            </summary>
+            
+            <param name="seed">Seed value.</param>
+            
+            <remarks>Resets random numbers generator initializing it with
+            specified seed value.</remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Random.UniformGenerator.Mean">
+             <summary>
+             Mean value of the generator.
+             </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.UniformGenerator.Variance">
+             <summary>
+             Variance value of the generator.
+             </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.UniformGenerator.Range">
+            <summary>
+            Random numbers range.
+            </summary>
+            
+            <remarks><para>Range of random numbers to generate. Generated numbers are
+            greater or equal to minimum range's value and less than maximum range's
+            value.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:AForge.Math.Histogram">
+            <summary>
+            Histogram for discrete random values.
+            </summary>
+            
+            <remarks><para>The class wraps histogram for discrete stochastic function, which is represented
+            by integer array, where indexes of the array are treated as values of the stochastic function,
+            but array values are treated as "probabilities" (total amount of hits).
+            </para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get mean and standard deviation values
+            System.Diagnostics.Debug.WriteLine( "mean = " + histogram.Mean + ", std.dev = " + histogram.StdDev );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Histogram.#ctor(System.Int32[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Histogram"/> class.
+            </summary>
+            
+            <param name="values">Values of the histogram.</param>
+            
+            <remarks><para>Indexes of the input array are treated as values of stochastic function,
+            but array values are treated as "probabilities" (total amount of hits).
+            </para></remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Histogram.GetRange(System.Double)">
+            <summary>
+            Get range around median containing specified percentage of values.
+            </summary>
+            
+            <param name="percent">Values percentage around median.</param>
+            
+            <returns>Returns the range which containes specifies percentage of values.</returns>
+            
+            <remarks><para>The method calculates range of stochastic variable, which summary probability
+            comprises the specified percentage of histogram's hits.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get 50% range
+            IntRange range = histogram.GetRange( 0.5 );
+            // show the range ([4, 6])
+            System.Diagnostics.Debug.WriteLine( "50% range = [" + range.Min + ", " + range.Max + "]" );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Histogram.Update">
+            <summary>
+            Update statistical value of the histogram.
+            </summary>
+            
+            <remarks>The method recalculates statistical values of the histogram, like mean,
+            standard deviation, etc., in the case if histogram's values were changed directly.
+            The method should be called only in the case if histogram's values were retrieved
+            through <see cref="P:AForge.Math.Histogram.Values"/> property and updated after that.
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Histogram.Values">
+            <summary>
+            Values of the histogram.
+            </summary>
+            
+            <remarks><para>Indexes of this array are treated as values of stochastic function,
+            but array values are treated as "probabilities" (total amount of hits).
+            </para></remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Histogram.Mean">
+            <summary>
+            Mean value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve mean value of the histogram.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get mean value (= 4.862)
+            System.Diagnostics.Debug.WriteLine( "mean = " + histogram.Mean.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Histogram.StdDev">
+            <summary>
+            Standard deviation.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve standard deviation value of the histogram.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get std.dev. value (= 1.136)
+            System.Diagnostics.Debug.WriteLine( "std.dev. = " + histogram.StdDev.ToString( "F3" ) );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Histogram.Median">
+            <summary>
+            Median value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve median value of the histogram.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get median value (= 5)
+            System.Diagnostics.Debug.WriteLine( "median = " + histogram.Median );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Histogram.Min">
+            <summary>
+            Minimum value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve minimum value of the histogram with non zero
+            hits count.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get min value (= 2)
+            System.Diagnostics.Debug.WriteLine( "min = " + histogram.Min );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Histogram.Max">
+            <summary>
+            Maximum value.
+            </summary>
+            
+            <remarks><para>The property allows to retrieve maximum value of the histogram with non zero
+            hits count.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create histogram
+            Histogram histogram = new Histogram( new int[10] { 0, 0, 1, 3, 6, 8, 11, 0, 0, 0 } );
+            // get max value (= 6)
+            System.Diagnostics.Debug.WriteLine( "max = " + histogram.Max );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="T:AForge.Math.PerlinNoise">
+            <summary>
+            Perlin noise function.
+            </summary>
+            
+            <remarks><para>The class implements 1-D and 2-D Perlin noise functions, which represent
+            sum of several smooth noise functions with different frequency and amplitude. The description
+            of Perlin noise function and its calculation may be found on
+            <a href="http://freespace.virgin.net/hugo.elias/models/m_perlin.htm" target="_blank">Hugo Elias's page</a>.
+            </para>
+            
+            <para>The number of noise functions, which comprise the resulting Perlin noise function, is
+            set by <see cref="P:AForge.Math.PerlinNoise.Octaves"/> property. Amplitude and frequency values for each octave
+            start from values, which are set by <see cref="P:AForge.Math.PerlinNoise.InitFrequency"/> and <see cref="P:AForge.Math.PerlinNoise.InitAmplitude"/>
+            properties.</para>
+            
+            <para>Sample usage (clouds effect):</para>
+            <code>
+            // create Perlin noise function
+            PerlinNoise noise = new PerlinNoise( 8, 0.5, 1.0 / 32 );
+            // generate clouds effect
+            float[,] texture = new float[height, width];
+            
+            for ( int y = 0; y &lt; height; y++ )
+            {
+            	for ( int x = 0; x &lt; width; x++ )
+            	{
+            		texture[y, x] = 
+            			Math.Max( 0.0f, Math.Min( 1.0f,
+            				(float) noise.Function2D( x, y ) * 0.5f + 0.5f
+            			) );
+            	}
+            }
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.PerlinNoise"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.#ctor(System.Int32,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.PerlinNoise"/> class.
+            </summary>
+            
+            <param name="octaves">Number of octaves (see <see cref="P:AForge.Math.PerlinNoise.Octaves"/> property).</param>
+            <param name="persistence">Persistence value (see <see cref="P:AForge.Math.PerlinNoise.Persistence"/> property).</param>
+            
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.#ctor(System.Int32,System.Double,System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.PerlinNoise"/> class.
+            </summary>
+            
+            <param name="octaves">Number of octaves (see <see cref="P:AForge.Math.PerlinNoise.Octaves"/> property).</param>
+            <param name="persistence">Persistence value (see <see cref="P:AForge.Math.PerlinNoise.Persistence"/> property).</param>
+            <param name="initFrequency">Initial frequency (see <see cref="P:AForge.Math.PerlinNoise.InitFrequency"/> property).</param>
+            <param name="initAmplitude">Initial amplitude (see <see cref="P:AForge.Math.PerlinNoise.InitAmplitude"/> property).</param>
+            
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.Function(System.Double)">
+            <summary>
+            1-D Perlin noise function.
+            </summary>
+            
+            <param name="x">x value.</param>
+            
+            <returns>Returns function's value at point <paramref name="x"/>.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.Function2D(System.Double,System.Double)">
+            <summary>
+            2-D Perlin noise function.
+            </summary>
+            
+            <param name="x">x value.</param>
+            <param name="y">y value.</param>
+            
+            <returns>Returns function's value at point (<paramref name="x"/>, <paramref name="y"/>).</returns>
+            
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.Noise(System.Int32)">
+            <summary>
+            Ordinary noise function
+            </summary>
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.SmoothedNoise(System.Double)">
+            <summary>
+            Smoothed noise.
+            </summary>
+        </member>
+        <member name="M:AForge.Math.PerlinNoise.CosineInterpolate(System.Double,System.Double,System.Double)">
+            <summary>
+            Cosine interpolation.
+            </summary>
+        </member>
+        <member name="P:AForge.Math.PerlinNoise.InitFrequency">
+            <summary>
+            Initial frequency.
+            </summary>
+            
+            <remarks><para>The property sets initial frequency of the first octave. Frequencies for
+            next octaves are calculated using the next equation:<br/>
+            frequency<sub>i</sub> = <see cref="P:AForge.Math.PerlinNoise.InitFrequency"/> * 2<sup>i</sup>,
+            where i = [0, <see cref="P:AForge.Math.PerlinNoise.Octaves"/>).
+            </para>
+            
+            <para>Default value is set to <b>1</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.PerlinNoise.InitAmplitude">
+             <summary>
+             Initial amplitude.
+             </summary>
+             
+             <remarks><para>The property sets initial amplitude of the first octave. Amplitudes for
+             next octaves are calculated using the next equation:<br/>
+             amplitude<sub>i</sub> = <see cref="P:AForge.Math.PerlinNoise.InitAmplitude"/> * <see cref="P:AForge.Math.PerlinNoise.Persistence"/><sup>i</sup>,
+             where i = [0, <see cref="P:AForge.Math.PerlinNoise.Octaves"/>).
+             </para>
+             
+             <para>Default value is set to <b>1</b>.</para>
+             </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.PerlinNoise.Persistence">
+             <summary>
+             Persistence value.
+             </summary>
+            
+             <remarks><para>The property sets so called persistence value, which controls the way
+             how <see cref="P:AForge.Math.PerlinNoise.InitAmplitude">amplitude</see> is calculated for each octave comprising
+             the Perlin noise function.</para>
+             
+             <para>Default value is set to <b>0.65</b>.</para>
+             </remarks>
+            
+        </member>
+        <member name="P:AForge.Math.PerlinNoise.Octaves">
+            <summary>
+            Number of octaves, [1, 32].
+            </summary>
+            
+            <remarks><para>The property sets the number of noise functions, which sum up the resulting
+            Perlin noise function.</para>
+            
+            <para>Default value is set to <b>4</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:AForge.Math.Gaussian">
+            <summary>
+            Gaussian function.
+            </summary>
+            
+            <remarks><para>The class is used to calculate 1D and 2D Gaussian functions for
+            specified <see cref="P:AForge.Math.Gaussian.Sigma"/> (s) value:</para>
+            
+            <code lang="none">
+            1-D: f(x) = exp( x * x / ( -2 * s * s ) ) / ( s * sqrt( 2 * PI ) )
+            
+            2-D: f(x, y) = exp( x * x + y * y / ( -2 * s * s ) ) / ( s * s * 2 * PI )
+            </code>
+            
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Gaussian.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Gaussian"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:AForge.Math.Gaussian.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Gaussian"/> class.
+            </summary>
+            
+            <param name="sigma">Sigma value.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Gaussian.Function(System.Double)">
+            <summary>
+            1-D Gaussian function.
+            </summary>
+            
+            <param name="x">x value.</param>
+            
+            <returns>Returns function's value at point <paramref name="x"/>.</returns>
+            
+            <remarks><para>The function calculates 1-D Gaussian function:</para>
+            
+            <code lang="none">
+            f(x) = exp( x * x / ( -2 * s * s ) ) / ( s * sqrt( 2 * PI ) )
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Gaussian.Function2D(System.Double,System.Double)">
+            <summary>
+            2-D Gaussian function.
+            </summary>
+            
+            <param name="x">x value.</param>
+            <param name="y">y value.</param>
+            
+            <returns>Returns function's value at point (<paramref name="x"/>, <paramref name="y"/>).</returns>
+            
+            <remarks><para>The function calculates 2-D Gaussian function:</para>
+            
+            <code lang="none">
+            f(x, y) = exp( x * x + y * y / ( -2 * s * s ) ) / ( s * s * 2 * PI )
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Gaussian.Kernel(System.Int32)">
+            <summary>
+            1-D Gaussian kernel.
+            </summary>
+            
+            <param name="size">Kernel size (should be odd), [3, 101].</param>
+            
+            <returns>Returns 1-D Gaussian kernel of the specified size.</returns>
+            
+            <remarks><para>The function calculates 1-D Gaussian kernel, which is array
+            of Gaussian function's values in the [-r, r] range of x value, where
+            r=floor(<paramref name="size"/>/2).
+            </para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Wrong kernel size.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Gaussian.Kernel2D(System.Int32)">
+            <summary>
+            2-D Gaussian kernel.
+            </summary>
+            
+            <param name="size">Kernel size (should be odd), [3, 101].</param>
+            
+            <returns>Returns 2-D Gaussian kernel of specified size.</returns>
+            
+            <remarks><para>The function calculates 2-D Gaussian kernel, which is array
+            of Gaussian function's values in the [-r, r] range of x,y values, where
+            r=floor(<paramref name="size"/>/2).
+            </para></remarks>
+            
+            <exception cref="T:System.ArgumentException">Wrong kernel size.</exception>
+            
+        </member>
+        <member name="P:AForge.Math.Gaussian.Sigma">
+            <summary>
+            Sigma value.
+            </summary>
+            
+            <remarks><para>Sigma property of Gaussian function.</para>
+            
+            <para>Default value is set to <b>1</b>. Minimum allowed value is <b>0.00000001</b>.</para>
+            </remarks>
+            
+        </member>
+        <member name="T:AForge.Math.Complex">
+            <summary>
+            Complex number wrapper class.
+            </summary>
+            
+            <remarks><para>The class encapsulates complex number and provides
+            set of different operators to manipulate it, lake adding, subtractio,
+            multiplication, etc.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // define two complex numbers
+            Complex c1 = new Complex( 3, 9 );
+            Complex c2 = new Complex( 8, 3 );
+            // sum
+            Complex s1 = Complex.Add( c1, c2 );
+            Complex s2 = c1 + c2;
+            Complex s3 = c1 + 5;
+            // difference
+            Complex d1 = Complex.Subtract( c1, c2 );
+            Complex d2 = c1 - c2;
+            Complex d3 = c1 - 2;
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="F:AForge.Math.Complex.Re">
+            <summary>
+            Real part of the complex number.
+            </summary>
+        </member>
+        <member name="F:AForge.Math.Complex.Im">
+            <summary>
+            Imaginary part of the complex number.
+            </summary>
+        </member>
+        <member name="F:AForge.Math.Complex.Zero">
+            <summary>
+             A double-precision complex number that represents zero.
+            </summary>
+        </member>
+        <member name="F:AForge.Math.Complex.One">
+            <summary>
+             A double-precision complex number that represents one.
+            </summary>
+        </member>
+        <member name="F:AForge.Math.Complex.I">
+            <summary>
+             A double-precision complex number that represents the squere root of (-1).
+            </summary>
+        </member>
+        <member name="M:AForge.Math.Complex.#ctor(System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Complex"/> class.
+            </summary>
+            
+            <param name="re">Real part.</param>
+            <param name="im">Imaginary part.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.#ctor(AForge.Math.Complex)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Complex"/> class.
+            </summary>
+            
+            <param name="c">Source complex number.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Add(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Adds two complex numbers.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the sum of specified
+            complex numbers.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Add(AForge.Math.Complex,System.Double)">
+            <summary>
+            Adds scalar value to a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the sum of specified
+            complex number and scalar value.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Add(AForge.Math.Complex,AForge.Math.Complex,AForge.Math.Complex@)">
+            <summary>
+            Adds two complex numbers and puts the result into the third complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Add(AForge.Math.Complex,System.Double,AForge.Math.Complex@)">
+            <summary>
+            Adds scalar value to a complex number and puts the result into another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Subtract(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Subtracts one complex number from another.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance to subtract from.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance to be subtracted.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the subtraction result (<b>a - b</b>).</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Subtract(AForge.Math.Complex,System.Double)">
+            <summary>
+            Subtracts a scalar from a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance to subtract from.</param>
+            <param name="s">A scalar value to be subtracted.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the subtraction result (<b>a - s</b>).</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Subtract(System.Double,AForge.Math.Complex)">
+            <summary>
+            Subtracts a complex number from a scalar value.
+            </summary>
+            
+            <param name="s">A scalar value to subtract from.</param>
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance to be subtracted.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the subtraction result (<b>s - a</b>).</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Subtract(AForge.Math.Complex,AForge.Math.Complex,AForge.Math.Complex@)">
+            <summary>
+            Subtracts one complex number from another and puts the result in the third complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance to subtract from.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance to be subtracted.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Subtract(AForge.Math.Complex,System.Double,AForge.Math.Complex@)">
+            <summary>
+            Subtracts a scalar value from a complex number and puts the result into another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance to subtract from.</param>
+            <param name="s">A scalar value to be subtracted.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Subtract(System.Double,AForge.Math.Complex,AForge.Math.Complex@)">
+            <summary>
+            Subtracts a complex number from a scalar value and puts the result into another complex number.
+            </summary>
+            
+            <param name="s">A scalar value to subtract from.</param>
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance to be subtracted.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Multiply(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Multiplies two complex numbers.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of multiplication.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Multiply(AForge.Math.Complex,System.Double)">
+            <summary>
+            Multiplies a complex number by a scalar value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of multiplication.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Multiply(AForge.Math.Complex,AForge.Math.Complex,AForge.Math.Complex@)">
+            <summary>
+            Multiplies two complex numbers and puts the result in a third complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Multiply(AForge.Math.Complex,System.Double,AForge.Math.Complex@)">
+            <summary>
+            Multiplies a complex number by a scalar value and puts the result into another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Divide(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Divides one complex number by another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result.</returns>
+            
+            <exception cref="T:System.DivideByZeroException">Can not divide by zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Divide(AForge.Math.Complex,System.Double)">
+            <summary>
+            Divides a complex number by a scalar value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result.</returns>
+            
+            <exception cref="T:System.DivideByZeroException">Can not divide by zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Divide(System.Double,AForge.Math.Complex)">
+            <summary>
+            Divides a scalar value by a complex number.
+            </summary>
+            
+            <param name="s">A scalar value.</param>
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result.</returns>
+            
+            <exception cref="T:System.DivideByZeroException">Can not divide by zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Divide(AForge.Math.Complex,AForge.Math.Complex,AForge.Math.Complex@)">
+            <summary>
+            Divides one complex number by another complex number and puts the result in a third complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+            <exception cref="T:System.DivideByZeroException">Can not divide by zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Divide(AForge.Math.Complex,System.Double,AForge.Math.Complex@)">
+            <summary>
+            Divides a complex number by a scalar value and puts the result into another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+            <exception cref="T:System.DivideByZeroException">Can not divide by zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Divide(System.Double,AForge.Math.Complex,AForge.Math.Complex@)">
+            <summary>
+            Divides a scalar value by a complex number and puts the result into another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            <param name="result">A <see cref="T:AForge.Math.Complex"/> instance to hold the result.</param>
+            
+            <exception cref="T:System.DivideByZeroException">Can not divide by zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Negate(AForge.Math.Complex)">
+            <summary>
+            Negates a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the negated values.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.ApproxEqual(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Tests whether two complex numbers are approximately equal using default tolerance value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Return <see langword="true"/> if the two vectors are approximately equal or <see langword="false"/> otherwise.</returns>
+            
+            <remarks><para>The default tolerance value, which is used for the test, equals to 8.8817841970012523233891E-16.</para></remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.ApproxEqual(AForge.Math.Complex,AForge.Math.Complex,System.Double)">
+            <summary>
+            Tests whether two complex numbers are approximately equal given a tolerance value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="tolerance">The tolerance value used to test approximate equality.</param>
+            
+            <remarks><para>The default tolerance value, which is used for the test, equals to 8.8817841970012523233891E-16.</para></remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Parse(System.String)">
+            <summary>
+            Converts the specified string to its <see cref="T:AForge.Math.Complex"/> equivalent.
+            </summary>
+            
+            <param name="s">A string representation of a complex number.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance that represents the complex number
+            specified by the <paramref name="s"/> parameter.</returns>
+            
+            <exception cref="T:System.FormatException">String representation of the complex number is not correctly formatted.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.TryParse(System.String,AForge.Math.Complex@)">
+            <summary>
+            Try to convert the specified string to its <see cref="T:AForge.Math.Complex"/> equivalent.
+            </summary>
+            
+            <param name="s">A string representation of a complex number.</param>
+            
+            <param name="result"><see cref="T:AForge.Math.Complex"/> instance to output the result to.</param>
+            
+            <returns>Returns boolean value that indicates if the parse was successful or not.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Sqrt(AForge.Math.Complex)">
+            <summary>
+            Calculates square root of a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the square root of the specified
+            complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Log(AForge.Math.Complex)">
+            <summary>
+            Calculates natural (base <b>e</b>) logarithm of a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the natural logarithm of the specified
+            complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Exp(AForge.Math.Complex)">
+            <summary>
+            Calculates exponent (<b>e</b> raised to the specified power) of a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the exponent of the specified
+            complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Sin(AForge.Math.Complex)">
+            <summary>
+            Calculates Sine value of the complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the Sine value of the specified
+            complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Cos(AForge.Math.Complex)">
+            <summary>
+            Calculates Cosine value of the complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the Cosine value of the specified
+            complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Tan(AForge.Math.Complex)">
+            <summary>
+            Calculates Tangent value of the complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the Tangent value of the specified
+            complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.GetHashCode">
+            <summary>
+            Returns the hashcode for this instance.
+            </summary>
+            
+            <returns>A 32-bit signed integer hash code.</returns>
+        </member>
+        <member name="M:AForge.Math.Complex.Equals(System.Object)">
+            <summary>
+            Returns a value indicating whether this instance is equal to the specified object.
+            </summary>
+            
+            <param name="obj">An object to compare to this instance.</param>
+            
+            <returns>Returns <see langword="true"/> if <paramref name="obj"/> is a <see cref="T:AForge.Math.Complex"/> and has the same values as this instance or <see langword="false"/> otherwise.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.ToString">
+            <summary>
+            Returns a string representation of this object.
+            </summary>
+            
+            <returns>A string representation of this object.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Equality(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Tests whether two specified complex numbers are equal.
+            </summary>
+            
+            <param name="u">The left-hand complex number.</param>
+            <param name="v">The right-hand complex number.</param>
+            
+            <returns>Returns <see langword="true"/> if the two complex numbers are equal or <see langword="false"/> otherwise.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Inequality(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Tests whether two specified complex numbers are not equal.
+            </summary>
+            
+            <param name="u">The left-hand complex number.</param>
+            <param name="v">The right-hand complex number.</param>
+            
+            <returns>Returns <see langword="true"/> if the two complex numbers are not equal or <see langword="false"/> otherwise.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_UnaryNegation(AForge.Math.Complex)">
+            <summary>
+            Negates the complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/>  instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the negated values.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Addition(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Adds two complex numbers.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the sum.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Addition(AForge.Math.Complex,System.Double)">
+            <summary>
+            Adds a complex number and a scalar value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the sum.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Addition(System.Double,AForge.Math.Complex)">
+            <summary>
+            Adds a complex number and a scalar value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the sum.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Subtraction(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Subtracts one complex number from another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the difference.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Subtraction(AForge.Math.Complex,System.Double)">
+            <summary>
+            Subtracts a scalar value from a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the difference.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Subtraction(System.Double,AForge.Math.Complex)">
+            <summary>
+            Subtracts a complex number from a scalar value.
+            </summary>
+            
+            <param name="s">A scalar value.</param>
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the difference.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Multiply(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Multiplies two complex numbers.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of multiplication.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Multiply(System.Double,AForge.Math.Complex)">
+            <summary>
+            Multiplies a complex number by a scalar value.
+            </summary>
+            
+            <param name="s">A scalar value.</param>
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of multiplication.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Multiply(AForge.Math.Complex,System.Double)">
+            <summary>
+            Multiplies a complex number by a scalar value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of multiplication.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Division(AForge.Math.Complex,AForge.Math.Complex)">
+            <summary>
+            Divides one complex number by another complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="b">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            
+            <returns>A new Complex instance containing the result.</returns>
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of division.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Division(AForge.Math.Complex,System.Double)">
+            <summary>
+            Divides a complex number by a scalar value.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of division.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Division(System.Double,AForge.Math.Complex)">
+            <summary>
+            Divides a scalar value by a complex number.
+            </summary>
+            
+            <param name="a">A <see cref="T:AForge.Math.Complex"/> instance.</param>
+            <param name="s">A scalar value.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing the result of division.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Explicit(System.Single)~AForge.Math.Complex">
+            <summary>
+            Converts from a single-precision real number to a complex number. 
+            </summary>
+            
+            <param name="value">Single-precision real number to convert to complex number.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing complex number with
+            real part initialized to the specified value.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.op_Explicit(System.Double)~AForge.Math.Complex">
+            <summary>
+            Converts from a double-precision real number to a complex number. 
+            </summary>
+            
+            <param name="value">Double-precision real number to convert to complex number.</param>
+            
+            <returns>Returns new <see cref="T:AForge.Math.Complex"/> instance containing complex number with
+            real part initialized to the specified value.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.System#ICloneable#Clone">
+            <summary>
+            Creates an exact copy of this <see cref="T:AForge.Math.Complex"/> object.
+            </summary>
+            
+            <returns>Returns clone of the complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.Clone">
+            <summary>
+            Creates an exact copy of this <see cref="T:AForge.Math.Complex"/> object.
+            </summary>
+            
+            <returns>Returns clone of the complex number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Complex.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data. </param>
+            <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
+            
+        </member>
+        <member name="P:AForge.Math.Complex.Magnitude">
+            <summary>
+            Magnitude value of the complex number.
+            </summary>
+            
+            <remarks><para>Magnitude of the complex number, which equals to <b>Sqrt( Re * Re + Im * Im )</b>.</para></remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Complex.Phase">
+            <summary>
+            Phase value of the complex number.
+            </summary>
+            
+            <remarks><para>Phase of the complex number, which equals to <b>Atan( Im / Re )</b>.</para></remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Complex.SquaredMagnitude">
+            <summary>
+            Squared magnitude value of the complex number.
+            </summary>
+        </member>
+        <member name="T:AForge.Math.Random.GaussianGenerator">
+            <summary>
+            Gaussian random numbers generator.
+            </summary>
+            
+            <remarks><para>The random number generator generates gaussian
+            random numbers with specified mean and standard deviation values.</para>
+            
+            <para>The generator uses <see cref="T:AForge.Math.Random.StandardGenerator"/> generator as base
+            to generate random numbers.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create instance of random generator
+            IRandomNumberGenerator generator = new GaussianGenerator( 5.0, 1.5 );
+            // generate random number
+            double randomNumber = generator.Next( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.GaussianGenerator.#ctor(System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.GaussianGenerator"/> class.
+            </summary>
+            
+            <param name="mean">Mean value.</param>
+            <param name="stdDev">Standard deviation value.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Random.GaussianGenerator.#ctor(System.Double,System.Double,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.GaussianGenerator"/> class.
+            </summary>
+            
+            <param name="mean">Mean value.</param>
+            <param name="stdDev">Standard deviation value.</param>
+            <param name="seed">Seed value to initialize random numbers generator.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Random.GaussianGenerator.Next">
+            <summary>
+            Generate next random number.
+            </summary>
+            
+            <returns>Returns next random number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Random.GaussianGenerator.SetSeed(System.Int32)">
+            <summary>
+            Set seed of the random numbers generator.
+            </summary>
+            
+            <param name="seed">Seed value.</param>
+            
+            <remarks>Resets random numbers generator initializing it with
+            specified seed value.</remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Random.GaussianGenerator.Mean">
+             <summary>
+             Mean value of the generator.
+             </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.GaussianGenerator.Variance">
+             <summary>
+             Variance value of the generator.
+             </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.GaussianGenerator.StdDev">
+             <summary>
+             Standard deviation value.
+             </summary>
+            
+        </member>
+        <member name="T:AForge.Math.Random.StandardGenerator">
+            <summary>
+            Standard random numbers generator.
+            </summary>
+            
+            <remarks><para>The random number generator generates gaussian
+            random numbers with zero mean and standard deviation of one. The generator
+            implements polar form of the Box-Muller transformation.</para>
+            
+            <para>The generator uses <see cref="T:AForge.Math.Random.UniformOneGenerator"/> generator as a base
+            to generate random numbers.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create instance of random generator
+            IRandomNumberGenerator generator = new StandardGenerator( );
+            // generate random number
+            double randomNumber = generator.Next( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.StandardGenerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.StandardGenerator"/> class.
+            </summary>
+            
+        </member>
+        <member name="M:AForge.Math.Random.StandardGenerator.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.StandardGenerator"/> class.
+            </summary>
+            
+            <param name="seed">Seed value to initialize random numbers generator.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Random.StandardGenerator.Next">
+            <summary>
+            Generate next random number.
+            </summary>
+            
+            <returns>Returns next random number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Random.StandardGenerator.SetSeed(System.Int32)">
+            <summary>
+            Set seed of the random numbers generator.
+            </summary>
+            
+            <param name="seed">Seed value.</param>
+            
+            <remarks>Resets random numbers generator initializing it with
+            specified seed value.</remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Random.StandardGenerator.Mean">
+            <summary>
+            Mean value of the generator.
+            </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.StandardGenerator.Variance">
+             <summary>
+             Variance value of the generator.
+             </summary>
+            
+        </member>
+        <member name="T:AForge.Math.Random.ExponentialGenerator">
+            <summary>
+            Exponential random numbers generator.
+            </summary>
+            
+            <remarks><para>The random number generator generates exponential
+            random numbers with specified rate value (lambda).</para>
+            
+            <para>The generator uses <see cref="T:AForge.Math.Random.UniformOneGenerator"/> generator as a base
+            to generate random numbers.</para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create instance of random generator
+            IRandomNumberGenerator generator = new ExponentialGenerator( 5 );
+            // generate random number
+            double randomNumber = generator.Next( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.ExponentialGenerator.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.ExponentialGenerator"/> class.
+            </summary>
+            
+            <param name="rate">Rate value.</param>
+            
+            <exception cref="T:System.ArgumentException">Rate value should be greater than zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Random.ExponentialGenerator.#ctor(System.Double,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.ExponentialGenerator"/> class.
+            </summary>
+            
+            <param name="rate">Rate value (inverse mean).</param>
+            <param name="seed">Seed value to initialize random numbers generator.</param>
+            
+            <exception cref="T:System.ArgumentException">Rate value should be greater than zero.</exception>
+            
+        </member>
+        <member name="M:AForge.Math.Random.ExponentialGenerator.Next">
+            <summary>
+            Generate next random number
+            </summary>
+            
+            <returns>Returns next random number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Random.ExponentialGenerator.SetSeed(System.Int32)">
+            <summary>
+            Set seed of the random numbers generator.
+            </summary>
+            
+            <param name="seed">Seed value.</param>
+            
+            <remarks>Resets random numbers generator initializing it with
+            specified seed value.</remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Random.ExponentialGenerator.Rate">
+            <summary>
+            Rate value (inverse mean).
+            </summary>
+            
+            <remarks>The rate value should be positive and non zero.</remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Random.ExponentialGenerator.Mean">
+            <summary>
+            Mean value of the generator.
+            </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.ExponentialGenerator.Variance">
+             <summary>
+             Variance value of the generator.
+             </summary>
+            
+        </member>
+        <member name="T:AForge.Math.Random.UniformOneGenerator">
+            <summary>
+            Uniform random numbers generator in the range of [0, 1).
+            </summary>
+            
+            <remarks><para>The random number generator generates uniformly
+            distributed numbers in the range of [0, 1) - greater or equal to 0.0
+            and less than 1.0.</para>
+            
+            <para><note>At this point the generator is based on the
+            internal .NET generator, but may be rewritten to
+            use faster generation algorithm.</note></para>
+            
+            <para>Sample usage:</para>
+            <code>
+            // create instance of random generator
+            IRandomNumberGenerator generator = new UniformOneGenerator( );
+            // generate random number
+            double randomNumber = generator.Next( );
+            </code>
+            </remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformOneGenerator.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.UniformOneGenerator"/> class.
+            </summary>
+            
+            <remarks>Initializes random numbers generator with zero seed.</remarks>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformOneGenerator.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AForge.Math.Random.UniformOneGenerator"/> class.
+            </summary>
+            
+            <param name="seed">Seed value to initialize random numbers generator.</param>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformOneGenerator.Next">
+            <summary>
+            Generate next random number.
+            </summary>
+            
+            <returns>Returns next random number.</returns>
+            
+        </member>
+        <member name="M:AForge.Math.Random.UniformOneGenerator.SetSeed(System.Int32)">
+            <summary>
+            Set seed of the random numbers generator.
+            </summary>
+            
+            <param name="seed">Seed value.</param>
+            
+            <remarks>Resets random numbers generator initializing it with
+            specified seed value.</remarks>
+            
+        </member>
+        <member name="P:AForge.Math.Random.UniformOneGenerator.Mean">
+             <summary>
+             Mean value of the generator.
+             </summary>
+            
+        </member>
+        <member name="P:AForge.Math.Random.UniformOneGenerator.Variance">
+             <summary>
+             Variance value of the generator.
+             </summary>
+            
+        </member>
+    </members>
+</doc>
