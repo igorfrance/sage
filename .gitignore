@@ -1,0 +1,10 @@
+aspnet_client/
+bin/
+obj/
+tmp/
+log/
+*.user
+*.suo
+*.resharper
+_target/
+Sage.Local.sln
