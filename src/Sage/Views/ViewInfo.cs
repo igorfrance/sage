@@ -3,6 +3,7 @@
 	using System;
 	using System.IO;
 	using System.Linq;
+	using System.Xml;
 
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
@@ -229,7 +230,16 @@
 				if (configDoc == null)
 				{
 					if (ConfigExists)
-						configDoc = context.Resources.LoadXml(ConfigPath);
+					{
+						try
+						{
+							configDoc = context.Resources.LoadXml(ConfigPath);
+						}
+						catch (XmlException ex)
+						{
+							throw new SageHelpException(ex, ProblemType.InvalidMarkup);
+						}
+					}
 				}
 
 				return configDoc;

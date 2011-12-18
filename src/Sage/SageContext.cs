@@ -606,14 +606,14 @@
 		}
 
 		/// <summary>
-		/// Creates an <see cref="XmlElement"/> that contains information about the current request.
+		/// Gets an <see cref="XmlElement"/> that contains information about this context.
 		/// </summary>
 		/// <param name="ownerDocument">The <see cref="XmlDocument"/> to use to create the element.</param>
 		/// <returns>An <see cref="XmlElement"/> that contains information about the current request</returns>
 		/// <exception cref="ArgumentNullException">
 		/// <paramref name="ownerDocument"/> is <c>null</c>.
 		/// </exception>
-		internal XmlElement CreateRequestElement(XmlDocument ownerDocument)
+		internal XmlElement ToXml(XmlDocument ownerDocument)
 		{
 			if (ownerDocument == null)
 				throw new ArgumentNullException("ownerDocument");
@@ -671,9 +671,13 @@
 				resultElement.AppendChild(new QueryString(request.Form).ToXml(ownerDocument, "sage:form", XmlNamespaces.SageNamespace));
 
 			XmlElement dateNode = resultElement.AppendElement("sage:dateTime", XmlNamespaces.SageNamespace);
+			dateNode.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
+			dateNode.SetAttribute("time", DateTime.Now.ToString("HH:mm:ss"));
+
 			dateNode.SetAttribute("day", DateTime.Now.ToString("dd"));
 			dateNode.SetAttribute("month", DateTime.Now.ToString("MM"));
 			dateNode.SetAttribute("year", DateTime.Now.ToString("yyyy"));
+
 			dateNode.SetAttribute("hour", DateTime.Now.ToString("HH"));
 			dateNode.SetAttribute("minute", DateTime.Now.ToString("mm"));
 			dateNode.SetAttribute("second", DateTime.Now.ToString("ss"));
