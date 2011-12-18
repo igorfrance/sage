@@ -8,5 +8,6 @@
 	exclude-result-prefixes="sage mod xhtml">
 
 	<xsl:include href="sageresx://sage/resources/xslt/global.xsl"/>
+	<!--<xsl:include href="G:\cycle99\projects\web\sage\src\Sage\Resources\Xslt\Global.xslt"/>-->
 
 </xsl:stylesheet>
