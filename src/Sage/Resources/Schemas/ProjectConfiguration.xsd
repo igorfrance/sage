@@ -194,6 +194,17 @@
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="module" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="ref" use="required" type="xs:Name"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="stylesheets" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">

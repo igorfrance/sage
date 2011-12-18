@@ -40,6 +40,22 @@
 		</html>
 	</xsl:template>
 
+	<xsl:template match="xhtml:head">
+		<head>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="node()"/>
+			<xsl:apply-templates select="$response/sage:resources/sage:resource[@location='head']"/>
+		</head>
+	</xsl:template>
+
+	<xsl:template match="xhtml:body">
+		<body>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="node()"/>
+			<xsl:apply-templates select="$response/sage:resources/sage:resource[@location='body']"/>
+		</body>
+	</xsl:template>
+
 	<xsl:template match="xhtml:script[starts-with(@src, 'kelp://')]">
 		<xsl:for-each select="document(@src)/*/kelp:resource">
 			<xsl:choose>
@@ -68,6 +84,14 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:for-each>
+	</xsl:template>
+
+	<xsl:template match="sage:resource[@type='script']">
+		<script type="text/javascript" language="javascript" src="{@path}"></script>
+	</xsl:template>
+
+	<xsl:template match="sage:resource[@type='style']">
+		<link type="text/css" rel="stylesheet" href="{@path}" />
 	</xsl:template>
 
 	<xsl:template match="*">

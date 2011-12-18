@@ -113,6 +113,7 @@
 
 			ModuleConfiguration config = SageModuleFactory.GetModuleConfiguration(moduleTagName);
 
+			// add resources that we don't already have
 			this.Resources.AddRange(config.Resources.Where(r => 
 				this.Resources.Where(r1 => r1.Path == r.Path).Count() == 0));
 		}

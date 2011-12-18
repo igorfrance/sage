@@ -167,7 +167,7 @@
 			viewRoot.SetAttribute("controller", this.ControllerName);
 			viewRoot.SetAttribute("action", action);
 
-			XmlElement requestNode = viewRoot.AppendElement(this.Context.CreateRequestElement(result));
+			XmlElement requestNode = viewRoot.AppendElement(this.Context.ToXml(result));
 			XmlElement responseNode = viewRoot.AppendElement("sage:response", XmlNamespaces.SageNamespace);
 
 			if (input != null && input.ConfigNode != null)

@@ -81,7 +81,6 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Application.cs" />
-    <Compile Include="ApplicationExceptionHandler.cs" />
     <Compile Include="CacheWrapper.cs" />
     <Compile Include="Configuration\CategoryConfiguration.cs" />
     <Compile Include="Configuration\CategoryInfo.cs" />
@@ -92,14 +91,18 @@
     <Compile Include="Configuration\LocaleInfo.cs" />
     <Compile Include="Configuration\MetaViewDictionary.cs" />
     <Compile Include="Configuration\MetaViewInfo.cs" />
-    <Compile Include="Configuration\ModuleConfiguration.cs" />
+    <Compile Include="Modules\ModuleConfiguration.cs" />
     <Compile Include="Configuration\ProjectConfiguration.cs" />
     <Compile Include="Configuration\RouteInfo.cs" />
     <Compile Include="Configuration\RoutingConfiguration.cs" />
     <Compile Include="Configuration\PathTemplates.cs" />
     <Compile Include="Configuration\UnconfiguredLocaleException.cs" />
+    <Compile Include="Modules\Source\SyntaxHighlighterModule.cs" />
+    <Compile Include="Modules\Source\XmlTreeModule.cs" />
     <Compile Include="ResourceManagement\ResourceHandler.cs" />
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
+    <Compile Include="SageException.cs" />
+    <Compile Include="SageHelpException.cs" />
     <Compile Include="Views\ViewConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\ControllerMessage.cs" />
@@ -287,6 +290,7 @@
     <EmbeddedResource Include="Resources\Xslt\Tree.xsl" />
     <EmbeddedResource Include="Resources\Xslt\Global.xslt" />
     <EmbeddedResource Include="Resources\Xslt\Logic.xslt" />
+    <EmbeddedResource Include="Resources\Xslt\AssistanceError.xslt" />
     <Content Include="System.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -301,21 +305,6 @@
     <EmbeddedResource Include="Resources\Schemas\Internationalization.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Schemas\ViewConfiguration.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Schemas\Module.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Schemas\Contextualization.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kelp\Kelp.csproj">
