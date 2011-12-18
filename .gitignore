@@ -6,5 +6,6 @@ log/
 *.user
 *.suo
 *.resharper
+*.Resharper
 _target/
 Sage.Local.sln
