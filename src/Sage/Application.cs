@@ -6,6 +6,7 @@
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Web;
@@ -159,20 +160,32 @@
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		protected virtual void Application_Error(object sender, EventArgs e)
 		{
-			Exception error = Server.GetLastError();
+			Exception exception = Server.GetLastError();
+			if (exception == null || this.Context.Request == null)
+				return;
 
-			// ReSharper disable ConditionIsAlwaysTrueOrFalse
-			if (error != null && this.Context.Request != null)
-			{
-				SageContext context = new SageContext(this.Context);
-				ApplicationExceptionHandler handler = new ApplicationExceptionHandler(context, error);
-				handler.HandleException(true);
-				Response.Cache.SetCacheability(HttpCacheability.NoCache);
-				Response.Cache.SetNoStore();
-				Response.End();
-			}
+			if (exception is System.Threading.ThreadAbortException)
+				return;
 
-			// ReSharper restore ConditionIsAlwaysTrueOrFalse
+			log.Fatal(exception.Message, exception);
+
+			StringBuilder html = new StringBuilder();
+			TextWriter writer = new StringWriter(html);
+			SageContext context = new SageContext(this.Context);
+
+			SageException sageException = exception is SageException 
+				? (SageException) exception 
+				: new SageException(exception);
+
+			sageException.Render(context, writer);
+
+			writer.Close();
+			writer.Dispose();
+
+			this.Response.Write(html.ToString());
+			this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+			this.Response.Cache.SetNoStore();
+			this.Response.End();
 		}
 	}
 }
