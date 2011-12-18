@@ -2,6 +2,11 @@
 {
 	using System.Xml;
 
+	public enum ProblemType
+	{
+		InvalidMarkup = 1,
+	}
+
 	public enum ViewSource
 	{
 		BuiltIn = 0,

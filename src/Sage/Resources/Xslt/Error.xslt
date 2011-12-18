@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0"
+	xmlns:sage="http://www.cycle99.com/projects/sage"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:param name="developer" select="0"/>
@@ -11,12 +12,12 @@
 	<xsl:template match="/exception">
 		<html>
 			<head>
-				<title><xsl:value-of select="@description"/></title>
+				<title><xsl:value-of select="@message"/></title>
 				<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 				<xsl:apply-templates select="." mode="css"/>
 				<xsl:apply-templates select="." mode="script"/>
 			</head>
-			<body class="error">
+			<body>
 				<xsl:choose>
 					<xsl:when test="$developer = 1">
 						<xsl:apply-templates select="." mode="developer"/>
@@ -30,7 +31,7 @@
 	</xsl:template>
 
 	<xsl:template match="exception" mode="standard">
-		<xsl:text>An error occured during the processing of your request.</xsl:text>
+		<xsl:text>An error occured during processing of your request.</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="exception" mode="developer">
@@ -51,55 +52,53 @@
 	<xsl:template match="exception" mode="css">
 		<style>
 
-			.error
+			.exception
 				{ font-family: Verdana; font-size: 13px; }
-			.error .errorType
-				{ border-bottom: 3px solid #e2e2e2; font-weight: bold; font-style: italic; padding-bottom: 8px; color: #c00; font-size: 20px; }
-			.error .errorDescription
-				{ font-size: 20px; font-style: italic; margin: 6px 0 30px; }
-			.error .errorFile
-				{ font-size: 11px; }
+			.exception .type
+				{ border-bottom: 3px solid #e2e2e2; padding-bottom: 8px; color: #c00; font-size: 20px; }
+			.exception .description
+				{ font-size: 20px; margin: 6px 0 30px; }
+			.exception .description .file
+				{ font-size: 11px; margin-top: 5px; }
 			
-			.error .exception .details
+			.exception .exception .details
 				{ margin-bottom: 20px; }
 			
-			.error .errorLogo
-				{ position: absolute; right: 10px; top: 54px; }
-			.error .stack-toggler
+			.exception .stack-toggler
 				{ font-size: 10px; color: #cccccc; cursor: default; }
 
-			.error .stacktrace
-				{ background-color: #E9E9E9; padding: 10px; }
-			.error .stacktrace .line
+			.exception .stacktrace
+				{ background-color: #f1f1f1; padding: 10px; }
+			.exception .stacktrace .line
 				{ color: #7F7F7F; display: none; }
-			.error .stacktrace .file
-				{ color: #7F7F7F; padding-left: 50px; font-size: 85%; font-style: italic; }
-			.error .stacktrace .myline
+			.exception .stacktrace .file
+				{ color: #9f9f9f; padding-left: 50px; margin-bottom: 3px; font-size: 85%; font-style: italic; }
+			.exception .stacktrace .myline
 				{ color: #000000; }
 
-			.error .requestInfo
+			.exception .requestInfo
 				{ margin-top: 30px; }
 
-			.error .errorLine
-				{ margin-bottom: 2px; #height: 1px; }
-			.error .errorLine .title
+			.exception .errorLine
+				{ margin-bottom: 2px; overflow: hidden; }
+			.exception .errorLine .title
 				{ color: #999; float: left; width: 160px; text-align: right; padding-right: 10px; }
-			.error .errorLine .text
+			.exception .errorLine .text
 				{ margin-left: 120px; }
-			.error .formdata
+			.errorexception .formdata
 				{ background-color: #E9E9E9; border: 1px solid #CECECE; }
-			.error .paramName
+			.exception .paramName
 				{ background-color: #F5F5F5; }
 
-			.error .inner .exception
+			.exception .inner .exception
 				{ margin-top: 50px; }
-			.error .exception .inner .stacktrace
+			.exception .exception .inner .stacktrace
 				{ font-size: 72%; }
-			.error .exception .inner .errorType
+			.exception .exception .inner .type
 				{ font-size: 85%; }
-			.error .inner .errorDescription
+			.exception .inner .description
 				{ font-size: 78%; margin-bottom: 15px;}
-			.error .exception .inner .errorFile
+			.exception .exception .inner .file
 				{ font-size: 78%; }
 			
 
@@ -136,13 +135,13 @@
 	</xsl:template>
 
 	<xsl:template match="exception" mode="general">
-		<div class="errorType">
+		<div class="type">
 			<xsl:value-of select="@type"/>
 		</div>
-		<div class="errorDescription">
+		<div class="description">
 			<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
 			<xsl:if test="@sourceuri">
-				<div class="errorFile"><a href="{@sourceuri}"><xsl:value-of select="@sourceuri"/></a></div>
+				<div class="file"><a href="{@sourceuri}"><xsl:value-of select="@sourceuri"/></a></div>
 			</xsl:if>
 		</div>
 	</xsl:template>
@@ -198,7 +197,7 @@
 					IP Address:
 				</div>
 				<div class="text">
-					<xsl:value-of select="request/@remoteip"/>
+					<xsl:value-of select="sage:request/@remoteip"/>
 				</div>
 			</div>
 			<div class="errorLine">
@@ -206,9 +205,9 @@
 					Date and time:
 				</div>
 				<div class="text">
-					<xsl:value-of select="@date"/>
+					<xsl:value-of select="sage:request/sage:dateTime/@date"/>
 					<xsl:text> </xsl:text>
-					<xsl:value-of select="@time"/>
+					<xsl:value-of select="sage:request/sage:dateTime/@time"/>
 				</div>
 			</div>
 			<div class="errorLine">
@@ -216,16 +215,16 @@
 					URL:
 				</div>
 				<div class="text">
-					<a href="{request/address/@url}"><xsl:value-of select="request/address/@url"/></a>
+					<a href="{sage:request/sage:address/@url}"><xsl:value-of select="sage:request/sage:address/@url"/></a>
 				</div>
 			</div>
-			<xsl:if test="string-length(request/@referrer)">
+			<xsl:if test="string-length(sage:request/sage:address/@referrer)">
 				<div class="errorLine">
 					<div class="title">
 						Referrer:
 					</div>
 					<div class="text">
-						<a href="{request/@referrer}"><xsl:value-of select="request/@referrer"/></a>
+						<a href="{sage:request/sage:address/@referrer}"><xsl:value-of select="sage:request/sage:address/@referrer"/></a>
 					</div>
 				</div>
 			</xsl:if>
@@ -234,7 +233,7 @@
 					User agent:
 				</div>
 				<div class="text">
-					<xsl:value-of select="request/browser/@useragent"/>
+					<xsl:value-of select="sage:request/sage:useragent/@value"/>
 				</div>
 			</div>
 		</div>
