@@ -163,6 +163,7 @@
     <Compile Include="Imaging\Quantizer.cs" />
     <Compile Include="Imaging\Filters\QueryFilter.cs" />
     <Compile Include="Imaging\ValueRange.cs" />
+    <Compile Include="IXmlConvertible.cs" />
     <Compile Include="ResourceHandling\ConfigurableAttribute.cs" />
     <Compile Include="ResourceHandling\GifFile.cs" />
     <Compile Include="ResourceHandling\CssFileConfiguration.cs" />

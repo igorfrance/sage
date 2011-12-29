@@ -28,7 +28,6 @@
 		/// <param name="dt">The value to offset</param>
 		/// <param name="offset">The string that specifies the time with which to offset the value.</param>
 		/// <returns>A new date, offset from the specified date by the specified value.</returns>
-		/// <exception cref="ArgumentNullException">If offset is <see langword="null"/> or empty.</exception>
 		public static DateTime Offset(this DateTime dt, string offset)
 		{
 			if (string.IsNullOrEmpty(offset))

@@ -41,9 +41,6 @@
 		/// The initial number of elements that the 
 		/// <see cref="OrderedDictionary{TKey,TValue}"/> can contain.
 		/// </param>
-		/// <exception cref="ArgumentOutOfRangeException">
-		/// <paramref name="capacity"/> is less than 0
-		/// </exception>
 		public OrderedDictionary(int capacity)
 			: this(capacity, null)
 		{
@@ -76,9 +73,6 @@
 		/// comparing keys, or <null/> to use the default <see cref="EqualityComparer{TKey}"/> 
 		/// for the type of the key.
 		/// </param>
-		/// <exception cref="ArgumentOutOfRangeException">
-		/// <paramref name="capacity"/> is less than 0
-		/// </exception>
 		public OrderedDictionary(int capacity, IEqualityComparer<TKey> comparer)
 		{
 			if (0 > capacity)
@@ -288,9 +282,6 @@
 		/// </summary>
 		/// <param name="index">The zero-based index of the value to get or set.</param>
 		/// <value>The value of the item at the specified index.</value>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.<br/>
-		/// -or-<br/>
-		/// index is equal to or greater than <see cref="Count"/>.</exception>
 		public TValue this[int index]
 		{
 			get
@@ -315,12 +306,6 @@
 		/// </summary>
 		/// <param name="key">The key of the item to get.</param>
 		/// <returns>The element with the specified key.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="key"/> is null. </exception>
-		/// <exception cref="NotSupportedException">The property is set and the 
-		/// <see cref="System.Collections.IDictionary"/> object is read-only.
-		/// -or- 
-		/// The property is set, <paramref name="key"/> does not exist in the collection, and the 
-		/// <see cref="T:System.Collections.IDictionary"/> has a fixed size. </exception>
 		public object this[object key]
 		{
 			get
@@ -342,12 +327,6 @@
 		/// <param name="key">The key of the entry to add.</param>
 		/// <param name="value">The value of the entry to add. The value can be <null/> if the type of the values in the 
 		/// dictionary is a reference type.</param>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.<br/>
-		/// -or-<br/>
-		/// <paramref name="index"/> is greater than <see cref="Count"/>.</exception>
-		/// <exception cref="ArgumentNullException"><paramref name="key"/> is <null/>.</exception>
-		/// <exception cref="ArgumentException">An element with the same key already exists in the 
-		/// <c>OrderedDictionary</c>.</exception>
 		public void Insert(int index, TKey key, TValue value)
 		{
 			if (index > this.Count || index < 0)
@@ -364,7 +343,6 @@
 		/// <returns>The zero-based index of <paramref name="key"/>, if <paramref name="key"/> is found in the 
 		/// <see cref="OrderedDictionary{TKey,TValue}"/>; otherwise, -1</returns>
 		/// <remarks>This method performs a linear search; therefore it has a cost of O(n) at worst.</remarks>
-		/// <exception cref="ArgumentNullException">If <paramref name="key"/> is <c>null</c>.</exception>
 		public int IndexOfKey(TKey key)
 		{
 			if (key == null)
@@ -395,9 +373,6 @@
 		/// <see cref="OrderedDictionary{TKey,TValue}"/> collection.
 		/// </summary>
 		/// <param name="index">The zero-based index of the entry to remove.</param>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.<br/>
-		/// -or-<br/>
-		/// index is equal to or greater than <see cref="Count"/>.</exception>
 		public void RemoveAt(int index)
 		{
 			if (index >= this.Count || index < 0)
@@ -425,9 +400,6 @@
 		/// <see cref="OrderedDictionary{TKey,TValue}"/>, setting the 
 		/// <c>Item</c> property overwrites the old value. 
 		/// In contrast, the <c>Add</c> method does not modify existing elements.</para></remarks>
-		/// <exception cref="ArgumentNullException"><paramref name="key"/> is <null/></exception>
-		/// <exception cref="ArgumentException">An element with the same key already exists in the 
-		/// <see cref="OrderedDictionary{TKey,TValue}"/></exception>
 		public int Add(TKey key, TValue value)
 		{
 			this.Dictionary.Add(key, value);
@@ -439,9 +411,6 @@
 		/// Adds an item to the <see cref="ICollection"/>.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="ICollection"/>.</param>
-		/// <exception cref="NotSupportedException">
-		/// The <see cref="ICollection"/> is read-only.
-		/// </exception>
 		public void Add(KeyValuePair<TKey, TValue> item)
 		{
 			this.Add(item.Key, item.Value);
@@ -467,7 +436,6 @@
 		/// <returns><see langword="true"/> if the 
 		/// <see cref="OrderedDictionary{TKey,TValue}"/> collection contains an 
 		/// element with the specified key; otherwise, <see langword="false"/>.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="key"/> is <null/></exception>
 		public bool ContainsKey(TKey key)
 		{
 			return this.Dictionary.ContainsKey(key);
@@ -492,18 +460,6 @@
 		/// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from 
 		/// <see cref="ICollection"/>. The <see cref="Array"/> must have zero-based indexing.</param>
 		/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="array"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-		/// <exception cref="ArgumentException">
-		/// <paramref name="array"/> is multidimensional.
-		/// -or-
-		/// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
-		/// -or-
-		/// The number of elements in the source <see cref="ICollection"/> is greater than the available
-		/// space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
-		/// -or-
-		/// Type <paramtyperef name="T"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
-		/// </exception>
 		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
 		{
 			((ICollection<KeyValuePair<TKey, TValue>>) this.Dictionary).CopyTo(array, arrayIndex);
@@ -577,11 +533,6 @@
 		/// <exception cref="ArgumentException">
 		/// An element with the same key already exists in the <see cref="IDictionary"/> object.
 		/// </exception>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="IDictionary"/> is read-only.
-		/// -or-
-		/// The <see cref="IDictionary"/> has a fixed size.
-		/// </exception>
 		public void Add(object key, object value)
 		{
 			this.Add(ConvertToKeyType(key), ConvertToValueType(value));
@@ -594,9 +545,6 @@
 		/// <returns>
 		/// <c>true</c> if the <see cref="T:System.Collections.IDictionary"/> contains an element with the key; otherwise, <c>false</c>.
 		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// 	<paramref name="key"/> is <c>null</c>.
-		/// </exception>
 		public bool Contains(object key)
 		{
 			return this.ContainsKey(ConvertToKeyType(key));
@@ -606,14 +554,6 @@
 		/// Removes the element with the specified key from the <see cref="T:System.Collections.IDictionary"/> object.
 		/// </summary>
 		/// <param name="key">The key of the element to remove.</param>
-		/// <exception cref="ArgumentNullException">
-		/// 	<paramref name="key"/> is <c>null</c>.
-		/// </exception>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.IDictionary"/> object is read-only.
-		/// -or-
-		/// The <see cref="T:System.Collections.IDictionary"/> has a fixed size.
-		/// </exception>
 		public void Remove(object key)
 		{
 			this.Remove(ConvertToKeyType(key));
@@ -624,18 +564,6 @@
 		/// </summary>
 		/// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection"/>. The <see cref="Array"/> must have zero-based indexing.</param>
 		/// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="array"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception>
-		/// <exception cref="ArgumentException">
-		/// <paramref name="array"/> is multidimensional.
-		/// -or-
-		/// <paramref name="index"/> is equal to or greater than the length of <paramref name="array"/>.
-		/// -or-
-		/// The number of elements in the source <see cref="ICollection"/> is greater than the available space from <paramref name="index"/> to the end of the destination <paramref name="array"/>.
-		/// </exception>
-		/// <exception cref="ArgumentException">
-		/// The type of the source <see cref="ICollection"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
-		/// </exception>
 		public void CopyTo(Array array, int index)
 		{
 			if (array == null)
@@ -698,15 +626,6 @@
 		/// </summary>
 		/// <param name="key">The object to use as the key of the element to add.</param>
 		/// <param name="value">The object to use as the value of the element to add.</param>
-		/// <exception cref="ArgumentNullException">
-		/// 	<paramref name="key"/> is <c>null</c>.
-		/// </exception>
-		/// <exception cref="ArgumentException">
-		/// An element with the same key already exists in the <see cref="IDictionary"/>.
-		/// </exception>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="IDictionary"/> is read-only.
-		/// </exception>
 		void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
 		{
 			Add(key, value);
@@ -717,10 +636,6 @@
 		/// </summary>
 		/// <param name="keyObject">The key object to check</param>
 		/// <returns>The key object, cast as the key type of the dictionary</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="keyObject"/> is <null/>.</exception>
-		/// <exception cref="ArgumentException">The key type of the 
-		/// <see cref="OrderedDictionary{TKey,TValue}"/> is not in the inheritance 
-		/// hierarchy of <paramref name="keyObject"/>.</exception>
 		private static TKey ConvertToKeyType(object keyObject)
 		{
 			if (null == keyObject)
@@ -737,11 +652,6 @@
 		/// </summary>
 		/// <param name="value">The object to convert to the value type of the dictionary</param>
 		/// <returns>The value object, converted to the value type of the dictionary</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="value"/> is <null/>, and the value type of the 
-		/// <see cref="OrderedDictionary{TKey,TValue}"/> is a value type.</exception>
-		/// <exception cref="ArgumentException">The value type of the 
-		/// <see cref="OrderedDictionary{TKey,TValue}"/> is not in the inheritance 
-		/// hierarchy of <paramref name="value"/>.</exception>
 		private static TValue ConvertToValueType(object value)
 		{
 			if (null == value)

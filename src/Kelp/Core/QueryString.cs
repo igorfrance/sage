@@ -11,7 +11,7 @@
 	/// <summary>
 	/// Provides a <see cref="NameValueCollection"/> variation that provides additional support for working with query strings.
 	/// </summary>
-	public class QueryString : NameValueCollection
+	public class QueryString : NameValueCollection, IXmlConvertible
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QueryString"/> class.

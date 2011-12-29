@@ -22,7 +22,6 @@
 		/// // The following line returns "red,green,blue":
 		/// var joined = myList.Join(","); 
 		/// </example>
-		/// <exception cref="ArgumentNullException">If <paramref name="separator"/> is <c>null</c>.</exception>
 		public static string Join<T>(this IEnumerable<T> collection, string separator)
 		{
 			if (separator == null)

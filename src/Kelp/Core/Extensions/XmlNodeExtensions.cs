@@ -23,10 +23,6 @@
 		/// <param name="instance">The target node to append the element to.</param>
 		/// <param name="child">The child element to append.</param>
 		/// <returns>The <paramref name="child"/> element that was appended.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// If the current <paramref name="instance"/> is <c>null</c>, or 
-		/// if the specified <paramref name="child"/> is <c>null</c>.
-		/// </exception>
 		public static XmlElement AppendElement(this XmlNode instance, XmlNode child)
 		{
 			if (instance == null)
@@ -43,10 +39,6 @@
 		/// <param name="instance">The target node to append the element to.</param>
 		/// <param name="elementName">The name of the element to create.</param>
 		/// <returns>The element that was created and appended to <paramref name="instance"/>.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// If the current <paramref name="instance"/> is <c>null</c>, or 
-		/// if the specified <paramref name="elementName"/> is <c>null</c> or empty.
-		/// </exception>
 		public static XmlElement AppendElement(this XmlNode instance, string elementName)
 		{
 			if (instance == null)
@@ -65,11 +57,6 @@
 		/// <param name="qualifiedName">The qualified name of the element.</param>
 		/// <param name="nodeNamespace">The XML namespace of the element to create.</param>
 		/// <returns>The element that was created and appended to <paramref name="instance"/>.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// If the current <paramref name="instance"/> is <c>null</c>, or 
-		/// if the specified <paramref name="qualifiedName"/> is <c>null</c> or empty, or.
-		/// if the specified <paramref name="nodeNamespace"/> is <c>null</c> or empty.
-		/// </exception>
 		public static XmlElement AppendElement(this XmlNode instance, string qualifiedName, string nodeNamespace)
 		{
 			if (instance == null)
@@ -90,9 +77,6 @@
 		/// <param name="instance">The node being extended</param>
 		/// <param name="xpath">The XPath expression.</param>
 		/// <returns>The first XmlNode that matches the XPath expression and returns it an an <see cref="XmlElement"/></returns>
-		/// <exception cref="ArgumentNullException">
-		/// If <paramref name="instance"/> is <c>null</c> or <paramref name="xpath"/> is <c>null</c> or an empty string.
-		/// </exception>
 		public static XmlElement SelectSingleElement(this XmlNode instance, string xpath)
 		{
 			if (instance == null)
@@ -113,9 +97,6 @@
 		/// <returns>
 		/// The first XmlNode that matches the XPath expression and returns it an an <see cref="XmlElement"/>
 		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// If <paramref name="instance"/> is <c>null</c> or <paramref name="xpath"/> is <c>null</c> or an empty string.
-		/// </exception>
 		public static XmlElement SelectSingleElement(this XmlNode instance, string xpath, XmlNamespaceManager manager)
 		{
 			if (instance == null)

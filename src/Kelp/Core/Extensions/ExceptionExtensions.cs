@@ -31,6 +31,17 @@
 			return inner.GetType().Name;
 		}
 
+		/// <summary>
+		/// Gets the stack trace name of the <see cref="Exception"/> innermost to the current <see cref="Exception"/>.
+		/// </summary>
+		/// <param name="instance">The <see cref="Exception"/> instance.</param>
+		/// <returns>The stack trace of the <see cref="Exception"/> innermost to the current <see cref="Exception"/>.</returns>
+		public static string InnermostExceptionStackTrace(this Exception instance)
+		{
+			Exception inner = GetInnermostException(instance);
+			return inner.StackTrace;
+		}
+
 		public static XmlElement ToXml(this Exception instance, XmlDocument ownerDocument)
 		{
 			XmlElement exceptionElement = ownerDocument.CreateElement("exception");
