@@ -22,16 +22,6 @@
 		/// Initializes a new instance of the <see cref="ResourceName"/> class.
 		/// </summary>
 		/// <param name="filePath">The full path of a file.</param>
-		/// <param name="currentCategory">The name of the resource's category.</param>
-		public ResourceName(string filePath, string currentCategory)
-			: this(filePath, ProjectConfiguration.Current.Categories[currentCategory])
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ResourceName"/> class.
-		/// </summary>
-		/// <param name="filePath">The full path of a file.</param>
 		/// <param name="category">The resource's category.</param>
 		public ResourceName(string filePath, CategoryInfo category)
 		{

@@ -62,6 +62,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
@@ -91,6 +94,14 @@
     <Compile Include="Configuration\LocaleInfo.cs" />
     <Compile Include="Configuration\MetaViewDictionary.cs" />
     <Compile Include="Configuration\MetaViewInfo.cs" />
+    <Compile Include="Extensibility\Constants.cs" />
+    <Compile Include="Extensibility\InstallFile.cs" />
+    <Compile Include="Extensibility\InstallLog.cs" />
+    <Compile Include="Extensibility\NodeHandlerAttribute.cs" />
+    <Compile Include="Extensibility\Delegates.cs" />
+    <Compile Include="Extensibility\ExtensionInfo.cs" />
+    <Compile Include="Extensibility\ExtensionManager.cs" />
+    <Compile Include="Extensibility\TextHandlerAttributes.cs" />
     <Compile Include="Modules\ModuleConfiguration.cs" />
     <Compile Include="Configuration\ProjectConfiguration.cs" />
     <Compile Include="Configuration\RouteInfo.cs" />
@@ -100,6 +111,7 @@
     <Compile Include="Modules\Source\SyntaxHighlighterModule.cs" />
     <Compile Include="Modules\Source\XmlTreeModule.cs" />
     <Compile Include="ResourceManagement\ResourceHandler.cs" />
+    <Compile Include="ResourceManagement\ScriptLibraryInfo.cs" />
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
@@ -107,12 +119,6 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\ControllerMessage.cs" />
     <Compile Include="Controllers\ControllerMessages.cs" />
-    <Compile Include="Controllers\Dev\DashboardController.cs" />
-    <Compile Include="Controllers\Dev\FileViewController.cs" />
-    <Compile Include="Controllers\Dev\InstallationController.cs" />
-    <Compile Include="Controllers\Dev\LogViewController.cs" />
-    <Compile Include="Controllers\Dev\RouteDebuggerController.cs" />
-    <Compile Include="Controllers\FileProxyController.cs" />
     <Compile Include="Controllers\CacheableAttribute.cs" />
     <Compile Include="Controllers\GenericController.cs" />
     <Compile Include="Controllers\FileLastModifiedFilterAttribute.cs" />
@@ -136,13 +142,8 @@
     <Compile Include="ResourceManagement\EntityResult.cs" />
     <Compile Include="ResourceManagement\MappedAssetResolver.cs" />
     <Compile Include="ResourceManagement\ISageXmlUrlResolver.cs" />
-    <Compile Include="ResourceManagement\NodeHandlerAttribute.cs" />
-    <Compile Include="ResourceManagement\TextHandlerAttribute.cs" />
     <Compile Include="ResourceManagement\UrlResolver.cs" />
     <Compile Include="ResourceManagement\UrlResolverAttribute.cs" />
-    <Compile Include="Xml\AbstractClass.cs" />
-    <Compile Include="Xml\TestClass.cs" />
-    <Compile Include="Xml\IXmlConvertible.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\SageModuleFactory.cs" />
     <Compile Include="Modules\ModuleResult.cs" />
@@ -163,7 +164,6 @@
     <Compile Include="ResourceManagement\XmlIncludeResolver.cs" />
     <Compile Include="ResourceManagement\XmlResource.cs" />
     <Compile Include="ResourceManagement\CodeFileUnmergeResolver.cs" />
-    <Compile Include="Resources\DevTools\PackageManager.cs" />
     <Compile Include="Routing\LowerCaseRoute.cs" />
     <Compile Include="Routing\RouteCollectionExtensions.cs" />
     <Compile Include="Routing\UrlRouteAttribute.cs" />
@@ -199,93 +199,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\DevTools\dashboard\dashboard.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\devtoolbar.js" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\devtools.js" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\devview.js" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\command.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\command_settings.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devtoolbar.css" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devtools.css" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devtools.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\devview.css" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\divider.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\dropdown.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\expand.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\expanded.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\false.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\folder.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\gear.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\home.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\hs16.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\html.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\labels.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\loading-node.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\log.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\next.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\preloader1.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\preloader2.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\preloader3.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\refresh.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\save.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\settings.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\summary.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\switchOff.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-item.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-line0.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-line1.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-line2.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-minus1.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-minus2.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-plus1.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\tree-plus2.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\true.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown01.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown02.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown03.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown04.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown06.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown07.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown08.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown09.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown10.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\unknown12.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_commands.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_commands_on.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_command_xml.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_double.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_framestats.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_horizontal.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_single.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\view_vertical.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\watch.gif" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\xml.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\images\xmlx.png" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\index.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\intl-summary.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\login.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\save.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\DevTools\dashboard\settings.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\DevTools\dashboard\variables.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\logview\logview.css" />
-    <EmbeddedResource Include="Resources\DevTools\logview\view-complete-log.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\logview\view-thread-log.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources\MetaViews\Xml.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\MetaViews\Xmlx.xsl" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\aeon.js" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\devtoolbar.css" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\devtools.css" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\devview.css" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\placeholder.js" />
-    <EmbeddedResource Include="Resources\DevTools\dashboard\tooltip.js" />
     <EmbeddedResource Include="Resources\Xslt\Installer.xslt" />
     <EmbeddedResource Include="Resources\Xslt\Tree.xsl" />
     <EmbeddedResource Include="Resources\Xslt\Global.xslt" />
@@ -311,6 +228,11 @@
       <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
       <Name>Kelp</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Schemas\Sage.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

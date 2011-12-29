@@ -75,22 +75,22 @@
 		private bool directoriesOnly;
 		private XmlElement moduleElement;
 			
-		public ModuleResult ProcessRequest(XmlElement moduleNode, SageContext context)
+		public ModuleResult ProcessRequest(XmlElement moduleElement, SageContext context)
 		{
-			this.moduleElement = moduleNode;
+			this.moduleElement = moduleElement;
 
-			XmlNode configNode = moduleNode.SelectSingleNode("mod:config", XmlNamespaces.Manager);
+			XmlNode configNode = moduleElement.SelectSingleNode("mod:config", XmlNamespaces.Manager);
 			if (configNode == null)
 			{
 				log.ErrorFormat("The {0} element doesn't have the mod:config node. Skipping further work", typeof(DirectoryTreeModule).FullName);
-				return new ModuleResult(ModuleResultStatus.MissingParameters);
+				return new ModuleResult(moduleElement, ModuleResultStatus.MissingParameters);
 			}
 
 			XmlNode valueNode;
 			if ((valueNode = configNode.SelectSingleNode("mod:path", XmlNamespaces.Manager)) == null)
 			{
 				log.ErrorFormat("The {0} element doesn't have the mod:config node. Skipping further work", typeof(DirectoryTreeModule).FullName);
-				return new ModuleResult(ModuleResultStatus.MissingParameters);
+				return new ModuleResult(moduleElement, ModuleResultStatus.MissingParameters);
 			}
 
 			this.path = valueNode.InnerText;
@@ -127,11 +127,11 @@
 			if (!Directory.Exists(this.absolutePath))
 			{
 				log.WarnFormat("The directory '{0}' (mapped to '{1}') doesn't exist.", this.path, this.absolutePath);
-				return new ModuleResult(ModuleResultStatus.NoData);
+				return new ModuleResult(moduleElement, ModuleResultStatus.NoData);
 			}
 
-			XmlElement resultElement = ScanDirectory(absolutePath);
-			ModuleResult result = new ModuleResult(ModuleResultStatus.Ok, resultElement);
+			ModuleResult result = new ModuleResult(moduleElement);
+			result.AppendDataNode(ScanDirectory(absolutePath));
 
 			return result;
 		}

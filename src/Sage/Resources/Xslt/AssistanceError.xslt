@@ -20,11 +20,30 @@
 						{ font-family: Century Gothic, Verdana, Helvetica, sans-serif; }
 					h1
 						{ font-size: 36px; margin: 0 0 30px 0; font-weight: normal; }
+					h3
+						{ font-size: 22px; margin: 0 0 5px 0; font-weight: normal; color: #c00; }
+					p
+						{ margin: 0 0 15px 0; }
+					code
+						{	font-family: Consolas, Courier; display: inline-block; background: #eaeaea; 
+						  padding: 1px 3px; border-radius: 3px; margin-bottom: 1px; }
+					
+					.pre
+						{ white-space: pre; }
+					
+					.problem-suggestion
+						{ margin-bottom: 40px; }
+					.problem-suggestion p
+						{ font-size: 120%; color: #666; }
+					.problem-location
+						{ margin-bottom: 0px; }
 						
+					.problem-description
+						{ margin-bottom: 20px; }
 					.problem-source
 						{	color: #009966; }
 					.problem-message
-						{ font-size: 21px; }
+						{ font-weight: bold; margin-bottom: 30px; }
 					.problem-details .switch 
 						{ font-size: 12px; }
 					.problem-details .switch a
@@ -49,22 +68,25 @@
 				<h1>
 					<xsl:apply-templates select="." mode="problem-title"/>
 				</h1>
-				<p class="problem-description">
+				<div class="problem-description">
 					<xsl:apply-templates select="." mode="problem-description"/>
-				</p>
+				</div>
+				<h3>Suggestion:</h3>
+				<div class="problem-suggestion">
+					<xsl:apply-templates select="." mode="problem-suggestion"/>
+				</div>
 				<xsl:if test="@sourceuri">
 					<div class="problem-file">
-						The error occured in 
-						<span class="problem-source"><xsl:value-of select="@sourceuri"/></span>
-					</div>
-					<div class="problem-location">
-						<span class="line">Line <xsl:value-of select="@linenumber" />, </span>
-						<span class="column">position <xsl:value-of select="@linenumber" />.</span>
+						File:
+						<span class="problem-source"><xsl:value-of select="@sourceuri"/>, </span>
+						<span class="line">line <xsl:value-of select="@linenumber" />, </span>
+						<span class="column">position <xsl:value-of select="@lineposition" />.</span>
 					</div>
 				</xsl:if>
-				<p class="problem-message">
+				<div class="problem-message">
+					Message:
 					<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
-				</p>
+				</div>
 				<div class="problem-details">
 					<span class="switch">(<a href="javascript:expandProblemDetail()">Click to show technical details about this error</a>)</span>
 					<div class="content" id="problem-details-content">
@@ -80,14 +102,116 @@
 			<xsl:when test="$problemType = 'InvalidMarkup'">
 				Invalid Markup Detected
 			</xsl:when>
-			<xsl:otherwise>An error was caught.</xsl:otherwise>
+			<xsl:when test="$problemType = 'InvalidHtmlMarkup'">
+				Invalid HTML Markup Detected
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingNamespaceDeclaration'">
+				Missing namespace declaration
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingConfigurationFile'">
+				No configuration file present
+			</xsl:when>
+			<xsl:when test="$problemType = 'ConfigurationMissingLocales'">
+				At least one locale needs to be configured
+			</xsl:when>
+			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
+				At least one category needs to be configured
+			</xsl:when>
+			<xsl:otherwise>An error was caught</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	
 	<xsl:template match="/exception" mode="problem-description">
 		<xsl:choose>
-			<xsl:when test="$problemType = 'InvalidMarkup'">
+			<xsl:when test="$problemType = 'InvalidMarkup' or $problemType = 'InvalidHtmlMarkup'">
 				Sage speaks XML, and therefore any XML needs to be valid. <br/>				HTML templates must parse as XHTML in order for them to use usable.
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingNamespaceDeclaration'">
+				One or more elements in the XML document are using a qualified name without specifying the name's 
+				corresponding namespace.
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingConfigurationFile'">
+				No configuration file has been found.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ConfigurationMissingLocales'">
+				A Sage project needs to have one default locale in order to function correctly. Neither the system
+				configuration (System.config) not the project configuration (Project.config) defined any locales.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
+				The current project is configured as multicategory <code><![CDATA[<project .. multiCategory="true">...</project>]]></code>,
+				but there are no categories defined.
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+	
+	<xsl:template match="/exception" mode="problem-suggestion">
+		<xsl:choose>
+			<xsl:when test="$problemType = 'InvalidMarkup' or $problemType = 'InvalidHtmlMarkup'">
+				Look in the source document for any unclosed tags, attribute quotes or unknown character entities.
+				<ul>
+					<li>
+						<label>The document must have at least one (root) element: </label>
+						<code class="block"><![CDATA[<html></html>]]></code>
+					</li>
+					<li>
+						<label>Tag pairs must be properly nested: </label>
+						<code class="block"><![CDATA[<b><span>text</span></b>]]></code>
+					</li>
+					<li>
+						<label>Single tags must be properly closed: </label>
+						<code class="block"><![CDATA[<br />]]></code>
+					</li>
+					<li>
+						<label>Element attributes must be unique, and must be quoted properly: </label> 
+						<code><![CDATA[comment="This is &quot;great&quot"]]></code>
+					</li>
+					<li>
+						<label>XML recognizes only a limited set of entities by a name: </label> 
+						<code><![CDATA[&quot; (")]]></code>&#160;
+						<code><![CDATA[&apos; (')]]></code>&#160; 
+						<code><![CDATA[&amp; (&)]]></code>&#160; 
+						<code><![CDATA[&lt; (<)]]></code> and 
+						<code><![CDATA[&gt; (>)]]></code>
+					</li>
+					<li>
+						<label>Any other entities must be expressed numerically: </label> 
+						<code><![CDATA[&#160;]]></code> instead of <code><![CDATA[&nbsp;]]></code> etc.
+					</li>
+					<li>
+						<label>Of course, the document can also be UTF-8 encoded and any entities can be embedded as they are, 
+						without having to use codes.</label> 
+					</li>
+				</ul>
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingNamespaceDeclaration'">
+				<p>Add the namespace declaration to the top of the document.</p>
+				
+				For instance, to use X-Include tags with namespace prefix 'xi': 
+				<code>&lt;xi:include href="myinclude.html" /&gt;</code><br/>
+				
+				Add the 'xmlns:xi' attribute to the document's root element: 
+				<code>&lt;document xmlns:xi="http://www.w3.org/2003/XInlude" ... &gt;</code>
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingConfigurationFile'">
+				<p>Sage needs a configuration file in order to work. Make sure either System.config (configuration bundled with Sage), 
+				Project.config (your own specific configuration) or both exist in the same directory from which Sage is being run 
+				(typically the 'bin' directory of the web application running Sage)</p>
+			</xsl:when>
+			<xsl:when test="$problemType = 'ConfigurationMissingLocales'">
+				Edit the Project.config file and make sure it contains the globalization element
+				with at least one locale. For exampe:<br/>
+<code class="pre"><![CDATA[<locale name="en" dictionaryNames="en" resourceNames="default">
+	<format culture="en-us" shortDate="MMMM d, yyyy" longDate="D"/>
+</locale>]]></code>
+			</xsl:when>
+			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
+				Edit the Project.config file and make sure it contains at least one category:
+<code class="pre"><![CDATA[<categories>
+	<category
+		name="running"
+		locales="ae,ar,at,au,be,br,ca,cf,ch,cn,com,de,dk,es,fi,fr,gr,hk,hu,id,in,it,jp,kr,la,my,nl,no,nz,ph,pl,pt,ru,se,sg,th,tw,uk,us,vn,za"
+		/>
+</categories>]]></code>
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>

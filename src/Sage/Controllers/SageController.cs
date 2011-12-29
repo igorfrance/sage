@@ -5,10 +5,12 @@
 	using System.Collections.Specialized;
 	using System.Linq;
 	using System.Reflection;
+	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Routing;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Core.Extensions;
 
 	using Sage.ResourceManagement;
@@ -19,6 +21,8 @@
 	using Sage.Configuration;
 	using Sage.Modules;
 	using Sage.Xml;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Provides a base class for all controllers within the application.
@@ -39,7 +43,7 @@
 
 		static SageController()
 		{
-			foreach (Assembly a in ProjectConfiguration.RelevantAssemblies)
+			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 							where t.IsClass && !t.IsAbstract
@@ -176,12 +180,24 @@
 					.AppendElement("sage:model", XmlNamespaces.SageNamespace)
 					.AppendChild(result.ImportNode(input.ConfigNode, true));
 
-				if (input.Resources.Count != 0)
+				if ((input.Resources.Count + input.Libraries.Count) != 0)
 				{
 					XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
+
 					foreach (ModuleResource resource in input.Resources)
-					{
 						resourceRoot.AppendChild(resource.ToXml(result, this.Context));
+
+					foreach (string libraryName in input.Libraries)
+					{
+						ScriptLibraryInfo info;
+						if (this.Context.Config.ScriptLibraries.TryGetValue(libraryName, out info))
+						{
+							resourceRoot.AppendChild(info.ToXml(result, this.Context));
+						}
+						else
+						{
+							log.ErrorFormat("The referenced script library '{0}' is undefined", libraryName);
+						}
 					}
 				}
 			}
@@ -323,7 +339,7 @@
 		protected override void Initialize(RequestContext requestContext)
 		{
 			base.Initialize(requestContext);
-			this.Context = new SageContext(this.ControllerContext);
+			this.Context = new SageContext(requestContext.HttpContext);
 		}
 	}
 }

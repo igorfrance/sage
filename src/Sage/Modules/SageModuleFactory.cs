@@ -114,7 +114,7 @@
 		private static Dictionary<string, ModuleConfiguration> DiscoverAvailableModules()
 		{
 			var types = new Dictionary<string, ModuleConfiguration>();
-			foreach (var asm in ProjectConfiguration.RelevantAssemblies)
+			foreach (var asm in Application.RelevantAssemblies)
 			{
 				var modules = asm.GetTypes().Where(t => 
 					typeof(IModule).IsAssignableFrom(t) && !t.IsInterface && t != typeof(NullModule));

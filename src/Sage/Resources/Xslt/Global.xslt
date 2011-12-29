@@ -33,6 +33,9 @@
 	<xsl:template match="xhtml:html">
 		<html>
 			<xsl:apply-templates select="@*"/>
+			<xsl:attribute name="data-thread">
+				<xsl:value-of select="/sage:view/sage:request/@thread" />
+			</xsl:attribute>
 			<xsl:if test="$request/@developer = 1">
 				<xsl:attribute name="data-developer">1</xsl:attribute>
 			</xsl:if>

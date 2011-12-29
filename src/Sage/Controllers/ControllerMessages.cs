@@ -4,9 +4,10 @@
 	using System.Collections.Generic;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Core.Extensions;
 
-	using Sage.Xml;
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Represents a collection of messages that the controller is sending to the view.

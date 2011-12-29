@@ -27,6 +27,9 @@
 
 		public XmlElement ToXml(XmlDocument ownerDoc, SageContext context)
 		{
+			Contract.Requires<ArgumentNullException>(ownerDoc != null);
+			Contract.Requires<ArgumentNullException>(context != null);
+
 			string resourcePath = context.Path.GetModulePath(this.ModuleName, this.Path);
 
 			XmlElement result = ownerDoc.CreateElement("sage:resource", XmlNamespaces.SageNamespace);

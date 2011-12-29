@@ -17,6 +17,10 @@
 		private static readonly string stylesheetPath = "sageresx://sage/resources/xslt/error.xslt";
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageException).FullName);
 
+		public SageException()
+		{
+		}
+
 		public SageException(Exception exception)
 			: base(exception.Message, exception)
 		{

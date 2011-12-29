@@ -28,13 +28,9 @@
 			this.Name = moduleType.Name.Replace("Module", string.Empty);
 
 			if (tagNames.Length == 0)
-			{
 				this.TagNames.Add(this.Type.Name.Replace("Module", string.Empty));
-			}
 			else
-			{
 				this.TagNames = new List<string>(tagNames);
-			}
 		}
 
 		internal ModuleConfiguration(XmlElement configElement)
@@ -86,13 +82,19 @@
 			var scriptNodes = configElement.SelectNodes("p:resources/p:script", XmlNamespaces.Manager);
 			foreach (XmlElement scriptNode in scriptNodes)
 			{
-				this.Resources.Add(new ModuleResource(scriptNode, this.Name));
+				this.resources.Add(new ModuleResource(scriptNode, this.Name));
 			}
 
 			var styleNodes = configElement.SelectNodes("p:resources/p:style", XmlNamespaces.Manager);
 			foreach (XmlElement styleNode in styleNodes)
 			{
-				this.Resources.Add(new ModuleResource(styleNode, this.Name));
+				this.resources.Add(new ModuleResource(styleNode, this.Name));
+			}
+
+			var libraryNodes = configElement.SelectNodes("p:resources/p:library", XmlNamespaces.Manager);
+			foreach (XmlElement libraryNode in libraryNodes)
+			{
+				this.Libraries.Add(libraryNode.GetAttribute("ref"));
 			}
 
 			var stylesheetNodes = configElement.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);
@@ -107,6 +109,7 @@
 			this.TagNames = new List<string>();
 			this.Stylesheets = new List<string>();
 			this.Dependencies = new List<string>();
+			this.Libraries = new List<string>();
 		}
 
 		public List<ModuleResource> Resources
@@ -114,7 +117,7 @@
 			get
 			{
 				List<ModuleResource> result = new List<ModuleResource>(this.resources);
-				List<ModuleConfiguration> configs = ResolveDependencies(this);
+				IEnumerable<ModuleConfiguration> configs = ResolveDependencies(this);
 
 				foreach (ModuleConfiguration config in configs)
 				{
@@ -131,6 +134,12 @@
 			}
 		}
 
+		public List<string> Libraries
+		{
+			get;
+			private set;
+		}
+
 		public string Name { get; private set; }
 
 		public Type Type { get; private set; }
@@ -141,7 +150,7 @@
 
 		public IList<string> Dependencies { get; private set; }
 
-		private static List<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
+		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
 		{
 			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
 			foreach (string name in config.Dependencies)
@@ -150,7 +159,7 @@
 				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
 				{
 					result.Add(reference);
-					List<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
+					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
 					result.AddRange(innerDependencies.Where(innerConfig => !result.Contains(innerConfig)));
 				}
 			}
@@ -159,12 +168,12 @@
 		}
 
 		[SageResourceProvider("modules.xslt")]
-		internal static XmlReader GetModulesXslt(SageContext context, string resourceUri)
+		internal static CacheableXmlDocument GetModulesXslt(SageContext context, string resourceUri)
 		{
 			CacheableXmlDocument resultDoc = new CacheableXmlDocument();
 			resultDoc.LoadXml(DefaultXslt);
 
-			foreach (ModuleConfiguration config in ProjectConfiguration.Current.Modules)
+			foreach (ModuleConfiguration config in context.Config.Modules)
 			{
 				foreach (string path in config.Stylesheets)
 				{
@@ -176,13 +185,10 @@
 				}
 			}
 
-			UrlResolver resolver = new UrlResolver(context);
-			XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(resolver);
-			XmlReader result = XmlReader.Create(new StringReader(resultDoc.OuterXml), settings, resourceUri);
-			return result;
+			return resultDoc;
 		}
 
-		private static void CopyXslElements(SageContext context, CacheableXmlDocument fromDocument, CacheableXmlDocument toDocument)
+		private static void CopyXslElements(SageContext context, XmlDocument fromDocument, XmlDocument toDocument)
 		{
 			XmlNodeList paramNodes = fromDocument.SelectNodes("/*/xsl:param", XmlNamespaces.Manager);
 			XmlNodeList variableNodes = fromDocument.SelectNodes("/*/xsl:variable", XmlNamespaces.Manager);

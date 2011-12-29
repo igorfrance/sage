@@ -14,6 +14,9 @@
 	using System.Web.Routing;
 
 	using Kelp.Core;
+
+	using Sage.Extensibility;
+
 	using log4net;
 
 	using Sage.Configuration;
@@ -30,33 +33,45 @@
 	public class Application : HttpApplication
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Application).FullName);
+		private static readonly ExtensionManager extensionManager = new ExtensionManager();
 
 		/// <summary>
-		/// Registers the URL routes in use by this application
+		/// Gets a list with the current assembly and all assemblies loaded from the <see cref="ProjectConfiguration.AssemblyPath"/> that 
+		/// reference the current assembly.
 		/// </summary>
-		/// <param name="routes">The collection of routes to register.</param>
-		/// <remarks>
-		/// the routes for the home page and custom pages are added manually (hardcoded) here.
-		/// </remarks>
-		public static void RegisterRoutes(RouteCollection routes)
+		public static List<Assembly> RelevantAssemblies
 		{
-			Contract.Requires<ArgumentNullException>(routes != null);
+			get
+			{
+				var currentAssembly = Assembly.GetExecutingAssembly();
+				List<Assembly> result = new List<Assembly> { currentAssembly };
+				try
+				{
+					var files = Directory.GetFiles(ProjectConfiguration.AssemblyPath, "*.dll", SearchOption.AllDirectories);
+					foreach (string path in files)
+					{
+						Assembly asmb = Assembly.LoadFrom(path);
+						if (asmb.GetReferencedAssemblies().Where(a => a.FullName == currentAssembly.FullName).Count() != 0)
+						{
+							result.Add(asmb);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					log.ErrorFormat("Failed to count the numer of assemblies: {0}", ex.Message);
+				}
 
-			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+				return result;
+			}
+		}
 
-			UrlRoutingUtility.RegisterRoutes(routes);
-
-			log.Debug("Manually registering route '' to GenericController.Action");
-			routes.MapRouteLowercase(
-				"GenericController.Default",
-				string.Empty,
-				new { controller = "Generic", action = "Action" });
-
-			log.Debug("Manually registering route '*' to GenericController.Action");
-			routes.MapRouteLowercase(
-				"GenericController.CatchAll",
-				"{*catchall}",
-				new { controller = "Generic", action = "Action" });
+		internal static ExtensionManager Extensions
+		{
+			get
+			{
+				return extensionManager;
+			}
 		}
 
 		/// <summary>
@@ -74,7 +89,31 @@
 
 			ControllerBuilder.Current.SetControllerFactory(controllerFactory);
 
-			RegisterRoutes(RouteTable.Routes);
+			ProjectConfiguration.Initialize();
+			SageContext context = new SageContext(HttpContext.Current);
+			extensionManager.Initialize(context);
+
+			foreach (ExtensionInfo plugin in extensionManager)
+			{
+				
+			}
+
+			RouteTable.Routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+			UrlRoutingUtility.RegisterRoutesToMethodsWithAttributes(RelevantAssemblies.ToArray());
+			UrlRoutingUtility.RegisterRoutesFromRoutingConfiguration(ProjectConfiguration.Current);
+
+			log.Debug("Manually registering route '' to GenericController.Action");
+			RouteTable.Routes.MapRouteLowercase(
+				"GenericController.Default",
+				String.Empty,
+				new { controller = "Generic", action = "Action" });
+
+			log.Debug("Manually registering route '*' to GenericController.Action");
+			RouteTable.Routes.MapRouteLowercase(
+				"GenericController.CatchAll",
+				"{*catchall}",
+				new { controller = "Generic", action = "Action" });
 		}
 
 		/// <summary>
@@ -100,7 +139,7 @@
 		{
 			HttpRuntime runtime =
 				(HttpRuntime)
-				typeof(System.Web.HttpRuntime).InvokeMember(
+				typeof(HttpRuntime).InvokeMember(
 					"_theRuntime", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField, null, null, null);
 
 			if (runtime == null)
@@ -164,7 +203,7 @@
 			if (exception == null || this.Context.Request == null)
 				return;
 
-			if (exception is System.Threading.ThreadAbortException)
+			if (exception is ThreadAbortException)
 				return;
 
 			log.Fatal(exception.Message, exception);

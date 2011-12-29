@@ -1,7 +1,6 @@
 ﻿namespace Sage
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
@@ -13,18 +12,22 @@
 	using System.Web.Routing;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Core;
 	using Kelp.Core.Extensions;
+
+	using Sage.Extensibility;
 
 	using log4net;
 
 	using Sage.Configuration;
 	using Sage.ResourceManagement;
+	using Sage.Xml;
 
 	/// <summary>
 	/// Provides the working environment for code within Sage.
 	/// </summary>
-	public class SageContext
+	public class SageContext : IXmlConvertible
 	{
 		/// <summary>
 		/// The name of the query string variable that instructs the system to load the latest resources
@@ -47,15 +50,15 @@
 			new Dictionary<string, CategoryConfiguration>();
 
 		private readonly Func<string, string> pathMapper;
-		private readonly ProjectConfiguration config = ProjectConfiguration.Current;
 		private readonly Dictionary<string, object> customData = new Dictionary<string, object>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
 		/// </summary>
 		/// <param name="context">An existing <see cref="SageContext"/> to use to initialize this instance.</param>
-		public SageContext(SageContext context)
-			: this(context, context.Category)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(SageContext context, ProjectConfiguration config = null)
+			: this(context, context.Category, config)
 		{
 		}
 
@@ -64,8 +67,9 @@
 		/// </summary>
 		/// <param name="context">An existing <see cref="SageContext"/> to use to initialize this instance.</param>
 		/// <param name="categoryName">The name of the category to set on the new context.</param>
-		public SageContext(SageContext context, string categoryName)
-			: this(context.HttpContext)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(SageContext context, string categoryName, ProjectConfiguration config = null)
+			: this(context.HttpContext, config)
 		{
 			this.Category = categoryName;
 			this.pathMapper = context.MapPath;
@@ -75,8 +79,9 @@
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using the specified <see cref="ControllerContext"/>.
 		/// </summary>
 		/// <param name="controllerContext">The current <see cref="ControllerContext"/> to use to initialize this instance.</param>
-		public SageContext(ControllerContext controllerContext)
-			: this(controllerContext.HttpContext)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(ControllerContext controllerContext, ProjectConfiguration config = null)
+			: this(controllerContext.HttpContext, config)
 		{
 			this.Route = controllerContext.RouteData.Route;
 			this.RouteValues = new NameValueCollection();
@@ -90,8 +95,9 @@
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using the specified <see cref="HttpContextBase"/>.
 		/// </summary>
 		/// <param name="httpContext">The current <see cref="HttpContextBase"/> to use to initialize this instance.</param>
-		public SageContext(HttpContextBase httpContext)
-			: this(httpContext, httpContext.Server.MapPath)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(HttpContextBase httpContext, ProjectConfiguration config = null)
+			: this(httpContext, httpContext.Server.MapPath, config)
 		{
 		}
 
@@ -99,8 +105,9 @@
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using the specified <see cref="HttpContext"/>.
 		/// </summary>
 		/// <param name="httpContext">The current <see cref="HttpContext"/> to use to initialize this instance.</param>
-		public SageContext(HttpContext httpContext)
-			: this(new HttpContextWrapper(httpContext))
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(HttpContext httpContext, ProjectConfiguration config = null)
+			: this(new HttpContextWrapper(httpContext), config)
 		{
 		}
 
@@ -110,8 +117,9 @@
 		/// </summary>
 		/// <param name="httpContext">The current HTTP context.</param>
 		/// <param name="categoryName">The category to set for this instance.</param>
-		public SageContext(HttpContextBase httpContext, string categoryName)
-			: this(httpContext)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(HttpContextBase httpContext, string categoryName, ProjectConfiguration config = null)
+			: this(httpContext, config)
 		{
 			this.Category = categoryName;
 			this.pathMapper = httpContext.Server.MapPath;
@@ -124,8 +132,9 @@
 		/// <param name="httpContext">The current HTTP context.</param>
 		/// <param name="categoryName">The category to set for this instance.</param>
 		/// <param name="localeName">The locale to set for this instance.</param>
-		public SageContext(HttpContextBase httpContext, string categoryName, string localeName)
-			: this(httpContext)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(HttpContextBase httpContext, string categoryName, string localeName, ProjectConfiguration config = null)
+			: this(httpContext, config)
 		{
 			this.Category = categoryName;
 			this.Locale = localeName;
@@ -139,8 +148,9 @@
 		/// <param name="httpContext">The current HTTP context.</param>
 		/// <param name="categoryName">The category to set for this instance.</param>
 		/// <param name="pathMapper">The function to use to map relative paths to absolute.</param>
-		public SageContext(HttpContextBase httpContext, string categoryName, Func<string, string> pathMapper)
-			: this(httpContext)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(HttpContextBase httpContext, string categoryName, Func<string, string> pathMapper, ProjectConfiguration config = null)
+			: this(httpContext, config)
 		{
 			this.Category = categoryName;
 			this.pathMapper = pathMapper;
@@ -152,12 +162,8 @@
 		/// </summary>
 		/// <param name="httpContext">The current <see cref="HttpContextBase"/> to use to initialize this instance.</param>
 		/// <param name="pathMapper">The function to use for resolving relative paths.</param>
-		/// <exception cref="ArgumentNullException">
-		/// <paramref name="httpContext"/> is <c>null</c>
-		/// - or -
-		/// <paramref name="pathMapper"/> is <c>null</c>
-		/// </exception>
-		public SageContext(HttpContextBase httpContext, Func<string, string> pathMapper)
+		/// <param name="config">The project configuration to use with this context instance.</param>
+		public SageContext(HttpContextBase httpContext, Func<string, string> pathMapper, ProjectConfiguration config = null)
 		{
 			Contract.Requires<ArgumentNullException>(httpContext != null);
 			Contract.Requires<ArgumentNullException>(pathMapper != null);
@@ -176,10 +182,12 @@
 			}
 			catch (HttpException ex)
 			{
+				// request unavailable
 				if (ex.ErrorCode != -2147467259)
 					throw;
 			}
 
+			this.Config = config ?? ProjectConfiguration.Current;
 			this.ApplicationPath = HostingEnvironment.ApplicationVirtualPath;
 			this.PhysicalApplicationPath = HostingEnvironment.ApplicationPhysicalPath;
 			this.Query = new QueryString();
@@ -204,14 +212,14 @@
 				this.PhysicalApplicationPath = httpContext.Request.PhysicalApplicationPath;
 			}
 
-			this.Locale = this.Query.GetString(LocaleVariableName, config.DefaultLocale);
+			this.Locale = this.Query.GetString(LocaleVariableName, this.Config.DefaultLocale);
 			this.Category = this.Query.GetString(CategoryVariableName);
 
-			if (string.IsNullOrEmpty(this.Category) || !config.Categories.ContainsKey(this.Category))
-				this.Category = config.DefaultCategory;
+			if (string.IsNullOrEmpty(this.Category) || !this.Config.Categories.ContainsKey(this.Category))
+				this.Category = this.Config.DefaultCategory;
 
 			if (string.IsNullOrEmpty(this.Locale))
-				this.Locale = config.DefaultLocale;
+				this.Locale = this.Config.DefaultLocale;
 
 			this.Query.Remove(LocaleVariableName);
 			this.Query.Remove(CategoryVariableName);
@@ -244,11 +252,7 @@
 		/// <summary>
 		/// Gets the virtual root path of the ASP.NET application on the server.
 		/// </summary>
-		public string ApplicationPath
-		{
-			get;
-			internal set;
-		}
+		public string ApplicationPath { get; internal set; }
 
 		/// <summary>
 		/// Gets the base href value (e.g. http://server:port/appname/") for requests within current context.
@@ -263,45 +267,27 @@
 			}
 		}
 
+		public ProjectConfiguration Config { get; internal set; }
+
 		/// <summary>
 		/// Gets the last modification date cache.
 		/// </summary>
-		public LastModifiedCache LmCache
-		{
-			get;
-			private set;
-		}
+		public LastModifiedCache LmCache { get; private set; }
 
 		/// <summary>
 		/// Gets the current <see cref="Cache"/>.
 		/// </summary>
 		/// <value>The cache.</value>
-		public CacheWrapper Cache
-		{
-			get;
-			private set;
-		}
+		public CacheWrapper Cache { get; private set; }
 
-		public RouteBase Route
-		{
-			get;
-			private set;
-		}
+		public RouteBase Route { get; private set; }
 
-		public NameValueCollection RouteValues
-		{
-			get;
-			private set;
-		}
+		public NameValueCollection RouteValues { get; private set; }
 
 		/// <summary>
 		/// Gets the currently applicable category.
 		/// </summary>
-		public string Category
-		{
-			get;
-			private set;
-		}
+		public string Category { get; private set; }
 
 		/// <summary>
 		/// Gets the category configuration instance for the current category, if the current category uses a category configuration file.
@@ -335,20 +321,12 @@
 		/// <summary>
 		/// Indicates whether the system should load the latest resources without considering the cache.
 		/// </summary>
-		public bool ForceRefresh
-		{
-			get;
-			private set;
-		}
+		public bool ForceRefresh { get; private set; }
 
 		/// <summary>
 		/// Gets the current <see cref="HttpContextBase"/>.
 		/// </summary>
-		public HttpContextBase HttpContext
-		{
-			get;
-			private set;
-		}
+		public HttpContextBase HttpContext { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this context is running within a developer request.
@@ -360,7 +338,7 @@
 		{
 			get
 			{
-				return this.config.IsDeveloperIp(this.Request.UserHostAddress) ||
+				return this.Config.IsDeveloperIp(this.Request.UserHostAddress) ||
 					(this.Session["developer"] != null && (bool) this.Session["developer"]);
 			}
 		}
@@ -368,11 +346,7 @@
 		/// <summary>
 		/// Gets the currently applicable locale.
 		/// </summary>
-		public string Locale
-		{
-			get;
-			private set;
-		}
+		public string Locale { get; private set; }
 
 		/// <summary>
 		/// Gets the <see cref="Sage.Configuration.LocaleInfo"/> associated with the <see cref="Locale"/> of the
@@ -382,45 +356,29 @@
 		{
 			get
 			{
-				return ProjectConfiguration.Current.Locales[this.Locale];
+				return Config.Locales[this.Locale];
 			}
 		}
 
 		/// <summary>
 		/// Gets <see cref="PathResolver"/> to be used with the current context.
 		/// </summary>
-		public PathResolver Path
-		{
-			get;
-			private set;
-		}
+		public PathResolver Path { get; private set; }
 
 		/// <summary>
 		/// Gets the physical file-system path of the current application's root directory.
 		/// </summary>
-		public string PhysicalApplicationPath
-		{
-			get;
-			internal set;
-		}
+		public string PhysicalApplicationPath { get; private set; }
 
 		/// <summary>
 		/// Gets the query string active within the current context.
 		/// </summary>
-		public QueryString Query
-		{
-			get;
-			private set;
-		}
+		public QueryString Query { get; private set; }
 
 		/// <summary>
 		/// Gets the URL of the client request that linked to the current URL.
 		/// </summary>
-		public string ReferrerUrl
-		{
-			get;
-			private set;
-		}
+		public string ReferrerUrl { get; private set; }
 
 		/// <summary>
 		/// Gets the current <see cref="HttpRequestBase"/>.
@@ -447,11 +405,7 @@
 		/// <summary>
 		/// Gets <see cref="ResourceManager"/> to be used with the current context.
 		/// </summary>
-		public ResourceManager Resources
-		{
-			get;
-			private set;
-		}
+		public ResourceManager Resources { get; private set; }
 
 		/// <summary>
 		/// Gets the current <see cref="HttpSessionStateBase"/>.
@@ -467,11 +421,7 @@
 		/// <summary>
 		/// Gets <see cref="UrlGenerator"/> to be used with the current context.
 		/// </summary>
-		public UrlGenerator Url
-		{
-			get;
-			private set;
-		}
+		public UrlGenerator Url { get; private set; }
 
 		/// <summary>
 		/// Maps the supplied relative <paramref name="path"/> to the actual, physical location of the file.
@@ -605,6 +555,24 @@
 			return valueNode;
 		}
 
+		[TextHandler("assetpath", "sharedassetpath", "modulepath")]
+		internal static string ResolvePathVariable(string variable, SageContext context)
+		{
+			switch (variable)
+			{
+				case "assetpath":
+					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
+
+				case "sharedassetpath":
+					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
+
+				case "modulepath":
+					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
+			}
+
+			return string.Format("{{?{0}?}}", variable);
+		}
+
 		/// <summary>
 		/// Gets an <see cref="XmlElement"/> that contains information about this context.
 		/// </summary>
@@ -613,7 +581,7 @@
 		/// <exception cref="ArgumentNullException">
 		/// <paramref name="ownerDocument"/> is <c>null</c>.
 		/// </exception>
-		internal XmlElement ToXml(XmlDocument ownerDocument)
+		public XmlElement ToXml(XmlDocument ownerDocument)
 		{
 			if (ownerDocument == null)
 				throw new ArgumentNullException("ownerDocument");
@@ -630,10 +598,15 @@
 
 			resultElement.SetAttribute("category", this.Category);
 			resultElement.SetAttribute("locale", this.Locale);
-			resultElement.SetAttribute("latin", ProjectConfiguration.Current.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
+			resultElement.SetAttribute("latin", Config.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
 			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
-			resultElement.SetAttribute("debug", ProjectConfiguration.Current.IsDebugMode ? "1" : "0");
+			resultElement.SetAttribute("debug", Config.IsDebugMode ? "1" : "0");
+
+			XmlElement pathNode = resultElement.AppendElement("sage:path", XmlNamespaces.SageNamespace);
+			pathNode.SetAttribute("assetPath", this.Path.GetRelativeWebPath(this.Path.AssetPath));
+			pathNode.SetAttribute("sharedAssetPath", this.Path.GetRelativeWebPath(this.Path.SharedAssetPath));
+			pathNode.SetAttribute("modulePath", this.Path.GetRelativeWebPath(this.Path.ModulePath));
 
 			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
 			addressNode.SetAttribute("url", this.Url.VisibleUrl);
@@ -645,10 +618,6 @@
 			addressNode.SetAttribute("scriptname", requestUri.LocalPath.TrimEnd('/'));
 			addressNode.SetAttribute("scriptnamefull", requestUri.PathAndQuery);
 			addressNode.SetAttribute("querystring", requestUri.Query);
-
-			XmlElement pathsNode = resultElement.AppendElement("sage:paths", XmlNamespaces.SageNamespace);
-			pathsNode.SetAttribute("category", this.Path.AssetPath.Replace("~/", string.Empty));
-			pathsNode.SetAttribute("shared", this.Path.SharedAssetPath.Replace("~/", string.Empty));
 
 			// browser element
 			XmlElement browserNode = resultElement.AppendElement("sage:useragent", XmlNamespaces.SageNamespace);

@@ -3,13 +3,19 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
+	using System.Web;
 	using System.Xml;
 	using System.Xml.Schema;
 
 	using Kelp.Core.Extensions;
+
+	using Sage.Extensibility;
+	using Sage.Modules;
+
 	using log4net;
 	using Sage.ResourceManagement;
 
@@ -25,7 +31,8 @@
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
 
-		private static volatile ProjectConfiguration current;
+		private static volatile ProjectConfiguration systemConfig;
+		private static volatile ProjectConfiguration projectConfig;
 
 		private ProjectConfiguration()
 		{
@@ -38,6 +45,8 @@
 			this.Links = new LinkConfiguration();
 			this.Routing = new RoutingConfiguration();
 			this.PathTemplates = new PathTemplates();
+			this.ScriptLibraries = new Dictionary<string, ScriptLibraryInfo>();
+			this.Deliverables = new List<string>();
 
 			this.SharedCategory = "shared";
 			this.DefaultLocale = "default";
@@ -53,18 +62,7 @@
 		{
 			get
 			{
-				if (current == null)
-				{
-					lock (ProjectConfigName)
-					{
-						if (current == null)
-						{
-							current = ProjectConfiguration.Create();
-						}
-					}
-				}
-
-				return current;
+				return projectConfig;
 			}
 		}
 
@@ -83,38 +81,9 @@
 			}
 		}
 
-		/// <summary>
-		/// Gets a list with the current assembly and all assemblies loaded from the <see cref="AssemblyPath"/> that 
-		/// reference the current assembly.
-		/// </summary>
-		public static List<Assembly> RelevantAssemblies
-		{
-			get
-			{
-				var currentAssembly = Assembly.GetExecutingAssembly();
-				List<Assembly> result = new List<Assembly> { currentAssembly };
-				try
-				{
-					var files = Directory.GetFiles(ProjectConfiguration.AssemblyPath, "*.dll", SearchOption.AllDirectories);
-					foreach (string path in files)
-					{
-						Assembly asmb = Assembly.LoadFrom(path);
-						if (asmb.GetReferencedAssemblies().Where(a => a.FullName == currentAssembly.FullName).Count() != 0)
-						{
-							result.Add(asmb);
-						}
-					}
-				}
-				catch (Exception ex)
-				{
-					log.ErrorFormat("Failed to count the numer of assemblies: {0}", ex.Message);
-				}
-
-				return result;
-			}
-		}
-
 		public XmlElement ConfigurationElement { get; private set; }
+
+		public string Name { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the resources have been pre-generated.
@@ -191,7 +160,7 @@
 		/// <summary>
 		/// Gets the resource path configuration variable; this is the base path for all resources.
 		/// </summary>
-		public string ResourcePath
+		public string AssetPath
 		{
 			get;
 			private set;
@@ -240,12 +209,15 @@
 			private set;
 		}
 
+		public Dictionary<string, ScriptLibraryInfo> ScriptLibraries
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Gets the dictionary of asset resource mappings; where keys are asset aliases, and values are the actual paths to these assets.
 		/// </summary>
-		/// <remarks>
-		/// This dictionary is used with <see cref="XsltIncludeResolver"/> to substitute aliases with actual paths to resources.
-		/// </remarks>
 		public Dictionary<string, string> AssetPrefixes
 		{
 			get;
@@ -265,6 +237,8 @@
 			get;
 			private set;
 		}
+
+		public List<string> Deliverables { get; private set; }
 
 		/// <summary>
 		/// Gets the list of IP addresses or address ranges to be considered as developers.
@@ -313,6 +287,24 @@
 			private set;
 		}
 
+		public static ProjectConfiguration Create(string configPath)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
+
+			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
+			return Create(document);
+		}
+
+		public static ProjectConfiguration Create(XmlDocument configDoc)
+		{
+			Contract.Requires<ArgumentNullException>(configDoc != null);
+
+			var result = new ProjectConfiguration();
+			result.Parse(configDoc);
+
+			return result;
+		}
+
 		/// <summary>
 		/// Determines whether the specified <paramref name="clientIpAddress"/> is configured as a developer IP address.
 		/// </summary>
@@ -349,94 +341,52 @@
 			return result;
 		}
 
-		/// <summary>
-		/// Creates an instance of <see cref="ProjectConfiguration"/> using the configuration section in the current configuration file.
-		/// </summary>
-		/// <returns>
-		/// An instance of <see cref="ProjectConfiguration"/> initialized using the configuration section in the current
-		/// configuration file.
-		/// </returns>
-		/// <exception cref="ApplicationException">
-		/// The required configuration file could not be opened.
-		/// </exception>
-		/// <exception cref="ConfigurationError">
-		/// The configuration file doesn't contain the right node.
-		/// </exception>
-		/// <exception cref="XmlSchemaException">
-		/// The format of the configuration file doesn't satisfy the schema criteria.
-		/// </exception>
-		private static ProjectConfiguration Create()
+		internal static void Initialize()
 		{
 			string projectConfigPath = Path.Combine(AssemblyPath, ProjectConfigName);
 			string systemConfigPath = Path.Combine(AssemblyPath, SystemConfigName);
+
 			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
-			{
-				string errorMessage =
-					string.Format(
-						string.Concat(
-							"The required configuration file '{0}' was not found in the running application directory '{2}'.\n",
-							"System configuration file '{1}' couldn't be found either. ",
-							"Please ensure that either file exists and try again"),
-						ProjectConfigName,
-						SystemConfigName,
-						AssemblyPath);
-
-				log.Fatal(errorMessage);
-				throw new ApplicationException(errorMessage);
-			}
-
-			ProjectConfiguration config = new ProjectConfiguration();
+				throw new SageHelpException(ProblemType.MissingConfigurationFile);
+		
+			systemConfig = new ProjectConfiguration();
 			if (File.Exists(systemConfigPath))
-				config.LoadValidateAndParseConfig(systemConfigPath, true);
+				systemConfig.Parse(systemConfigPath);
+
+			projectConfig = new ProjectConfiguration();
+			if (File.Exists(systemConfigPath))
+				projectConfig.Parse(systemConfigPath);
 
 			if (File.Exists(projectConfigPath))
-				config.LoadValidateAndParseConfig(projectConfigPath, false);
+				projectConfig.Parse(projectConfigPath);
 
-			return config;
+			if (projectConfig.Locales.Count == 0)
+				throw new SageHelpException(ProblemType.ConfigurationMissingLocales);
+
+			if (projectConfig.MultiCategory && projectConfig.Categories.Count == 0)
+				throw new SageHelpException(ProblemType.ConfigurationMissingCategories);
 		}
 
-		private void LoadValidateAndParseConfig(string configPath, bool isSystemConfig)
+		internal void Parse(string configPath)
 		{
-			XmlDocument configDoc = ResourceManager.LoadXmlDocument(configPath, null, ConfigSchemaPath);
-			XmlNode configNode = configDoc.SelectSingleNode("/p:configuration", XmlNamespaces.Manager);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
 
-			if (configNode == null)
-			{
-				string errorMessage =
-					string.Format(
-						string.Concat(
-							"The configuration file {0} doesn't contain the required node ",
-							"/p:configuration.\n",
-							"Please ensure that the file is properly formed and try again"),
-					configPath);
-
-				log.Fatal(errorMessage);
-				throw new ConfigurationError(errorMessage);
-			}
-
-			this.ParseConfig(configNode, isSystemConfig);
+			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
+			Parse(document);
 		}
 
 		/// <summary>
-		/// Parses the specified configuration node.
+		/// Parses the specified configuration document.
 		/// </summary>
-		/// <param name="configNode">The XML configuration node to parse.</param>
-		/// <param name="isSystemConfig">if set to <c>true</c> [is system config].</param>
-		/// <exception cref="ArgumentNullException"><paramref name="configNode"/> is <c>null</c></exception>
-		///   
-		/// <exception cref="ArgumentException">
-		/// The <paramref name="configNode"/> is missing the <c>project</c> node
-		/// - or -
-		/// The <paramref name="configNode"/> is missing the <c>modules</c> node
-		/// - or -
-		/// The <paramref name="configNode"/> is missing the <c>urls</c> node.
-		/// </exception>
-		private void ParseConfig(XmlNode configNode, bool isSystemConfig)
+		/// <param name="configDoc">The XML configuration document to parse.</param>
+		internal void Parse(XmlDocument configDoc)
 		{
-			if (configNode == null)
-				throw new ArgumentNullException("configNode");
+			Contract.Requires<ArgumentNullException>(configDoc != null);
 
+			ResourceManager.ValidateDocument(configDoc, ConfigSchemaPath);
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
+
+			XmlElement configNode = configDoc.SelectSingleElement("/p:configuration", nm);
 
 			this.ConfigurationElement = configNode.SelectSingleElement("p:project", nm);
 			this.Categories = new Dictionary<string, CategoryInfo>();
@@ -444,15 +394,13 @@
 
 			string nodeValue;
 			XmlElement projectNode = this.ConfigurationElement;
-			XmlElement modulesNode = projectNode.SelectSingleElement("p:modules", nm);
 			XmlElement routingNode = projectNode.SelectSingleElement("p:routing", nm);
 			XmlElement linksNode = projectNode.SelectSingleElement("p:links", nm);
-			XmlElement categoriesNode = projectNode.SelectSingleElement("p:categories", nm);
-			XmlElement globalizationNode = projectNode.SelectSingleElement("p:globalization", nm);
 			XmlElement pathsNode = projectNode.SelectSingleElement("p:paths", nm);
-			XmlElement viewsNode = projectNode.SelectSingleElement("p:metaViews", nm);
-			XmlElement developerAddresses = projectNode.SelectSingleElement("p:developers", nm);
-			XmlElement assetsNode = projectNode.SelectSingleElement("p:assets", nm);
+
+			nodeValue = projectNode.GetAttribute("name");
+			if (!string.IsNullOrEmpty(nodeValue))
+				this.Name = nodeValue;
 
 			nodeValue = projectNode.GetAttribute("sharedCategory");
 			if (!string.IsNullOrEmpty(nodeValue))
@@ -486,9 +434,13 @@
 			{
 				this.PathTemplates.Parse(pathsNode);
 
-				nodeValue = pathsNode.SelectSingleNode("p:ResourcePath", nm).InnerText;
-				if (!string.IsNullOrEmpty(nodeValue))
-					this.ResourcePath = nodeValue;
+				XmlNode node = pathsNode.SelectSingleNode("p:AssetPath", nm);
+				if (node != null)
+				{
+					nodeValue = node.InnerText;
+					if (!string.IsNullOrEmpty(nodeValue))
+						this.AssetPath = nodeValue;
+				}
 			}
 
 			if (routingNode != null)
@@ -502,55 +454,38 @@
 					this.UrlRewritePrefix = nodeValue;
 			}
 
-			if (modulesNode != null)
+			foreach (XmlElement moduleNode in projectNode.SelectNodes("p:modules/p:module", nm))
 			{
-				foreach (XmlElement moduleNode in modulesNode.SelectNodes("p:module", nm))
-				{
-					ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode);
-					this.Modules.Add(moduleConfig);
-				}
+				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode);
+				this.Modules.Add(moduleConfig);
 			}
 
-			if (globalizationNode != null)
+			foreach (XmlElement libraryNode in projectNode.SelectNodes("p:scripts/p:library", nm))
 			{
-				foreach (XmlElement locale in globalizationNode.SelectNodes("p:locale", nm))
-				{
-					var name = locale.GetAttribute("name");
-					var info = new LocaleInfo(locale);
-					if (this.Locales.ContainsKey(name))
-						this.Locales[name] = info;
-					else
-						this.Locales.Add(name, info);
-				}
+				ScriptLibraryInfo info = new ScriptLibraryInfo(libraryNode);
+				this.ScriptLibraries.Add(info.Name, info);
 			}
 
-			if (!isSystemConfig && this.Locales.Count == 0)
+			foreach (XmlElement locale in projectNode.SelectNodes("p:globalization/p:locale", nm))
 			{
-				throw new ConfigurationError(string.Concat(
-					"The current project doesn't specify any locales, make sure at least ",
-					"one locale is defined in the project configuration."));
+				var name = locale.GetAttribute("name");
+				var info = new LocaleInfo(locale);
+				if (this.Locales.ContainsKey(name))
+					this.Locales[name] = info;
+				else
+					this.Locales.Add(name, info);
 			}
 
 			if (this.MultiCategory)
 			{
-				if (categoriesNode != null)
+				foreach (XmlElement category in projectNode.SelectNodes("p:categories/p:category", nm))
 				{
-					foreach (XmlElement category in categoriesNode.SelectNodes("p:category", nm))
-					{
-						var info = new CategoryInfo(category, this.Locales);
+					var info = new CategoryInfo(category, this.Locales);
+					this.Categories.Add(info.Name, info);
+					if (this.Categories.ContainsKey(info.Name))
+						this.Categories[info.Name] = info;
+					else
 						this.Categories.Add(info.Name, info);
-						if (this.Categories.ContainsKey(info.Name))
-							this.Categories[info.Name] = info;
-						else
-							this.Categories.Add(info.Name, info);
-					}
-				}
-				else if (!isSystemConfig)
-				{
-					throw new ConfigurationError(string.Concat(
-						"The current project is defined as a multi-category project, but the ",
-						"configuration doesn't define any category. Define at least one category, ",
-						"or redefine this project as a single-category project"));
 				}
 			}
 			else
@@ -558,39 +493,35 @@
 				this.Categories.Add(this.DefaultCategory, new CategoryInfo(this.DefaultCategory, this.Locales));
 			}
 
-			if (viewsNode != null)
+			foreach (XmlElement viewNode in projectNode.SelectNodes("p:metaViews/p:view", nm))
 			{
-				foreach (XmlElement viewNode in viewsNode.SelectNodes("p:view", nm))
-				{
-					var name = viewNode.GetAttribute("name");
-					var info = new MetaViewInfo(viewNode);
-					if (this.MetaViews.ContainsKey(name))
-						this.MetaViews[name] = info;
-					else
-						this.MetaViews.Add(name, info);
-				}
+				var name = viewNode.GetAttribute("name");
+				var info = new MetaViewInfo(viewNode);
+				if (this.MetaViews.ContainsKey(name))
+					this.MetaViews[name] = info;
+				else
+					this.MetaViews.Add(name, info);
 			}
 
-			if (developerAddresses != null)
+			foreach (XmlElement elem in projectNode.SelectNodes("p:developers/p:ip", nm))
 			{
-				foreach (XmlElement elem in developerAddresses.SelectNodes("p:ip", nm))
-				{
-					IpAddress address = new IpAddress(elem);
-					this.DeveloperIps.Add(address);
-				}
+				IpAddress address = new IpAddress(elem);
+				this.DeveloperIps.Add(address);
 			}
 
-			if (assetsNode != null)
+			foreach (XmlElement elem in projectNode.SelectNodes("p:assets/p:prefix", nm))
 			{
-				foreach (XmlElement elem in assetsNode.SelectNodes("p:prefix", nm))
-				{
-					var key = elem.GetAttribute("key");
-					var value = elem.GetAttribute("value");
-					if (this.AssetPrefixes.ContainsKey(key))
-						this.AssetPrefixes[key] = value;
-					else
-						this.AssetPrefixes.Add(key, value);
-				}
+				var key = elem.GetAttribute("key");
+				var value = elem.GetAttribute("value");
+				if (this.AssetPrefixes.ContainsKey(key))
+					this.AssetPrefixes[key] = value;
+				else
+					this.AssetPrefixes.Add(key, value);
+			}
+
+			foreach (XmlElement binaryNode in projectNode.SelectNodes("p:deliverables/p:binary", nm))
+			{
+				this.Deliverables.Add(binaryNode.InnerText);
 			}
 		}
 	}

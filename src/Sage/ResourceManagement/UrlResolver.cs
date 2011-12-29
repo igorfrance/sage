@@ -32,7 +32,7 @@
 
 		static UrlResolver()
 		{
-			foreach (Assembly a in ProjectConfiguration.RelevantAssemblies)
+			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 								  where t.IsClass && !t.IsAbstract

@@ -32,7 +32,7 @@
 			string resourceName = ConvertPath(resourceUri);
 
 			Stream result = null;
-			foreach (Assembly a in ProjectConfiguration.RelevantAssemblies)
+			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				string resourcePath = new List<string>(a.GetManifestResourceNames())
 					.FirstOrDefault(r => r.ToLower().IndexOf(resourceName) != -1);

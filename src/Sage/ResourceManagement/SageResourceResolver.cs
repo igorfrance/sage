@@ -2,12 +2,14 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Reflection;
 	using System.Xml;
 
+	using Sage.Extensibility;
+
 	using log4net;
-	using Sage.Configuration;
 
 	/// <summary>
 	/// Implements a custom resolver for various resource providers.
@@ -34,7 +36,7 @@
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 			providers = new Dictionary<string, SageResourceProvider>();
 
-			foreach (Assembly a in ProjectConfiguration.RelevantAssemblies)
+			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 							where 
@@ -64,20 +66,15 @@
 			}
 		}
 
-		/// <summary>
-		/// Defines the signature of the delegate that can return the <see cref="XmlReader"/> for the specified
-		/// <paramref name="resourceUri"/> and <paramref name="context"/>.
-		/// </summary>
-		/// <param name="context">The context under which the code is executing.</param>
-		/// <param name="resourceUri">The URI of the resource to open.</param>
-		/// <returns>An <see cref="XmlReader"/> that reads the resource referred to with <paramref name="resourceUri"/>.</returns>
-		public delegate XmlReader SageResourceProvider(SageContext context, string resourceUri);
-
 		/// <inheritdoc/>
 		public EntityResult GetEntity(UrlResolver parent, SageContext context, string resourceUri)
 		{
-			XmlReader reader = GetXmlResourceReader(context, resourceUri);
-			if (reader == null)
+			string resourceName = GetResourceName(resourceUri);
+			CacheableXmlDocument resourceDoc = null;
+			if (providers.ContainsKey(resourceName))
+				resourceDoc = providers[resourceName](context, resourceUri);
+
+			if (resourceDoc == null)
 			{
 				if (providers.Count == 0)
 				{
@@ -87,16 +84,9 @@
 				throw new ArgumentException(string.Format("The resource with uri '{0}' could not be resolved. The supported uris are: \n{1}", resourceUri, string.Join("\n", GetValidResourceUris())));
 			}
 
-			return new EntityResult { Entity = reader, Dependencies = dependencies };
-		}
-
-		protected XmlReader GetXmlResourceReader(SageContext context, string resourceUri)
-		{
-			string resourceName = GetResourceName(resourceUri);
-			if (providers.ContainsKey(resourceName))
-				return providers[resourceName](context, resourceUri);
-
-			return null;
+			XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(parent);
+			XmlReader reader = XmlReader.Create(new StringReader(resourceDoc.OuterXml), settings, resourceUri);
+			return new EntityResult { Entity = reader, Dependencies = resourceDoc.Dependencies };
 		}
 
 		private string GetResourceName(string uri)

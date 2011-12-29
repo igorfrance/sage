@@ -30,13 +30,12 @@
 
 		private string GetAssetPath(SageContext context, string resource)
 		{
-			ProjectConfiguration config = ProjectConfiguration.Current;
-			foreach (string key in config.AssetPrefixes.Keys)
+			foreach (string key in context.Config.AssetPrefixes.Keys)
 			{
 				if (!resource.StartsWith(key))
 					continue;
 
-				string assetPath = config.AssetPrefixes[key];
+				string assetPath = context.Config.AssetPrefixes[key];
 				string resourcePath = resource.Replace(key, assetPath).Trim('/');
 				return context.Path.Resolve(resourcePath);
 			}

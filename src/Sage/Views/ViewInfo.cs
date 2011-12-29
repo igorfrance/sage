@@ -24,7 +24,6 @@
 			new[] { ".aspx", ".xsl", ".xslt" };
 
 		private readonly SageContext context;
-		private readonly bool directoryExists;
 		private CacheableXmlDocument configDoc;
 		private CacheableXslTransform transform;
 
@@ -68,8 +67,6 @@
 				this.ViewSource = ViewSource.Specific;
 				break;
 			}
-
-			this.directoryExists = Directory.Exists(folderPath);
 
 			if (this.ViewSource == ViewSource.BuiltIn && File.Exists(context.Path.CategoryStylesheetPath))
 			{
@@ -151,7 +148,7 @@
 		{
 			get
 			{
-				return this.directoryExists;
+				return this.ConfigExists || this.ViewSource != Sage.ViewSource.BuiltIn;
 			}
 		}
 
@@ -237,7 +234,11 @@
 						}
 						catch (XmlException ex)
 						{
-							throw new SageHelpException(ex, ProblemType.InvalidMarkup);
+							ProblemType problemType = DetectProblemType(ex, ConfigPath);
+							if (problemType == ProblemType.Unknown)
+								throw;
+
+							throw new SageHelpException(problemType, ex);
 						}
 					}
 				}
@@ -287,5 +288,20 @@
 			return string.Format("{0}/{1} ({2})", Controller, Action, ViewPath);
 		}
 
+		private ProblemType DetectProblemType(Exception ex, string path)
+		{
+			if (ex is XmlException)
+			{
+				if (ex.Message.Contains("undeclared prefix"))
+					return ProblemType.MissingNamespaceDeclaration;
+
+				if (path.EndsWith("html") || path.EndsWith("htm"))
+					return ProblemType.InvalidHtmlMarkup;
+
+				return ProblemType.InvalidMarkup;
+			}
+
+			return ProblemType.Unknown;
+		}
 	}
 }

@@ -156,37 +156,44 @@
 		/// </exception>
 		private XmlDocument CombineVariations()
 		{
-			ProjectConfiguration config = ProjectConfiguration.Current;
 			this.constituents = new List<string>();
 
 			LocaleInfo localeInfo;
-			if (!config.Locales.TryGetValue(this.Locale, out localeInfo))
+			if (!context.Config.Locales.TryGetValue(this.Locale, out localeInfo))
 				throw new UnconfiguredLocaleException(this.Locale);
 
 			// locales contains the list of locales ordered by priority (high to low)
 			List<string> names = new List<string>(localeInfo.DictionaryNames);
 
 			// documents are orderered as defined in the configuration, from high to low priority
-			OrderedDictionary<string, XmlDocument> documents = new OrderedDictionary<string, XmlDocument>();
+			OrderedDictionary<string, List<CacheableXmlDocument>> allDictionaries = new OrderedDictionary<string, List<CacheableXmlDocument>>();
 			foreach (string locale in names)
 			{
-				string documentPath = context.Path.Resolve(config.PathTemplates.Dictionary, context.Category, locale);
+				if (!context.Config.Locales.ContainsKey(locale))
+					throw new ConfigurationError(string.Format("Dictionary name '{0}' is invalid because it doesn't match any of the configured locales. Valid names are: {1}", 
+						locale, string.Join(",", context.Config.Locales.Keys)));
 
-				if (!File.Exists(documentPath))
-					continue;
+				List<CacheableXmlDocument> langDictionaries = new List<CacheableXmlDocument>();
+				string documentPath = context.Path.GetDictionaryPath(context.Category, locale);
 
-				CacheableXmlDocument cacheable = new CacheableXmlDocument();
-				cacheable.Load(documentPath);
+				// add extension dictionaries for the current locale
+				langDictionaries.AddRange(Application.Extensions.GetDictionaries(context, locale));
+				
+				// add the project dictionary for the current locale
+				if (File.Exists(documentPath))
+				{
+					CacheableXmlDocument cacheable = new CacheableXmlDocument();
+					cacheable.Load(documentPath);
 
-				Dependencies.Add(documentPath);
-				Dependencies.AddRange(cacheable.Dependencies);
+					Dependencies.AddRange(cacheable.Dependencies);
+					langDictionaries.Add(cacheable);
+				}
 
-				XmlDocument dictionaryDoc = cacheable;
-				documents.Add(locale, dictionaryDoc);
-				constituents.Add(documentPath);
+				if (langDictionaries.Count != 0)
+					allDictionaries.Add(locale, langDictionaries);
 			}
 
-			if (documents.Count == 0)
+			if (allDictionaries.Count == 0)
 			{
 				log.Error(
 					string.Format("There are no dictionary files for locale '{0}' in category '{1}'.\n", this.Locale, context.Category));
@@ -194,13 +201,11 @@
 				return null;
 			}
 
-			// now create a combined documen, adding items from each document starting with high priority
+			// now create a combined document, adding items from each document starting with high priority
 			// and moving through the lower priority ones
-			string firstLocale = documents.Keys.First();
+			string firstLocale = allDictionaries.Keys.First();
 
-			// XmlDocument result = new XmlDocument();
-			// result.LoadXml(documents[firstLocale].OuterXml);
-			XmlDocument result = documents[firstLocale]; 
+			XmlDocument result = allDictionaries[firstLocale][0]; 
 
 			XmlElement rootNode = result.DocumentElement;
 			XmlNodeList dictNodes = rootNode.SelectNodes("*");
@@ -208,20 +213,23 @@
 			foreach (XmlElement phrase in dictNodes)
 				phrase.SetAttribute("source", firstLocale);
 
-			foreach (string locale in documents.Keys)
+			foreach (string locale in allDictionaries.Keys)
 			{
-				if (locale == firstLocale)
-					continue;
-
-				dictNodes = documents[locale].DocumentElement.SelectNodes("*");
-				foreach (XmlElement node in dictNodes)
+				for (int i = 0; i < allDictionaries[locale].Count; i++)
 				{
-					string phraseID = node.GetAttribute("id");
-					XmlNode existingNode = result.SelectSingleNode(string.Format("/*/*[@id='{0}']", phraseID.Replace("'", "&apos;")));
-					if (existingNode == null)
+					if (locale == firstLocale && i == 0)
+						continue;
+
+					dictNodes = allDictionaries[locale][i].DocumentElement.SelectNodes("*");
+					foreach (XmlElement node in dictNodes)
 					{
-						XmlElement phrase = rootNode.AppendElement(result.ImportNode(node, true));
-						phrase.SetAttribute("source", locale);
+						string phraseID = node.GetAttribute("id");
+						XmlNode existingNode = result.SelectSingleNode(string.Format("/*/*[@id='{0}']", phraseID.Replace("'", "&apos;")));
+						if (existingNode == null)
+						{
+							XmlElement phrase = rootNode.AppendElement(result.ImportNode(node, true));
+							phrase.SetAttribute("source", locale);
+						}
 					}
 				}
 			}

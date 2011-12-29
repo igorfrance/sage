@@ -13,6 +13,18 @@
 		/// </summary>
 		public PathTemplates()
 		{
+			// initialize with default values.
+			this.View = "{assetpath}/views/";
+			this.Module = "{assetpath}/modules/";
+			this.Extension = "{assetpath}/extensions/";
+			this.CategoryConfiguration = "{assetpath}/configuration/Category.config";
+			this.ViewConfiguration = "{assetpath}/views/{controller}/{action}.xml";
+			this.ViewTemplate = "{assetpath}/views/{controller}/{action}";
+			this.DefaultStylesheet = "{assetpath}/views/xslt/default.xsl";
+			this.CategoryStylesheet = "{assetpath}/views/xslt/default.xsl";
+			this.Dictionary = "{assetpath}/configuration/dictionary/{locale}.xml";
+			this.GlobalizedDirectory = "_target/";
+			this.GlobalizedDirectoryForNonFileResources = "~/_target/";
 		}
 
 		/// <summary>
@@ -21,6 +33,7 @@
 		/// </summary>
 		/// <param name="configElement">The configuration element containing the definition of the path templates.</param>
 		public PathTemplates(XmlElement configElement)
+			: this()
 		{
 			this.Parse(configElement);
 		}
@@ -28,94 +41,59 @@
 		/// <summary>
 		/// Gets the template for constructing paths to views.
 		/// </summary>
-		public string View
-		{
-			get;
-			private set;
-		}
+		public string View { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constructing paths to module directories.
 		/// </summary>
-		public string Module
-		{
-			get;
-			private set;
-		}
+		public string Module { get; private set; }
+
+		/// <summary>
+		/// Gets the template for constructing paths to plugin directories.
+		/// </summary>
+		public string Extension { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constucting paths to view configuration files.
 		/// </summary>
-		public string ViewConfiguration
-		{
-			get;
-			private set;
-		}
+		public string ViewConfiguration { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constucting paths to view template files.
 		/// </summary>
-		public string ViewTemplate
-		{
-			get;
-			private set;
-		}
+		public string ViewTemplate { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constucting paths to language dictionaries.
 		/// </summary>
-		public string Dictionary
-		{
-			get;
-			private set;
-		}
+		public string Dictionary { get; private set; }
 
 		/// <summary>
 		/// Gets the path template to the default XSLT stylesheet that can be used if a view
 		/// doesn't have it's own, specific stylesheet.
 		/// </summary>
-		public string DefaultStylesheet
-		{
-			get;
-			private set;
-		}
+		public string DefaultStylesheet { get; private set; }
 
 		/// <summary>
 		/// Gets the path template to the default XSLT stylesheet specific to a category (in a multi-category project)
 		/// that can be used if a view doesn't have it's own, specific stylesheet.
 		/// </summary>
-		public string CategoryStylesheet
-		{
-			get;
-			private set;
-		}
+		public string CategoryStylesheet { get; private set; }
 
 		/// <summary>
 		/// Gets the directory in which the globalized resources are saved.
 		/// </summary>
-		public string GlobalizedDirectory
-		{
-			get;
-			private set;
-		}
+		public string GlobalizedDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the directory in which the globalized non-file resources are saved.
 		/// </summary>
-		public string GlobalizedDirectoryForNonFileResources
-		{
-			get;
-			private set;
-		}
+		public string GlobalizedDirectoryForNonFileResources { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constucting paths to category configuration files.
 		/// </summary>
-		public string CategoryConfiguration
-		{
-			get;
-			private set;
-		}
+		public string CategoryConfiguration { get; private set; }
 
 		/// <summary>
 		/// Parses the specified configuration element and copies any applicable values into the current instance.
@@ -137,6 +115,10 @@
 			testNode = configElement.SelectSingleNode("p:Module", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
 				this.Module = testValue;
+
+			testNode = configElement.SelectSingleNode("p:Extension", nm);
+			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
+				this.Extension = testValue;
 
 			testNode = configElement.SelectSingleNode("p:CategoryConfiguration", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))

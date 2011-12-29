@@ -12,7 +12,7 @@
 	using log4net;
 	using Sage.Configuration;
 
-	internal class Globalizer
+	public class Globalizer
 	{
 		private const string XsltPath = "sageresx://sage/resources/xslt/internationalization.xslt";
 
@@ -55,7 +55,7 @@
 			}
 
 			DictionaryFileCollection coll = GetTranslationDictionaryCollection(context);
-			CategoryInfo categoryInfo = ProjectConfiguration.Current.Categories[context.Category];
+			CategoryInfo categoryInfo = context.Config.Categories[context.Category];
 			GlobalizationSummary summary = new GlobalizationSummary(resource, categoryInfo);
 
 			Stopwatch sw = new Stopwatch();
@@ -144,7 +144,7 @@
 			return dictionaries[context.Category];
 		}
 
-		internal void Transform(XmlDocument input, CategoryConfiguration categoryConfig, DictionaryFileCollection collection, string locale, XmlWriter output, GlobalizeType type)
+		public void Transform(XmlDocument input, CategoryConfiguration categoryConfig, DictionaryFileCollection collection, string locale, XmlWriter output, GlobalizeType type)
 		{
 			if (input == null)
 				throw new ArgumentNullException("input");
@@ -155,7 +155,7 @@
 			if (output == null)
 				throw new ArgumentNullException("output");
 
-			LocaleInfo localeInfo = ProjectConfiguration.Current.Locales[locale];
+			LocaleInfo localeInfo = context.Config.Locales[locale];
 			XmlElement fallbacks = input.CreateElement("fallbacks");
 			foreach (string name in localeInfo.ResourceNames)
 				fallbacks.AppendElement(input.CreateElement("locale")).InnerText = name;

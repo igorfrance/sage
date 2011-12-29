@@ -11,9 +11,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("Sage.Test")]
-[assembly: InternalsVisibleTo("Sage.BatchGlobalizer")]
+[assembly: InternalsVisibleTo("Sage.Build")]
+[assembly: InternalsVisibleTo("Sage.Explorables")]
 
 // configure logging from the file specified by System.Configuration.ConfigurationSettings for the AppDomain, and watch for changes
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.xml", Watch = true)]
-[assembly: InternalsVisibleTo("Sage.Tests")]
-[assembly: InternalsVisibleTo("Sage.Explorables")]

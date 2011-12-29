@@ -12,41 +12,15 @@
 	public class ModuleResult
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ModuleResult"/> class.
-		/// </summary>
-		public ModuleResult()
-		{
-			this.Status = ModuleResultStatus.Ok;
-			this.ModuleData = new Dictionary<string, object>();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ModuleResult"/> class, using the specified <paramref name="status"/>.
-		/// </summary>
-		/// <param name="status">The status of this result.</param>
-		public ModuleResult(ModuleResultStatus status)
-			: this(status, null)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ModuleResult"/> class, using the specified <paramref name="resultElement"/>.
-		/// </summary>
-		/// <param name="resultElement">The result element produced by the module.</param>
-		public ModuleResult(XmlElement resultElement)
-			: this(ModuleResultStatus.Ok, resultElement)
-		{
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ModuleResult"/> class, using the specified <paramref name="status"/> and 
 		/// <paramref name="resultElement"/>.
 		/// </summary>
 		/// <param name="status">The status of this result.</param>
 		/// <param name="resultElement">The content of this result.</param>
-		public ModuleResult(ModuleResultStatus status, XmlElement resultElement)
-			: this()
+		public ModuleResult(XmlElement resultElement, ModuleResultStatus status = ModuleResultStatus.Ok)
 		{
+			this.Status = ModuleResultStatus.Ok;
+			this.ModuleData = new Dictionary<string, object>();
 			this.Status = status;
 			this.ResultElement = resultElement;
 		}

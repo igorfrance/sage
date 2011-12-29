@@ -29,6 +29,7 @@
 			this.ViewName = viewName;
 			this.ModuleResults = new Dictionary<string, List<ModuleResult>>();
 			this.Resources = new List<ModuleResource>();
+			this.Libraries = new List<string>();
 		}
 
 		/// <summary>
@@ -47,6 +48,8 @@
 		}
 
 		public List<ModuleResource> Resources { get; private set; }
+
+		public List<string> Libraries { get; private set; }
 
 		public string ViewName { get; private set; }
 
@@ -116,6 +119,8 @@
 			// add resources that we don't already have
 			this.Resources.AddRange(config.Resources.Where(r => 
 				this.Resources.Where(r1 => r1.Path == r.Path).Count() == 0));
+
+			this.Libraries.AddRange(config.Libraries.Where(l => !this.Libraries.Contains(l)));
 		}
 	}
 }

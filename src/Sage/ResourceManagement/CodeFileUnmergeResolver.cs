@@ -63,7 +63,7 @@
 			}
 
 			CodeFile file = CodeFile.Create(sourcePathAbsolute, sourcePathRelative, context.MapPath);
-			if (ProjectConfiguration.Current.MergeResources)
+			if (context.Config.MergeResources)
 			{
 				XmlElement resourceNode = rootNode.AppendElement(document.CreateElement("kelp:resource", Kelp.XmlNamespaces.KelpNamespace));
 				resourceNode.SetAttribute("src", string.Format(RelativeFilePathInProductionSetup, sourcePath, file.ETag));

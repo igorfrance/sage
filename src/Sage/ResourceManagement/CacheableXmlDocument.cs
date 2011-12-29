@@ -226,6 +226,7 @@
 
 			XmlReaderSettings settings = CreateReaderSettings(resolver);
 			XIncludingReader xreader = new XIncludingReader(XmlReader.Create(reader, settings));
+			xreader.XmlResolver = resolver;
 
 			try
 			{

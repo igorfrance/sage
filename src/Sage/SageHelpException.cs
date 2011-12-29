@@ -6,14 +6,16 @@
 	using System.Text;
 	using System.Xml.Xsl;
 
-	/// <summary>
-	/// TODO: Update summary.
-	/// </summary>
 	public class SageHelpException : SageException
 	{
 		private static readonly string stylesheetPath = @"sageresx://sage/resources/xslt/AssistanceError.xslt";
 
-		public SageHelpException(Exception actual, ProblemType type)
+		public SageHelpException(ProblemType type)
+		{
+			this.ProblemType = type;
+		}
+
+		public SageHelpException(ProblemType type, Exception actual)
 			: base(actual)
 		{
 			this.ProblemType = type;

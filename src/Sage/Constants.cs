@@ -4,7 +4,13 @@
 
 	public enum ProblemType
 	{
-		InvalidMarkup = 1,
+		Unknown = 0,
+		InvalidMarkup,
+		InvalidHtmlMarkup,
+		MissingNamespaceDeclaration,
+		MissingConfigurationFile,
+		ConfigurationMissingLocales,
+		ConfigurationMissingCategories,
 	}
 
 	public enum ViewSource

@@ -61,7 +61,7 @@
 				if (rewriteOn != null)
 					return rewriteOn.Value;
 
-				return ProjectConfiguration.Current.UrlRewritingOn;
+				return context.Config.UrlRewritingOn;
 			}
 
 			set
@@ -86,7 +86,7 @@
 			get
 			{
 				if (RewritingOn)
-					return ProjectConfiguration.Current.UrlRewritePrefix.Replace(
+					return context.Config.UrlRewritePrefix.Replace(
 						"{category}", context.Category).Replace("{locale}", context.Locale);
 
 				return string.Empty;
@@ -360,17 +360,15 @@
 		/// <paramref name="linkName"/>.</exception>
 		internal string FormatAndRewriteUrl(string linkName, NameValueCollection parameters, bool includeActiveQuery)
 		{
-			ProjectConfiguration config = ProjectConfiguration.Current;
-
-			if (config.Links.External.ContainsKey(linkName))
+			if (context.Config.Links.External.ContainsKey(linkName))
 			{
-				string linkPattern = config.Links.External[linkName];
+				string linkPattern = context.Config.Links.External[linkName];
 				return FormatAndRewriteExternalUrl(linkPattern, parameters, includeActiveQuery);
 			}
 
-			if (config.Links.Internal.ContainsKey(linkName))
+			if (context.Config.Links.Internal.ContainsKey(linkName))
 			{
-				string linkPattern = config.Links.Internal[linkName].Pattern;
+				string linkPattern = context.Config.Links.Internal[linkName].Pattern;
 				return FormatAndRewriteInternalUrl(linkPattern, parameters, includeActiveQuery);
 			}
 

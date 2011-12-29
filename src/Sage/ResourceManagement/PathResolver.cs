@@ -16,7 +16,6 @@
 	public class PathResolver
 	{
 		private readonly SageContext context;
-		private readonly ProjectConfiguration config = ProjectConfiguration.Current;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PathResolver"/> class using the specified <see cref="SageContext"/>
@@ -52,7 +51,7 @@
 		{
 			get
 			{
-				return config.PathTemplates.View.Replace("{resourcepath}", this.AssetPath);
+				return context.Config.PathTemplates.View.Replace("{assetpath}", this.AssetPath);
 			}
 		}
 
@@ -63,7 +62,18 @@
 		{
 			get
 			{
-				return config.PathTemplates.Module.Replace("{resourcepath}", this.AssetPath);
+				return context.Config.PathTemplates.Module.Replace("{assetpath}", this.AssetPath);
+			}
+		}
+
+		/// <summary>
+		/// Gets the view path of the currently active category.
+		/// </summary>
+		public string PluginPath
+		{
+			get
+			{
+				return this.Resolve(context.Config.PathTemplates.Extension);
 			}
 		}
 
@@ -85,7 +95,7 @@
 		{
 			get
 			{
-				return this.Substitute(config.PathTemplates.CategoryConfiguration);
+				return this.Substitute(context.Config.PathTemplates.CategoryConfiguration);
 			}
 		}
 
@@ -104,7 +114,7 @@
 		{
 			get
 			{
-				return config.PathTemplates.View.Replace("{resourcepath}", this.SharedAssetPath);
+				return context.Config.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath);
 			}
 		}
 
@@ -115,7 +125,8 @@
 		{
 			get
 			{
-				return this.Resolve(config.PathTemplates.View, new QueryString { { "category", config.SharedCategory } });
+				return this.Resolve(context.Config.PathTemplates.View, 
+					new QueryString { { "category", context.Config.SharedCategory } });
 			}
 		}
 
@@ -137,7 +148,7 @@
 		{
 			get
 			{
-				return this.GetAssetPath(config.SharedCategory);
+				return this.GetAssetPath(context.Config.SharedCategory);
 			}
 		}
 
@@ -145,7 +156,7 @@
 		{
 			get
 			{
-				return this.Resolve(config.PathTemplates.DefaultStylesheet);
+				return this.Resolve(context.Config.PathTemplates.DefaultStylesheet);
 			}
 		}
 
@@ -153,7 +164,7 @@
 		{
 			get
 			{
-				return this.Resolve(config.PathTemplates.CategoryStylesheet);
+				return this.Resolve(context.Config.PathTemplates.CategoryStylesheet);
 			}
 		}
 
@@ -164,7 +175,7 @@
 		/// <returns>The physical path to the assets folder of the specified <paramref name="category"/></returns>
 		public string GetAssetPath(string category)
 		{
-			return config.ResourcePath.Replace("{category}", category);
+			return context.Config.AssetPath.Replace("{category}", category);
 		}
 
 		/// <summary>
@@ -187,8 +198,37 @@
 			if (childPath.StartsWith("~/"))
 				return context.MapPath(childPath);
 
-			string templatePath = string.Concat(context.Path.ModulePath.TrimEnd('/'), "/", moduleName, "/", childPath);
+			string templatePath = string.Concat(this.ModulePath.TrimEnd('/'), "/", moduleName, "/", childPath);
 			return this.Resolve(templatePath);
+		}
+
+		/// <summary>
+		/// Expands the specified <paramref name="childPath"/> to its full path within the module with the specified
+		/// <paramref name="pluginName"/>.
+		/// </summary>
+		/// <param name="pluginName">The name of the plugin for which the path is being expanded.</param>
+		/// <param name="childPath">The path to expand</param>
+		/// <returns>The expended version of the specified <paramref name="childPath"/>. If the <paramref name="childPath"/>
+		/// is either an absolute web or absolute local path, the path will not be expanded.</returns>
+		public string GetPluginPath(string pluginName, string childPath)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(pluginName));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(childPath));
+
+			bool isRooted = new Uri(childPath, UriKind.RelativeOrAbsolute).IsAbsoluteUri || Path.IsPathRooted(childPath);
+			if (isRooted)
+				return childPath;
+
+			if (childPath.StartsWith("~/"))
+				return context.MapPath(childPath);
+
+			string templatePath = string.Concat(this.PluginPath.TrimEnd('/'), "/", pluginName, "/", childPath);
+			return this.Resolve(templatePath);
+		}
+
+		public string GetDictionaryPath(string locale = null, string category = null)
+		{
+			return this.Resolve(context.Config.PathTemplates.Dictionary, category ?? context.Category, locale ?? context.Locale);
 		}
 
 		/// <summary>
@@ -196,9 +236,9 @@
 		/// </summary>
 		/// <param name="category">The category for which to return the path</param>
 		/// <returns>The physical path to the assets folder of the specified <paramref name="category"/></returns>
-		public string GetPhysicalCategoryPath(string category)
+		public string GetPhysicalCategoryPath(string category = null)
 		{
-			return this.Resolve(GetAssetPath(category));
+			return this.Resolve(GetAssetPath(category ?? context.Category));
 		}
 
 		/// <summary>
@@ -206,9 +246,9 @@
 		/// </summary>
 		/// <param name="category">The category for which to return the path</param>
 		/// <returns>The physical path to the views folder of the specified <paramref name="category"/></returns>
-		public string GetViewPath(string category)
+		public string GetViewPath(string category = null)
 		{
-			return this.Substitute("{resourcepath}", category);
+			return this.Substitute("{assetpath}", category ?? context.Category);
 		}
 
 		/// <summary>
@@ -216,29 +256,29 @@
 		/// </summary>
 		/// <param name="category">The category for which to return the path</param>
 		/// <returns>The physical path to the views folder of the specified <paramref name="category"/></returns>
-		public string GetPhysicalViewPath(string category)
+		public string GetPhysicalViewPath(string category = null)
 		{
-			return this.Resolve(GetViewPath(category));
+			return this.Resolve(GetViewPath(category ?? context.Category));
 		}
 
 		/// <summary>
 		/// Converts, if possible, an absolute path to it's equivalent web accessible location (relative to the application path).
 		/// </summary>
-		/// <param name="absolutePath">The path to convert, for instance 'c:\Inetpub\wwwroot\mysite\static\resource.xml'</param>
+		/// <param name="path">The path to convert, for instance 'c:\Inetpub\wwwroot\mysite\static\resource.xml'</param>
 		/// <returns>The specified absolute path, converted to a web-accessible location. For the example above
 		/// that could be something similar to 'static/resource' (assuming that the project is running within c:\Inetpub\wwwroot\mysite.</returns>
-		public string GetRelativeWebPath(string absolutePath)
+		public string GetRelativeWebPath(string path)
 		{
-			if (string.IsNullOrEmpty(absolutePath))
-				throw new ArgumentNullException(absolutePath);
+			if (string.IsNullOrEmpty(path))
+				throw new ArgumentNullException(path);
 
-			if (absolutePath.Contains("\\"))
+			if (path.Contains("\\"))
 			{
 				var applicationPath = context.PhysicalApplicationPath.ToLower();
-				return absolutePath.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
+				return path.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
 			}
 
-			return absolutePath.Replace("~", context.ApplicationPath.TrimEnd('/'));
+			return path.Replace("~", context.ApplicationPath.TrimEnd('/'));
 		}
 
 		/// <summary>
@@ -273,12 +313,11 @@
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
-			string category = context.Category;
-
 			LocaleInfo localeInfo;
-			if (!config.Locales.TryGetValue(locale, out localeInfo))
+			if (!context.Config.Locales.TryGetValue(locale, out localeInfo))
 				throw new UnconfiguredLocaleException(locale);
 
+			CategoryInfo category = context.Config.Categories[context.Category];
 			foreach (string suffix in localeInfo.ResourceNames)
 			{
 				string localizedName = new ResourceName(path, category).ToLocalePath(suffix);
@@ -297,8 +336,8 @@
 		/// <returns>The expanded relative path</returns>
 		public string Expand(string relativePath)
 		{
-			if (relativePath.ToLower().StartsWith(config.SharedCategory + "/"))
-				return this.Expand(relativePath, config.SharedCategory);
+			if (relativePath.ToLower().StartsWith(context.Config.SharedCategory + "/"))
+				return this.Expand(relativePath, context.Config.SharedCategory);
 
 			return this.Expand(relativePath, context.Category);
 		}
@@ -383,8 +422,8 @@
 			{
 				string separator = path.Contains("\\") ? "\\" : "/";
 				string directory = Path.GetDirectoryName(path);
-				string category = context.Category;
 
+				CategoryInfo category = context.Config.Categories[context.Category];
 				return string.Concat(directory, separator, new ResourceName(path, category).ToLocale(suffix));
 			}
 
@@ -465,8 +504,8 @@
 				values.Add("category", context.Category);
 			if (values["locale"] == null)
 				values.Add("locale", context.Locale);
-			if (values["resourcepath"] == null)
-				values.Add("resourcepath", GetAssetPath(values["category"]));
+			if (values["assetpath"] == null)
+				values.Add("assetpath", GetAssetPath(values["category"]));
 
 			string result = template;
 			foreach (string key in values)
