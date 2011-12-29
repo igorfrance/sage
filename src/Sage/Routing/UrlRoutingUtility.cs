@@ -17,19 +17,8 @@
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlRoutingUtility).FullName);
 
-		/// <summary>
-		/// Uses reflection to enumerate through Controller classes and automatically register routes.
-		/// </summary>
-		/// <param name="routes">The routes.</param>
-		public static void RegisterRoutes(RouteCollection routes)
+		internal static void RegisterRoutesFromRoutingConfiguration(ProjectConfiguration config)
 		{
-			RegisterRoutesToMethodsWithAttributes(routes);
-			RegisterRoutesFromRoutingConfiguration(routes);
-		}
-
-		private static void RegisterRoutesFromRoutingConfiguration(RouteCollection routes)
-		{
-			ProjectConfiguration config = ProjectConfiguration.Current;
 			foreach (RouteInfo route in config.Routing.Values)
 			{
 				var controllerName = route.Controller.EndsWith("Controller")
@@ -37,7 +26,7 @@
 					: route.Controller;
 
 				string[] namespaces = new[] { route.Namespace ?? config.Routing.DefaultNamespace };
-				routes.MapRouteLowercase(route.Name, route.Path,
+				RouteTable.Routes.MapRouteLowercase(route.Name, route.Path,
 					new { controller = controllerName, action = route.Action }, 
 					null, 
 					namespaces);
@@ -52,11 +41,11 @@
 		/// <summary>
 		/// Uses reflection to enumerate through Controller classes in the assembly and registers a route for each method declaring a <see cref="UrlRouteAttribute"/>.
 		/// </summary>
-		/// <param name="routes">Route collection to add routes to.</param>
-		private static void RegisterRoutesToMethodsWithAttributes(RouteCollection routes)
+		/// <param name="assemblies">Assemblies that contain the methods to register.</param>
+		internal static void RegisterRoutesToMethodsWithAttributes(Assembly[] assemblies)
 		{
 			List<MapRouteParams> routeParams = GetRouteParamsFromAttributes(
-				ProjectConfiguration.RelevantAssemblies.ToArray());
+				Application.RelevantAssemblies.ToArray());
 
 			routeParams.Sort((a, b) => a.Order.CompareTo(b.Order));
 			foreach (MapRouteParams rd in routeParams)
@@ -71,7 +60,7 @@
 				if (string.IsNullOrEmpty(name))
 					name = string.Concat(rd.ControllerName, ".", rd.ActionName);
 
-				UrlRoutingUtility.MapRoute(routes, name, rd.Path, rd.Defaults, rd.Constraints, new[] { rd.ControllerNamespace });
+				UrlRoutingUtility.MapRoute(name, rd.Path, rd.Defaults, rd.Constraints, new[] { rd.ControllerNamespace });
 			}
 		}
 
@@ -141,7 +130,6 @@
 		/// <summary>
 		/// Maps a route.
 		/// </summary>
-		/// <param name="routes">The routes.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="url">The URL.</param>
 		/// <param name="defaults">The defaults.</param>
@@ -149,13 +137,11 @@
 		/// <param name="namespaces">The namespaces.</param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException">
-		/// <paramref name="routes"/> or <paramref name="url"/> or <paramref name="constraints"/> is <c>null</c>
+		/// <paramref name="url"/> or <paramref name="constraints"/> is <c>null</c>
 		/// </exception>
-		private static void MapRoute(RouteCollection routes, string name, string url, 
+		private static void MapRoute(string name, string url, 
 			IDictionary<string, object> defaults, IDictionary<string, object> constraints, ICollection<string> namespaces)
 		{
-			if (routes == null)
-				throw new ArgumentNullException("routes");
 			if (url == null)
 				throw new ArgumentNullException("url");
 			if (constraints == null)
@@ -174,7 +160,7 @@
 				route.DataTokens["Namespaces"] = namespaces;
 			}
 
-			routes.Add(name, route);
+			RouteTable.Routes.Add(name, route);
 		}
 
 		/// <summary>
