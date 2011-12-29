@@ -1,0 +1,7 @@
+﻿html, body
+	{ height: 100%; }
+body
+	{ margin: 0 10px; background-color: white; font-family: Century Gothic, Verdana, Helvetica, Arial, Sans-Serif; }
+
+h1, h2
+	{ margin-top: 0; }
