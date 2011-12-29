@@ -23,7 +23,7 @@ namespace Kelp.Test.ResourceHandling
 
 	using Microsoft.Ajax.Utilities;
 
-	[Subject(typeof(ScriptFile))]
+	[Subject(typeof(ScriptFile)), Tags(Categories.ResourceHandling)]
 	public class When_getting_an_including_file
 	{
 		private static string content;
@@ -77,7 +77,7 @@ namespace Kelp.Test.ResourceHandling
 		}
 	}
 
-	[Subject(typeof(ScriptFile))]
+	[Subject(typeof(ScriptFile)), Tags(Categories.ResourceHandling)]
 	public class When_getting_a_file_with_indirect_self_inclusion
 	{
 		private static string content;
@@ -88,7 +88,7 @@ namespace Kelp.Test.ResourceHandling
 			Catch.Exception(() => content = subject.Content).ShouldBeOfType<InvalidOperationException>();
 	}
 
-	[Subject(typeof(ScriptFile))]
+	[Subject(typeof(ScriptFile)), Tags(Categories.ResourceHandling)]
 	public class When_getting_a_file_with_includes_itself
 	{
 		private static string content;
@@ -99,7 +99,7 @@ namespace Kelp.Test.ResourceHandling
 			Catch.Exception(() => content = subject.Content).ShouldBeOfType<InvalidOperationException>();
 	}
 
-	[Subject(typeof(ScriptFile))]
+	[Subject(typeof(ScriptFile)), Tags(Categories.ResourceHandling)]
 	public class When_minifying_script_files
 	{
 		private static ScriptFile subject = (ScriptFile) CodeFile.Create(
@@ -124,7 +124,7 @@ namespace Kelp.Test.ResourceHandling
 			subject.Minify(Utilities.GetScriptContents("formatting3.js")).ShouldContain("MSIE (5");
 	}
 
-	[Subject(typeof(ScriptFile))]
+	[Subject(typeof(ScriptFile)), Tags(Categories.ResourceHandling)]
 	public class When_getting_a_file_that_exists_in_cache_already
 	{
 		private static string scriptName = "script1.js";
