@@ -18,7 +18,6 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(Globalizer)), Tags(Categories.ResourceManagement)]
 	public class When_globalizing_a_resource
 	{
-		private static readonly ProjectConfiguration config = ProjectConfiguration.Current;
 		private static readonly SageContext context = Mother.CreateSageContext("default", "com");
 		private static XmlResource resource;
 		
@@ -33,7 +32,7 @@ namespace Sage.Test.ResourceManagement
 
 		private It Should_translate_to_all_locales_applicable_for_its_category = () =>
 			{
-				CategoryInfo categoryInfo = ProjectConfiguration.Current.Categories[context.Category];
+				CategoryInfo categoryInfo = context.Config.Categories[context.Category];
 				foreach (string locale in categoryInfo.Locales)
 				{
 					string localizedPath = resource.GetGlobalizedName(locale, true);

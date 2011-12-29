@@ -14,31 +14,44 @@ namespace Sage.Test
 
 	using Sage.Xml;
 
-	[Subject(typeof(XsltRegistry))]
-	public class When_opening_a_standard_xslt_file
+	[Subject(typeof(XsltRegistry)), Tags(Categories.ResourceManagement)]
+	public class When_opening_an_xslt_file
 	{
 		private static SageContext context = Mother.CreateSageContext(string.Empty);
 
-		//private static string stylesheetPath1 = Utilities.ExpandResourcePath
 		private It Should_store_that_file_in_cache = () =>
 		{
-			//context.Path.
-
+			throw new NotImplementedException();
 		};
 
-		private It Should_reuse_that_file_if_exists_in_cache;
-		// XsltRegistry
-		// When opening an xslt file
-		// Should store that file in cache
-		// Should reuse that file from cache if it exists in cache
-		// Should cache and reuse the parent stylesheet if this stylesheet is empty
-		// Should use the fresh version if the source file changes
-		// Should use the fresh version if the parent stylesheet changes
-	}
+		private It Should_reuse_that_file_if_exists_in_cache = () =>
+		{
+			throw new NotImplementedException();
+		};
 
-	[Subject(typeof(XsltRegistry))]
-	public class When_opening_an_empty_xslt_file
-	{
-		It Should_cache_and_reuse_the_parent_stylesheet;
+		private It Should_pick_the_fresh_version_if_the_source_file_changes = () =>
+		{
+			throw new NotImplementedException();
+		};
+
+		private It Should_pick_the_fresh_version_if_any_dependencies_change = () =>
+		{
+			throw new NotImplementedException();
+		};
+
+		private It Should_use_project_default_stylesheet_if_specific_one_is_missing_and_project_default_exists = () =>
+		{
+			throw new NotImplementedException();
+		};
+
+		private It Should_use_category_default_stylesheet_if_specific_one_is_missing_and_category_default_exists = () =>
+		{
+			throw new NotImplementedException();
+		};
+
+		private It Should_use_builtin_default_stylesheet_if_specific_one_is_missing_and_no_other_default_stylesheets_exist = () =>
+		{
+			throw new NotImplementedException();
+		};
 	}
 }

@@ -87,7 +87,6 @@
     <Compile Include="Configuration\IpAddressTests.cs" />
     <Compile Include="Configuration\ProjectConfigurationTests.cs" />
     <Compile Include="ControllerFactoryExtensions.cs" />
-    <Compile Include="Dev\PackageManagerTests.cs" />
     <Compile Include="MockController.cs" />
     <Compile Include="Modules\IO\DirectoryTreeModuleTest.cs" />
     <Compile Include="Mother.cs" />

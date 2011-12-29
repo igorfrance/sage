@@ -48,10 +48,10 @@ namespace Sage.Test.ResourceManagement
 		It Should_return_proper_physical_shared_view_path_for_default_category = () => context1.Path.PhysicalSharedViewPath.ShouldEqual(physicalSharedViewPath);
 		It Should_return_proper_physical_shared_view_path_for_alternate_category = () => context2.Path.PhysicalSharedViewPath.ShouldEqual(physicalSharedViewPath);
 
-		It Should_properly_substitute_template_path_for_default_category = () => context1.Path.Substitute("{resourcepath}/{category}/{locale}").ShouldEqual("~/assets/default/default/com");
-		It Should_properly_substitute_template_path_for_alternate_category = () => context2.Path.Substitute("{resourcepath}/{category}/{locale}").ShouldEqual("~/assets/alternate/alternate/uk");
+		It Should_properly_substitute_template_path_for_default_category = () => context1.Path.Substitute("{assetpath}/{category}/{locale}").ShouldEqual("~/assets/default/default/com");
+		It Should_properly_substitute_template_path_for_alternate_category = () => context2.Path.Substitute("{assetpath}/{category}/{locale}").ShouldEqual("~/assets/alternate/alternate/uk");
 		It Should_properly_substitute_template_path_for_default_category_using_alternate_context = () =>
-			context1.Path.Substitute("{resourcepath}/{category}/{locale}", context2).ShouldEqual("~/assets/alternate/alternate/com");
+			context1.Path.Substitute("{assetpath}/{category}/{locale}", context2).ShouldEqual("~/assets/alternate/alternate/com");
 
 		It Should_properly_substitute_template_path_for_using_custom_values = () =>
 			context1.Path.Substitute("{a}/{b}/{c}", new Kelp.Core.QueryString { { "a", "A"}, { "b", "B" }, { "c", "C" } })

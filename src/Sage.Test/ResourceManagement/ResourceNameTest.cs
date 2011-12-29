@@ -18,8 +18,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_default_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"c:\somewhere\file-default.txt", category);
@@ -29,8 +29,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_locale_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"d:\somewhere\file-{locale}.txt", category);
@@ -40,8 +40,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_no_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"c:\somewhere\file-example.txt", category);
@@ -51,8 +51,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"c:\somewhere\file-uk.txt", category);
@@ -66,8 +66,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_unknown_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"d:\somewhere\file-rr.txt", category);
@@ -77,8 +77,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_la_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"G:\default\flash\xml\mastfoot\techfit-la.xml", category);
@@ -88,8 +88,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_es_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"G:\default\flash\xml\mastfoot\techfit-es.xml", category);
@@ -99,8 +99,8 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceName)), Tags(Categories.ResourceManagement)]
 	public class When_getting_a_resource_with_tw_locale_suffix
 	{
-		private static CategoryInfo category = ProjectConfiguration.Current.Categories["default"];
 		private static SageContext context = Mother.CreateSageContext("default", "com");
+		private static CategoryInfo category = context.Config.Categories["default"];
 		private static ResourceName resourceName;
 
 		private Because of = () => resourceName = new ResourceName(@"G:\default\flash\xml\mastfoot\techfit-tw.xml", category);
