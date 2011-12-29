@@ -62,30 +62,37 @@
 		private void OnApplicationRequestStart(object sender, EventArgs e)
 		{
 			HttpApplication application = (HttpApplication) sender;
-			HttpContext context = application.Context;
+			SageContext context = new SageContext(application.Context);
 
 			if (File.Exists(context.Request.PhysicalPath))
 				return;
+
+			
+			QueryString query = new QueryString(HttpContext.Current.Request.Url.Query);
+			string view = query.GetString(MetaViewDictionary.ParamNameMetaView);
+			if (view != null && !context.Config.MetaViews.ContainsKey(view))
+				view = null;
 
 			//// \.(html|xml|xmlx|htmlx)$
 			//// Meta view extension gets removed from the path
 			//// Path is rewritten with ?view=$1
 
-			string view = null;
 			string path = MetaViewExpression.Replace(context.Request.Path, delegate(Match m)
 			{
-				view = m.Groups[1].Value;
+				if (view == null)
+					view = m.Groups[1].Value;
+
 				return string.Empty;
 			});
 
 			if (view != null)
 			{
-				QueryString query = new QueryString(HttpContext.Current.Request.Url.Query);
+				query.Remove(MetaViewDictionary.ParamNameMetaView);
 				query.Add(MetaViewDictionary.ParamNameMetaView, view);
 
 				string newUri = new Uri(path + query.ToString(true), UriKind.RelativeOrAbsolute).ToString();
 				log.DebugFormat("Rewriting the context path from '{0}' to '{1}'.", context.Request.Path, newUri);
-				context.RewritePath(newUri);
+				application.Context.RewritePath(newUri);
 			}
 		}
 	}
