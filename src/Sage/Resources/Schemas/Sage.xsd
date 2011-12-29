@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Sage"
+		elementFormDefault="qualified"
+		targetNamespace="http://www.cycle99.com/projects/sage"
+		xmlns:sage="http://www.cycle99.com/projects/sage"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns="http://www.cycle99.com/projects/sage">
+	
+	<xs:element name="basehref"/>
+	
+	<xs:element name="link">
+		<xs:complexType>
+			<xs:attribute name="linkId" use="optional"/>
+			<xs:attribute name="linkValues" use="optional"/>
+			<xs:attribute name="urlEncode" use="optional" type="xs:boolean"/>
+			<xs:attribute name="href" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>
