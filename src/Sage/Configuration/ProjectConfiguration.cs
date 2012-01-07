@@ -42,11 +42,10 @@
 			this.MetaViews = new MetaViewDictionary();
 			this.DeveloperIps = new List<IpAddress>();
 			this.AssetPrefixes = new Dictionary<string, string>();
-			this.Links = new LinkConfiguration();
+			this.Links = new Dictionary<string, LinkInfo>();
 			this.Routing = new RoutingConfiguration();
 			this.PathTemplates = new PathTemplates();
 			this.ScriptLibraries = new Dictionary<string, ScriptLibraryInfo>();
-			this.Deliverables = new List<string>();
 
 			this.SharedCategory = "shared";
 			this.DefaultLocale = "default";
@@ -62,6 +61,17 @@
 		{
 			get
 			{
+				lock (SystemConfigName)
+				{
+					if (projectConfig == null)
+					{
+						lock (ProjectConfigName)
+						{
+							Initialize();
+						}
+					}
+				}
+
 				return projectConfig;
 			}
 		}
@@ -84,6 +94,8 @@
 		public XmlElement ConfigurationElement { get; private set; }
 
 		public string Name { get; private set; }
+
+		public ConfigurationType Type { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the resources have been pre-generated.
@@ -238,7 +250,7 @@
 			private set;
 		}
 
-		public List<string> Deliverables { get; private set; }
+		public PackageConfiguration Package { get; private set; }
 
 		/// <summary>
 		/// Gets the list of IP addresses or address ranges to be considered as developers.
@@ -252,7 +264,7 @@
 		/// <summary>
 		/// Gets the <see cref="NameValueCollection"/> of name/pattern link values as parsed from the configuration node.
 		/// </summary>
-		public LinkConfiguration Links
+		public Dictionary<string, LinkInfo> Links
 		{
 			get;
 			private set;
@@ -287,21 +299,27 @@
 			private set;
 		}
 
-		public static ProjectConfiguration Create(string configPath)
+		public static ProjectConfiguration Create(string configPath, string parentConfigPath = null)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
 
 			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
-			return Create(document);
+			XmlDocument parentDoc = null;
+			if (parentConfigPath != null)
+				parentDoc = ResourceManager.LoadXmlDocument(parentConfigPath);
+
+			return Create(document, parentDoc);
 		}
 
-		public static ProjectConfiguration Create(XmlDocument configDoc)
+		public static ProjectConfiguration Create(XmlDocument configDoc, XmlDocument parentConfigDoc = null)
 		{
 			Contract.Requires<ArgumentNullException>(configDoc != null);
 
 			var result = new ProjectConfiguration();
-			result.Parse(configDoc);
+			if (parentConfigDoc != null)
+				result.Parse(parentConfigDoc);
 
+			result.Parse(configDoc);
 			return result;
 		}
 
@@ -343,6 +361,9 @@
 
 		internal static void Initialize()
 		{
+			if (projectConfig != null)
+				return;
+
 			string projectConfigPath = Path.Combine(AssemblyPath, ProjectConfigName);
 			string systemConfigPath = Path.Combine(AssemblyPath, SystemConfigName);
 
@@ -386,47 +407,46 @@
 			ResourceManager.ValidateDocument(configDoc, ConfigSchemaPath);
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 
-			XmlElement configNode = configDoc.SelectSingleElement("/p:configuration", nm);
+			XmlElement configNode = configDoc.SelectSingleElement("/p:configuration/*", nm);
 
-			this.ConfigurationElement = configNode.SelectSingleElement("p:project", nm);
+			string nodeValue;
+			XmlElement routingNode = configNode.SelectSingleElement("p:routing", nm);
+			XmlElement pathsNode = configNode.SelectSingleElement("p:paths", nm);
+
+			this.Type = (ConfigurationType) Enum.Parse(typeof(ConfigurationType), configNode.Name, true);
+			this.ConfigurationElement = configNode;
 			this.Categories = new Dictionary<string, CategoryInfo>();
 			this.Locales = new Dictionary<string, LocaleInfo>();
 
-			string nodeValue;
-			XmlElement projectNode = this.ConfigurationElement;
-			XmlElement routingNode = projectNode.SelectSingleElement("p:routing", nm);
-			XmlElement linksNode = projectNode.SelectSingleElement("p:links", nm);
-			XmlElement pathsNode = projectNode.SelectSingleElement("p:paths", nm);
-
-			nodeValue = projectNode.GetAttribute("name");
+			nodeValue = configNode.GetAttribute("name");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.Name = nodeValue;
 
-			nodeValue = projectNode.GetAttribute("sharedCategory");
+			nodeValue = configNode.GetAttribute("sharedCategory");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.SharedCategory = nodeValue;
 
-			nodeValue = projectNode.GetAttribute("defaultLocale");
+			nodeValue = configNode.GetAttribute("defaultLocale");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.DefaultLocale = nodeValue;
 
-			nodeValue = projectNode.GetAttribute("defaultCategory");
+			nodeValue = configNode.GetAttribute("defaultCategory");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.DefaultCategory = nodeValue;
 
-			nodeValue = projectNode.GetAttribute("resourcesPregenerated");
+			nodeValue = configNode.GetAttribute("resourcesPregenerated");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.AreResourcesPreGenerated = nodeValue.ContainsAnyOf("yes", "1", "true");
 
-			nodeValue = projectNode.GetAttribute("multiCategory");
+			nodeValue = configNode.GetAttribute("multiCategory");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.MultiCategory = nodeValue.ContainsAnyOf("yes", "1", "true");
 
-			nodeValue = projectNode.GetAttribute("mergeResources");
+			nodeValue = configNode.GetAttribute("mergeResources");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.MergeResources = nodeValue.ContainsAnyOf("yes", "1", "true");
 
-			nodeValue = projectNode.GetAttribute("debugMode");
+			nodeValue = configNode.GetAttribute("debugMode");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.IsDebugMode = nodeValue.ContainsAnyOf("yes", "1", "true");
 
@@ -446,27 +466,28 @@
 			if (routingNode != null)
 				this.Routing.ParseConfiguration(routingNode);
 
-			if (linksNode != null)
+			foreach (XmlElement linkNode in configNode.SelectNodes("p:links/p:link", nm))
 			{
-				this.Links.ParseConfiguration(linksNode);
-				nodeValue = linksNode.GetAttribute("rewritePrefix");
-				if (!string.IsNullOrEmpty(nodeValue))
-					this.UrlRewritePrefix = nodeValue;
+				LinkInfo linkInfo = new LinkInfo(linkNode);
+				if (this.Links.ContainsKey(linkInfo.Name))
+					this.Links[linkInfo.Name] = linkInfo;
+				else
+					this.Links.Add(linkInfo.Name, linkInfo);
 			}
 
-			foreach (XmlElement moduleNode in projectNode.SelectNodes("p:modules/p:module", nm))
+			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
 			{
 				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode);
 				this.Modules.Add(moduleConfig);
 			}
 
-			foreach (XmlElement libraryNode in projectNode.SelectNodes("p:scripts/p:library", nm))
+			foreach (XmlElement libraryNode in configNode.SelectNodes("p:scripts/p:library", nm))
 			{
 				ScriptLibraryInfo info = new ScriptLibraryInfo(libraryNode);
 				this.ScriptLibraries.Add(info.Name, info);
 			}
 
-			foreach (XmlElement locale in projectNode.SelectNodes("p:globalization/p:locale", nm))
+			foreach (XmlElement locale in configNode.SelectNodes("p:globalization/p:locale", nm))
 			{
 				var name = locale.GetAttribute("name");
 				var info = new LocaleInfo(locale);
@@ -478,7 +499,7 @@
 
 			if (this.MultiCategory)
 			{
-				foreach (XmlElement category in projectNode.SelectNodes("p:categories/p:category", nm))
+				foreach (XmlElement category in configNode.SelectNodes("p:categories/p:category", nm))
 				{
 					var info = new CategoryInfo(category, this.Locales);
 					this.Categories.Add(info.Name, info);
@@ -493,7 +514,7 @@
 				this.Categories.Add(this.DefaultCategory, new CategoryInfo(this.DefaultCategory, this.Locales));
 			}
 
-			foreach (XmlElement viewNode in projectNode.SelectNodes("p:metaViews/p:view", nm))
+			foreach (XmlElement viewNode in configNode.SelectNodes("p:metaViews/p:view", nm))
 			{
 				var name = viewNode.GetAttribute("name");
 				var info = new MetaViewInfo(viewNode);
@@ -503,13 +524,13 @@
 					this.MetaViews.Add(name, info);
 			}
 
-			foreach (XmlElement elem in projectNode.SelectNodes("p:developers/p:ip", nm))
+			foreach (XmlElement elem in configNode.SelectNodes("p:developers/p:ip", nm))
 			{
 				IpAddress address = new IpAddress(elem);
 				this.DeveloperIps.Add(address);
 			}
 
-			foreach (XmlElement elem in projectNode.SelectNodes("p:assets/p:prefix", nm))
+			foreach (XmlElement elem in configNode.SelectNodes("p:assets/p:prefix", nm))
 			{
 				var key = elem.GetAttribute("key");
 				var value = elem.GetAttribute("value");
@@ -519,10 +540,7 @@
 					this.AssetPrefixes.Add(key, value);
 			}
 
-			foreach (XmlElement binaryNode in projectNode.SelectNodes("p:deliverables/p:binary", nm))
-			{
-				this.Deliverables.Add(binaryNode.InnerText);
-			}
+			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));
 		}
 	}
 }

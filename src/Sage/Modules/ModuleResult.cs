@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
@@ -11,6 +12,12 @@
 	/// </summary>
 	public class ModuleResult
 	{
+		public ModuleResult(ModuleResultStatus status)
+		{
+			this.ModuleData = new Dictionary<string, object>();
+			this.Status = status;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ModuleResult"/> class, using the specified <paramref name="status"/> and 
 		/// <paramref name="resultElement"/>.
@@ -18,10 +25,8 @@
 		/// <param name="status">The status of this result.</param>
 		/// <param name="resultElement">The content of this result.</param>
 		public ModuleResult(XmlElement resultElement, ModuleResultStatus status = ModuleResultStatus.Ok)
+			: this(status)
 		{
-			this.Status = ModuleResultStatus.Ok;
-			this.ModuleData = new Dictionary<string, object>();
-			this.Status = status;
 			this.ResultElement = resultElement;
 		}
 
@@ -79,27 +84,25 @@
 			return AppendOrPrependDataNode(dataNode, true);
 		}
 
-		public XmlElement AppendDataElement(XmlNode dataElement)
+		public XmlElement AppendDataElement(XmlNode dataElement = null)
 		{
 			return (XmlElement) AppendDataNode(dataElement);
 		}
 
-		public XmlNode AppendDataNode(XmlNode dataNode)
+		public XmlNode AppendDataNode(XmlNode dataNode = null)
 		{
+			Contract.Requires<InvalidOperationException>(this.ResultElement != null, "The ModuleResult.ResultElement property is null");
+			
 			if (dataNode == null)
-				throw new ArgumentNullException("dataNode");
-			if (this.ResultElement == null)
-				throw new InvalidOperationException("The ResultElement property is null");
+				dataNode = OwnerDocument.CreateElement("mod:data", XmlNamespaces.ModulesNamespace);
 
 			return AppendOrPrependDataNode(dataNode, false);
 		}
 
 		private XmlNode AppendOrPrependDataNode(XmlNode dataNode, bool prepend)
 		{
-			if (dataNode == null)
-				throw new ArgumentNullException("dataNode");
-			if (this.ResultElement == null)
-				throw new InvalidOperationException("The ResultElement property is null");
+			Contract.Requires<ArgumentNullException>(dataNode != null);
+			Contract.Requires<InvalidOperationException>(this.ResultElement != null, "The ModuleResult.ResultElement property is null");
 
 			if (dataNode.NodeType == XmlNodeType.Document)
 				dataNode = ((XmlDocument) dataNode).DocumentElement;

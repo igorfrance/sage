@@ -14,6 +14,7 @@
     <AssemblyName>Sage.DevTools</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +24,31 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,46 +67,62 @@
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Routing" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\LogViewController.cs" />
     <Compile Include="Controllers\RouteDebuggerController.cs" />
+    <Compile Include="Modules\IO\DirectoryTreeModule.cs" />
+    <Compile Include="Modules\Source\SyntaxHighlighterModule.cs" />
+    <Compile Include="Modules\Source\XmlTreeModule.cs" />
     <Compile Include="Modules\ViewInspectorModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\css\devtools.css" />
+    <EmbeddedResource Include="assets\css\devtools.css" />
+    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.js" />
+    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
+    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xml" />
+    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xsl" />
+    <EmbeddedResource Include="assets\modules\XmlTree\XmlTree.xsl" />
+    <Content Include="assets\modules\XmlTree\XmlTree.js" />
+    <Content Include="assets\modules\XmlTree\XmlTree.css" />
+    <Content Include="assets\modules\XmlTree\XmlTree.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="assets\views\shared\elements.html" />
+    <Content Include="assets\views\tests\directory-tree.html" />
+    <Content Include="assets\views\tests\syntax-highlighting.html" />
+    <Content Include="assets\views\tests\xml-tree.html" />
     <Content Include="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\scripts\lib\aeon.js" />
-    <EmbeddedResource Include="Assets\css\logview.css" />
-    <EmbeddedResource Include="Assets\views\logview\thread-log.xsl">
+    <Content Include="assets\scripts\lib\aeon.js" />
+    <EmbeddedResource Include="assets\css\logview.css" />
+    <EmbeddedResource Include="assets\views\logview\thread-log.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Assets\views\logview\complete-log.xsl" />
-    <Content Include="Assets\views\home\index.html">
+    <EmbeddedResource Include="assets\views\logview\complete-log.xsl" />
+    <Content Include="assets\views\home\index.html">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Assets\views\tests\case1.html" />
+    <Content Include="assets\views\tests\index.html" />
     <Content Include="Global.asax" />
-    <Content Include="Assets\modules\ViewInspector\images\close.png" />
-    <Content Include="Assets\modules\ViewInspector\images\gear.png" />
-    <Content Include="Assets\modules\ViewInspector\images\html.png" />
-    <Content Include="Assets\modules\ViewInspector\images\log.png" />
-    <Content Include="Assets\modules\ViewInspector\images\minimize.png" />
-    <Content Include="Assets\modules\ViewInspector\images\preloader1.gif" />
-    <Content Include="Assets\modules\ViewInspector\images\preloader2.gif" />
-    <Content Include="Assets\modules\ViewInspector\images\refresh.png" />
-    <Content Include="Assets\modules\ViewInspector\images\restore.png" />
-    <Content Include="Assets\modules\ViewInspector\images\xml.png" />
-    <Content Include="Assets\modules\ViewInspector\images\xmlx.png" />
-    <Content Include="Assets\modules\ViewInspector\ViewInspector.css" />
-    <Content Include="Assets\modules\ViewInspector\ViewInspector.js" />
-    <Content Include="Assets\modules\ViewInspector\ViewInspector.xsl" />
+    <Content Include="assets\modules\ViewInspector\images\close.png" />
+    <Content Include="assets\modules\ViewInspector\images\gear.png" />
+    <Content Include="assets\modules\ViewInspector\images\html.png" />
+    <Content Include="assets\modules\ViewInspector\images\log.png" />
+    <Content Include="assets\modules\ViewInspector\images\minimize.png" />
+    <Content Include="assets\modules\ViewInspector\images\preloader1.gif" />
+    <Content Include="assets\modules\ViewInspector\images\preloader2.gif" />
+    <Content Include="assets\modules\ViewInspector\images\refresh.png" />
+    <Content Include="assets\modules\ViewInspector\images\restore.png" />
+    <Content Include="assets\modules\ViewInspector\images\xml.png" />
+    <Content Include="assets\modules\ViewInspector\images\xmlx.png" />
+    <Content Include="assets\modules\ViewInspector\ViewInspector.css" />
+    <Content Include="assets\modules\ViewInspector\ViewInspector.js" />
+    <Content Include="assets\modules\ViewInspector\ViewInspector.xsl" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +144,17 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <None Include="Assets\modules\ViewInspector\ViewInspector.xsd">
+    <Folder Include="assets\modules\DirectoryTree\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="assets\modules\ViewInspector\ViewInspector.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="assets\modules\XmlTree\XmlTree.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

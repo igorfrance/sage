@@ -16,13 +16,11 @@
 	using Kelp.Core;
 	using Kelp.Core.Extensions;
 
-	using Sage.Extensibility;
-
 	using log4net;
 
 	using Sage.Configuration;
+	using Sage.Extensibility;
 	using Sage.ResourceManagement;
-	using Sage.Xml;
 
 	/// <summary>
 	/// Provides the working environment for code within Sage.

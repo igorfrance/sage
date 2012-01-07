@@ -12,7 +12,7 @@
 	/// </summary>
 	public class LastModifiedCache
 	{
-		private const string CacheKeyName = "{0}_DATE";
+		private const string CacheKeyName = "DATE_{0}";
 		private readonly SageContext context;
 
 		/// <summary>

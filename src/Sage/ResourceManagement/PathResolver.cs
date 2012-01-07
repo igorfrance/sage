@@ -160,14 +160,6 @@
 			}
 		}
 
-		public string CategoryStylesheetPath
-		{
-			get
-			{
-				return this.Resolve(context.Config.PathTemplates.CategoryStylesheet);
-			}
-		}
-
 		/// <summary>
 		/// Returns the path to the assets folder of the specified <paramref name="category"/>.
 		/// </summary>
@@ -176,6 +168,12 @@
 		public string GetAssetPath(string category)
 		{
 			return context.Config.AssetPath.Replace("{category}", category);
+		}
+
+		public string GetModulePath(string moduleName)
+		{
+			string templatePath = string.Concat(this.ModulePath.TrimEnd('/'), "/", moduleName);
+			return this.Resolve(templatePath);
 		}
 
 		/// <summary>
@@ -265,9 +263,13 @@
 		/// Converts, if possible, an absolute path to it's equivalent web accessible location (relative to the application path).
 		/// </summary>
 		/// <param name="path">The path to convert, for instance 'c:\Inetpub\wwwroot\mysite\static\resource.xml'</param>
-		/// <returns>The specified absolute path, converted to a web-accessible location. For the example above
-		/// that could be something similar to 'static/resource' (assuming that the project is running within c:\Inetpub\wwwroot\mysite.</returns>
-		public string GetRelativeWebPath(string path)
+		/// <param name="prependApplicationPath">if set to <c>true</c>, the path returned will be prefixed with the 
+		/// application path, if the path doesn't start with it already.</param>
+		/// <returns>
+		/// The specified absolute path, converted to a web-accessible location. For the example above
+		/// that could be something similar to 'static/resource' (assuming that the project is running within c:\Inetpub\wwwroot\mysite.
+		/// </returns>
+		public string GetRelativeWebPath(string path, bool prependApplicationPath = false)
 		{
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(path);
@@ -275,10 +277,14 @@
 			if (path.Contains("\\"))
 			{
 				var applicationPath = context.PhysicalApplicationPath.ToLower();
-				return path.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
+				path = path.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
 			}
 
-			return path.Replace("~", context.ApplicationPath.TrimEnd('/'));
+			path = path.Replace("~", context.ApplicationPath.TrimEnd('/'));
+			if (prependApplicationPath && !path.StartsWith(context.ApplicationPath))
+				path = string.Concat(context.ApplicationPath, "/", path).Replace("//", "/");
+
+			return path;
 		}
 
 		/// <summary>
@@ -465,12 +471,12 @@
 			return context.MapPath(substituted);
 		}
 
-		internal string Substitute(string template)
+		public string Substitute(string template)
 		{
 			return this.Substitute(template, this.context);
 		}
 
-		internal string Substitute(string template, SageContext context)
+		public string Substitute(string template, SageContext context)
 		{
 			return Substitute(template, new QueryString { { "category", context.Category } });
 		}
@@ -483,7 +489,7 @@
 		/// <returns>
 		/// The absolute version of the specified template with placeholders substituted.
 		/// </returns>
-		internal string Substitute(string template, string category)
+		public string Substitute(string template, string category)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(template));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(category));
@@ -495,7 +501,7 @@
 			return Substitute(template, values);
 		}
 
-		internal string Substitute(string template, QueryString values)
+		public string Substitute(string template, QueryString values)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(template));
 			Contract.Requires<ArgumentNullException>(values != null);

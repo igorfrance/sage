@@ -123,6 +123,52 @@
 		}
 
 		/// <summary>
+		/// Escapes all characters in <paramref name="subject"/> that may be treated as meta characters (such as '\.^$*+?(){['),
+		/// so that it can be interpreted as-is in regular expressions. 
+		/// </summary>
+		/// <param name="subject">The subject to escape.</param>
+		/// <returns>The escaped version of <paramref name="subject"/>.</returns>
+		public static string EscapeMeta(this string subject)
+		{
+			if (subject == null)
+				return null;
+
+			return Regex.Replace(subject, @"([\\\.\^\$\*\+\?\(\)\[\{])", @"\$1");
+		}
+
+		/// <summary>
+		/// Searches the specified <paramref name="subject"/> for the first occurrence of the specified regular 
+		/// <paramref name="expression"/>.
+		/// </summary>
+		/// <param name="subject">The string to search for a match.</param>
+		/// <param name="expression">The regular expression pattern to match.</param>
+		/// <returns>
+		/// An object that contains information about the match.
+		/// </returns>
+		public static Match Match(this string subject, string expression)
+		{
+			return Match(subject, expression, RegexOptions.None);
+		}
+
+		/// <summary>
+		/// Searches the specified <paramref name="subject"/> for the first occurrence of the specified regular
+		/// <paramref name="expression"/>.
+		/// </summary>
+		/// <param name="subject">The string to search for a match.</param>
+		/// <param name="expression">The regular expression pattern to match.</param>
+		/// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
+		/// <returns>
+		/// An object that contains information about the match.
+		/// </returns>
+		public static Match Match(this string subject, string expression, RegexOptions options)
+		{
+			if (subject == null || string.IsNullOrEmpty(expression))
+				return null;
+
+			return Regex.Match(subject, expression);
+		}
+
+		/// <summary>
 		/// Replaces the string mathing the specified regular <paramref name="expression"/> string with the specified 
 		/// <paramref name="replacement"/> string.
 		/// </summary>
@@ -135,7 +181,7 @@
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(subject));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(expression));
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(replacement));
+			Contract.Requires<ArgumentNullException>(replacement != null);
 
 			return ReplaceAll(subject, new Regex(expression), replacement);
 		}
@@ -153,7 +199,7 @@
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(subject));
 			Contract.Requires<ArgumentNullException>(expression != null);
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(replacement));
+			Contract.Requires<ArgumentNullException>(replacement != null);
 
 			return expression.Replace(subject, replacement);
 		}

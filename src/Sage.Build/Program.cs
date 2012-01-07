@@ -6,10 +6,14 @@
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
+	using System.Web;
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
+	using Kelp.HttpMock;
+
 	using Sage.Build.Utilities;
+	using Sage.Configuration;
 
 	internal class Program
 	{
@@ -92,6 +96,38 @@
 			}
 
 			return ShowUsage();
+		}
+
+		internal static string MapPath(string path)
+		{
+			if (path == "/")
+				path = "~/";
+
+			string result = path.Replace(
+				"~", ApplicationPath).Replace(
+				"//", "/").Replace(
+				"/", "\\");
+
+			return new FileInfo(result).FullName;
+		}
+
+		internal static HttpContextBase CreateHttpContext(string url)
+		{
+			return CreateHttpContext(url, "default.aspx");
+		}
+
+		internal static HttpContextBase CreateHttpContext(string url, string physicalPath)
+		{
+			return new HttpContextMock(url, physicalPath, null, null, Program.MapPath);
+		}
+
+		internal static SageContext CreateSageContext(string url, Func<string, string> pathMapper, ProjectConfiguration config)
+		{
+			HttpContextBase httpContext =
+				Program.CreateHttpContext(url, "default.aspx");
+
+			SageContext context = new SageContext(httpContext, pathMapper, config);
+			return context;
 		}
 
 		private static int ShowUsage()

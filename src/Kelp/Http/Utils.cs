@@ -75,7 +75,7 @@
 		/// </summary>
 		/// <param name="files">The files.</param>
 		/// <returns>The latest last-modified datetime of the <paramref name="files"/> list.</returns>
-		public static DateTime GetDateLastModified(IList<string> files)
+		public static DateTime GetDateLastModified(IEnumerable<string> files)
 		{
 			DateTime latestModified = new DateTime();
 			foreach (string file in files)

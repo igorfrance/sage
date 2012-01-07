@@ -9,7 +9,6 @@
 	exclude-result-prefixes="sage mod kelp xhtml">
 
 	<xsl:include href="sage://resources/modules.xslt" />
-	<xsl:include href="sageresx://sage/resources/xslt/tree.xsl" />
 	<xsl:include href="sageresx://sage/resources/xslt/logic.xsl" />
 
 	<xsl:variable name="view" select="/sage:view"/>
@@ -96,6 +95,8 @@
 	<xsl:template match="sage:resource[@type='style']">
 		<link type="text/css" rel="stylesheet" href="{@path}" />
 	</xsl:template>
+
+	<xsl:template match="@xml:base"/>
 
 	<xsl:template match="*">
 		<xsl:element name="{name()}" namespace="{namespace-uri()}">

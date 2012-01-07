@@ -1,6 +1,7 @@
 ﻿namespace Kelp.SyntaxHighlighting
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
 
 	/// <summary>
@@ -15,41 +16,23 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExpressionGroup"/> class.
 		/// </summary>
-		/// <param name="className">The css class name to use for the words in this group.</param>
-		/// <param name="words">The words that define this group.</param>
-		public ExpressionGroup(string className, string words)
-			: this(className, words, true)
+		/// <param name="name">The name.</param>
+		/// <param name="keywords">The pipe-separated list of language keywords (e.g: 'if|else|function...').</param>
+		/// <param name="treatAsWord">if set to <c>true</c> [treat as word].</param>
+		/// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
+		public ExpressionGroup(string name, string keywords, bool treatAsWord = true, bool caseSensitive = true)
 		{
-		}
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(name));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(keywords));
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ExpressionGroup"/> class.
-		/// </summary>
-		/// <param name="className">The css class name to use for the words in this group.</param>
-		/// <param name="words">The words that define this group.</param>
-		/// <param name="treatAsWord">If set to <c>true</c> the words will be matched as separate words only.</param>
-		public ExpressionGroup(string className, string words, bool treatAsWord)
-			: this(className, words, treatAsWord, true)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ExpressionGroup"/> class.
-		/// </summary>
-		/// <param name="className">The css class name to use for the words in this group.</param>
-		/// <param name="words">The words that define this group.</param>
-		/// <param name="treatAsWord">if set to <c>true</c> indicates that the group should be treated as a word.</param>
-		/// <param name="caseSensitive">if set to <c>true</c> indicates that the group should be case sensitive.</param>
-		public ExpressionGroup(string className, string words, bool treatAsWord, bool caseSensitive)
-		{
 			RegexOptions options = RegexOptions.None;
 			if (!caseSensitive)
 				options |= RegexOptions.IgnoreCase;
 
-			string pattern = treatAsWord ? (@"(\b)(" + words + @")(\b)") : words;
+			string pattern = treatAsWord ? (@"(\b)(" + keywords + @")(\b)") : keywords;
 
 			this.Expression = new Regex(pattern, options);
-			this.ClassName = className;
+			this.ClassName = name;
 		}
 
 		/// <summary>

@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
@@ -24,8 +25,8 @@
 		/// </example>
 		public static string Join<T>(this IEnumerable<T> collection, string separator)
 		{
-			if (separator == null)
-				throw new ArgumentNullException("separator");
+			Contract.Requires<ArgumentNullException>(collection != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(separator));
 
 			StringBuilder result = new StringBuilder();
 			for (int i = 0; i < collection.Count(); i++)

@@ -17,4 +17,15 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:complexType name="generic" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:any namespace="http://www.cycle99.com/projects/sage"/>
+			<xs:any namespace="http://www.cycle99.com/projects/sage/internationalization"/>
+			<xs:any namespace="http://www.w3.org/2003/XInclude"/>
+		</xs:choice>
+		<xs:anyAttribute namespace="
+										 http://www.cycle99.com/projects/sage 
+										 http://www.cycle99.com/projects/sage/internationalization"/>
+	</xs:complexType>
+	
 </xs:schema>

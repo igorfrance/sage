@@ -28,7 +28,7 @@ sage.dev.ViewInspector = new function ViewInspector()
 	var currentPage = null;
 
 	var defaultCommand = "ShowMeta";
-	var defaultArguments = "xmlx";
+	var defaultArguments = "log";
 
 	var metaViewUrl = "{url}{?}view={arguments}";
 	var logViewUrl = "dev/log/{thread}";
@@ -221,9 +221,9 @@ sage.dev.ViewInspector = new function ViewInspector()
 
 	function executeCommand(targetCommand, targetArguments)
 	{
-		if (Commands[targetCommand] != null)
+		if (commands[targetCommand] != null)
 		{
-			Commands[targetCommand](targetArguments);
+			commands[targetCommand](targetArguments);
 			updateControls();
 		}
 		else
@@ -288,10 +288,10 @@ sage.dev.ViewInspector = new function ViewInspector()
 
 		try
 		{
-			$log.message(commandName + ": " + Commands[commandName]);
-			if (Commands[commandName] != null)
+			$log.message(commandName + ": " + commands[commandName]);
+			if (commands[commandName] != null)
 			{
-				var state = Commands[commandName].getState(commandArgs);
+				var state = commands[commandName].getState(commandArgs);
 				if ((state & buttonState.ENABLED) != 0)
 				{
 					button.removeClass("disabled");
@@ -308,7 +308,7 @@ sage.dev.ViewInspector = new function ViewInspector()
 
 	function resizeFrames(e)
 	{
-		var e = e || window.event;
+		e = e || window.event;
 
 		var diffX = e.clientX - dragClientX;
 		var diffY = e.clientY - dragClientY;
@@ -339,6 +339,8 @@ sage.dev.ViewInspector = new function ViewInspector()
 
 			contentcontainer.height(f1h + "%");
 			toolscontainer.height(f2h + "%");
+
+			$cookie.set("dev.viewinspector.fh", f1h);
 		}
 	}
 
@@ -356,6 +358,8 @@ sage.dev.ViewInspector = new function ViewInspector()
 
 			contentcontainer.width(f1w + "%");
 			toolscontainer.width(f2w + "%");
+
+			$cookie.set("dev.viewinspector.fw", f1w);
 		}
 	}
 
@@ -435,7 +439,7 @@ sage.dev.ViewInspector = new function ViewInspector()
 		contentPreloader.hide();
 
 		if (currentCommand && currentLayout == layoutType.DOUBLE)
-			Commands[currentCommand](currentArguments);
+			commands[currentCommand](currentArguments);
 
 		currentPage = getDocumentUrl();
 		if (currentPage != "about:blank")
@@ -498,12 +502,13 @@ sage.dev.ViewInspector = new function ViewInspector()
 	function onDocumentMouseMove(e)
 	{
 		if (currentLayout == layoutType.SINGLE)
-			return;
+			return false;
 
 		if (isResizeActive)
 			return resizeFrames(e);
 
-		var e = e || window.event;
+		e = e || window.event;
+
 		var x = e.clientX;
 		var y = e.clientY;
 		var t = viewToolbar[0];
@@ -519,9 +524,9 @@ sage.dev.ViewInspector = new function ViewInspector()
 		}
 	}
 
-	Commands = {};
+	var commands = {};
 
-	Commands.ToggleFrame = function ToggleFrame()
+	commands.ToggleFrame = function ToggleFrame()
 	{
 		if (currentLayout == layoutType.SINGLE)
 		{
@@ -532,7 +537,8 @@ sage.dev.ViewInspector = new function ViewInspector()
 			executeCommand("SingleFrame");
 		}
 	};
-	Commands.ToggleFrame.getState = function ToggleFrame$getState()
+
+	commands.ToggleFrame.getState = function ToggleFrame$getState()
 	{
 		var state = buttonState.ENABLED;
 		if (currentLayout == layoutType.DOUBLE)
@@ -541,16 +547,17 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.SingleFrame = function SingleFrame()
+	commands.SingleFrame = function SingleFrame()
 	{
-		$cookie.set("LY", "SINGLE", "/");
+		$cookie.set("dev.viewinspector.layout", "single", "/");
 		$url.removeHashParam("command");
 		$url.removeHashParam("arguments");
 
 		viewInspector.removeClass("double").addClass("single");
 		currentLayout = layoutType.SINGLE;
 	};
-	Commands.SingleFrame.getState = function SingleFrame$getState()
+
+	commands.SingleFrame.getState = function SingleFrame$getState()
 	{
 		var state = buttonState.ENABLED;
 		if (currentLayout == layoutType.SINGLE)
@@ -559,13 +566,14 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.DoubleFrame = function DoubleFrame()
+	commands.DoubleFrame = function DoubleFrame()
 	{
-		$cookie.set("LY", "DOUBLE", "/");
+		$cookie.set("dev.viewinspector.layout", "double", "/");
 		viewInspector.removeClass("single").addClass("double");
 		currentLayout = layoutType.DOUBLE;
 	};
-	Commands.DoubleFrame.getState = function DoubleFrame$getState()
+
+	commands.DoubleFrame.getState = function DoubleFrame$getState()
 	{
 		var state = buttonState.ENABLED;
 		if (currentLayout == layoutType.DOUBLE)
@@ -574,16 +582,16 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.VerticalFrames = function VerticalFrames()
+	commands.VerticalFrames = function VerticalFrames()
 	{
-		$cookie.set("OR", "VERTICAL", "/");
+		$cookie.set("dev.viewinspector.orientation", "vertical", "/");
 		viewInspector.removeClass("horizontal").addClass("vertical");
 		currentOrientation = orientationType.VERTICAL;
 
 		if (currentLayout == layoutType.SINGLE)
-			Commands.DoubleFrame();
+			commands.DoubleFrame();
 	};
-	Commands.VerticalFrames.getState = function VerticalFrames$getState()
+	commands.VerticalFrames.getState = function VerticalFrames$getState()
 	{
 		var state = currentLayout == layoutType.DOUBLE;
 		if (currentOrientation == orientationType.VERTICAL)
@@ -592,16 +600,16 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.HorizontalFrames = function HorizontalFrames()
+	commands.HorizontalFrames = function HorizontalFrames()
 	{
-		$cookie.set("OR", "HORIZONTAL", "/");
+		$cookie.set("dev.viewinspector.orientation", "horizontal", "/");
 		viewInspector.removeClass("vertical").addClass("horizontal");
 		currentOrientation = orientationType.HORIZONTAL;
 
 		if (currentLayout == layoutType.SINGLE)
-			Commands.DoubleFrame();
+			commands.DoubleFrame();
 	};
-	Commands.HorizontalFrames.getState = function HorizontalFrames$getState()
+	commands.HorizontalFrames.getState = function HorizontalFrames$getState()
 	{
 		var state = currentLayout == layoutType.DOUBLE;
 		if (currentOrientation == orientationType.HORIZONTAL)
@@ -610,7 +618,7 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.ShowMeta = function ShowMeta(viewName)
+	commands.ShowMeta = function ShowMeta(viewName)
 	{
 		if (currentLayout == layoutType.DOUBLE && currentCommand == "ShowMeta" && currentArguments == viewName)
 			return executeCommand("SingleFrame");
@@ -618,10 +626,10 @@ sage.dev.ViewInspector = new function ViewInspector()
 		if (currentLayout == layoutType.SINGLE)
 			executeCommand("DoubleFrame");
 
-		setToolLocation(metaViewUrl, "ShowMeta", viewName);
+		return setToolLocation(metaViewUrl, "ShowMeta", viewName);
 	};
 
-	Commands.ShowMeta.getState = function ShowMeta$getState(viewName)
+	commands.ShowMeta.getState = function ShowMeta$getState(viewName)
 	{
 		var state = buttonState.ENABLED;
 		if (currentLayout == layoutType.DOUBLE && currentCommand == "ShowMeta" && currentArguments == viewName)
@@ -630,17 +638,18 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.ShowLog = function ShowLog()
+	commands.ShowLog = function ShowLog()
 	{
 		if (currentLayout == layoutType.DOUBLE && currentCommand == "ShowLog")
 			return executeCommand("SingleFrame");
 
 		if (currentLayout == layoutType.SINGLE)
-			executeCommand("DoubleFrame");
+			return executeCommand("DoubleFrame");
 
-		setToolLocation(logViewUrl, "ShowLog");
+		return setToolLocation(logViewUrl, "ShowLog");
 	};
-	Commands.ShowLog.getState = function ShowLog$getState()
+
+	commands.ShowLog.getState = function ShowLog$getState()
 	{
 		var state = buttonState.ENABLED;
 		if (currentCommand == "ShowLog")
@@ -649,14 +658,14 @@ sage.dev.ViewInspector = new function ViewInspector()
 		return state;
 	};
 
-	Commands.Reload = function Reload()
+	commands.Reload = function Reload()
 	{
 		contentPreloader.show();
 		toolPreloader.show();
 		getWindow().location.reload(true);
 	};
 
-	Commands.Reload.getState = function Reload$getState(url)
+	commands.Reload.getState = function Reload$getState(url)
 	{
 		return buttonState.ENABLED;
 	};

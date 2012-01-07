@@ -45,18 +45,13 @@
 		/// <remarks>
 		/// The last modification date will be the latests modification date of all constituent files referenced with
 		/// <see cref="Dependencies"/>.
-		/// </remarks>x
+		/// </remarks>
 		public DateTime LastModified
 		{
 			get
 			{
 				if (lastModified == null)
 				{
-					List<DateTime> dates = new List<DateTime>();
-					foreach (string file in this.Dependencies)
-					{
-
-					}
 					lastModified = Util.GetDateLastModified(this.Dependencies);
 				}
 

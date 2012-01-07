@@ -182,9 +182,7 @@
     <Compile Include="ResourceHandling\ResourceHandler.cs" />
     <Compile Include="ResourceHandling\ScriptFile.cs" />
     <Compile Include="ResourceHandling\ScriptFileConfiguration.cs" />
-    <Compile Include="SyntaxHighlighting\CssDefinition.cs" />
     <Compile Include="SyntaxHighlighting\ExpressionGroup.cs" />
-    <Compile Include="SyntaxHighlighting\JavaScriptDefinition.cs" />
     <Compile Include="SyntaxHighlighting\LanguageDefinition.cs" />
     <Compile Include="SyntaxHighlighting\SyntaxHighlighter.cs" />
   </ItemGroup>

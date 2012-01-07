@@ -5,10 +5,9 @@
 	using System.Web.Mvc;
 
 	using Sage.Configuration;
-	using Sage.Xml;
 
 	/// <summary>
-	/// Causes the original view to use this view's <see cref="XsltTemplate"/> instead.
+	/// Causes the original view to use this view's <see cref="XsltTransform"/> instead.
 	/// </summary>
 	public class DivertView : MetaView
 	{
@@ -20,13 +19,13 @@
 		public DivertView(MetaViewInfo viewInfo, IView wrapped)
 			: base(viewInfo, wrapped)
 		{
-			this.Template = new XsltTemplate(viewInfo.Transform.Processor);
+			this.Processor = viewInfo.Processor;
 		}
 
 		/// <summary>
 		/// Gets the template associated with this meta view.
 		/// </summary>
-		public XsltTemplate Template { get; private set; }
+		public XsltTransform Processor { get; private set; }
 
 		/// <summary>
 		/// Renders the specified view context by using the specified the writer object.
@@ -40,7 +39,7 @@
 				XsltView view = (XsltView) this.View;
 
 				viewContext.HttpContext.Response.ContentType = this.Info.ContentType;
-				view.Transform(viewContext, writer, this.Template);
+				view.Transform(viewContext, writer, this.Processor);
 
 				this.DisableCaching(viewContext);
 			}

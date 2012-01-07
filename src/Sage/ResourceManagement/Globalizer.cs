@@ -3,14 +3,16 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Text;
 	using System.Xml;
-	using System.Xml.Xsl;
 
 	using Kelp.Core.Extensions;
 	using log4net;
+
 	using Sage.Configuration;
+	using Sage.Views;
 
 	public class Globalizer
 	{
@@ -20,7 +22,7 @@
 
 		private readonly SageContext context;
 		private static readonly Dictionary<string, DictionaryFileCollection> dictionaries = new Dictionary<string, DictionaryFileCollection>();
-		private readonly XslCompiledTransform processor;
+		private readonly XsltTransform processor;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Globalizer"/> class, using the specified <see cref="SageContext"/>.
@@ -28,8 +30,7 @@
 		/// <param name="context">The context under which the globalizer is being executed.</param>
 		public Globalizer(SageContext context)
 		{
-			CacheableXslTransform transform = ResourceManager.LoadXslStylesheet(XsltPath, context);
-			this.processor = transform.Processor;
+			this.processor = XsltTransform.Create(context, Globalizer.XsltPath);
 			this.context = new SageContext(context);
 		}
 
@@ -130,6 +131,39 @@
 			return summary;
 		}
 
+		public void Transform(XmlDocument input, CategoryConfiguration categoryConfig, DictionaryFileCollection collection, string locale, XmlWriter output, GlobalizeType type)
+		{
+			Contract.Requires<ArgumentNullException>(input != null);
+			Contract.Requires<ArgumentNullException>(collection != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(locale));
+			Contract.Requires<ArgumentNullException>(output != null);
+
+			LocaleInfo localeInfo = context.Config.Locales[locale];
+			XmlElement fallbacks = input.CreateElement("fallbacks");
+			foreach (string name in localeInfo.ResourceNames)
+				fallbacks.AppendElement(input.CreateElement("locale")).InnerText = name;
+
+			DictionaryFile dictionary = collection.Dictionaries[locale];
+
+			Dictionary<string, object> arguments = new Dictionary<string, object>();
+			arguments.Add("dictionary", dictionary.Document.DocumentElement);
+			arguments.Add("locale", locale);
+			arguments.Add("fallbacks", fallbacks);
+			arguments.Add("mode", type.ToString().ToLower());
+			if (categoryConfig != null && categoryConfig.VariablesElement != null)
+				arguments.Add("globalvariables", categoryConfig.VariablesElement);
+
+			try
+			{
+				processor.Transform(input, output, context, arguments);
+			}
+			finally
+			{
+				if (output.WriteState != WriteState.Closed)
+					output.Close();
+			}
+		}
+
 		internal static DictionaryFileCollection GetTranslationDictionaryCollection(SageContext context)
 		{
 			if (!dictionaries.ContainsKey(context.Category))
@@ -142,43 +176,6 @@
 			}
 
 			return dictionaries[context.Category];
-		}
-
-		public void Transform(XmlDocument input, CategoryConfiguration categoryConfig, DictionaryFileCollection collection, string locale, XmlWriter output, GlobalizeType type)
-		{
-			if (input == null)
-				throw new ArgumentNullException("input");
-			if (collection == null)
-				throw new ArgumentNullException("collection");
-			if (locale == null)
-				throw new ArgumentNullException("locale");
-			if (output == null)
-				throw new ArgumentNullException("output");
-
-			LocaleInfo localeInfo = context.Config.Locales[locale];
-			XmlElement fallbacks = input.CreateElement("fallbacks");
-			foreach (string name in localeInfo.ResourceNames)
-				fallbacks.AppendElement(input.CreateElement("locale")).InnerText = name;
-
-			DictionaryFile dictionary = collection.Dictionaries[locale];
-
-			XsltArgumentList args = new XsltArgumentList();
-			args.AddParam("dictionary", string.Empty, dictionary.Document.DocumentElement);
-			args.AddParam("locale", string.Empty, locale);
-			args.AddParam("fallbacks", string.Empty, fallbacks);
-			args.AddParam("mode", string.Empty, type.ToString().ToLower());
-			if (categoryConfig != null && categoryConfig.VariablesElement != null)
-				args.AddParam("globalvariables", string.Empty, categoryConfig.VariablesElement);
-
-			try
-			{
-				processor.Transform(input, args, output);
-			}
-			finally
-			{
-				if (output.WriteState != WriteState.Closed)
-					output.Close();
-			}
 		}
 	}
 }

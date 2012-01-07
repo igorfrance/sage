@@ -2,11 +2,15 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Xml;
+
+	using Kelp.Core.Extensions;
 
 	/// <summary>
 	/// Defines the language elements for syntax highlighting.
 	/// </summary>
-	public abstract class LanguageDefinition
+	public class LanguageDefinition
 	{
 		/// <summary>
 		/// The CSS class name that will be used on comments.
@@ -19,13 +23,17 @@
 		public const string ClassNameString = "string";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LanguageDefinition"/> class.
+		/// Initializes a new instance of the <see cref="LanguageDefinition"/> class, using the specified
+		/// <paramref name="name"/>.
 		/// </summary>
-		/// <param name="id">The id of the language.</param>
-		protected LanguageDefinition(string id)
+		/// <param name="name">The name of the language this definition represents (e.g. 'javascript').</param>
+		/// <param name="caseSensitive">If set to <c>true</c>, indicates that this language is case sensitive.</param>
+		public LanguageDefinition(string name, bool caseSensitive = true)
 		{
-			this.ID = id;
-			this.CaseSensitive = true;
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(name));
+
+			this.Name = name;
+			this.CaseSensitive = caseSensitive;
 
 			this.Quotes = new List<string>();
 			this.Comments = new List<string>();
@@ -38,7 +46,7 @@
 		/// <remarks>
 		/// This value will be includes in the class name of the syntax highlighted block.
 		/// </remarks>
-		public string ID { get; protected set; }
+		public string Name { get; protected set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this language is case sensitive.

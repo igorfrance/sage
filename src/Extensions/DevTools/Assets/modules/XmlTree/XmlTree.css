@@ -1,0 +1,64 @@
+﻿.xmltree
+	{ font: 11px Verdana; border-bottom: 1px solid #ccc; }
+.xmltree *
+	{ text-align: left; }
+.xmltree .xmlroot
+	{ white-space: nowrap; padding: 10px; }
+.xmltree .toolbar
+	{ font-size: 10px; padding: 4px 7px; overflow: hidden; background: #F5F5F5; border-radius: 4px; }
+.xmltree .toolbar a
+	{ color: #8B8B8B; text-decoration: none; }
+.xmltree .toolbar a:hover
+	{ color: #f00; }
+.xmltree .toolbar .left
+	{ float: left; }
+.xmltree .toolbar .right
+	{ float: right; }
+.xmltree .toolbar .toggler
+	{ margin-right: 10px; }
+.xmltree pre
+	{ margin: 0px; }
+.xmltree .wrapctrl
+	{ cursor: pointer; color: blue; }
+.xmltree .comment
+	{ margin-left: 22px; color: #A7A7A7; }
+.xmltree .element
+	{ overflow: hidden; }
+.xmltree .children
+	{ overflow: hidden; clear: left; }
+.xmltree .element .element
+	{ margin-left: 15px; }
+.xmltree .element span
+	{	float: left; }
+.xmltree .nodeName
+	{ color: #CC0000; }
+.xmltree .attrName
+	{ color: #CC0000; }
+.xmltree .attrValue
+	{ font-weight: bold;  }
+.xmltree .text
+	{ font-weight: bold;  }
+.xmltree .markup
+	{ color: blue; }
+.xmltree .comment .markup
+	{ color: #888888; }
+.xmltree .commentText
+	{ color: #888888; }
+.xmltree .pi
+	{ color: blue; }
+.xmltree .ns
+	{ color: blue; }
+.xmltree .switch
+	{ color: #FF0000; cursor: pointer; width: 8px; text-align: right; font-weight: bold; padding-right: 2px; }
+.xmltree .switch_space
+	{ width: 10px; }
+
+.xmltree .nsattrib
+	{ font-weight: normal; display: none; }
+.xmltree .nsattrib .attrName,
+.xmltree .nsattrib .markup,
+.xmltree .nsattrib .attrValue
+	{ font-weight: normal; color: #00f; }
+.xmltree .nsattrib a,
+.xmltree .nsattrib a:visited
+	{ color: #00f; text-decoration: underline; font-weight: normal; }

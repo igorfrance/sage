@@ -6,15 +6,12 @@
 namespace Sage.Test
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
 
 	using Machine.Specifications;
 
-	using Sage.Xml;
+	using Sage.Views;
 
-	[Subject(typeof(XsltRegistry)), Tags(Categories.ResourceManagement)]
+	[Subject(typeof(XsltTransform)), Tags(Categories.ResourceManagement)]
 	public class When_opening_an_xslt_file
 	{
 		private static SageContext context = Mother.CreateSageContext(string.Empty);

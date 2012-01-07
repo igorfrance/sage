@@ -16,7 +16,7 @@
 
 	using Sage.Configuration;
 	using Sage.ResourceManagement;
-	using Sage.Xml;
+	using Sage.Views;
 
 	internal class BatchGlobalizer : IUtility
 	{
@@ -25,7 +25,7 @@
 
 		private const string XsltPath = "Resources/Xslt/Summary.xslt";
 		private static readonly ILog log = LogManager.GetLogger(typeof(Globalizer).FullName);
-		private static XsltTemplate processor;
+		private static XsltTransform processor;
 
 		private string categoryPath;
 		private SageContext context;
@@ -179,8 +179,7 @@
 
 			if (processor == null)
 			{
-				CacheableXslTransform transform = ResourceManager.LoadXslStylesheet(XsltPath, context);
-				processor = new XsltTemplate(transform.Processor);
+				processor = XsltTransform.Create(context, XsltPath);
 			}
 
 			StringBuilder text = new StringBuilder();

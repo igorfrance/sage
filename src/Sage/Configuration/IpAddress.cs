@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Net;
 	using System.Xml;
 
@@ -18,8 +19,7 @@
 		public IpAddress(string address)
 			: this()
 		{
-			if (string.IsNullOrEmpty(address))
-				throw new ArgumentNullException("address");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(address));
 
 			this.Address = IpAddress.FromString(address);
 		}
@@ -34,8 +34,7 @@
 		public IpAddress(string address, string to)
 			: this(address)
 		{
-			if (string.IsNullOrEmpty(to))
-				throw new ArgumentNullException("address");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(address));
 
 			this.To = IpAddress.FromString(to);
 		}

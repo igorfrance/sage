@@ -1,16 +1,16 @@
 ﻿namespace Sage
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.IO;
-	using System.Text;
-	using System.Text.RegularExpressions;
 	using System.Xml;
-	using System.Xml.Xsl;
 
 	using Kelp.Core.Extensions;
+
+	using Sage.Views;
+
 	using log4net;
-	using Sage.ResourceManagement;
 
 	public class SageException : Exception
 	{
@@ -60,17 +60,16 @@
 			documentElement.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
 			documentElement.SetAttribute("time", DateTime.Now.ToString("hh:mm:ss"));
 
-			CacheableXslTransform stylesheet = ResourceManager.LoadXslStylesheet(StylesheetPath);
-			XmlWriter xmlwr = XmlWriter.Create(writer, stylesheet.Processor.OutputSettings);
+			XsltTransform processor = XsltTransform.Create(context, StylesheetPath);
+			XmlWriter xmlwr = XmlWriter.Create(writer, processor.OutputSettings);
 
-			XsltArgumentList arguments = GetTransformArguments(context);
-			stylesheet.Processor.Transform(documentElement, arguments, xmlwr);
+			processor.Transform(documentElement, xmlwr, context, GetTransformArguments(context));
 		}
 
-		protected virtual XsltArgumentList GetTransformArguments(SageContext context)
+		protected virtual Dictionary<string, object> GetTransformArguments(SageContext context)
 		{
-			XsltArgumentList arguments = new XsltArgumentList();
-			arguments.AddParam("developer", string.Empty, context.IsDeveloperRequest ? 1 : 0);
+			Dictionary<string, object> arguments = new Dictionary<string, object>();
+			arguments.Add("developer", context.IsDeveloperRequest ? 1 : 0);
 			return arguments;
 		}
 	}

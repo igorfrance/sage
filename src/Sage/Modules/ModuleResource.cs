@@ -35,7 +35,7 @@
 			XmlElement result = ownerDoc.CreateElement("sage:resource", XmlNamespaces.SageNamespace);
 			result.SetAttribute("type", this.Type.ToString().ToLower());
 			result.SetAttribute("location", this.Location.ToString().ToLower());
-			result.SetAttribute("path", context.Path.GetRelativeWebPath(resourcePath));
+			result.SetAttribute("path", context.Path.GetRelativeWebPath(resourcePath, true));
 
 			return result;
 		}

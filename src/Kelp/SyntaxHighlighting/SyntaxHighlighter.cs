@@ -13,7 +13,8 @@
 	{
 		private const string PlaceHolder = "@@%%__%%@@";
 		private const string WrapExpression = "<span class='{1}'>{0}</span>";
-		private const string WrapBlock = "<span class='syntax {1}'>{0}</span>";
+		private const string WrapBlock = "<div class='syntax {1} linecols-{2}'>{0}</div>";
+		private const string LineBlock = "<div class='line {2}'><span class='num'>{1}</span><span class='content'>{0}</span></div>";
 
 		private readonly string spaceString;
 		private readonly string tabString;
@@ -25,7 +26,7 @@
 		/// </summary>
 		/// <param name="language">The definition of the language being highlighted.</param>
 		public SyntaxHighlighter(LanguageDefinition language)
-			: this(language, "&#160;&#160;&#160;&#160;", "&#160;")
+			: this(language, "<span class='tab'></span>")
 		{
 		}
 
@@ -35,7 +36,7 @@
 		/// <param name="language">The definition of the language being processed.</param>
 		/// <param name="tabString">The string to use for replacing TAB characters.</param>
 		/// <param name="spaceString">The string to use for replacing SPACE characters.</param>
-		public SyntaxHighlighter(LanguageDefinition language, string tabString, string spaceString)
+		public SyntaxHighlighter(LanguageDefinition language, string tabString)
 		{
 			this.language = language;
 			this.tabString = tabString;
@@ -52,11 +53,23 @@
 		public string Format(string sourceCode)
 		{
 			string formattedSource =
-				ParseWhitespace(
 				ParseKeywords(
-				ParseStrings(
-				ParseComments(
-				ParseHtml(sourceCode)))));
+					ParseStrings(
+						ParseComments(
+							ParseHtml(sourceCode.Trim()))));
+
+			formattedSource = Regex.Replace(formattedSource, "\r", string.Empty);
+			formattedSource = Regex.Replace(formattedSource, "\t", this.tabString);
+
+			StringBuilder result = new StringBuilder();
+
+			string[] lines = formattedSource.Split('\n');
+			for (int i = 0; i < lines.Length; i++)
+			{
+				result.AppendFormat(LineBlock, lines[i], i + 1, i % 2 == 1 ? "odd" : "even");
+			}
+
+			formattedSource = result.ToString();
 
 			while (patterns.Count != 0)
 			{
@@ -64,8 +77,25 @@
 				formattedSource = Regex.Replace(formattedSource, GetPlaceHolderPattern(patterns.Count), patterns[lastIndex]);
 				patterns.RemoveAt(lastIndex);
 			}
-			return string.Format(WrapBlock, formattedSource, language.ID);
 
+			return string.Format(WrapBlock, formattedSource, language.Name, lines.Length.ToString().Length);
+		}
+
+		private static string ParseHtml(string sourceCode)
+		{
+			sourceCode = Regex.Replace(sourceCode, "<", "&lt;");
+			sourceCode = Regex.Replace(sourceCode, "/>", "&gt;");
+			return sourceCode;
+		}
+
+		private static string GetPlaceHolderPattern(int index)
+		{
+			return PlaceHolder + index + PlaceHolder;
+		}
+
+		private static string WrapWord(string word, string className)
+		{
+			return string.Format(WrapExpression, word, className);
 		}
 
 		private string ParseKeywords(string sourceCode)
@@ -89,15 +119,6 @@
 			return sourceCode;
 		}
 
-		private string ParseWhitespace(string sourceCode)
-		{
-			sourceCode = Regex.Replace(sourceCode, "\r", string.Empty);
-			sourceCode = Regex.Replace(sourceCode, "\n", "<br/>");
-			sourceCode = Regex.Replace(sourceCode, "\t", this.tabString);
-			sourceCode = Regex.Replace(sourceCode, " ", this.spaceString);
-			return sourceCode;
-		}
-
 		private string ParseComments(string sourceCode)
 		{
 			foreach (string pattern in language.Comments)
@@ -113,23 +134,6 @@
 				patterns.Add(WrapWord(m.Groups[0].Value, color));
 				return GetPlaceHolderPattern(this.patterns.Count);
 			});
-		}
-
-		private static string ParseHtml(string sourceCode)
-		{
-			sourceCode = Regex.Replace(sourceCode, "<", "&lt;");
-			sourceCode = Regex.Replace(sourceCode, "/>", "&gt;");
-			return sourceCode;
-		}
-
-		private static string GetPlaceHolderPattern(int index)
-		{
-			return (PlaceHolder + index + PlaceHolder);
-		}
-
-		private static string WrapWord(string word, string className)
-		{
-			return string.Format(WrapExpression, word, className);
 		}
 	}
 }

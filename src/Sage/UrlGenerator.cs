@@ -360,81 +360,18 @@
 		/// <paramref name="linkName"/>.</exception>
 		internal string FormatAndRewriteUrl(string linkName, NameValueCollection parameters, bool includeActiveQuery)
 		{
-			if (context.Config.Links.External.ContainsKey(linkName))
+			if (!context.Config.Links.ContainsKey(linkName))
 			{
-				string linkPattern = context.Config.Links.External[linkName];
-				return FormatAndRewriteExternalUrl(linkPattern, parameters, includeActiveQuery);
+				log.ErrorFormat("The url configuration doesn't contain a url with name '{0}'", linkName);
+				return linkName + "??";
 			}
 
-			if (context.Config.Links.Internal.ContainsKey(linkName))
-			{
-				string linkPattern = context.Config.Links.Internal[linkName].Pattern;
-				return FormatAndRewriteInternalUrl(linkPattern, parameters, includeActiveQuery);
-			}
+			LinkInfo link = context.Config.Links[linkName];
+			string linkPattern = link.Pattern;
 
-			log.ErrorFormat("The url configuration doesn't contain a url with name '{0}'", linkName);
-			return FormatAndRewriteInternalUrl(linkName, parameters, includeActiveQuery);
-		}
+			if (!string.IsNullOrWhiteSpace(link.Url))
+				linkPattern = link.Url;
 
-		/// <summary>
-		/// Formats and rewrites internal URL's.
-		/// </summary>
-		/// <param name="linkPattern">The link pattern.</param>
-		/// <param name="parameters">The parameters.</param>
-		/// <param name="includeActiveQuery">if set to <c>true</c> current query parameters are also appended.</param>
-		/// <returns>The full rewritten Url, ready to use</returns>
-		internal string FormatAndRewriteInternalUrl(string linkPattern, NameValueCollection parameters, bool includeActiveQuery)
-		{
-			QueryString query = new QueryString(context.Query);
-			QueryString formatValues = new QueryString();
-			if (parameters != null)
-			{
-				formatValues.Merge(parameters);
-			}
-
-			string resultUrl = linkPlaceholder.Replace(
-				linkPattern,
-				delegate(Match m)
-				{
-					string key = m.Groups[1].Value;
-					string value = formatValues[key];
-					if (key == "rewriteprefix")
-						value = RewritePrefix;
-
-					query.Remove(key);
-					formatValues.Remove(key);
-
-					return value ?? string.Empty;
-				}).Replace("{{", "{").Replace("}}", "}");
-
-			resultUrl = string.Concat(UrlPrefix, resultUrl);
-			QueryString resultQuery = new QueryString(formatValues);
-
-			if (includeActiveQuery)
-				resultQuery.Merge(query);
-
-			string queryString = resultQuery.ToString();
-			if (queryString != string.Empty)
-			{
-				string join = resultUrl.Contains("?") ? "&" : "?";
-				resultUrl = string.Concat(resultUrl, join, queryString);
-			}
-
-			if (resultUrl.StartsWith("#"))
-				return string.Concat(ServerPrefix, resultUrl);
-
-			return resultUrl;
-		}
-
-		/// <summary>
-		/// Formats and rewrites external URL's.
-		/// </summary>
-		/// <param name="linkPattern">The link pattern.</param>
-		/// <param name="parameters">The parameters.</param>
-		/// <param name="includeActiveQuery">if set to <c>true</c> current query parameters are also appended.</param>
-		/// <returns>The full rewritten Url, ready to use</returns>
-		internal string FormatAndRewriteExternalUrl(string linkPattern, NameValueCollection parameters, bool includeActiveQuery)
-		{
 			QueryString query = new QueryString(context.Query);
 			QueryString formatValues = new QueryString { { "locale", context.Locale }, { "category", context.Category } };
 			if (parameters != null)
@@ -470,6 +407,9 @@
 				string join = resultUrl.Contains("?") ? "&" : "?";
 				resultUrl = string.Concat(resultUrl, join, queryString);
 			}
+
+			if (resultUrl.StartsWith("#"))
+				return string.Concat(ServerPrefix, resultUrl);
 
 			return resultUrl;
 		}

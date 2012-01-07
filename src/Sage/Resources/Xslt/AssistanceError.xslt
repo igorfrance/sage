@@ -190,7 +190,7 @@
 				<code>&lt;xi:include href="myinclude.html" /&gt;</code><br/>
 				
 				Add the 'xmlns:xi' attribute to the document's root element: 
-				<code>&lt;document xmlns:xi="http://www.w3.org/2003/XInlude" ... &gt;</code>
+				<code>&lt;document xmlns:xi="http://www.w3.org/2003/XInclude" ... &gt;</code>
 			</xsl:when>
 			<xsl:when test="$problemType = 'MissingConfigurationFile'">
 				<p>Sage needs a configuration file in order to work. Make sure either System.config (configuration bundled with Sage), 

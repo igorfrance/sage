@@ -2,9 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Xml.Xsl;
 
 	public class SageHelpException : SageException
 	{
@@ -35,10 +32,10 @@
 			}
 		}
 
-		protected override XsltArgumentList GetTransformArguments(SageContext context)
+		protected override Dictionary<string, object> GetTransformArguments(SageContext context)
 		{
-			XsltArgumentList arguments = base.GetTransformArguments(context);
-			arguments.AddParam("problemType", string.Empty, ProblemType.ToString());
+			Dictionary<string, object> arguments = base.GetTransformArguments(context);
+			arguments.Add("problemType", ProblemType.ToString());
 
 			return arguments;
 		}

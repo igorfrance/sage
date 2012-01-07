@@ -14,15 +14,11 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:all>
-				<xs:element name="project" minOccurs="1" maxOccurs="1" type="config.instance">
-					<xs:annotation>
-						<xs:documentation>
-							Defines the various project configuration options.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:all>
+			<xs:choice minOccurs="1" maxOccurs="1">
+				<xs:element name="system" minOccurs="1" maxOccurs="1" type="config.instance"/>
+				<xs:element name="project" minOccurs="1" maxOccurs="1" type="config.instance"/>
+				<xs:element name="extension" minOccurs="1" maxOccurs="1" type="config.instance"/>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 
@@ -50,17 +46,7 @@
 					</xs:all>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="deliverables" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="binary" minOccurs="0" maxOccurs="unbounded" type="config.textelement"/>
-					</xs:sequence>
-				</xs:complexType>
-				<xs:unique name="uniqueBinaryName">
-					<xs:selector xpath="p:binary"/>
-					<xs:field xpath="."/>
-				</xs:unique>
-			</xs:element>
+			<xs:element name="package" minOccurs="0" maxOccurs="1" type="config.package"/>
 			<xs:element name="scripts" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
@@ -106,20 +92,7 @@
 			<xs:element name="links" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="internal" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="link" type="config.link.internal" minOccurs="0" maxOccurs="unbounded"/>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="external" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
-									<xs:element name="link" type="config.link.external" minOccurs="0" maxOccurs="unbounded"/>
-								</xs:sequence>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="link" type="config.link" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:attribute name="rewritePrefix" use="optional" type="nonEmptyString"/>
 				</xs:complexType>
@@ -180,6 +153,25 @@
 		<xs:attribute name="multiCategory" use="optional" type="xs:boolean"/>
 	</xs:complexType>
 	
+	<xs:complexType name="config.package">
+		<xs:choice minOccurs="1" maxOccurs="7">
+			<xs:element name="binaries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="assets" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="modules" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="libraries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="routes" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="links" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="metaviews" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="config.packagegroup" mixed="true">
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="include" type="config.textelement"/>
+			<xs:element name="exclude" type="config.textelement"/>
+		</xs:choice>
+	</xs:complexType>
+
 	<xs:complexType name="config.textelement" mixed="true">
 		<xs:simpleContent>
 			<xs:extension base="nonEmptyString"/>
@@ -264,13 +256,9 @@
 		<xs:attribute name="path" use="required" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.link.internal">
+	<xs:complexType name="config.link">
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
 		<xs:attribute name="pattern" use="required" type="xs:string"/>
-	</xs:complexType>
-
-	<xs:complexType name="config.link.external">
-		<xs:attribute name="name" use="required" type="nonEmptyString"/>
 		<xs:attribute name="url" use="required" type="xs:string"/>
 	</xs:complexType>
 

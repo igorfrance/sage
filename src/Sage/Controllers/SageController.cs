@@ -5,22 +5,17 @@
 	using System.Collections.Specialized;
 	using System.Linq;
 	using System.Reflection;
-	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Routing;
 	using System.Xml;
 
 	using Kelp;
 	using Kelp.Core.Extensions;
-
-	using Sage.ResourceManagement;
-	using Sage.Views;
-
 	using log4net;
 
-	using Sage.Configuration;
 	using Sage.Modules;
-	using Sage.Xml;
+	using Sage.ResourceManagement;
+	using Sage.Views;
 
 	using XmlNamespaces = Sage.XmlNamespaces;
 
@@ -142,8 +137,8 @@
 
 		public virtual ViewInput ProcessView(ViewInfo viewInfo)
 		{
-			ViewConfiguration config = ViewConfiguration.Create(viewInfo.Action, viewInfo.ConfigDocument);
-			return config.ProcessRequest(this);
+			ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
+			return config.ProcessRequest();
 		}
 
 		public virtual ViewInput ProcessView(string viewName)

@@ -2,6 +2,13 @@
 {
 	using System.Xml;
 
+	public enum ConfigurationType
+	{
+		System,
+		Project,
+		Extension,
+	}
+
 	public enum ProblemType
 	{
 		Unknown = 0,
@@ -27,6 +34,11 @@
 	public enum ModuleResultStatus
 	{
 		/// <summary>
+		/// Indicates the default, zero-state.
+		/// </summary>
+		None = 0,
+
+		/// <summary>
 		/// Indicates that the operation completed successfully.
 		/// </summary>
 		Ok = 1,
@@ -41,6 +53,21 @@
 		/// were missing from the context.
 		/// </summary>
 		MissingParameters = 3,
+
+		/// <summary>
+		/// Indicates that an error in module's configuration is preventing the module from operating normally.
+		/// </summary>
+		ConfigurationError = 4,
+
+		/// <summary>
+		/// Indicates that an error occured during processing of the module.
+		/// </summary>
+		ModuleError = 5,
+
+		/// <summary>
+		/// Indicates that the module even though module processing completed normally, there was a warning.
+		/// </summary>
+		ModuleWarning = 6,
 	}
 
 	/// <summary>
@@ -245,6 +272,21 @@
 
 				return nsman;
 			}
+		}
+
+		public static class Extensions
+		{
+			public const string IO = "http://www.cycle99.com/projects/sage/xslt/extensions/io";
+
+			public const string Regexp = "http://www.cycle99.com/projects/sage/xslt/extensions/regexp";
+
+			public const string Math = "http://www.cycle99.com/projects/sage/xslt/extensions/math";
+
+			public const string String = "http://www.cycle99.com/projects/sage/xslt/extensions/string";
+
+			public const string Set = "http://www.cycle99.com/projects/sage/xslt/extensions/set";
+
+			public const string Date = "http://www.cycle99.com/projects/sage/xslt/extensions/date";
 		}
 	}
 }

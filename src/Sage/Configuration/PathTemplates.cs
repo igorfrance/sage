@@ -21,7 +21,6 @@
 			this.ViewConfiguration = "{assetpath}/views/{controller}/{action}.xml";
 			this.ViewTemplate = "{assetpath}/views/{controller}/{action}";
 			this.DefaultStylesheet = "{assetpath}/views/xslt/default.xsl";
-			this.CategoryStylesheet = "{assetpath}/views/xslt/default.xsl";
 			this.Dictionary = "{assetpath}/configuration/dictionary/{locale}.xml";
 			this.GlobalizedDirectory = "_target/";
 			this.GlobalizedDirectoryForNonFileResources = "~/_target/";
@@ -73,12 +72,6 @@
 		/// doesn't have it's own, specific stylesheet.
 		/// </summary>
 		public string DefaultStylesheet { get; private set; }
-
-		/// <summary>
-		/// Gets the path template to the default XSLT stylesheet specific to a category (in a multi-category project)
-		/// that can be used if a view doesn't have it's own, specific stylesheet.
-		/// </summary>
-		public string CategoryStylesheet { get; private set; }
 
 		/// <summary>
 		/// Gets the directory in which the globalized resources are saved.
@@ -135,10 +128,6 @@
 			testNode = configElement.SelectSingleNode("p:DefaultStylesheet", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
 				this.DefaultStylesheet = testValue;
-
-			testNode = configElement.SelectSingleNode("p:DefaultCategoryStylesheet", nm);
-			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.CategoryStylesheet = testValue;
 
 			testNode = configElement.SelectSingleNode("p:Dictionary", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))

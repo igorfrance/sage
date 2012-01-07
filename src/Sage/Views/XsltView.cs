@@ -5,23 +5,21 @@
 	using System.IO;
 	using System.Web.Mvc;
 	using System.Xml;
-	using System.Xml.Xsl;
 
 	using Sage.Controllers;
-	using Sage.Xml;
 
 	/// <summary>
 	/// Implements an XSLT based <see cref="IView"/>.
 	/// </summary>
 	public class XsltView : IView
 	{
-		private readonly XsltTemplate processor;
+		private readonly XsltTransform processor;
 
-		public XsltView(XslCompiledTransform processor)
+		public XsltView(XsltTransform processor)
 		{
 			Contract.Requires<ArgumentNullException>(processor != null);
 
-			this.processor = new XsltTemplate(processor);
+			this.processor = processor;
 		}
 
 		/// <summary>
@@ -44,7 +42,7 @@
 			Transform(viewContext, textWriter, this.processor);
 		}
 
-		public virtual void Transform(ViewContext viewContext, TextWriter textWriter, XsltTemplate template)
+		public virtual void Transform(ViewContext viewContext, TextWriter textWriter, XsltTransform template)
 		{
 			Contract.Requires<ArgumentNullException>(viewContext != null);
 			Contract.Requires<ArgumentException>(viewContext.Controller is SageController);

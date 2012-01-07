@@ -2,22 +2,32 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
 	using System.Xml;
 
-	using Sage.Configuration;
-	using Sage.ResourceManagement;
+	using Sage.Views;
 
 	using log4net;
 
+	using Sage.Extensibility;
+	using Sage.ResourceManagement;
+
+	/// <summary>
+	/// Contains module configuration information.
+	/// </summary>
 	public class ModuleConfiguration
 	{
-		private const string DefaultXslt = "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns=\"http://www.w3.org/1999/xhtml\"/>";
+		private const string DefaultXslt = @"<xsl:stylesheet version=""1.0"" xmlns:xsl=""http://www.w3.org/1999/XSL/Transform"" xmlns=""http://www.w3.org/1999/xhtml""/>";
 		private static readonly ILog log = LogManager.GetLogger(typeof(ModuleConfiguration).FullName);
 
 		private readonly List<ModuleResource> resources = new List<ModuleResource>();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ModuleConfiguration"/> class, using the specified 
+		/// <paramref name="moduleType"/> and <paramref name="tagNames"/>.
+		/// </summary>
+		/// <param name="moduleType">The type of the module.</param>
+		/// <param name="tagNames">The tag names associated with the module.</param>
 		internal ModuleConfiguration(Type moduleType, params string[] tagNames)
 			: this()
 		{
@@ -33,6 +43,11 @@
 				this.TagNames = new List<string>(tagNames);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ModuleConfiguration"/> class, using the specified
+		/// <paramref name="configElement"/>.
+		/// </summary>
+		/// <param name="configElement">The module configuration element.</param>
 		internal ModuleConfiguration(XmlElement configElement)
 			: this()
 		{
@@ -150,23 +165,6 @@
 
 		public IList<string> Dependencies { get; private set; }
 
-		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
-		{
-			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
-			foreach (string name in config.Dependencies)
-			{
-				ModuleConfiguration reference;
-				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
-				{
-					result.Add(reference);
-					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
-					result.AddRange(innerDependencies.Where(innerConfig => !result.Contains(innerConfig)));
-				}
-			}
-
-			return result;
-		}
-
 		[SageResourceProvider("modules.xslt")]
 		internal static CacheableXmlDocument GetModulesXslt(SageContext context, string resourceUri)
 		{
@@ -185,7 +183,25 @@
 				}
 			}
 
+			XsltTransform.ExcludeNamespacesPrefixResults(resultDoc);
 			return resultDoc;
+		}
+
+		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
+		{
+			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
+			foreach (string name in config.Dependencies)
+			{
+				ModuleConfiguration reference;
+				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
+				{
+					result.Add(reference);
+					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
+					result.AddRange(innerDependencies.Where(innerConfig => !result.Contains(innerConfig)));
+				}
+			}
+
+			return result;
 		}
 
 		private static void CopyXslElements(SageContext context, XmlDocument fromDocument, XmlDocument toDocument)

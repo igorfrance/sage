@@ -3,8 +3,6 @@
 	using System;
 	using System.Xml;
 
-	using Sage.Controllers;
-	using Sage.ResourceManagement;
 	using Sage.Views;
 
 	/// <summary>
@@ -51,7 +49,7 @@
 		/// <summary>
 		/// Gets the XSLT transform associated with the meta view this object represents.
 		/// </summary>
-		public CacheableXslTransform Transform
+		public XsltTransform Processor
 		{
 			get;
 			private set;
@@ -66,7 +64,7 @@
 		internal void Load(SageContext context)
 		{
 			if (!string.IsNullOrWhiteSpace(this.ViewPath))
-				this.Transform = context.Resources.LoadXsl(context.MapPath(this.ViewPath));
+				this.Processor = XsltTransform.Create(context, this.ViewPath);
 
 			this.IsLoaded = true;
 		}

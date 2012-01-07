@@ -1,6 +1,7 @@
-﻿namespace Sage.Modules.IO
+﻿namespace Sage.DevTools.Modules.IO
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
@@ -8,6 +9,9 @@
 
 	using Kelp.Core.Extensions;
 	using log4net;
+
+	using Sage.Modules;
+	using Sage.Views;
 
 	/// <summary>
 	/// Provides a module that reads directories.
@@ -74,9 +78,13 @@
 		private bool filesOnly;
 		private bool directoriesOnly;
 		private XmlElement moduleElement;
-			
-		public ModuleResult ProcessRequest(XmlElement moduleElement, SageContext context)
+
+		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
 		{
+			Contract.Requires<ArgumentNullException>(moduleElement != null);
+			Contract.Requires<ArgumentNullException>(configuration != null);
+
+			SageContext context = configuration.Context;
 			this.moduleElement = moduleElement;
 
 			XmlNode configNode = moduleElement.SelectSingleNode("mod:config", XmlNamespaces.Manager);

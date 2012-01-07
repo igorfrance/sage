@@ -43,7 +43,7 @@
 		protected override IView CreateView(ControllerContext controllerContext, string viewName, string masterPath)
 		{
 			ViewInfo viewInfo = GetViewInfo(controllerContext, viewName);
-			IView result = new XsltView(viewInfo.CacheableTransform.Processor);
+			IView result = new XsltView(viewInfo.Processor);
 
 			if (controllerContext.Controller is SageController)
 			{

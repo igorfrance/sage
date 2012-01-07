@@ -137,25 +137,19 @@
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		protected virtual void Application_End(object sender, EventArgs e)
 		{
-			HttpRuntime runtime =
-				(HttpRuntime)
-				typeof(HttpRuntime).InvokeMember(
-					"_theRuntime", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField, null, null, null);
+			HttpRuntime runtime = (HttpRuntime) typeof(HttpRuntime).InvokeMember(
+				"_theRuntime", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField, null, null, null);
 
 			if (runtime == null)
 				return;
 
-			string shutDownMessage =
-				(string)
-				runtime.GetType().InvokeMember(
-					"_shutDownMessage", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
+			string shutDownMessage = (string) runtime.GetType().InvokeMember(
+				"_shutDownMessage", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
 
-			string shutDownStack =
-				(string)
-				runtime.GetType().InvokeMember(
-					"_shutDownStack", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
+			string shutDownStack = (string) runtime.GetType().InvokeMember(
+				"_shutDownStack", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
 
-			log.DebugFormat("Application has shut down with message\n{0}\nStack:\n{1}", shutDownMessage, shutDownStack);
+			log.DebugFormat("Application has shut down with message: \n{0} \nStack: \n{1}", shutDownMessage, shutDownStack);
 		}
 
 		/// <summary>

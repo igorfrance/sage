@@ -7,7 +7,6 @@
 
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
-	using Sage.Xml;
 
 	/// <summary>
 	/// Provides information about view template and configuration file corresponding to a controller and an action.
@@ -25,7 +24,7 @@
 
 		private readonly SageContext context;
 		private CacheableXmlDocument configDoc;
-		private CacheableXslTransform transform;
+		private XsltTransform processor;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewInfo"/> class, using the specified 
@@ -40,7 +39,9 @@
 			this.Controller = controller;
 			this.Action = action;
 			this.ConfigPath = null;
+
 			this.ViewSource = ViewSource.BuiltIn;
+			this.ViewPath = DefaultBuiltInStylesheetPath;
 
 			string pathTemplate = controller.IsShared ? context.Path.SharedViewPath : context.Path.ViewPath;
 			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controller.ControllerName));
@@ -68,15 +69,9 @@
 				break;
 			}
 
-			if (this.ViewSource == ViewSource.BuiltIn && File.Exists(context.Path.CategoryStylesheetPath))
-			{
-				this.ViewPath = context.Path.CategoryStylesheetPath;
-				this.ViewSource = ViewSource.Category;
-			}
-
 			if (this.ViewSource == ViewSource.BuiltIn && File.Exists(context.Path.DefaultStylesheetPath))
 			{
-				this.ViewPath = context.Path.CategoryStylesheetPath;
+				this.ViewPath = context.Path.DefaultStylesheetPath;
 				this.ViewSource = ViewSource.Project;
 			}
 		}
@@ -164,7 +159,21 @@
 		{
 			get
 			{
-				return this.Exists && this.ViewExtension.IndexOf("xsl") != -1;
+				return this.Exists && this.ViewExtension.IndexOf("xsl", System.StringComparison.Ordinal) != -1;
+			}
+		}
+
+		public bool IsNoCacheView
+		{
+			get
+			{
+				if (!this.ConfigExists)
+					return false;
+
+				XmlNamespaceManager nm = XmlNamespaces.Manager;
+				return
+					ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='cache-control' and @content='no-cache']", nm) != null ||
+					ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='pragma' and @content='no-cache']", nm) != null;
 			}
 		}
 
@@ -175,7 +184,7 @@
 		{
 			get
 			{
-				if (!this.Exists)
+				if (!this.Exists || this.IsNoCacheView)
 					return null;
 
 				DateTime? lastModified1 = null;
@@ -191,8 +200,8 @@
 				{
 					if (this.ViewPath != null)
 					{
-						lastModified1 = this.CacheableTransform.LastModified;
-						context.LmCache.Put(this.ViewPath, lastModified1.Value, this.CacheableTransform.Dependencies.ToList());
+						lastModified1 = this.Processor.LastModified;
+						context.LmCache.Put(this.ViewPath, lastModified1.Value, this.Processor.Dependencies.ToList());
 					}
 					else
 					{
@@ -234,6 +243,10 @@
 						}
 						catch (XmlException ex)
 						{
+							//// TODO: Catch Mvp.Xml.XInclude.FatalResourceException (test with invalid xpointer spec)
+							//// Mvp.Xml.XInclude.FatalResourceException + NoSubresourcesIdentifiedException
+							//// Mvp.Xml.XInclude.FatalResourceException + ResourceException + FileNotFoundException
+							
 							ProblemType problemType = DetectProblemType(ex, ConfigPath);
 							if (problemType == ProblemType.Unknown)
 								throw;
@@ -253,30 +266,30 @@
 		}
 
 		/// <summary>
-		/// Gets the XSLT transform associated with the view this object represents.
+		/// Gets the XSLT processor associated with the view this object represents.
 		/// </summary>
-		public CacheableXslTransform CacheableTransform
+		public XsltTransform Processor
 		{
 			get
 			{
-				if (transform == null)
+				if (processor == null)
 				{
-					if (this.ViewSource != 0)
+					if (this.ViewSource != ViewSource.BuiltIn)
 					{
-						transform = XsltRegistry.Load(this.ViewPath, this.context);
+						processor = XsltTransform.Create(this.context, this.ViewPath);
 					}
 					else
 					{
-						transform = XsltRegistry.Load(DefaultBuiltInStylesheetPath, this.context);
+						processor = XsltTransform.Create(this.context, DefaultBuiltInStylesheetPath);
 					}
 				}
 
-				return transform;
+				return processor;
 			}
 
 			internal set
 			{
-				transform = value;
+				processor = value;
 			}
 		}
 

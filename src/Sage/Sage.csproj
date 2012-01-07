@@ -89,11 +89,12 @@
     <Compile Include="Configuration\CategoryInfo.cs" />
     <Compile Include="Configuration\ConfigurationError.cs" />
     <Compile Include="Configuration\IpAddress.cs" />
-    <Compile Include="Configuration\LinkConfiguration.cs" />
     <Compile Include="Configuration\LinkInfo.cs" />
     <Compile Include="Configuration\LocaleInfo.cs" />
     <Compile Include="Configuration\MetaViewDictionary.cs" />
     <Compile Include="Configuration\MetaViewInfo.cs" />
+    <Compile Include="Configuration\PackageConfiguration.cs" />
+    <Compile Include="Configuration\PackageGroup.cs" />
     <Compile Include="Extensibility\Constants.cs" />
     <Compile Include="Extensibility\InstallFile.cs" />
     <Compile Include="Extensibility\InstallLog.cs" />
@@ -108,8 +109,6 @@
     <Compile Include="Configuration\RoutingConfiguration.cs" />
     <Compile Include="Configuration\PathTemplates.cs" />
     <Compile Include="Configuration\UnconfiguredLocaleException.cs" />
-    <Compile Include="Modules\Source\SyntaxHighlighterModule.cs" />
-    <Compile Include="Modules\Source\XmlTreeModule.cs" />
     <Compile Include="ResourceManagement\ResourceHandler.cs" />
     <Compile Include="ResourceManagement\ScriptLibraryInfo.cs" />
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
@@ -125,11 +124,10 @@
     <Compile Include="Controllers\SageController.cs" />
     <Compile Include="Controllers\SageControllerFactory.cs" />
     <Compile Include="Controllers\SharedControllerAttribute.cs" />
-    <Compile Include="Modules\IO\DirectoryTreeModule.cs" />
     <Compile Include="Modules\ModuleResource.cs" />
     <Compile Include="Modules\NullModule.cs" />
     <Compile Include="Rewriters\LocalizePathRewriter.cs" />
-    <Compile Include="ResourceManagement\SageResourceProviderAttribute.cs" />
+    <Compile Include="Extensibility\SageResourceProviderAttribute.cs" />
     <Compile Include="ResourceManagement\SageResourceResolver.cs" />
     <Compile Include="Views\Meta\DivertView.cs" />
     <Compile Include="Views\Meta\JsonView.cs" />
@@ -152,7 +150,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceManagement\CacheableXmlDocument.cs" />
     <Compile Include="ResourceManagement\Constants.cs" />
-    <Compile Include="ResourceManagement\CacheableXslTransform.cs" />
     <Compile Include="ResourceManagement\DictionaryFile.cs" />
     <Compile Include="ResourceManagement\DictionaryFileCollection.cs" />
     <Compile Include="ResourceManagement\EmbeddedResourceResolver.cs" />
@@ -173,12 +170,19 @@
     <Compile Include="SageContext.cs" />
     <Compile Include="UrlGenerator.cs" />
     <Compile Include="Views\ViewInfo.cs" />
-    <Compile Include="Xml\XHtmlXmlWriter.cs" />
-    <Compile Include="Xml\XmlWrappingWriter.cs" />
-    <Compile Include="Xml\XsltRegistry.cs" />
-    <Compile Include="Xml\XsltTemplate.cs" />
+    <Compile Include="Views\MsXsltTransform.cs" />
+    <Compile Include="Views\XHtmlXmlWriter.cs" />
+    <Compile Include="Views\XmlWrappingWriter.cs" />
+    <Compile Include="Extensibility\XsltExtensionObjectAttribute.cs" />
+    <Compile Include="XsltExtensions\Date.cs" />
+    <Compile Include="XsltExtensions\String.cs" />
+    <Compile Include="XsltExtensions\IO.cs" />
     <Compile Include="Views\XsltView.cs" />
     <Compile Include="Views\XsltViewEngine.cs" />
+    <Compile Include="Views\XsltTransform.cs" />
+    <Compile Include="XsltExtensions\Set.cs" />
+    <Compile Include="XsltExtensions\Math.cs" />
+    <Compile Include="XsltExtensions\Regexp.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Schemas\ProjectConfiguration.xsd">

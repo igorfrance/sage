@@ -16,6 +16,7 @@
 		{
 			this.Name = configNode.GetAttribute("name");
 			this.Pattern = configNode.GetAttribute("pattern");
+			this.Url = configNode.GetAttribute("url");
 		}
 
 		/// <summary>
@@ -27,5 +28,10 @@
 		/// Gets the format pattern of this link, e.g. <c>products/{tab}/{page}/</c>.
 		/// </summary>
 		public string Pattern { get; private set; }
+
+		/// <summary>
+		/// Gets the URL of this link (for non-dynamic links).
+		/// </summary>
+		public string Url { get; private set; }
 	}
 }

@@ -9,3 +9,5 @@ log/
 *.Resharper
 _target/
 Sage.Local.sln
+
+/releases

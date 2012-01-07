@@ -1,6 +1,7 @@
 ﻿namespace Kelp.Core.Extensions
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
 
 	/// <summary>
@@ -30,15 +31,14 @@
 		/// <returns>A new date, offset from the specified date by the specified value.</returns>
 		public static DateTime Offset(this DateTime dt, string offset)
 		{
-			if (string.IsNullOrEmpty(offset))
-				throw new ArgumentNullException("offset");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(offset));
 
 			Match m;
 			DateTime result = new DateTime(dt.Ticks);
 			if ((m = offsetValue.Match(offset)).Success)
 			{
 				string unit = m.Groups["unit"].Value;
-				long value = Int64.Parse(m.Groups["value"].Value);
+				long value = long.Parse(m.Groups["value"].Value);
 
 				switch (unit)
 				{

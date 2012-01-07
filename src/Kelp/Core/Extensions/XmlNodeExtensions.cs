@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using System.Xml;
@@ -14,8 +15,44 @@
 	/// </summary>
 	public static class XmlNodeExtensions
 	{
-		private const string AttribJsonFormat1 = "{0}: ";
-		private const string AttribJsonFormat2 = "{0}: {1}";
+		/// <summary>
+		/// Iterates through xml nodes selected from <paramref name="instance"/> using the specified 
+		/// <paramref name="xpath"/>, and pushes node text info the list of values that is returned.
+		/// </summary>
+		/// <param name="instance">The xml node from which to execute the xpath selection.</param>
+		/// <param name="xpath">The XPath expression that specifies what to select (e.g. './child/@attrib1').</param>
+		/// <returns>
+		/// List of node values, selected with the specified <paramref name="xpath"/>.
+		/// </returns>
+		public static List<string> Aggregate(this XmlNode instance, string xpath)
+		{
+			return Aggregate(instance, xpath, XmlNamespaces.Manager);
+		}
+
+		/// <summary>
+		/// Iterates through xml nodes selected from <paramref name="instance"/> using the specified
+		/// <paramref name="xpath"/> and <paramref name="manager"/>, and pushes node text info the list of
+		/// values that is returned.
+		/// </summary>
+		/// <param name="instance">The xml node from which to execute the xpath selection.</param>
+		/// <param name="xpath">The XPath expression that specifies what to select (e.g. './child/@attrib1').</param>
+		/// <param name="manager">The XML namespace manager to use with the specified <paramref name="xpath"/>.</param>
+		/// <returns>
+		/// List of node values, selected with the specified <paramref name="xpath"/>.
+		/// </returns>
+		public static List<string> Aggregate(this XmlNode instance, string xpath, XmlNamespaceManager manager)
+		{
+			Contract.Requires<ArgumentNullException>(instance != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(xpath));
+
+			List<string> result = new List<string>();
+			foreach (XmlNode node in instance.SelectNodes(xpath, manager))
+			{
+				result.Add(node.InnerText);
+			}
+
+			return result;
+		}
 
 		/// <summary>
 		/// Appends the specified element to the current node and returns it.

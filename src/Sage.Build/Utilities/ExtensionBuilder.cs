@@ -11,13 +11,14 @@
 	using ICSharpCode.SharpZipLib.Zip;
 
 	using Kelp.Core.Extensions;
-
 	using Sage.Configuration;
-	using Sage.ResourceManagement;
 
 	internal class ExtensionBuilder : IUtility
 	{
 		private NameValueCollection arguments;
+		private string applicationPath;
+		private string extensionName;
+		private readonly ZipEntryFactory zipEntryFactory = new ZipEntryFactory();
 
 		public string CommandName
 		{
@@ -58,53 +59,51 @@
 
 		public void Run()
 		{
-			//// try get directory with files in there
-			//// read project.config
-			//// name = project.name ?? dirname
-			//// output path = 
-			//// create an archive in the output path
-				//// add project.config as extension.config
-				//// add assets to assets
-				//// add all not *.pdb and not project.config or system.config files from bin folder
+			applicationPath = arguments["source"];
+			if (!Path.IsPathRooted(applicationPath))
+				applicationPath = Path.Combine(Directory.GetCurrentDirectory(), applicationPath);
 
-			string sourcePath = arguments["source"];
-			if (!Path.IsPathRooted(sourcePath))
-				sourcePath = Path.Combine(Directory.GetCurrentDirectory(), sourcePath);
+			extensionName = Path.ChangeExtension(Path.GetFileName(applicationPath), "zip");
+			string configPath = Path.Combine(applicationPath, "Project.config");
+			string systemConfigPath = Path.Combine(Program.ApplicationPath, "System.config");
+			string extensionConfigPath = Path.Combine(Program.ApplicationPath, "Extension.config");
 
-			string targetName = Path.ChangeExtension(Path.GetFileName(sourcePath), "zip");
-			string configPath = Path.Combine(sourcePath, "Project.config");
-
-			string targetPath = arguments["target"] ?? Path.Combine(Path.GetDirectoryName(sourcePath), targetName);
+			string targetPath = arguments["target"] ?? Path.Combine(Path.GetDirectoryName(applicationPath), extensionName);
 			if (!Path.IsPathRooted(targetPath))
 				targetPath = Path.Combine(Directory.GetCurrentDirectory(), targetPath);
 
-			List<string> binaries = new List<string>();
-
-			if (!Directory.Exists(sourcePath))
+			if (!Directory.Exists(applicationPath))
 			{
 				throw new FileNotFoundException(
-					string.Format("The specified extension source path '{0}' doesn't exist", sourcePath));
+					string.Format("The specified extension source path '{0}' doesn't exist", applicationPath));
 			}
 
-			if (File.Exists(configPath))
+			if (!File.Exists(configPath))
 			{
-				ProjectConfiguration config = ProjectConfiguration.Create(configPath);
-				if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))
-				{
-					targetName = Path.ChangeExtension(config.Name, "zip");
-					targetPath = Path.Combine(Path.GetDirectoryName(sourcePath), targetName);
-				}
+				throw new FileNotFoundException(
+					string.Format("The specified project configuration path '{0}' doesn't exist", configPath));
+			}
 
-				binaries.AddRange(config.Deliverables);
+			XmlNamespaceManager nm = XmlNamespaces.Manager;
+			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
+			XmlElement extensionRoot = extensionConfig.SelectSingleElement("p:configuration/p:extension", nm);
+
+			ProjectConfiguration config = ProjectConfiguration.Create(configPath, systemConfigPath);
+			XmlElement configRoot = config.ConfigurationElement;
+
+			if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))
+			{
+				extensionName = Path.ChangeExtension(config.Name, "zip");
+				targetPath = Path.Combine(Path.GetDirectoryName(applicationPath), extensionName);
 			}
 
 			if (File.Exists(targetPath))
 				File.Delete(targetPath);
 
-			string assetPath = Path.Combine(sourcePath, "Assets");
 			string targetDir = Path.GetDirectoryName(targetPath);
 
 			Directory.CreateDirectory(targetDir);
+			SageContext context = Program.CreateSageContext("/", this.MapPath, config);
 
 			using (ZipOutputStream zipfile = new ZipOutputStream(File.Create(targetPath)))
 			{
@@ -112,21 +111,32 @@
 				zipfile.UseZip64 = UseZip64.Off;
 				zipfile.SetLevel(9);
 
-				if (Directory.Exists(assetPath))
-					PackDirectory(zipfile, assetPath, "Assets");
-
-				foreach (string binary in binaries)
+				// assets
+				string assetSourcePath = context.Path.Resolve(context.Path.AssetPath);
+				foreach (string file in config.Package.Assets.GetFiles(context))
 				{
-					string binaryPath = Path.Combine(sourcePath, binary);
-					if (!File.Exists(binaryPath))
-						throw new FileNotFoundException(string.Format("The specified binary deliverable '{0}' was not found.", binaryPath), binaryPath);
-
-					string fileName = Path.GetFileName(binary);
-					PackFile(zipfile, binaryPath, Path.Combine("Bin", fileName));
+					string childPath = file.ReplaceAll(assetSourcePath.EscapeMeta(), string.Empty).Trim('/', '\\');
+					PackFile(zipfile, file, "assets/" + childPath);
 				}
 
-				if (File.Exists(configPath))
-					PackFile(zipfile, configPath, "Plugin.config");
+				// binaries
+				string binarySourcePath = context.Path.Resolve("/bin");
+				foreach (string file in config.Package.Binaries.GetFiles(context))
+				{
+					string childPath = file.ReplaceAll(binarySourcePath.EscapeMeta(), string.Empty).Trim('/', '\\');
+					PackFile(zipfile, file, "bin/" + childPath);
+				}
+
+				// libraries, modules, links, metaviews, routes
+				CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:view", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Links, "p:links", "p:link", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Libraries, "p:scripts", "p:library", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
+
+				extensionConfig.Save(extensionConfigPath);
+
+				PackFile(zipfile, extensionConfigPath, "Extension.config");
 
 				zipfile.IsStreamOwner = true;
 				zipfile.Finish();
@@ -134,20 +144,35 @@
 			}
 		}
 
-		private void PackDirectory(ZipOutputStream zipfile, string directoryPath, string targetName)
+		private void CopyConfiguration(PackageGroup group, string parentName, string childName, XmlElement source, XmlElement target)
 		{
-			directoryPath = directoryPath.ToLower();
-			foreach (string filepath in Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories))
+			string aggregateXpath = string.Format("{0}/{1}/@name", parentName, childName);
+			List<string> names = group.FilterNames(source.Aggregate(aggregateXpath, XmlNamespaces.Manager));
+			if (names.Count != 0)
 			{
-				string fileName = filepath.ToLower().Replace(directoryPath, string.Empty).Trim('/', '\\');
-				PackFile(zipfile, filepath, Path.Combine(targetName, fileName));
+				XmlNode parentNode = target.AppendElement(parentName.Replace("p:", string.Empty), XmlNamespaces.ProjectConfigurationNamespace);
+				foreach (string name in names)
+				{
+					string xpath = string.Format("{0}/{1}[@name='{2}']", parentName, childName, name);
+					parentNode.AppendChild(target.OwnerDocument.ImportNode(
+						source.SelectSingleNode(xpath, XmlNamespaces.Manager), true));
+				}
 			}
+		}
+
+		private static XmlDocument CreateExtensionConfigurationDocument(string extensionName)
+		{
+			XmlDocument result = new XmlDocument();
+			result.LoadXml(string.Format("<configuration xmlns='{0}'><extension name='{1}'></extension></configuration>",
+				XmlNamespaces.ProjectConfigurationNamespace, extensionName));
+
+			return result;
 		}
 
 		private void PackFile(ZipOutputStream zipfile, string filePath, string targetName)
 		{
 			FileInfo fileInfo = new FileInfo(filePath);
-			ZipEntry zipentry = new ZipEntry(targetName);
+			ZipEntry zipentry = zipEntryFactory.MakeFileEntry(targetName, true);
 			zipentry.DateTime = fileInfo.LastWriteTime;
 			zipentry.Size = fileInfo.Length;
 
@@ -157,6 +182,19 @@
 				StreamUtils.Copy(streamReader, zipfile, new byte[4096]);
 
 			zipfile.CloseEntry();
+		}
+
+		private string MapPath(string path)
+		{
+			if (path == "/")
+				path = "~/";
+
+			string result = path.Replace(
+				"~", applicationPath).Replace(
+				"//", "/").Replace(
+				"/", "\\");
+
+			return new FileInfo(result).FullName;
 		}
 	}
 }

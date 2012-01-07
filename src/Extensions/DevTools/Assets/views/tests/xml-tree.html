@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html
+	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>XML Tree</title>
+		<link type="text/css" rel="stylesheet" href="{assetpath}/css/devtools.css"/>
+	</head>
+	<body>
+		<h1>XML Tree</h1>
+
+		<xi:include href="sagexi://views/shared/elements.html"
+			xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class]) "/>
+
+		<mod:XmlTree>
+			<mod:config>
+				<mod:expandLevels>1</mod:expandLevels>
+				<mod:source>../shared/elements.html</mod:source>
+				<mod:xpath>//ul[@class]</mod:xpath>
+			</mod:config>
+		</mod:XmlTree>
+
+	</body>
+</html>

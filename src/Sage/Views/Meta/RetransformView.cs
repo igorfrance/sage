@@ -10,14 +10,13 @@
 	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
-	using Sage.Xml;
 
 	/// <summary>
 	/// Provides an additional transform of the original view result.
 	/// </summary>
 	public class RetransformView : MetaView
 	{
-		private readonly XsltTemplate template;
+		private readonly XsltTransform processor;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RetransformView"/> class.
@@ -27,11 +26,11 @@
 		public RetransformView(MetaViewInfo viewInfo, IView wrapped)
 			: base(viewInfo, wrapped)
 		{
-			this.template = new XsltTemplate(viewInfo.Transform.Processor);
+			this.processor = viewInfo.Processor;
 		}
 
 		/// <summary>
-		/// Renders the result of the original view with an additional <see cref="XsltTemplate"/>.
+		/// Renders the result of the original view with an additional <see cref="XsltTransform"/>.
 		/// </summary>
 		/// <param name="viewContext">The view context.</param>
 		/// <param name="writer">The writer to write to.</param>
@@ -58,7 +57,7 @@
 					XmlDocument viewXml = new XmlDocument();
 					viewXml.Load(reader);
 
-					template.Transform(viewXml, writer, controller.Context);
+					processor.Transform(viewXml, writer, controller.Context);
 				}
 
 				this.DisableCaching(viewContext);

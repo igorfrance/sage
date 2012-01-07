@@ -11,18 +11,14 @@
 	using System.Xml;
 	using System.Xml.Schema;
 
-	using Sage.Extensibility;
-
 	using log4net;
-	using Sage.Configuration;
+	using Sage.Extensibility;
 
 	/// <summary>
 	/// Handles internal file resource management.
 	/// </summary>
 	public class ResourceManager
 	{
-		public const string SageSchemeEmbedded = "sageresx://";
-
 		private static readonly Dictionary<string, CopyNodeHandler> nodeHandlerRegistry = new Dictionary<string, CopyNodeHandler>();
 		private static readonly Dictionary<string, CopyTextHandler> textHandlerRegistry = new Dictionary<string, CopyTextHandler>();
 
@@ -167,24 +163,6 @@
 			return response;
 		}
 
-		public static CacheableXslTransform LoadXslStylesheet(string path)
-		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
-
-			return LoadXslStylesheet(path, null);
-		}
-
-		public static CacheableXslTransform LoadXslStylesheet(string path, SageContext context)
-		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
-
-			UrlResolver resolver = new UrlResolver(context);
-			CacheableXmlDocument document = LoadXmlDocument(path, context);
-			CacheableXslTransform result = new CacheableXslTransform(document, resolver);
-
-			return result;
-		}
-
 		public static CacheableXmlDocument LoadXmlDocument(string path)
 		{
 		    Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -291,14 +269,6 @@
 			return LoadXmlDocument(path, context);
 		}
 
-		public CacheableXslTransform LoadXsl(string path)
-		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException("path");
-
-			return LoadXslStylesheet(path, context);
-		}
-
 		internal static XmlNode CopyNode(XmlNode node, SageContext context)
 		{
 			XmlNode result;
@@ -345,80 +315,6 @@
 				default:
 					result = node.CloneNode(true);
 					break;
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Gets an embedded resource as a stream.
-		/// </summary>
-		/// <param name="resourceName">The name of the resource. This is the path relative to the project in which the resource has
-		/// been compiled; e.g. 'Resources/Schemas/Dictionary.xsd'.</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentException">
-		/// The specified resource name is not a valid embedded resource name</exception>
-		/// <exception cref="ArgumentNullException">
-		/// <paramref name="resourceName"/> is <c>null</c>. </exception>
-		internal static Stream GetEmbeddedResourceAsStream(string resourceName)
-		{
-			return GetEmbeddedResourceAsStream(resourceName, Assembly.GetExecutingAssembly());
-		}
-
-		/// <summary>
-		/// Gets an embedded resource as a stream.
-		/// </summary>
-		/// <param name="resourceName">The name of the resource. This is the path relative to the project in which the resource has
-		/// been compiled; e.g. 'Resources/Schemas/Dictionary.xsd'.</param>
-		/// <param name="source">The source assembly in which to look for the resource.</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentException">
-		/// The specified resource name is not a valid embedded resource name</exception>
-		/// <exception cref="ArgumentNullException">
-		/// <paramref name="resourceName"/> is <c>null</c>.
-		/// </exception>
-		internal static Stream GetEmbeddedResourceAsStream(string resourceName, Assembly source)
-		{
-			if (string.IsNullOrEmpty(resourceName))
-				throw new ArgumentNullException("resourceName");
-			if (source == null)
-				throw new ArgumentNullException("source");
-
-			resourceName = resourceName
-				.Replace(SageSchemeEmbedded, string.Empty)
-				.Replace('/', '.')
-				.Replace('\\', '.')
-				.ToLower();
-
-			string resourcePath = new List<string>(source.GetManifestResourceNames())
-				.FirstOrDefault(r => r.ToLower().IndexOf(resourceName) != -1);
-
-			if (string.IsNullOrEmpty(resourcePath))
-				throw new ArgumentException(string.Format(
-					"The specified resource name '{0}' is not a valid embedded resource name", resourceName));
-
-			return source.GetManifestResourceStream(resourcePath);
-		}
-
-		/// <summary>
-		/// Gets an embedded resource as a string.
-		/// </summary>
-		/// <param name="resourceName">The name of the resource. This is the path relative to the project in which the resource has
-		/// been compiled; e.g. 'Resources/Schemas/Dictionary.xsd'.</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException">
-		/// <paramref name="resourceName"/> is <c>null</c>.
-		/// </exception>
-		internal static string GetEmbeddedResourceAsString(string resourceName)
-		{
-			if (string.IsNullOrEmpty(resourceName))
-				throw new ArgumentNullException("resourceName");
-
-			string result;
-			using (Stream stream = GetEmbeddedResourceAsStream(resourceName))
-			using (TextReader textReader = new StreamReader(stream))
-			{
-				result = textReader.ReadToEnd();
 			}
 
 			return result;

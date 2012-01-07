@@ -23,15 +23,17 @@
 		/// </summary>
 		internal const string ModuleIdPattern = "module{0}";
 		private readonly XmlElement configElement;
-		private readonly string name;
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewConfiguration).FullName);
 		private static string moduleSelectXPath;
 
-		public ViewConfiguration(string viewName, XmlNode configNode)
+		private ViewConfiguration(SageController controller, ViewInfo viewInfo)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(viewName));
-			Contract.Requires<ArgumentNullException>(configNode != null);
-			
+			Contract.Requires<ArgumentNullException>(controller != null);
+			Contract.Requires<ArgumentNullException>(viewInfo != null);
+
+			string viewName = viewInfo.Action;
+			XmlNode configNode = viewInfo.ConfigDocument;
+
 			if (string.IsNullOrEmpty(viewName))
 				throw new ArgumentNullException("name");
 
@@ -41,7 +43,8 @@
 			if (configNode.NodeType != XmlNodeType.Element)
 				throw new ArgumentException("The node type of the supplied xml node should be either an element or a document node", "configNode");
 
-			this.name = viewName;
+			this.Name = viewName;
+			this.Controller = controller;
 			this.configElement = (XmlElement) configNode;
 			this.Modules = new Dictionary<string, IModule>();
 
@@ -69,11 +72,17 @@
 			}
 		}
 
-		public string Name
+		public string Name { get; private set; }
+
+		public ViewInfo Info { get; private set; }
+
+		public SageController Controller { get; private set; }
+
+		public SageContext Context
 		{
 			get
 			{
-				return name;
+				return this.Controller.Context;
 			}
 		}
 
@@ -116,12 +125,12 @@
 			private set;
 		}
 
-		public static ViewConfiguration Create(string name, XmlNode inputDoc)
+		public static ViewConfiguration Create(SageController controller, ViewInfo viewInfo)
 		{
-			return new ViewConfiguration(name, inputDoc);
+			return new ViewConfiguration(controller, viewInfo);
 		}
 
-		public ViewInput ProcessRequest(SageController controller)
+		public ViewInput ProcessRequest()
 		{
 			ViewInput input = new ViewInput(this.Name, configElement);
 
@@ -129,8 +138,8 @@
 			{
 				foreach (XmlElement moduleElement in input.ConfigNode.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager))
 				{
-					IModule module = controller.CreateModule(moduleElement);
-					ModuleResult result = module.ProcessRequest(moduleElement, controller.Context);
+					IModule module = this.Controller.CreateModule(moduleElement);
+					ModuleResult result = module.ProcessRequest(moduleElement, this);
 					input.AddModuleResult(moduleElement.LocalName, result);
 
 					if (result.ResultElement != null)

@@ -43,7 +43,7 @@
 			XmlElement result = ownerDocument.CreateElement("sage:resource", XmlNamespaces.SageNamespace);
 			result.SetAttribute("type", "script");
 			result.SetAttribute("location", "head");
-			result.SetAttribute("path", context.Path.GetRelativeWebPath(resourcePath));
+			result.SetAttribute("path", context.Path.GetRelativeWebPath(resourcePath, true));
 
 			return result;
 		}

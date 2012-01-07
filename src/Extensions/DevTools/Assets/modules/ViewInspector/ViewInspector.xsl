@@ -3,30 +3,32 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
 	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:regexp="http://www.cycle99.com/projects/sage/xslt/extensions/regexp"
+	xmlns:string="http://www.cycle99.com/projects/sage/xslt/extensions/string"
+	xmlns:math="http://www.cycle99.com/projects/sage/xslt/extensions/math"
 	xmlns="http://www.w3.org/1999/xhtml"
-	exclude-result-prefixes="mod sage">
+
+	exclude-result-prefixes="mod sage regexp string math">
 
 	<xsl:template match="mod:ViewInspector">
 		<xsl:param name="config" select="mod:config"/>
 		<xsl:variable name="path">
 			<xsl:apply-templates select="$config/mod:path"/>
 		</xsl:variable>
+
 		<xsl:variable name="cookies" select="/sage:view/sage:request/sage:cookies"/>
-		<div class="view-inspector" data-view="{$path}">
+		<xsl:variable name="orientation" select="math:isnull($cookies/@dev.viewinspector.orientation, 'horizontal')"/>
+		<xsl:variable name="layout" select="math:isnull($cookies/@dev.viewinspector.layout, 'double')"/>
+		<xsl:variable name="framewidth" select="math:isnull($cookies/@dev.viewinspector.fw, 70)"/>
+		<xsl:variable name="frameheight" select="math:isnull($cookies/@dev.viewinspector.fw, 70)"/>
+
+		<div class="view-inspector {$orientation} {$layout}" data-view="{$path}">
 			<xsl:apply-templates select="$config/mod:id" mode="attribute"/>
-			<xsl:attribute name="class">
-				<xsl:text>view-inspector </xsl:text>
-				<xsl:choose>
-					<xsl:when test="$cookies/@OR = 'VERTICAL'">vertical </xsl:when>
-					<xsl:otherwise>horizontal </xsl:otherwise>
-				</xsl:choose>
-				<xsl:choose>
-					<xsl:when test="$cookies/@LY = 'DOUBLE'">double </xsl:when>
-					<xsl:otherwise>single </xsl:otherwise>
-				</xsl:choose>
-				<xsl:apply-templates select="$config/mod:class" mode="attribute-value"/>
-			</xsl:attribute>
 			<div class="contentcontainer">
+				<xsl:attribute name="style">
+					<xsl:value-of select="string:format1('width: {0}%; ', $framewidth)"/>
+					<xsl:value-of select="string:format1('height: {0}%; ', $frameheight)"/>
+				</xsl:attribute>
 				<div class="contenttoolbar">
 					<div class="contenttitle"></div>
 					<div class="toolbar right">
@@ -39,6 +41,10 @@
 				<div class="contentpreloader"></div>
 			</div>
 			<div class="toolscontainer">
+				<xsl:attribute name="style">
+					<xsl:value-of select="string:format1('width: {0}%; ', 100 - $framewidth)"/>
+					<xsl:value-of select="string:format1('height: {0}%; ', 100 - $frameheight)"/>
+				</xsl:attribute>
 				<div class="viewtoolbar">
 					<div class="toolbar left">
 						<xsl:for-each select="mod:data/mod:meta/mod:view">
@@ -51,7 +57,8 @@
 						</div>
 					</div>
 					<div class="toolbar right">
-						<div class="button toggle" title="Toggle the tool frame" data-command="ToggleFrame"></div>
+						<div class="button toggle {math:iif($layout='double', 'active', '')}"
+							title="Toggle the tool frame" data-command="ToggleFrame"></div>
 					</div>
 				</div>
 				<div class="toolframe">
