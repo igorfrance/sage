@@ -2,7 +2,7 @@
 <project name="Sage" xmlns="http://nant.sf.net/release/0.91-alpha2/nant.xsd" default="default">
 	
 	<property name="outputPath" value="releases/latest"/>
-	<property name="solutionFile" value="src/Sage.Local.sln"/>
+	<property name="solutionFile" value="src/Sage.sln"/>
 	<property name="buildConfiguration" value="Debug"/>
 	<property name="kelpBuildPath" value="src/kelp/bin/${buildConfiguration}"/>
 	<property name="sageBuildPath" value="src/sage/bin/${buildConfiguration}"/>
