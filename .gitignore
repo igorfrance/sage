@@ -11,3 +11,4 @@ _target/
 Sage.Local.sln
 
 /releases
+/sage.local.build
