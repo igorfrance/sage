@@ -10,23 +10,6 @@
 	<property name="exampleSitePath" value="src/examples/tutorial"/>
 	
 	<target name="default">
-		<!-- 
-		
-			- build solution
-				- lib
-				- src
-				- releases
-					- latest
-						- kelp
-						- sage
-						- extensions
-						- examples
-							- example
-			
-			- copy extensions to example directory
-			- 
-		
-		-->
 		<call target="clean"/>
 		<call target="build-solution"/>
 		<call target="build-extensions"/>
@@ -37,9 +20,9 @@
 	</target>
 	
 	<target name="build-solution">
-		<!--<msbuild project="${solutionFile}" verbosity="Normal">
+		<msbuild project="${solutionFile}" verbosity="Normal">
 			<property name="Configuration" value="${buildConfiguration}"/>
-		</msbuild>-->
+		</msbuild>
 		
 		<copy todir="${outputPath}/kelp">
 			<fileset basedir="${kelpBuildPath}">
