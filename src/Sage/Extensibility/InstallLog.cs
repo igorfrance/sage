@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
@@ -27,14 +28,14 @@
 					this.Result = result;
 			}
 
-			this.Files = new List<InstallFile>();
+			this.Items = new List<InstallItem>();
 			foreach (XmlElement fileElem in element.SelectNodes("files/file"))
 			{
-				InstallFile file = this.AddFile(fileElem.GetAttribute("path"));
+				InstallItem file = this.AddFile(fileElem.GetAttribute("path"));
 				string stateString = fileElem.GetAttribute("state");
 				if (!string.IsNullOrWhiteSpace(stateString))
 				{
-					FileState state;
+					InstallState state;
 					if (Enum.TryParse(resultString, true, out state))
 						file.State = state;
 				}
@@ -44,7 +45,7 @@
 		public InstallLog(DateTime date)
 		{
 			this.Date = date;
-			this.Files = new List<InstallFile>();
+			this.Items = new List<InstallItem>();
 		}
 
 		public DateTime? Date { get; private set; }
@@ -53,12 +54,19 @@
 
 		public InstallState Result { get; set; }
 
-		public List<InstallFile> Files { get; private set; }
+		public List<InstallItem> Items { get; private set; }
 
-		public InstallFile AddFile(string path)
+		public InstallItem AddFile(string path)
 		{
-			InstallFile file = new InstallFile { Path = path };
-			this.Files.Add(file);
+			InstallItem file = new InstallItem { Path = path, Type = InstallItemType.File };
+			this.Items.Add(file);
+			return file;
+		}
+
+		public InstallItem AddConfiguration(string path, string name)
+		{
+			InstallItem file = new InstallItem { Path = path, Name = name, Type = InstallItemType.Configuration };
+			this.Items.Add(file);
 			return file;
 		}
 
@@ -69,11 +77,19 @@
 			logElement.SetAttribute("result", this.Result.ToString());
 
 			XmlElement filesElement = logElement.AppendElement("files");
-			foreach (InstallFile file in this.Files)
+			foreach (InstallItem file in this.Items.Where(i => i.Type == InstallItemType.File))
 			{
 				XmlElement fileElement = filesElement.AppendElement("file");
 				fileElement.SetAttribute("path", file.Path);
 				fileElement.SetAttribute("state", file.State.ToString().ToLower());
+			}
+
+			foreach (InstallItem config in this.Items.Where(i => i.Type == InstallItemType.Configuration))
+			{
+				XmlElement fileElement = filesElement.AppendElement("configuration");
+				fileElement.SetAttribute("path", config.Path);
+				fileElement.SetAttribute("name", config.Name);
+				fileElement.SetAttribute("state", config.State.ToString().ToLower());
 			}
 
 			if (this.Error != null)

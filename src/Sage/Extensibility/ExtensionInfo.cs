@@ -19,6 +19,15 @@ namespace Sage.Extensibility
 	internal class ExtensionInfo
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionInfo).FullName);
+		private static readonly List<string[]> configInstallGroups = new List<string[]>
+		{
+			new[] { "p:metaViews", "p:view" },
+			new[] { "p:routing", "p:route" },
+			new[] { "p:links", "p:link" },
+			new[] { "p:scripts", "p:script" },
+			new[] { "p:modules", "p:module" },
+		};
+
 		private readonly IOrderedEnumerable<InstallLog> orderedLogs;
 		private bool loaded;
 
@@ -53,7 +62,7 @@ namespace Sage.Extensibility
 					Directory.GetFiles(assetdir, "*.*", SearchOption.AllDirectories));
 			}
 
-			string configPath = Path.Combine(this.SourceDirectory, "Plugin.config");
+			string configPath = Path.Combine(this.SourceDirectory, "Extension.config");
 			if (File.Exists(configPath))
 				this.Config = ProjectConfiguration.Create(configPath);
 
@@ -108,15 +117,24 @@ namespace Sage.Extensibility
 
 					Directory.CreateDirectory(targetDir);
 
-					InstallFile entry = installLog.AddFile(targetPath);
+					InstallItem entry = installLog.AddFile(targetPath);
 					if (File.Exists(targetPath))
 					{
-						entry.State = FileState.NotCopied;
+						entry.State = InstallState.NotInstalled;
 						continue;
 					}
 
 					File.Copy(file, targetPath);
-					entry.State = FileState.Copied;
+					entry.State = InstallState.Installed;
+				}
+
+				foreach (string[] pathParts in configInstallGroups)
+				{
+					string xpathElem = string.Join("/", pathParts);
+					foreach (XmlElement configDoc in this.Config.ConfigurationElement.SelectNodes(xpathElem, XmlNamespaces.Manager))
+					{
+						
+					}
 				}
 
 				installLog.Result = InstallState.Installed;
@@ -163,7 +181,7 @@ namespace Sage.Extensibility
 
 		public CacheableXmlDocument GetDictionary(SageContext context, string locale)
 		{
-			SageContext pluginContext = GetPluginContext(context);
+			SageContext pluginContext = GetExtensionContext(context);
 			string path = pluginContext.Path.GetDictionaryPath(locale);
 			if (File.Exists(path))
 				return pluginContext.Resources.LoadXml(path);
@@ -171,7 +189,7 @@ namespace Sage.Extensibility
 			return null;
 		}
 
-		private SageContext GetPluginContext(SageContext context)
+		private SageContext GetExtensionContext(SageContext context)
 		{
 			return new SageContext(context, this.Config);
 		}
@@ -179,11 +197,12 @@ namespace Sage.Extensibility
 		private void Rollback(InstallLog installLog)
 		{
 			log.DebugFormat("Rolling back log extension '{0}'", this.Name);
-			foreach (InstallFile file in installLog.Files.Where(f => f.State == FileState.Copied))
+			foreach (InstallItem file in installLog.Items.Where(f => f.State == InstallState.Installed))
 			{
 				try
 				{
 					File.Delete(file.Path);
+					file.State = InstallState.UnInstalled;
 				}
 				catch (Exception ex)
 				{

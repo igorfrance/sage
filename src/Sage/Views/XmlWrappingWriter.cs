@@ -7,7 +7,6 @@
 	/// <summary>
 	/// Implements an <see cref="XmlWriter"/> that wraps another <see cref="XmlWriter"/>.
 	/// </summary>
-	[ContractClass(null)]
 	public class XmlWrappingWriter : XmlWriter
 	{
 		private XmlWriter writer; 

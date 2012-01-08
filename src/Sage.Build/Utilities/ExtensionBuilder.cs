@@ -97,7 +97,8 @@
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = extensionConfig.SelectSingleElement("p:configuration/p:extension", nm);
 
-			ProjectConfiguration config = ProjectConfiguration.Create(configPath, systemConfigPath);
+			// ProjectConfiguration config = ProjectConfiguration.Create(configPath, systemConfigPath);
+			ProjectConfiguration config = ProjectConfiguration.Create(null, systemConfigPath);
 			XmlElement configRoot = config.ConfigurationElement;
 
 			if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))

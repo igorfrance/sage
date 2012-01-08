@@ -96,7 +96,7 @@
     <Compile Include="Configuration\PackageConfiguration.cs" />
     <Compile Include="Configuration\PackageGroup.cs" />
     <Compile Include="Extensibility\Constants.cs" />
-    <Compile Include="Extensibility\InstallFile.cs" />
+    <Compile Include="Extensibility\InstallItem.cs" />
     <Compile Include="Extensibility\InstallLog.cs" />
     <Compile Include="Extensibility\NodeHandlerAttribute.cs" />
     <Compile Include="Extensibility\Delegates.cs" />

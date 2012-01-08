@@ -7,10 +7,9 @@
 		UnInstalled,
 	}
 
-	internal enum FileState
+	internal enum InstallItemType
 	{
-		Copied,
-		NotCopied,
-		Removed,
+		File,
+		Configuration,
 	}
 }
