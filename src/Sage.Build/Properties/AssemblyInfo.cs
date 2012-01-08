@@ -8,4 +8,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("cc056797-064d-463c-8b14-29a400f6b49a")]
 
 // configure logging from the file specified by System.Configuration.ConfigurationSettings for the AppDomain, and watch for changes
-[assembly: log4net.Config.XmlConfigurator]
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.xml", Watch = true)]

@@ -13,8 +13,12 @@
 	using Kelp.Core.Extensions;
 	using Sage.Configuration;
 
+	using log4net;
+
 	internal class ExtensionBuilder : IUtility
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionBuilder).FullName);
+
 		private NameValueCollection arguments;
 		private string applicationPath;
 		private string extensionName;
@@ -83,6 +87,11 @@
 				throw new FileNotFoundException(
 					string.Format("The specified project configuration path '{0}' doesn't exist", configPath));
 			}
+
+			log.DebugFormat("Application path is '{0}'.", applicationPath);
+			log.DebugFormat("System config path is '{0}'.", systemConfigPath);
+			log.DebugFormat("Extension config path is '{0}'.", extensionConfigPath);
+			log.DebugFormat("Config path is '{0}'.", configPath);
 
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
