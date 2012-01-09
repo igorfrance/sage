@@ -97,8 +97,7 @@
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = extensionConfig.SelectSingleElement("p:configuration/p:extension", nm);
 
-			// ProjectConfiguration config = ProjectConfiguration.Create(configPath, systemConfigPath);
-			ProjectConfiguration config = ProjectConfiguration.Create(null, systemConfigPath);
+			ProjectConfiguration config = ProjectConfiguration.Create(configPath, systemConfigPath);
 			XmlElement configRoot = config.ConfigurationElement;
 
 			if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))
@@ -130,7 +129,7 @@
 				}
 
 				// binaries
-				string binarySourcePath = context.Path.Resolve("/bin");
+				string binarySourcePath = context.Path.Resolve("~/bin");
 				foreach (string file in config.Package.Binaries.GetFiles(context))
 				{
 					string childPath = file.ReplaceAll(binarySourcePath.EscapeMeta(), string.Empty).Trim('/', '\\');

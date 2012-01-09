@@ -47,6 +47,9 @@
 
 				else if ((match = wildcardFilePath.Match(include)).Success)
 					result.AddRange(GetAllFilesStartingWithInDirectory(context, match.Groups[1].Value));
+
+				else
+					result.AddRange(GetAllFilesFrom(context, include));
 			}
 
 			foreach (string exclude in this.Excludes)
@@ -59,6 +62,9 @@
 
 				else if ((match = wildcardFilePath.Match(exclude)).Success)
 					result = ExcludeAllFilesStartingWithInDirectory(result, context, match.Groups[1].Value);
+
+				else
+					result = ExcludeAllFilesFrom(result, context, exclude);
 			}
 
 
@@ -115,7 +121,7 @@
 
 		public List<string> Excludes { get; private set; }
 
-		private static IEnumerable<string> GetAllFilesInDirectory(SageContext context, string directory)
+		private static List<string> GetAllFilesInDirectory(SageContext context, string directory)
 		{
 			string resolved = context.Path.Resolve(directory);
 			if (!Directory.Exists(resolved))
@@ -124,7 +130,7 @@
 			return Directory.GetFiles(resolved, "*.*", SearchOption.AllDirectories).ToList();
 		}
 
-		private static IEnumerable<string> GetAllFilesOfTypeInDirectory(SageContext context, string directory, string filter)
+		private static List<string> GetAllFilesOfTypeInDirectory(SageContext context, string directory, string filter)
 		{
 			string resolved = context.Path.Resolve(directory);
 			if (!Directory.Exists(resolved))
@@ -133,7 +139,7 @@
 			return new List<string>(Directory.GetFiles(resolved, filter, SearchOption.AllDirectories));
 		}
 
-		private static IEnumerable<string> GetAllFilesStartingWithInDirectory(SageContext context, string startsWith)
+		private static List<string> GetAllFilesStartingWithInDirectory(SageContext context, string startsWith)
 		{
 			string directory = Path.GetDirectoryName(startsWith);
 			string filter = Path.GetFileName(startsWith).ToLower();
@@ -145,6 +151,23 @@
 			return new List<string>(
 				Directory.GetFiles(resolved, "*.*", SearchOption.AllDirectories)
 					.Where(f => f.ToLower().StartsWith(filter)));
+		}
+
+		private static List<string> GetAllFilesFrom(SageContext context, string filepath)
+		{
+			List<string> result = new List<string>();
+
+			string resolved = context.Path.Resolve(filepath);
+			if (Directory.Exists(resolved))
+			{
+				result.AddRange(Directory.GetFiles(resolved, "*.*", SearchOption.AllDirectories));
+			}
+			else if (File.Exists(resolved))
+			{
+				result.Add(resolved);
+			}
+
+			return result;
 		}
 
 		private List<string> ExcludeAllFilesInDirectory(List<string> files, SageContext context, string directory)
@@ -169,6 +192,13 @@
 			string resolved = context.Path.Resolve(directory).ToLower();
 
 			return files.Where(f => !(f.ToLower().StartsWith(resolved) && Path.GetFileName(f).ToLower().StartsWith(filter))).ToList();
+		}
+
+		private List<string> ExcludeAllFilesFrom(List<string> files, SageContext context, string filepath)
+		{
+			List<string> excludeFiles = GetAllFilesFrom(context, filepath);
+
+			return files.Where(f => excludeFiles.Where(e => e.ToLower() == f.ToLower()).Count() == 0).ToList();
 		}
 	}
 }

@@ -67,6 +67,28 @@
 		}
 
 		/// <summary>
+		/// Gets the smaller of the two dates.
+		/// </summary>
+		/// <param name="date1">The first date to compare.</param>
+		/// <param name="date2">The second date to compare.</param>
+		/// <returns>The smaller of two dates.</returns>
+		public static DateTime Min(this DateTime date1, DateTime date2)
+		{
+			return date1 <= date2 ? date1 : date2;
+		}
+
+		/// <summary>
+		/// Gets the larger of the two dates.
+		/// </summary>
+		/// <param name="date1">The first date to compare.</param>
+		/// <param name="date2">The second date to compare.</param>
+		/// <returns>The larger of two dates.</returns>
+		public static DateTime Max(this DateTime date1, DateTime date2)
+		{
+			return date1 >= date2 ? date1 : date2;
+		}
+
+		/// <summary>
 		/// Determines whether instance <paramref name="dt"/> is equal to <paramref name="other"/>, comparing
 		/// only the year, month and date, disregarding the time completely.
 		/// </summary>

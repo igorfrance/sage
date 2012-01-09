@@ -19,16 +19,9 @@ namespace Sage.Extensibility
 	internal class ExtensionInfo
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionInfo).FullName);
-		private static readonly List<string[]> configInstallGroups = new List<string[]>
-		{
-			new[] { "p:metaViews", "p:view" },
-			new[] { "p:routing", "p:route" },
-			new[] { "p:links", "p:link" },
-			new[] { "p:scripts", "p:script" },
-			new[] { "p:modules", "p:module" },
-		};
 
 		private readonly IOrderedEnumerable<InstallLog> orderedLogs;
+		private List<Assembly> assemblies;
 		private bool loaded;
 
 		internal ExtensionInfo(string pluginArchive)
@@ -37,8 +30,9 @@ namespace Sage.Extensibility
 			Contract.Requires<ArgumentException>(File.Exists(pluginArchive));
 
 			this.Name = Path.GetFileNameWithoutExtension(pluginArchive);
+			this.ArchiveDate = File.GetLastWriteTime(pluginArchive).Max(File.GetCreationTime(pluginArchive));
 			this.Assets = new List<string>();
-			this.Assemblies = new List<string>();
+			this.AssembyNames = new List<string>();
 			this.SourceArchive = pluginArchive;
 			this.SourceDirectory = Path.ChangeExtension(pluginArchive, null);
 			this.InstallLogFile = Path.ChangeExtension(this.SourceArchive, ".history.xml");
@@ -46,12 +40,18 @@ namespace Sage.Extensibility
 			if (!Directory.Exists(this.SourceDirectory))
 				this.ExtractArchive();
 
+			else if (this.ArchiveDate > Directory.GetLastWriteTime(this.SourceDirectory))
+			{
+				Directory.Delete(this.SourceDirectory);
+				this.ExtractArchive();
+			}
+
 			this.ReadLog();
 
 			string bindir = Path.Combine(this.SourceDirectory, "bin");
 			if (Directory.Exists(bindir))
 			{
-				this.Assemblies.AddRange(
+				this.AssembyNames.AddRange(
 					Directory.GetFiles(bindir, "*.dll", SearchOption.AllDirectories));
 			}
 
@@ -73,9 +73,22 @@ namespace Sage.Extensibility
 
 		public string Name { get; private set; }
 
+		public DateTime ArchiveDate { get; private set; }
+
 		public ProjectConfiguration Config { get; private set; }
 
-		public List<string> Assemblies { get; private set; }
+		public List<Assembly> Assemblies
+		{
+			get
+			{
+				if (assemblies == null)
+					LoadAssemblies();
+
+				return assemblies;
+			}
+		}
+
+		public List<string> AssembyNames { get; private set; }
 
 		public List<string> Assets { get; private set; }
 
@@ -96,6 +109,20 @@ namespace Sage.Extensibility
 
 				return orderedLogs.Last().Result == InstallState.Installed;
 			}
+		}
+
+		public bool IsUpdateAvailable
+		{
+			get
+			{
+				return this.ArchiveDate > orderedLogs.Last().Date;
+			}
+		}
+
+		public void Update(SageContext context)
+		{
+			Uninstall();
+			Install(context);
 		}
 
 		public void Install(SageContext context)
@@ -128,15 +155,6 @@ namespace Sage.Extensibility
 					entry.State = InstallState.Installed;
 				}
 
-				foreach (string[] pathParts in configInstallGroups)
-				{
-					string xpathElem = string.Join("/", pathParts);
-					foreach (XmlElement configDoc in this.Config.ConfigurationElement.SelectNodes(xpathElem, XmlNamespaces.Manager))
-					{
-						
-					}
-				}
-
 				installLog.Result = InstallState.Installed;
 			}
 			catch (Exception ex)
@@ -163,7 +181,10 @@ namespace Sage.Extensibility
 				return;
 
 			log.DebugFormat("Uninstalling extension '{0}'", this.Name);
-			Rollback(orderedLogs.Last());
+
+			var installLog = orderedLogs.Last();
+			Rollback(installLog);
+			SaveLog(installLog);
 		}
 
 		public void LoadAssemblies()
@@ -171,9 +192,10 @@ namespace Sage.Extensibility
 			if (loaded)
 				return;
 
-			foreach (string assemblyPath in this.Assemblies)
+			assemblies = new List<Assembly>();
+			foreach (string assemblyPath in this.AssembyNames)
 			{
-				Assembly.LoadFrom(assemblyPath);
+				assemblies.Add(Assembly.LoadFrom(assemblyPath));
 			}
 
 			loaded = true;
@@ -209,6 +231,8 @@ namespace Sage.Extensibility
 					log.Error(ex);
 				}
 			}
+
+			installLog.Result = InstallState.UnInstalled;
 		}
 
 		private void SaveLog(InstallLog installLog)

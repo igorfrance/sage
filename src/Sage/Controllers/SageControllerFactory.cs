@@ -26,7 +26,21 @@
 		protected override IController GetControllerInstance(RequestContext requestContext, Type type)
 		{
 			if (type == null)
-				return base.GetControllerInstance(requestContext, type);
+			{
+				Route route = (Route) requestContext.RouteData.Route;
+
+				if (route.DataTokens["namespaces"] != null && route.DataTokens["namespaces"] is string[])
+				{
+					string controllerName = string.Concat(route.Defaults["controller"], "Controller");
+					string controllerNs = ((string[]) route.DataTokens["namespaces"])[0];
+
+					string typeName = string.Concat(controllerNs, ".", controllerName);
+					type = Application.GetType(typeName);
+				}
+			}
+
+			if (type == null)
+				return base.GetControllerInstance(requestContext, null);
 
 			ConstructorInfo[] constructors = type.GetConstructors();
 			IController result = (IController) constructors[0].Invoke(new object[] { });

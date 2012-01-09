@@ -42,6 +42,9 @@ namespace Sage.Extensibility
 
 				if (!extension.IsInstalled)
 					extension.Install(context);
+
+				else if (extension.IsUpdateAvailable)
+					extension.Update(context);
 			}
 		}
 	}

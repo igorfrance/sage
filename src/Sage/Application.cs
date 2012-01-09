@@ -34,6 +34,7 @@
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Application).FullName);
 		private static readonly ExtensionManager extensionManager = new ExtensionManager();
+		private static List<Assembly> relevantAssemblies;
 
 		/// <summary>
 		/// Gets a list with the current assembly and all assemblies loaded from the <see cref="ProjectConfiguration.AssemblyPath"/> that 
@@ -43,28 +44,49 @@
 		{
 			get
 			{
-				var currentAssembly = Assembly.GetExecutingAssembly();
-				List<Assembly> result = new List<Assembly> { currentAssembly };
-				try
+				lock (log)
 				{
-					var files = Directory.GetFiles(ProjectConfiguration.AssemblyPath, "*.dll", SearchOption.AllDirectories);
-					foreach (string path in files)
+					if (relevantAssemblies == null)
 					{
-						Assembly asmb = Assembly.LoadFrom(path);
-						if (asmb.GetReferencedAssemblies().Where(a => a.FullName == currentAssembly.FullName).Count() != 0)
+						lock (log)
 						{
-							result.Add(asmb);
+							var currentAssembly = Assembly.GetExecutingAssembly();
+							relevantAssemblies = new List<Assembly> { currentAssembly };
+							var files = Directory.GetFiles(ProjectConfiguration.AssemblyPath, "*.dll", SearchOption.AllDirectories);
+							foreach (string path in files)
+							{
+								Assembly asmb = Assembly.LoadFrom(path);
+								if (asmb.GetReferencedAssemblies().Where(a => a.FullName == currentAssembly.FullName).Count() != 0)
+								{
+									relevantAssemblies.Add(asmb);
+								}
+							}
 						}
 					}
 				}
-				catch (Exception ex)
-				{
-					log.ErrorFormat("Failed to count the numer of assemblies: {0}", ex.Message);
-				}
 
-				return result;
+				return relevantAssemblies;
 			}
 		}
+
+		public static Type GetType(string typeName)
+		{
+			Contract.Requires<ArgumentNullException>(typeName != null);
+
+			Type result = Type.GetType(typeName, false);
+			if (result != null)
+				return result;
+
+			foreach (Assembly asm in RelevantAssemblies)
+			{
+				result = asm.GetType(typeName, false);
+				if (result != null)
+					break;
+			}
+
+			return result;
+		}
+
 
 		internal static ExtensionManager Extensions
 		{
@@ -93,9 +115,10 @@
 			SageContext context = new SageContext(HttpContext.Current);
 			extensionManager.Initialize(context);
 
-			foreach (ExtensionInfo plugin in extensionManager)
+			foreach (ExtensionInfo extension in extensionManager)
 			{
-				
+				ProjectConfiguration.Current.RegisterExtension(extension.Config);
+				RelevantAssemblies.AddRange(extension.Assemblies);
 			}
 
 			RouteTable.Routes.IgnoreRoute("{resource}.axd/{*pathInfo}");

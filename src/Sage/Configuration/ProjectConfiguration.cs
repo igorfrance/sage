@@ -542,5 +542,68 @@
 
 			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));
 		}
+
+		internal void RegisterExtension(ProjectConfiguration extensionConfig)
+		{
+			Contract.Requires<ArgumentNullException>(extensionConfig != null);
+			Contract.Requires<ArgumentException>(extensionConfig.Type == ConfigurationType.Extension);
+			Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(extensionConfig.Name));
+
+			string extensionName = extensionConfig.Name;
+			foreach (string name in extensionConfig.Routing.Keys)
+			{
+				if (this.Routing.ContainsKey(name))
+				{
+					log.WarnFormat("Skipped registering route '{0}' from extension '{1}' because a route with the same name already exists.", name, extensionName);
+					continue;
+				}
+
+				this.Routing.Add(name, extensionConfig.Routing[name]);
+			}
+
+			foreach (string name in extensionConfig.Links.Keys)
+			{
+				if (this.Links.ContainsKey(name))
+				{
+					log.WarnFormat("Skipped registering link '{0}' from extension '{1}' because a link with the same name already exists.", name, extensionName);
+					continue;
+				}
+
+				this.Links.Add(name, extensionConfig.Links[name]);
+			}
+
+			foreach (string name in extensionConfig.ScriptLibraries.Keys)
+			{
+				if (this.ScriptLibraries.ContainsKey(name))
+				{
+					log.WarnFormat("Skipped registering script library '{0}' from extension '{1}' because a script library with the same name already exists.", name, extensionName);
+					continue;
+				}
+
+				this.ScriptLibraries.Add(name, extensionConfig.ScriptLibraries[name]);
+			}
+
+			foreach (string name in extensionConfig.MetaViews.Keys)
+			{
+				if (this.MetaViews.ContainsKey(name))
+				{
+					log.WarnFormat("Skipped registering meta view '{0}' from extension '{1}' because a meta view with the same name already exists.", name, extensionName);
+					continue;
+				}
+
+				this.MetaViews.Add(name, extensionConfig.MetaViews[name]);
+			}
+
+			foreach (ModuleConfiguration module in extensionConfig.Modules)
+			{
+				if (this.Modules.Where(m => m.Name == module.Name).Count() != 0)
+				{
+					log.WarnFormat("Skipped registering module '{0}' from extension '{1}' because a module with the same name already exists.", module.Name, extensionName);
+					continue;
+				}
+
+				this.Modules.Add(module);
+			}
+		}
 	}
 }

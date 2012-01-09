@@ -58,14 +58,7 @@
 
 		public InstallItem AddFile(string path)
 		{
-			InstallItem file = new InstallItem { Path = path, Type = InstallItemType.File };
-			this.Items.Add(file);
-			return file;
-		}
-
-		public InstallItem AddConfiguration(string path, string name)
-		{
-			InstallItem file = new InstallItem { Path = path, Name = name, Type = InstallItemType.Configuration };
+			InstallItem file = new InstallItem { Path = path };
 			this.Items.Add(file);
 			return file;
 		}
@@ -77,19 +70,11 @@
 			logElement.SetAttribute("result", this.Result.ToString());
 
 			XmlElement filesElement = logElement.AppendElement("files");
-			foreach (InstallItem file in this.Items.Where(i => i.Type == InstallItemType.File))
+			foreach (InstallItem file in this.Items)
 			{
 				XmlElement fileElement = filesElement.AppendElement("file");
 				fileElement.SetAttribute("path", file.Path);
 				fileElement.SetAttribute("state", file.State.ToString().ToLower());
-			}
-
-			foreach (InstallItem config in this.Items.Where(i => i.Type == InstallItemType.Configuration))
-			{
-				XmlElement fileElement = filesElement.AppendElement("configuration");
-				fileElement.SetAttribute("path", config.Path);
-				fileElement.SetAttribute("name", config.Name);
-				fileElement.SetAttribute("state", config.State.ToString().ToLower());
 			}
 
 			if (this.Error != null)
