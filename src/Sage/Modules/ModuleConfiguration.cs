@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Xml;
 
@@ -21,6 +22,7 @@
 		private static readonly ILog log = LogManager.GetLogger(typeof(ModuleConfiguration).FullName);
 
 		private readonly List<ModuleResource> resources = new List<ModuleResource>();
+		private Type moduleType;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ModuleConfiguration"/> class, using the specified 
@@ -31,10 +33,9 @@
 		internal ModuleConfiguration(Type moduleType, params string[] tagNames)
 			: this()
 		{
-			if (moduleType == null)
-				throw new ArgumentNullException("moduleType");
+			Contract.Requires<ArgumentNullException>(moduleType != null);
 
-			this.Type = moduleType;
+			this.moduleType = moduleType;
 			this.Name = moduleType.Name.Replace("Module", string.Empty);
 
 			if (tagNames.Length == 0)
@@ -51,28 +52,11 @@
 		internal ModuleConfiguration(XmlElement configElement)
 			: this()
 		{
-			if (configElement == null)
-				throw new ArgumentNullException("configElement");
+			Contract.Requires<ArgumentNullException>(configElement != null);
 
 			this.Name = configElement.GetAttribute("name");
 
-			Type moduleType = typeof(NullModule);
-			string typeName = configElement.GetAttribute("type");
-			if (!string.IsNullOrEmpty(typeName))
-			{
-				Type t = Type.GetType(typeName, false);
-				if (t == null)
-				{
-					log.ErrorFormat(string.Format(string.Concat(
-						"The type '{0}' specified for module '{1}' could not be created and the system will use '{2}' instead. ",
-						"To use a custom type for this module, make sure the type name is fully qualified with the name of the ",
-						"assembly it lives in."), typeName, this.Name, moduleType.FullName));
-				}
-				else
-					moduleType = t;
-			}
-
-			this.Type = moduleType;
+			this.TypeName = configElement.GetAttribute("type");
 			this.TagNames = new List<string>();
 
 			var tagNameNodes = configElement.SelectNodes("p:tags/p:tag", XmlNamespaces.Manager);
@@ -157,7 +141,15 @@
 
 		public string Name { get; private set; }
 
-		public Type Type { get; private set; }
+		public Type Type
+		{
+			get
+			{
+				return moduleType ?? (moduleType = Application.GetType(this.TypeName));
+			}
+		}
+
+		public string TypeName { get; private set; }
 
 		public IList<string> TagNames { get; private set; }
 
@@ -171,7 +163,7 @@
 			CacheableXmlDocument resultDoc = new CacheableXmlDocument();
 			resultDoc.LoadXml(DefaultXslt);
 
-			foreach (ModuleConfiguration config in context.Config.Modules)
+			foreach (ModuleConfiguration config in context.ProjectConfiguration.Modules.Values)
 			{
 				foreach (string path in config.Stylesheets)
 				{

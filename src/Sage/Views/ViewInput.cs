@@ -1,9 +1,14 @@
 ﻿namespace Sage.Views
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Collections.Generic;
 	using System.Xml;
+
+	using Kelp.Core;
+
+	using Sage.ResourceManagement;
 
 	using log4net;
 	using Sage.Configuration;
@@ -15,43 +20,81 @@
 	public class ViewInput
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewInput).FullName);
+		private readonly OrderedDictionary<string, ModuleConfiguration> modules = new OrderedDictionary<string, ModuleConfiguration>();
+		private readonly SageContext context;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewInput"/> class.
 		/// </summary>
-		/// <param name="viewName">The name of this view.</param>
-		/// <exception cref="ArgumentNullException">If <paramref name="viewName"/> is <c>null</c> or empty.</exception>
-		public ViewInput(string viewName)
+		/// <param name="viewConfiguration">The view configuration associated with this view input.</param>
+		public ViewInput(ViewConfiguration viewConfiguration)
 		{
-			if (string.IsNullOrEmpty(viewName))
-				throw new ArgumentNullException("viewName");
+			Contract.Requires<ArgumentException>(viewConfiguration != null);
 
-			this.ViewName = viewName;
+			this.context = viewConfiguration.Context;
+
+			this.ViewConfiguration = viewConfiguration;
 			this.ModuleResults = new Dictionary<string, List<ModuleResult>>();
-			this.Resources = new List<ModuleResource>();
-			this.Libraries = new List<string>();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewInput"/> class.
 		/// </summary>
-		/// <param name="viewName">The name of this view.</param>
-		/// <param name="viewConfig">The configuration node of the view template this class handles.</param>
-		/// <exception cref="ArgumentNullException">If <paramref name="viewConfig"/> is <c>null</c>.</exception>
-		public ViewInput(string viewName, XmlElement viewConfig)
-			: this(viewName)
+		/// <param name="viewConfiguration">The name of this view.</param>
+		/// <param name="viewElement">The configuration element of the view template this class handles.</param>
+		public ViewInput(ViewConfiguration viewConfiguration, XmlElement viewElement)
+			: this(viewConfiguration)
 		{
-			if (viewConfig == null)
-				throw new ArgumentNullException("viewConfig");
+			Contract.Requires<ArgumentException>(viewElement != null);
 
-			this.ConfigNode = (XmlElement) viewConfig.CloneNode(true);
+			this.ConfigNode = (XmlElement) viewElement.CloneNode(true);
 		}
 
-		public List<ModuleResource> Resources { get; private set; }
+		public List<ModuleResource> Resources
+		{
+			get
+			{
+				var result = new List<ModuleResource>();
+				foreach (ModuleConfiguration module in this.modules.Values)
+				{
+					foreach (ModuleResource resource in module.Resources)
+					{
+						if (result.Where(r => r.Path == resource.Path).Count() != 0)
+							continue;
 
-		public List<string> Libraries { get; private set; }
+						result.Add(resource);
+					}
+				}
 
-		public string ViewName { get; private set; }
+				return result;
+			}
+		}
+
+		public List<ResourceLibraryInfo> Libraries
+		{
+			get
+			{
+				var config = this.ViewConfiguration.Context.ProjectConfiguration;
+				var result = new List<ResourceLibraryInfo>(config.ResourceLibraries.Values.Where(l => l.IsGlobal));
+				foreach (ModuleConfiguration module in this.modules.Values)
+				{
+					foreach (string name in module.Libraries)
+					{
+						if (!config.ResourceLibraries.ContainsKey(name))
+							continue;
+
+						if (result.Where(r => r.Name == name).Count() != 0)
+							continue;
+
+						result.Add(config.ResourceLibraries[name]);
+					}
+				}
+
+				return result;
+			}
+		}
+
+		public ViewConfiguration ViewConfiguration { get; private set; }
 
 		/// <summary>
 		/// Gets the XML configuration node of the view this instance represents.
@@ -113,13 +156,57 @@
 		private void AddModuleType(string moduleTagName)
 		{
 			this.ModuleResults.Add(moduleTagName, new List<ModuleResult>());
+			if (this.modules.ContainsKey(moduleTagName))
+				return;
 
-			ModuleConfiguration config = SageModuleFactory.GetModuleConfiguration(moduleTagName);
+			// add the module and all its references to this object's module dictionary
+			ModuleConfiguration moduleConfig = SageModuleFactory.GetModuleConfiguration(moduleTagName);
+			this.modules.Add(moduleTagName, moduleConfig);
+			foreach (string name in moduleConfig.Dependencies.Where(n => !modules.ContainsKey(n)))
+			{
+				if (!context.ProjectConfiguration.Modules.ContainsKey(name))
+				{
+					log.ErrorFormat("Module '{0}' referenced from module '{1}' was not found.",
+						name, moduleConfig.Name);
 
-			this.Resources.AddRange(config.Resources.Where(r => 
-				this.Resources.Where(r1 => r1.Path == r.Path).Count() == 0));
+					continue;
+				}
 
-			this.Libraries.AddRange(config.Libraries.Where(l => !this.Libraries.Contains(l)));
+				this.modules.Add(name, context.ProjectConfiguration.Modules[name]);
+			}
+
+			// reorder the modules by dependencies
+			List<ModuleConfiguration> temp = new List<ModuleConfiguration>(modules.Values);
+			int index = 0;
+			while (index < modules.Count)
+			{
+				ModuleConfiguration module = temp[index];
+				bool changed = false;
+				foreach (string name in module.Dependencies)
+				{
+					if (!context.ProjectConfiguration.Modules.ContainsKey(name))
+						continue;
+
+					ModuleConfiguration reference = context.ProjectConfiguration.Modules[name];
+					int other = temp.IndexOf(reference);
+					if (other > index)
+					{
+						temp[index] = reference;
+						temp[other] = module;
+						changed = true;
+						break;
+					}
+				}
+
+				if (!changed)
+					index++;
+			}
+
+			modules.Clear();
+			foreach (ModuleConfiguration module in temp)
+			{
+				modules.Add(module.Name, module);
+			}
 		}
 	}
 }

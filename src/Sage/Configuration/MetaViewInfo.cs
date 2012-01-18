@@ -49,24 +49,14 @@
 		/// <summary>
 		/// Gets the XSLT transform associated with the meta view this object represents.
 		/// </summary>
-		public XsltTransform Processor
-		{
-			get;
-			private set;
-		}
+		public XsltTransform Processor { get; private set; }
 
-		internal bool IsLoaded
-		{
-			get;
-			private set;
-		}
-
-		internal void Load(SageContext context)
+		internal MetaViewInfo Load(SageContext context)
 		{
 			if (!string.IsNullOrWhiteSpace(this.ViewPath))
 				this.Processor = XsltTransform.Create(context, this.ViewPath);
 
-			this.IsLoaded = true;
+			return this;
 		}
 	}
 }

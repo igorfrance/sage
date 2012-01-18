@@ -56,7 +56,7 @@
 			}
 
 			DictionaryFileCollection coll = GetTranslationDictionaryCollection(context);
-			CategoryInfo categoryInfo = context.Config.Categories[context.Category];
+			CategoryInfo categoryInfo = context.ProjectConfiguration.Categories[context.Category];
 			GlobalizationSummary summary = new GlobalizationSummary(resource, categoryInfo);
 
 			Stopwatch sw = new Stopwatch();
@@ -138,7 +138,7 @@
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(locale));
 			Contract.Requires<ArgumentNullException>(output != null);
 
-			LocaleInfo localeInfo = context.Config.Locales[locale];
+			LocaleInfo localeInfo = context.ProjectConfiguration.Locales[locale];
 			XmlElement fallbacks = input.CreateElement("fallbacks");
 			foreach (string name in localeInfo.ResourceNames)
 				fallbacks.AppendElement(input.CreateElement("locale")).InnerText = name;

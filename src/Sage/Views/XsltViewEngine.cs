@@ -48,7 +48,7 @@
 			if (controllerContext.Controller is SageController)
 			{
 				SageController controller = (SageController) controllerContext.Controller;
-				ProjectConfiguration config = controller.Context.Config;
+				ProjectConfiguration config = controller.Context.ProjectConfiguration;
 				MetaViewInfo metaViewInfo = config.MetaViews.SelectView(controller.Context);
 				if (metaViewInfo != null)
 				{

@@ -50,7 +50,7 @@
 			Contract.Requires<ArgumentNullException>(template != null);
 
 			SageController controller = (SageController) viewContext.Controller;
-			XmlDocument requestXml = controller.GetViewXml(viewContext);
+			XmlDocument requestXml = controller.PrepareViewXml(viewContext);
 			template.Transform(requestXml, textWriter, controller.Context);
 		}
 	}

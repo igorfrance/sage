@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
@@ -14,6 +15,7 @@
 	using System.Web.Routing;
 
 	using Kelp.Core;
+	using Kelp.Core.Extensions;
 
 	using Sage.Extensibility;
 
@@ -23,6 +25,7 @@
 	using Sage.Controllers;
 	using Sage.Routing;
 	using Sage.Views;
+	using System.Diagnostics;
 
 	/// <summary>
 	/// Implements the <see cref="HttpApplication"/> class for this web application.
@@ -69,6 +72,14 @@
 			}
 		}
 
+		internal static ExtensionManager Extensions
+		{
+			get
+			{
+				return extensionManager;
+			}
+		}
+
 		public static Type GetType(string typeName)
 		{
 			Contract.Requires<ArgumentNullException>(typeName != null);
@@ -84,16 +95,49 @@
 					break;
 			}
 
+			if (typeName.IndexOf(",") != -1)
+			{
+				return GetType(typeName.ReplaceAll(@",.*$", string.Empty));
+			}
+
 			return result;
 		}
 
-
-		internal static ExtensionManager Extensions
+		internal static Dictionary<string, string> GetVirtualDirectories(SageContext context)
 		{
-			get
+			Dictionary<string, string> virtualDirectories = null;
+
+			try
 			{
-				return extensionManager;
+				string serverRootPath = context.MapPath("/").ToLower().TrimEnd('\\');
+				using (DirectoryEntry iis = new DirectoryEntry("IIS://Localhost/w3svc"))
+				{
+					IEnumerable<DirectoryEntry> websites = iis.Children.Cast<DirectoryEntry>()
+						.Where(c => c.SchemaClassName == "IIsWebServer");
+
+					foreach (DirectoryEntry website in websites)
+					{
+						using (website)
+						{
+							DirectoryEntry root = website.Children.Find("Root", "IIsWebVirtualDir");
+							string sitePath = root.Properties["path"].Value.ToString().ToLower().TrimEnd('\\');
+
+							if (sitePath == serverRootPath)
+							{
+								virtualDirectories = GetVirtualDirectories(root, string.Empty);
+								break;
+							}
+						}
+					}
+				}
 			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Could not retrieve virtual directories in the current application's web server: {0}", ex.Message);
+				virtualDirectories = new Dictionary<string, string>();
+			}
+
+			return virtualDirectories;
 		}
 
 		/// <summary>
@@ -117,8 +161,8 @@
 
 			foreach (ExtensionInfo extension in extensionManager)
 			{
-				ProjectConfiguration.Current.RegisterExtension(extension.Config);
 				RelevantAssemblies.AddRange(extension.Assemblies);
+				ProjectConfiguration.Current.RegisterExtension(extension.Config);
 			}
 
 			RouteTable.Routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
@@ -242,6 +286,27 @@
 			this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 			this.Response.Cache.SetNoStore();
 			this.Response.End();
+		}
+
+		private static Dictionary<string, string> GetVirtualDirectories(DirectoryEntry directory, string path)
+		{
+			IEnumerable<DirectoryEntry> directories = directory.Children.Cast<DirectoryEntry>()
+				.Where(c => c.SchemaClassName == "IIsWebVirtualDir");
+
+			Dictionary<string, string> result = new Dictionary<string, string>();
+			foreach (DirectoryEntry entry in directories)
+			{
+				string key = string.Concat(path, "/", entry.Name);
+				result.Add(key, entry.Properties["path"].Value.ToString().ToLower().TrimEnd('\\'));
+
+				Dictionary<string, string> childDirs = GetVirtualDirectories(entry, key);
+				foreach (string childKey in childDirs.Keys)
+				{
+					result.Add(childKey, childDirs[childKey]);
+				}
+			}
+
+			return result;
 		}
 	}
 }

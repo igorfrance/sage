@@ -159,7 +159,7 @@
 			this.constituents = new List<string>();
 
 			LocaleInfo localeInfo;
-			if (!context.Config.Locales.TryGetValue(this.Locale, out localeInfo))
+			if (!context.ProjectConfiguration.Locales.TryGetValue(this.Locale, out localeInfo))
 				throw new UnconfiguredLocaleException(this.Locale);
 
 			// locales contains the list of locales ordered by priority (high to low)
@@ -169,15 +169,15 @@
 			OrderedDictionary<string, List<CacheableXmlDocument>> allDictionaries = new OrderedDictionary<string, List<CacheableXmlDocument>>();
 			foreach (string locale in names)
 			{
-				if (!context.Config.Locales.ContainsKey(locale))
+				if (!context.ProjectConfiguration.Locales.ContainsKey(locale))
 					throw new ConfigurationError(string.Format("Dictionary name '{0}' is invalid because it doesn't match any of the configured locales. Valid names are: {1}", 
-						locale, string.Join(",", context.Config.Locales.Keys)));
+						locale, string.Join(",", context.ProjectConfiguration.Locales.Keys)));
 
 				List<CacheableXmlDocument> langDictionaries = new List<CacheableXmlDocument>();
-				string documentPath = context.Path.GetDictionaryPath(context.Category, locale);
+				string documentPath = context.Path.GetDictionaryPath(locale, context.Category);
 
 				// add extension dictionaries for the current locale
-				langDictionaries.AddRange(Application.Extensions.GetDictionaries(context, locale));
+				// langDictionaries.AddRange(Application.Extensions.GetDictionaries(context, locale));
 				
 				// add the project dictionary for the current locale
 				if (File.Exists(documentPath))

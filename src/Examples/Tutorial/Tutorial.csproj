@@ -73,14 +73,25 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="assets\css\fonts.css" />
+    <Content Include="assets\scripts\dashboard.js" />
+    <Content Include="assets\views\documentation\installation.html" />
+    <Content Include="Project.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="assets\css\gradients.css" />
     <Content Include="assets\css\tutorial.css" />
-    <Content Include="assets\scripts\tutorial\home.js" />
+    <Content Include="assets\scripts\lib\aeon.js" />
+    <Content Include="assets\views\examples\image-processing.html" />
+    <Content Include="assets\views\examples\resource-compression.html" />
+    <Content Include="assets\views\examples\resource-merging.html" />
+    <Content Include="assets\views\examples\xincludes.html" />
+    <Content Include="assets\views\examples\xml-in-sage.html" />
+    <Content Include="assets\views\examples\helloworld.html" />
     <Content Include="assets\views\home\index.html" />
-    <Content Include="assets\views\xslt\default.xsl" />
+    <Content Include="assets\xslt\default.xslt" />
     <Content Include="Global.asax" />
     <Content Include="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

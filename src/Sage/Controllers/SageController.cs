@@ -11,6 +11,9 @@
 
 	using Kelp;
 	using Kelp.Core.Extensions;
+
+	using Sage.Extensibility;
+
 	using log4net;
 
 	using Sage.Modules;
@@ -30,11 +33,9 @@
 
 		protected Dictionary<string, ViewInfo> viewInfo = new Dictionary<string, ViewInfo>();
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageController).FullName);
-		private static readonly List<ViewXmlFilter> xmlFilters = new List<ViewXmlFilter>();
+		private static readonly List<FilterViewXml> xmlFilters = new List<FilterViewXml>();
 		private readonly ControllerMessages messages = new ControllerMessages();
 		private readonly IModuleFactory moduleFactory = new SageModuleFactory();
-
-		public delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
 
 		static SageController()
 		{
@@ -48,15 +49,15 @@
 				{
 					foreach (MethodInfo methodInfo in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttributes(typeof(ViewXmlFilterAttribute), false).Count() != 0))
 					{
-						ViewXmlFilter del;
+						FilterViewXml del;
 						try
 						{
-							del = (ViewXmlFilter) Delegate.CreateDelegate(typeof(ViewXmlFilter), methodInfo);
+							del = (FilterViewXml) Delegate.CreateDelegate(typeof(FilterViewXml), methodInfo);
 						}
 						catch
 						{
 							log.ErrorFormat("The method {0} on type {1} marked with attribute {2} doesn't match the required delegate {3}, and will therefore not be registered as an XML filter method",
-								methodInfo.Name, type.FullName, typeof(ViewXmlFilterAttribute).Name, typeof(ViewXmlFilter).Name);
+								methodInfo.Name, type.FullName, typeof(ViewXmlFilterAttribute).Name, typeof(FilterViewXml).Name);
 
 							continue;
 						}
@@ -151,15 +152,19 @@
 			return moduleFactory.CreateModule(moduleElement);
 		}
 
-		public virtual XmlDocument GetViewXml(ViewContext viewContext)
+		public virtual XmlDocument PrepareViewXml(ViewContext viewContext)
 		{
 			ViewInput input = viewContext.ViewData.Model as ViewInput;
 
 			string action = "action";
 			if (input != null)
-				action = input.ViewName;
+			{
+				action = input.ViewConfiguration.Name;
+			}
 			else if (this.ViewData["Action"] != null)
+			{
 				action = this.ViewData["Action"].ToString();
+			}
 
 			XmlDocument result = new XmlDocument();
 			XmlElement viewRoot = result.AppendElement("sage:view", XmlNamespaces.SageNamespace);
@@ -171,29 +176,33 @@
 
 			if (input != null && input.ConfigNode != null)
 			{
-				responseNode
-					.AppendElement("sage:model", XmlNamespaces.SageNamespace)
-					.AppendChild(result.ImportNode(input.ConfigNode, true));
-
 				if ((input.Resources.Count + input.Libraries.Count) != 0)
 				{
 					XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
 
-					foreach (ModuleResource resource in input.Resources)
-						resourceRoot.AppendChild(resource.ToXml(result, this.Context));
+					IEnumerable<ModuleResource> headResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Head);
+					IEnumerable<ModuleResource> bodyResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Body);
 
-					foreach (string libraryName in input.Libraries)
+					if ((input.Libraries.Count + headResources.Count()) != 0)
 					{
-						ScriptLibraryInfo info;
-						if (this.Context.Config.ScriptLibraries.TryGetValue(libraryName, out info))
-						{
-							resourceRoot.AppendChild(info.ToXml(result, this.Context));
-						}
-						else
-						{
-							log.ErrorFormat("The referenced script library '{0}' is undefined", libraryName);
-						}
+						XmlNode headNode = resourceRoot.AppendElement("sage:head", XmlNamespaces.SageNamespace);
+						foreach (ResourceLibraryInfo library in input.Libraries)
+							headNode.AppendChild(library.ToXml(result, this.Context));
+
+						foreach (ModuleResource resource in headResources)
+							headNode.AppendChild(resource.ToXml(result, this.Context));
 					}
+
+					if (bodyResources.Count() != 0)
+					{
+						XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
+						foreach (ModuleResource resource in bodyResources)
+							bodyNode.AppendChild(resource.ToXml(result, this.Context));
+					}
+
+					responseNode
+						.AppendElement("sage:model", XmlNamespaces.SageNamespace)
+						.AppendChild(result.ImportNode(input.ConfigNode, true));
 				}
 			}
 
@@ -279,7 +288,7 @@
 
 		protected virtual XmlDocument FilterViewXml(ViewContext viewContext, XmlDocument viewXml)
 		{
-			foreach (ViewXmlFilter filter in xmlFilters)
+			foreach (FilterViewXml filter in xmlFilters)
 			{
 				viewXml = filter.Invoke(this, viewContext, viewXml);
 			}

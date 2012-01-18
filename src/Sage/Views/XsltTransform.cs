@@ -141,6 +141,18 @@
 
 		public abstract void Transform(XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
 
+		internal static void ExcludeNamespacesPrefixResults(CacheableXmlDocument document)
+		{
+			List<string> prefixes = new List<string>();
+			foreach (XmlAttribute attribute in document.DocumentElement.Attributes)
+			{
+				if (attribute.Name.StartsWith("xmlns:"))
+					prefixes.Add(attribute.Name.Substring(6));
+			}
+
+			document.DocumentElement.SetAttribute("exclude-result-prefixes", string.Join(" ", prefixes.ToArray()));
+		}
+
 		protected XsltArgumentList GetArguments(Dictionary<string, object> arguments)
 		{
 			if (arguments == null || arguments.Count == 0)
@@ -158,18 +170,6 @@
 				result.AddParam(key, string.Empty, arguments[key]);
 
 			return result;
-		}
-
-		internal static void ExcludeNamespacesPrefixResults(CacheableXmlDocument document)
-		{
-			List<string> prefixes = new List<string>();
-			foreach (XmlAttribute attribute in document.DocumentElement.Attributes)
-			{
-				if (attribute.Name.StartsWith("xmlns:"))
-					prefixes.Add(attribute.Name.Substring(6));
-			}
-
-			document.DocumentElement.SetAttribute("exclude-result-prefixes", string.Join(" ", prefixes.ToArray()));
 		}
 	}
 }

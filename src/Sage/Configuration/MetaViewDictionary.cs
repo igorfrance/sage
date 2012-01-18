@@ -21,11 +21,8 @@
 			string viewName = context.Query[ParamNameMetaView];
 			if (viewName != null && this.ContainsKey(viewName) && context.IsDeveloperRequest)
 			{
-				MetaViewInfo result = context.Config.MetaViews[viewName];
-				if (!result.IsLoaded)
-					result.Load(context);
-
-				return result;
+				MetaViewInfo result = context.ProjectConfiguration.MetaViews[viewName];
+				return result.Load(context);
 			}
 
 			return null;

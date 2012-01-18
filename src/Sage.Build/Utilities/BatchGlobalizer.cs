@@ -59,11 +59,11 @@
 			XmlElement categorySummary = result.AppendElement(summaryDoc.CreateElement("category"));
 			categorySummary.SetAttribute("name", arguments["category"]);
 
-			CategoryInfo info = context.Config.Categories[arguments["category"]];
+			CategoryInfo info = context.ProjectConfiguration.Categories[arguments["category"]];
 			XmlElement localesElement = categorySummary.AppendElement(summaryDoc.CreateElement("locales"));
 			foreach (string name in info.Locales)
 			{
-				LocaleInfo locale = context.Config.Locales[name];
+				LocaleInfo locale = context.ProjectConfiguration.Locales[name];
 				XmlElement categoryNode = localesElement.AppendElement(summaryDoc.CreateElement("locale"));
 				categoryNode.SetAttribute("name", name);
 				categoryNode.SetAttribute("dictionaries", locale.DictionaryNames.Join(", "));
@@ -110,7 +110,7 @@
 
 		internal List<string> GetFiles()
 		{
-			string globDirName = context.Config.PathTemplates.GlobalizedDirectory.Replace("/", string.Empty).Replace("\\", string.Empty);
+			string globDirName = context.ProjectConfiguration.PathTemplates.GlobalizedDirectory.Replace("/", string.Empty).Replace("\\", string.Empty);
 			string[] skipDirs = new[] { "dictionary", globDirName };
 			
 			var files = new List<string>(Directory.GetFiles(this.categoryPath, "*.xml", SearchOption.AllDirectories))
@@ -123,7 +123,7 @@
 		{
 			log.InfoFormat("Merging assets within {0}...", this.categoryPath);
 
-			string searchName = Path.GetFileName(context.Config.PathTemplates.GlobalizedDirectory.TrimEnd('/', '\\'));
+			string searchName = Path.GetFileName(context.ProjectConfiguration.PathTemplates.GlobalizedDirectory.TrimEnd('/', '\\'));
 			string[] directories = Directory.GetDirectories(this.categoryPath, searchName, SearchOption.AllDirectories);
 			foreach (string folder in directories)
 			{
@@ -239,7 +239,7 @@
 
 		private IEnumerable<XmlResource> GetGlobalizableResources()
 		{
-			string globDirName = context.Config.PathTemplates.GlobalizedDirectory.Replace("/", string.Empty).Replace("\\", string.Empty);
+			string globDirName = context.ProjectConfiguration.PathTemplates.GlobalizedDirectory.Replace("/", string.Empty).Replace("\\", string.Empty);
 			string[] skipDirs = new[] { "dictionary", globDirName };
 			
 			var files = new List<string>(Directory.GetFiles(this.categoryPath, "*.xml", SearchOption.AllDirectories))

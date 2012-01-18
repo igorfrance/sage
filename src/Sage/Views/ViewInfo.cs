@@ -143,7 +143,7 @@
 		{
 			get
 			{
-				return this.ConfigExists || this.ViewSource != Sage.ViewSource.BuiltIn;
+				return this.ConfigExists || this.ViewSource == Sage.ViewSource.Specific;
 			}
 		}
 
@@ -240,6 +240,11 @@
 						try
 						{
 							configDoc = context.Resources.LoadXml(ConfigPath);
+							string defaultNamespace = configDoc.DocumentElement.GetAttribute("xmlns");
+							if (string.IsNullOrEmpty(defaultNamespace))
+								configDoc.DocumentElement.SetAttribute("xmlns", XmlNamespaces.XHtmlNamespace);
+
+							configDoc.LoadXml(configDoc.InnerXml);
 						}
 						catch (XmlException ex)
 						{

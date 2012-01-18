@@ -41,27 +41,34 @@ sage.devtools.XmlTree = new function XmlTree()
 	{
 		var xmltree = $(this).closest(".xmltree");
 		var state = $(this).closest(".toggler").find(".state");
-		var visible = xmltree.attr("data-namespacesVisible") == "true";
-		visible = !visible;
 
-		xmltree.find(".nsattrib").each(function (i, element)
+		if (xmltree.hasClass("namespaces"))
 		{
-			$(element).toggle(visible);
-		});
-
-		xmltree.attr("data-namespacesVisible", visible);
-		state.text(visible ? "on" : "off");
+			xmltree.removeClass("namespaces");
+			state.text("off");
+		}
+		else
+		{
+			xmltree.addClass("namespaces");
+			state.text("on");
+		}
 	}
 
 	function onToggleWordWrapClick()
 	{
-		var xmlroot = $(this).closest(".xmltree").find(".xmlroot");
+		var xmltree = $(this).closest(".xmltree");
 		var state = $(this).closest(".toggler").find(".state");
-		var whitespace = xmlroot.css("white-space");
-		whitespace = whitespace == "nowrap" ? "normal" : "nowrap";
 
-		xmlroot.css("white-space", whitespace);
-		state.text(whitespace == "nowrap" ? "off" : "on");
+		if (xmltree.hasClass("wrap"))
+		{
+			xmltree.removeClass("wrap");
+			state.text("off");
+		}
+		else
+		{
+			xmltree.addClass("wrap");
+			state.text("on");
+		}
 	}
 
 	function expandElement(element)

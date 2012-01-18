@@ -1,6 +1,7 @@
 ﻿namespace Sage.ResourceManagement
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Web;
@@ -16,6 +17,7 @@
 	public class PathResolver
 	{
 		private readonly SageContext context;
+		private static Dictionary<string, string> virtualDirectories;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PathResolver"/> class using the specified <see cref="SageContext"/>
@@ -51,7 +53,7 @@
 		{
 			get
 			{
-				return context.Config.PathTemplates.View.Replace("{assetpath}", this.AssetPath);
+				return context.ProjectConfiguration.PathTemplates.View.Replace("{assetpath}", this.AssetPath);
 			}
 		}
 
@@ -62,18 +64,18 @@
 		{
 			get
 			{
-				return context.Config.PathTemplates.Module.Replace("{assetpath}", this.AssetPath);
+				return context.ProjectConfiguration.PathTemplates.Module.Replace("{assetpath}", this.AssetPath);
 			}
 		}
 
 		/// <summary>
-		/// Gets the view path of the currently active category.
+		/// Gets the path in which to look for extensions.
 		/// </summary>
-		public string PluginPath
+		public string ExtensionPath
 		{
 			get
 			{
-				return this.Resolve(context.Config.PathTemplates.Extension);
+				return this.Resolve(context.ProjectConfiguration.PathTemplates.Extension);
 			}
 		}
 
@@ -95,7 +97,7 @@
 		{
 			get
 			{
-				return this.Substitute(context.Config.PathTemplates.CategoryConfiguration);
+				return this.Substitute(context.ProjectConfiguration.PathTemplates.CategoryConfiguration);
 			}
 		}
 
@@ -114,7 +116,7 @@
 		{
 			get
 			{
-				return context.Config.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath);
+				return context.ProjectConfiguration.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath);
 			}
 		}
 
@@ -125,8 +127,8 @@
 		{
 			get
 			{
-				return this.Resolve(context.Config.PathTemplates.View, 
-					new QueryString { { "category", context.Config.SharedCategory } });
+				return this.Resolve(context.ProjectConfiguration.PathTemplates.View, 
+					new QueryString { { "category", context.ProjectConfiguration.SharedCategory } });
 			}
 		}
 
@@ -148,7 +150,7 @@
 		{
 			get
 			{
-				return this.GetAssetPath(context.Config.SharedCategory);
+				return this.GetAssetPath(context.ProjectConfiguration.SharedCategory);
 			}
 		}
 
@@ -156,7 +158,15 @@
 		{
 			get
 			{
-				return this.Resolve(context.Config.PathTemplates.DefaultStylesheet);
+				return this.Resolve(context.ProjectConfiguration.PathTemplates.DefaultStylesheet);
+			}
+		}
+
+		public Dictionary<string, string> VirtualDirectories
+		{
+			get
+			{
+				return virtualDirectories ?? (virtualDirectories = Application.GetVirtualDirectories(this.context));
 			}
 		}
 
@@ -167,7 +177,7 @@
 		/// <returns>The physical path to the assets folder of the specified <paramref name="category"/></returns>
 		public string GetAssetPath(string category)
 		{
-			return context.Config.AssetPath.Replace("{category}", category);
+			return context.ProjectConfiguration.AssetPath.Replace("{category}", category);
 		}
 
 		public string GetModulePath(string moduleName)
@@ -220,13 +230,13 @@
 			if (childPath.StartsWith("~/"))
 				return context.MapPath(childPath);
 
-			string templatePath = string.Concat(this.PluginPath.TrimEnd('/'), "/", pluginName, "/", childPath);
+			string templatePath = string.Concat(this.ExtensionPath.TrimEnd('/'), "/", pluginName, "/", childPath);
 			return this.Resolve(templatePath);
 		}
 
 		public string GetDictionaryPath(string locale = null, string category = null)
 		{
-			return this.Resolve(context.Config.PathTemplates.Dictionary, category ?? context.Category, locale ?? context.Locale);
+			return this.Resolve(context.ProjectConfiguration.PathTemplates.Dictionary, category ?? context.Category, locale ?? context.Locale);
 		}
 
 		/// <summary>
@@ -274,13 +284,32 @@
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(path);
 
+			path = path.ToLower().TrimEnd('\\');
 			if (path.Contains("\\"))
 			{
-				var applicationPath = context.PhysicalApplicationPath.ToLower();
-				path = path.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
+				bool replaced = false;
+				foreach (string key in VirtualDirectories.Keys)
+				{
+					string directoryPath = VirtualDirectories[key];
+				    if (path.Contains(directoryPath))
+				    {
+				        path = path.Replace(directoryPath, key).Replace("\\", "/");
+						replaced = true;
+						break;
+				    }
+				}
+
+				if (!replaced)
+				{
+					var applicationPath = context.PhysicalApplicationPath.ToLower();
+					path = path.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
+				}
 			}
 
 			path = path.Replace("~", context.ApplicationPath.TrimEnd('/'));
+			if (path.Contains(Uri.SchemeDelimiter))
+				return path;
+
 			if (prependApplicationPath && !path.StartsWith(context.ApplicationPath))
 				path = string.Concat(context.ApplicationPath, "/", path).Replace("//", "/");
 
@@ -320,10 +349,10 @@
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
 			LocaleInfo localeInfo;
-			if (!context.Config.Locales.TryGetValue(locale, out localeInfo))
+			if (!context.ProjectConfiguration.Locales.TryGetValue(locale, out localeInfo))
 				throw new UnconfiguredLocaleException(locale);
 
-			CategoryInfo category = context.Config.Categories[context.Category];
+			CategoryInfo category = context.ProjectConfiguration.Categories[context.Category];
 			foreach (string suffix in localeInfo.ResourceNames)
 			{
 				string localizedName = new ResourceName(path, category).ToLocalePath(suffix);
@@ -342,8 +371,8 @@
 		/// <returns>The expanded relative path</returns>
 		public string Expand(string relativePath)
 		{
-			if (relativePath.ToLower().StartsWith(context.Config.SharedCategory + "/"))
-				return this.Expand(relativePath, context.Config.SharedCategory);
+			if (relativePath.ToLower().StartsWith(context.ProjectConfiguration.SharedCategory + "/"))
+				return this.Expand(relativePath, context.ProjectConfiguration.SharedCategory);
 
 			return this.Expand(relativePath, context.Category);
 		}
@@ -429,7 +458,7 @@
 				string separator = path.Contains("\\") ? "\\" : "/";
 				string directory = Path.GetDirectoryName(path);
 
-				CategoryInfo category = context.Config.Categories[context.Category];
+				CategoryInfo category = context.ProjectConfiguration.Categories[context.Category];
 				return string.Concat(directory, separator, new ResourceName(path, category).ToLocale(suffix));
 			}
 

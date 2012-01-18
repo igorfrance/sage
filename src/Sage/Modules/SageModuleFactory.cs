@@ -25,7 +25,7 @@
 						lock (log)
 						{
 							var temp = DiscoverAvailableModules();
-							foreach (ModuleConfiguration config in ProjectConfiguration.Current.Modules)
+							foreach (ModuleConfiguration config in ProjectConfiguration.Current.Modules.Values)
 							{
 								if (config.Type == null)
 									continue;

@@ -73,6 +73,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -110,7 +111,7 @@
     <Compile Include="Configuration\PathTemplates.cs" />
     <Compile Include="Configuration\UnconfiguredLocaleException.cs" />
     <Compile Include="ResourceManagement\ResourceHandler.cs" />
-    <Compile Include="ResourceManagement\ScriptLibraryInfo.cs" />
+    <Compile Include="ResourceManagement\ResourceLibraryInfo.cs" />
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
@@ -134,7 +135,7 @@
     <Compile Include="Views\Meta\MetaView.cs" />
     <Compile Include="Views\Meta\RetransformView.cs" />
     <Compile Include="Views\ViewInput.cs" />
-    <Compile Include="Controllers\ViewXmlFilterAttribute.cs" />
+    <Compile Include="Extensibility\ViewXmlFilterAttribute.cs" />
     <Compile Include="LastModifiedCache.cs" />
     <Compile Include="Modules\IModuleFactory.cs" />
     <Compile Include="ResourceManagement\EntityResult.cs" />
@@ -206,10 +207,13 @@
     <EmbeddedResource Include="Resources\MetaViews\Xml.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\MetaViews\Xmlx.xsl" />
+    <EmbeddedResource Include="Resources\MetaViews\Xmlx.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Xslt\Installer.xslt" />
-    <EmbeddedResource Include="Resources\Xslt\Tree.xsl" />
-    <EmbeddedResource Include="Resources\Xslt\Global.xslt" />
+    <EmbeddedResource Include="Resources\Xslt\Global.xslt">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Xslt\Logic.xslt" />
     <EmbeddedResource Include="Resources\Xslt\AssistanceError.xslt" />
     <Content Include="System.config">

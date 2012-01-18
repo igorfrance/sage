@@ -32,7 +32,7 @@ namespace Sage.Test.ResourceManagement
 
 		private It Should_translate_to_all_locales_applicable_for_its_category = () =>
 			{
-				CategoryInfo categoryInfo = context.Config.Categories[context.Category];
+				CategoryInfo categoryInfo = context.ProjectConfiguration.Categories[context.Category];
 				foreach (string locale in categoryInfo.Locales)
 				{
 					string localizedPath = resource.GetGlobalizedName(locale, true);

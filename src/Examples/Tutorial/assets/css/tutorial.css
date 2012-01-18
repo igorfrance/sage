@@ -1,33 +1,50 @@
-﻿@import url(fonts.css);
+﻿@import url(http://fonts.googleapis.com/css?family=Questrial);
 @import url(gradients.css);
 
-html, body
-	{ height: 100%; }
 body
-	{ background: #eaeaea; margin: 0; font-size: 16px; font-family: TeXGyreAdventorRegular; }
+	{ background: #fff; font-size: 16px; font-family: Questrial, Sans-Serif; }
+a,
+a:visited
+	{ color: #0066ff; }
+a:hover
+	{ color: #400040; }
 
-#examples
-	{ position: absolute; top: 10px; left: 10px; bottom: 10px; width: 300px; padding: 10px; overflow: auto;
-	  border-radius: 3px; background: #D8D8D8; }
-#examples ul
-	{ list-style-type: none; padding: 0; margin: 0; }
-#examples li.separator
-	{ height: 20px; }
+h1
+	{ color: #c00; font-size: 32px; font-weight: normal; margin-bottom: 40px; }
+h2.section
+	{ font-weight: normal; text-align: right; font-style: italic; color: #999;
+	  border-bottom: 1px solid #eee; margin: 40px 0 40px 0; }
+h3
+	{ color: #b1bac5; font-size: 28px; font-weight: normal; }
+h3.section
+	{ margin: 30px 0 5px 0; }
+p
+	{ margin-top: 0; }
 
-#welcome
-	{ position: absolute; top: 0; left: 300px; right: 0; bottom: 0; height: 100%; text-align: center; }
-#welcome .button
-	{ width: 370px; height: 384px; text-align: center; display: inline-block; margin: 0 50px;
-		border: 17px solid #323232; border-radius: 210px; font-family: QuicksandLight; }
-#welcome .button:hover
-	{ cursor: default; }
-#welcome .button span
-	{ position: relative; top: 10px; }
-#welcome .button h1
-	{ font-size: 60px; font-weight: normal; margin: 0; }
+dfn
+	{ color: #93a74b; text-decoration: italic; }
+code
+	{ white-space: nowrap; color: #006697; }
+code.example
+	{ display: block; margin: 10px 0 10px  40px; }
+dl
+	{}
+dt
+	{ margin-left: 20px; }
+dd
+	{ margin-left: 40px; }
+dt.zip
+	{ background: url(../images/page-file.gif) no-repeat 0 2px; padding-left: 20px; }
+ul li
+	{	list-style-type: none; margin: 0; background: url(../images/bullet.png) no-repeat 0 3px; padding-left: 20px; }
+ul.separate > li,
+ol.separate > li
+	{ margin-bottom: 20px; }
 
-div.gradient
-	{ background: #E5E5E5; }
+html.dashboard
+	{ height: 100%; }
+html.dashboard body
+	{ height: 100%; background: #E0D9C9; margin: 0; }
 
 .valign
 	{ width: 100%; height: 100%; display: table; }
@@ -35,4 +52,87 @@ div.gradient
 	{ width: 100%; height: 100%; display: table-cell; vertical-align: middle; }
 .center
 	{ text-align: center; }
+.gradient
+	{ background: #E5E5E5; }
+
+#navigation
+	{ position: absolute; top: 10px; left: 10px; bottom: 10px; width: 300px; padding: 10px; overflow: auto;
+	  border-radius: 3px; background: #F4F4F4; }
+#navigation h1
+	{ background: url(../images/sage.png) no-repeat; width: 70px; height: 70px; margin-top: 0; }
+#navigation h1 span
+	{ display: none; }
+
+#navigation h2
+	{ margin-top: 0 0 10px 0; font-size: 16px; font-weight: normal; color: #999; }
+
+#navigation ul
+	{ list-style-type: none; padding: 0; margin: 0 0 20px 0; }
+#navigation ul li
+	{ background: none; padding: 0; }
+#navigation li.separator
+	{ height: 10px; }
+
+#welcome
+	{ position: absolute; top: 0; left: 300px; right: 0; bottom: 0; height: 100%; text-align: center; }
+#welcome .button
+	{ width: 370px; height: 384px; text-align: center; display: inline-block; margin: 0 50px;
+	  background: #fff; border: 17px solid #323232; border-radius: 210px; }
+#welcome .button:hover
+	{ cursor: default; }
+#welcome .button span
+	{ position: relative; top: 10px; }
+#welcome .button h1
+	{ font-size: 60px; font-weight: normal; margin: 0; }
+
+#examples
+	{ position: absolute; top: 10px; left: 340px; right: 10px; bottom: 10px; text-align: center; display: none; }
+
+/**
+ * View inspector adjustments for the dashboard.
+ */
+html.dashboard .view-inspector
+	{ border-radius: 5px; background: #fff; border: 0; }
+html.dashboard .view-inspector .contentcontainer
+	{ z-index: 0; }
+html.dashboard .view-inspector .contenttoolbar
+	{ border-radius: 5px 5px 0 0; background: #E5E5E5; border-bottom: 0; padding: 3px 4px 5px 4px; z-index: 1; }
+html.dashboard .view-inspector .viewtoolbar
+	{ background: #E5E5E5; height: 22px; border: 0; }
+html.dashboard .view-inspector .contenttitle
+	{ font-size: 14px; font-weight: normal; }
+html.dashboard .view-inspector .contentframe
+	{ top: 24px; bottom: 0px; background: #fff; z-index: 0; }
+html.dashboard .view-inspector .view-inspector .textbutton
+	{ padding: 3px 7px 5px; margin: 2px 5px 0 5px; }
+html.dashboard .view-inspector.horizontal .toolframe,
+html.dashboard .view-inspector.horizontal .toolpreloader
+	{ top: 24px; z-index: 0; }
+html.dashboard .view-inspector.horizontal .toolpreloader
+	{ background-color: }
+html.dashboard .view-inspector .button.close,
+html.dashboard .view-inspector .button.info
+	{ display: block; }
+html.dashboard .view-inspector.horizontal.single .contentcontainer
+	{ bottom: 24px !important; }
+html.dashboard .view-inspector.horizontal.single .toolscontainer
+	{ height: 24px !important; }
+html.dashboard .toolbar .textbutton.xml,
+html.dashboard .toolbar .textbutton.json
+	{ display: none; }
+
+html.dashboard .view-inspector .toolscontainer {
+	box-shadow: 0 -5px 8px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 0 -5px 8px rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: 0 -5px 8px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+html.dashboard .view-inspector .viewtoolbar,
+html.dashboard .view-inspector .contenttoolbar {
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
 

@@ -4,36 +4,55 @@
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<xsl:param name="path"/>
+	<xsl:param name="expandLevels" select="7"/>
 
- 	<xsl:template match="/">
-		<xsl:apply-templates select="." mode="tree"/>
+	<xsl:output indent="no"/>
+	
+	<xsl:template match="/">
+		<xsl:apply-templates select="." mode="xmltree"/>
 	</xsl:template>
 
-	<xsl:template match="/" mode="tree">
+	<xsl:template match="/" mode="xmltree">
 		<html xml:lang="en" lang="en">
 			<head>
 				<title>Xml Tree View</title>
-				<xsl:apply-templates select="*" mode="tree-headers"/>
+				<xsl:apply-templates select="." mode="xmltree-styles"/>
 			</head>
 			<body>
-				<xsl:apply-templates select="*" mode="tree-root"/>
+				<xsl:apply-templates select="*" mode="xmlroot"/>
 			</body>
 		</html>
 	</xsl:template>
 
-	<xsl:variable name="expand-levels" select="7"/>
+	<xsl:template match="*" mode="xmlroot">
+		<div class="xmltree">
+			<xsl:apply-templates select="." mode="xmltree-toolbar"/>
+			<xsl:apply-templates select="." mode="tree-start"/>
+			<xsl:apply-templates select="." mode="xmltree-script"/>
+		</div>
+	</xsl:template>
 
-	<xsl:template match="*" mode="tree-headers">
+	<xsl:template match="*" mode="xmltree-styles">
 		<style>
 
-			.xmltree *
-				{ -moz-box-sizing: border-box; box-sizing: border-box; text-align: left; }
 			.xmltree
 				{ font: 11px Verdana; }
-			.xmltree .treeRoot
-				{ white-space: nowrap; }
-			.xmltree A, .element A:visited
-				{ color: blue; font-weight: normal; }
+			.xmltree *
+				{ text-align: left; }
+			.xmltree .xmlroot
+				{ white-space: nowrap; padding: 10px 0; }
+			.xmltree .toolbar
+				{ font-size: 10px; padding: 4px 7px; overflow: hidden; background: #F5F5F5; border-radius: 4px; }
+			.xmltree .toolbar a
+				{ color: #8B8B8B; text-decoration: none; }
+			.xmltree .toolbar a:hover
+				{ color: #f00; }
+			.xmltree .toolbar .left
+				{ float: left; }
+			.xmltree .toolbar .right
+				{ float: right; }
+			.xmltree .toolbar .toggler
+				{ margin-right: 10px; }
 			.xmltree pre
 				{ margin: 0px; }
 			.xmltree .wrapctrl
@@ -47,24 +66,33 @@
 			.xmltree .attrName
 				{ color: #CC0000; }
 			.xmltree .attrValue
-				{ font-weight: bold; }
-			.xmltree .--text
-				{ font-weight: bold; }
+				{ font-weight: bold;  }
+			.xmltree .text
+				{ color: #323232;  }
 			.xmltree .markup
 				{ color: blue; }
 			.xmltree .comment .markup
-				{ color:#888888; }
+				{ color: #888888; }
 			.xmltree .commentText
-				{ color:#888888; }
+				{ color: #888888; }
 			.xmltree .pi
 				{ color: blue; }
 			.xmltree .ns
 				{ color: blue; }
-			.xmltree .switch, .xmltree .switch_space
-				{ color: #FF0000; cursor: pointer; font-family: Courier New; }
-			.xmltree .controls
-				{ font-size: 10px; font-family: verdana, padding: 2px; background-color: #e2e2e2; color: black;
-				  margin-bottom: 20px; padding: 2px; height: 16px; }
+			.xmltree .switch
+				{ display: inline-block; color: #FF0000; cursor: pointer; width: 8px; text-align: right; font-weight: bold; padding-right: 2px; }
+			.xmltree .switch_space
+				{ display: inline-block; width: 10px; }
+				
+			.xmltree.wrap .element span
+				{	float: left; }
+			.xmltree.wrap .element
+				{ overflow: hidden; }
+			.xmltree.wrap .element .children
+				{ overflow: hidden; clear: left; }
+			.xmltree.namespaces .nsattrib
+				{	display: inline; }
+
 
 			.xmltree .nsattrib
 				{ font-weight: normal; display: none; }
@@ -72,282 +100,385 @@
 			.xmltree .nsattrib .markup,
 			.xmltree .nsattrib .attrValue
 				{ font-weight: normal; color: #00f; }
+			.xmltree .nsattrib a,
+			.xmltree .nsattrib a:visited
+				{ color: #00f; text-decoration: underline; font-weight: normal; }
 
 		</style>
-		<script>
-			<xsl:comment>
-				<![CDATA[
+	</xsl:template>
 
-			var namespacesVisible = false;
+	<xsl:template match="*" mode="xmltree-script">
+		<script><xsl:comment><![CDATA[
 
-			function switchNode()
+			(function initializeTrees()
 			{
-				var parent = this.parentNode;
-				var children = parent.getElementsByTagName("DIV")[0];
-				if (children.offsetHeight)
-					toggleOff(parent);
-				else
-					toggleOn(parent);
-			}
-
-			function toggleOn(node)
-			{
-				for (var i = 0; i < node.childNodes.length; i++)
+				function onToggleAllClick()
 				{
-					var c = node.childNodes[i];
-					if (!c.tagName)
-						continue;
+					var xmltree = findParentByClassName(this, "xmltree");
+					var children = findChildrenByClassName(xmltree, "children", true);
+					var elements = findChildrenByClassName(xmltree, "element", true);
+					var allVisible = true;
 
-					if (c.className.indexOf("children") != -1)
-						c.style.display = "block";
-
-					if (c.className.indexOf("switch") != -1)
-						c.innerText = c.textContent = "-";
-				}
-			}
-
-			function toggleOff(node)
-			{
-				for (var i = 0; i < node.childNodes.length; i++)
-				{
-					var c = node.childNodes[i];
-					if (!c.tagName)
-						continue;
-
-					if (c.className.indexOf("children") != -1)
-						c.style.display = "none";
-
-					if (c.className.indexOf("switch") != -1)
-						c.innerText = c.textContent = "+";
-				}
-			}
-
-			function expandAllNodes()
-			{
-				var nodes = document.getElementsByTagName("div");
-				for (var i = 0; i < nodes.length; i++)
-				{
-					if (nodes[i].className.indexOf("element") != -1)
+					for (var i = 0; i < children.length; i++)
 					{
-						toggleOn(nodes[i]);
+						if (children[i].offsetHeight == 0)
+						{
+							allVisible = false;
+							break;
+						}
 					}
-				}
-			}
 
-			function toggleNamespaceAttributes()
-			{
-				var nodes = document.getElementsByTagName("span");
-				namespacesVisible = !namespacesVisible;
-				for (var i = 0; i < nodes.length; i++)
-				{
-					if (nodes[i].className.indexOf("nsattrib") != -1)
+					for (var i = 0; i < elements.length; i++)
 					{
-						nodes[i].style.display = namespacesVisible ? "inline" : "none";
-					}
-				}
-			}
-
-			function toggleWordWrap(on)
-			{
-				if (on != undefined)
-					var wordwrap = on;
-				else
-					var wordwrap = window.wordwrap = !window.wordwrap;
-
-				var whitespace = wordwrap ? "normal" : "nowrap";
-
-				var elements = document.getElementsByTagName("DIV");
-				for (var i = 0; i < elements.length; i++)
-				{
-					if (elements[i].className == "treeRoot")
-					{
-						elements[i].style.whiteSpace = whitespace;
-						elements[i].style.display = "block";
+						if (allVisible)
+							collapseElement(elements[i]);
+						else
+							expandElement(elements[i]);
 					}
 				}
 
-				document.cookie = "wordwrap=" + wordwrap;
-
-				var wordWrapOn = document.getElementById("wordWrapOn");
-				var wordWrapOff = document.getElementById("wordWrapOff");
-				if (wordWrapOn && wordWrapOff)
+				function onToggleNamespacesClick()
 				{
-					if (wordwrap)
+					var xmltree = findParentByClassName(this, "xmltree");
+					var toggler = findParentByClassName(this, "toggler");
+					var state = findChildrenByClassName(toggler, "state")[0];
+					
+					if (containsClass(xmltree, "namespaces"))
 					{
-						document.getElementById("wordWrapOn").style.fontWeight = "bold";
-						document.getElementById("wordWrapOff").style.fontWeight = "normal";
+						removeClass(xmltree, "namespaces");
+						setText(state, "off");
 					}
 					else
 					{
-						document.getElementById("wordWrapOn").style.fontWeight = "normal";
-						document.getElementById("wordWrapOff").style.fontWeight = "bold";
+						addClass(xmltree, "namespaces");
+						setText(state, "on");
 					}
 				}
-			}
 
-			function wrap_on()  { toggleWordWrap(true);  }
-			function wrap_off() { toggleWordWrap(false); }
-
-			window_onload = function ()
-			{
-				window.wordwrap = false;
-				var cookie = String(document.cookie);
-				if (cookie.match(/wordwrap=(true|false)/))
-					window.wordwrap = RegExp.$1 == "true" ? true : false;
-
-				toggleWordWrap(window.wordwrap);
-				var wordWrapOn = document.getElementById("wordWrapOn");
-				var wordWrapOff = document.getElementById("wordWrapOff");
-				var expandAll = document.getElementById("expandAll");
-				var toggleNamespaces = document.getElementById("toggleNamespaces");
-				if (wordWrapOn)
-					wordWrapOn.onclick = wrap_on;
-				if (wordWrapOff)
-					wordWrapOff.onclick = wrap_off;
-				if (expandAll)
-					expandAll.onclick = expandAllNodes;
-				if (toggleNamespaces)
-					toggleNamespaces.onclick = toggleNamespaceAttributes;
-
-				var spans = document.getElementsByTagName("SPAN");
-				for (var i = 0; i < spans.length; i++)
+				function onToggleWordWrapClick()
 				{
-					if (spans[i].className == "switch")
-						spans[i].onclick = switchNode;
+					var xmltree = findParentByClassName(this, "xmltree");
+					var toggler = findParentByClassName(this, "toggler");
+					var state = findChildrenByClassName(toggler, "state")[0];
+					
+					if (containsClass(xmltree, "wrap"))
+					{
+						removeClass(xmltree, "wrap");
+						setText(state, "off");
+					}
+					else
+					{
+						addClass(xmltree, "wrap");
+						setText(state, "on");
+					}
 				}
-			}
 
-			if (window.util)
-				evt.addHandler(window, "onload", window_onload);
-			else
-				window.onload = window_onload;
+				function onSwitchClick()
+				{
+					for (var i = 0; i < this.parentNode.childNodes.length; i++)
+					{
+						var childNode = this.parentNode.childNodes[i];
+						var className = childNode.className;
+						if (className == "children")
+						{
+							if (childNode.offsetHeight)
+								collapseElement(this.parentNode);
+							else
+								expandElement(this.parentNode);
+						}
+					}
+				}
 
-		]]>
-			</xsl:comment>
-		</script>
+				function containsClass(element)
+				{
+					if (element == null || element.className == null || arguments.length < 2)
+						return false;
+
+					for (var i = 1; i < arguments.length; i++)
+					{
+						var rxp = new RegExp("\\b" + arguments[i] + "\\b");
+						if (!element.className.match(rxp))
+							return false;
+					}
+					
+					return true;
+				}
+
+				function addClass(element)
+				{
+					if (element == null || element.className == null || arguments.length < 2)
+						return;
+						
+					for (var i = 1; i < arguments.length; i++)
+					{
+						var className = arguments[i];
+						if (!containsClass(element, className))
+							element.className += " " + className;
+					}
+				}
+
+				function removeClass(element)
+				{
+					if (element == null || element.className == null || arguments.length < 2)
+						return;
+						
+					for (var i = 1; i < arguments.length; i++)
+					{
+						var className = arguments[i];
+						var rxp = new RegExp("(\\b)" + className + "(\\b)", "g");
+						element.className = element.className.replace(rxp, "$1$2");
+					}
+				}
+
+				function getStyle(element, property)
+				{
+					if (window.getComputedStyle)
+						return window.getComputedStyle(element, null)[property];
+
+					return element.currentStyle[property];
+				}
+
+				function findParentByClassName(element, className)
+				{
+					var parent = element;
+					while (parent && parent.className && parent.className.indexOf(className) == -1)
+					{
+						parent = parent.parentNode;
+					}
+
+					return parent;
+				}
+
+				function findChildrenByClassName(element, className, recursive)
+				{
+					var result = [];
+					for (var i = 0; i < element.childNodes.length; i++)
+					{
+						if (element.childNodes[i].nodeType != 1)
+							continue;
+
+						if (element.childNodes[i].className.indexOf(className) != -1)
+							result.push(element.childNodes[i]);
+
+						var children = findChildrenByClassName(element.childNodes[i], className, recursive);
+						for (var j = 0; j < children.length; j++)
+						{
+							result.push(children[j]);
+						}
+					}
+
+					return result;
+				}
+
+				function setText(element, text)
+				{
+					element.innerText = element.textContent = text;
+				}
+
+				function expandElement(element)
+				{
+					for (var i = 0; i < element.childNodes.length; i++)
+					{
+						var className = element.childNodes[i].className;
+						if (className == "children")
+							element.childNodes[i].style.display = "block";
+						if (className == "switch")
+							setText(element.childNodes[i], "-");
+					}
+				}
+
+				function collapseElement(element)
+				{
+					for (var i = 0; i < element.childNodes.length; i++)
+					{
+						var className = element.childNodes[i].className;
+						if (className == "children")
+							element.childNodes[i].style.display = "none";
+						if (className == "switch")
+							setText(element.childNodes[i], "+");
+					}
+				}
+
+				var divs = document.getElementsByTagName("div");
+				for (var i = 0; i < divs.length; i++)
+				{
+					if (divs[i].className.indexOf("xmltree") != -1)
+					{
+						var spans = divs[i].getElementsByTagName("span");
+						var links = divs[i].getElementsByTagName("a");
+
+						for (var j = 0; j < spans.length; j++)
+						{
+							if (spans[j].className.indexOf("switch") != -1)
+							{
+								spans[j].onclick = onSwitchClick;
+							}
+						}
+
+						for (var j = 0; j < links.length; j++)
+						{
+							if (links[j].className.indexOf("wrap") != -1)
+								links[j].onclick = onToggleWordWrapClick;
+							if (links[j].className.indexOf("namespaces") != -1)
+								links[j].onclick = onToggleNamespacesClick;
+							if (links[j].className.indexOf("toggleall") != -1)
+								links[j].onclick = onToggleAllClick;
+						}
+					}
+				}
+
+			})();
+
+		]]></xsl:comment></script>
 	</xsl:template>
 
-	<xsl:template match="*" mode="tree-root">
-		<div class="xmltree">
-			<div class="controls">
-				<span style="float: left">
-					[<span class="wrapctrl" id="wordWrapOn">wrap</span>]
-					[<span class="wrapctrl" id="wordWrapOff">no wrap</span>]
+	<xsl:template match="*" mode="xmltree-toolbar">
+		<div class="toolbar">
+			<span class="group left">
+				<span class="toggler">
+					<a href="javascript:;" class="wrap">Wrap: </a>
+					<span class="state">off</span>
 				</span>
-				<span style="float: right">
-					[<a href="javascript:;" id="toggleNamespaces">toggle namespaces</a>]
-					[<a href="javascript:;" id="expandAll">expand all</a>]
-					[<a href="javascript:location.reload()">refresh</a>]
-					[<a href="javascript:history.back()">back</a>]
+				<span class="toggler">
+					<a href="javascript:;" class="namespaces">Namespaces: </a>
+					<span class="state">off</span>
 				</span>
-			</div>
-			<div class="treeRoot">
-				<xsl:apply-templates select="." mode="tree-start"/>
-			</div>
+			</span>
+			<span class="group right">
+				<a href="javascript:;" class="toggleall">toggle all</a>
+			</span>
 		</div>
 	</xsl:template>
 
 	<xsl:template match="*" mode="tree-start">
-		<div class="xmltree xmlroot">
-			<xsl:apply-templates select="." mode="tree">
+		<div class="xmlroot">
+			<xsl:apply-templates select="." mode="xmltree">
 				<xsl:with-param name="level" select="1" />
 			</xsl:apply-templates>
 		</div>
 	</xsl:template>
 
-	<xsl:template match="*" mode="tree">
+	<xsl:template match="*" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<div class="element">
-			<xsl:text>&#160;</xsl:text>
-			<span class="switch_space">&#160;</span>
-			<span class="markup">&lt;</span>
+			<span class="switch_space">
+				<xsl:text>&#160;</xsl:text>
+			</span>
+			<span class="markup">
+				<xsl:text>&lt;</xsl:text>
+			</span>
 			<span class="nodeName element-{translate(name(), ':', '_')}">
 				<xsl:value-of select="name()"/>
 			</span>
-			<xsl:apply-templates select="@*" mode="tree"/>
-			<xsl:apply-templates select="." mode="namespace"/>
-			<span class="markup">/></span>
+			<xsl:apply-templates select="@*" mode="xmltree"/>
+			<xsl:apply-templates select="." mode="xnamespace">
+				<xsl:with-param name="level" select="$level" />
+			</xsl:apply-templates>
+			<span class="markup">
+				<xsl:text>/></xsl:text>
+			</span>
 		</div>
 	</xsl:template>
 
-	<xsl:template match="*[node()]" mode="tree">
+	<xsl:template match="*[node()]" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<div class="element">
-			<xsl:text>&#160;</xsl:text>
-			<xsl:apply-templates select="." mode="switch">
+			<span class="markup">&#160;</span>
+			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
-			<span class="markup">&lt;</span>
+			<span class="markup">
+				<xsl:text>&lt;</xsl:text>
+			</span>
 			<span class="nodeName element-{translate(name(), ':', '_')}">
 				<xsl:value-of select="name()"/>
 			</span>
-			<xsl:apply-templates select="@*" mode="tree"/>
-			<xsl:apply-templates select="." mode="namespace"/>
-			<span class="markup">></span>
+			<xsl:apply-templates select="@*" mode="xmltree"/>
+			<xsl:apply-templates select="." mode="xnamespace">
+				<xsl:with-param name="level" select="$level" />
+			</xsl:apply-templates>
+			<span class="markup">
+				<xsl:text>&gt;</xsl:text>
+			</span>
 			<div class="children">
-				<xsl:apply-templates select="." mode="display">
+				<xsl:apply-templates select="." mode="xdisplay">
 					<xsl:with-param name="level" select="$level" />
 				</xsl:apply-templates>
-				<xsl:apply-templates mode="tree">
+				<xsl:apply-templates mode="xmltree">
 					<xsl:with-param name="level" select="$level + 1" />
 				</xsl:apply-templates>
 				<div>
 					<span class="switch_space">&#160;</span>
-					<span class="markup">&lt;/</span>
+					<span class="markup">
+						<xsl:text>&lt;/</xsl:text>
+					</span>
 					<span class="nodeName element-{translate(name(), ':', '_')}">
 						<xsl:value-of select="name()"/>
 					</span>
-					<span class="markup">></span>
+					<span class="markup">
+						<xsl:text>&gt;</xsl:text>
+					</span>
 				</div>
 			</div>
 		</div>
 	</xsl:template>
 
-	<xsl:template match="*[*]" mode="tree" priority="20">
+	<xsl:template match="*[*]" mode="xmltree" priority="20">
 		<xsl:param name="level" select="1"/>
 		<div class="element">
-			<xsl:text>&#160;</xsl:text>
-			<xsl:apply-templates select="." mode="switch">
+			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
-			<span class="markup">&lt;</span>
-			<span class="nodeName element-{translate(name(), ':', '_')}">
-				<xsl:value-of select="name()"/>
+			<span class="markup"><xsl:text>&lt;</xsl:text></span>
+			<span class="nodeName element-{translate(name(), ':', '_')}"><xsl:value-of select="name()"/></span>
+			<xsl:apply-templates select="@*" mode="xmltree"/>
+			<xsl:apply-templates select="." mode="xnamespace">
+				<xsl:with-param name="level" select="$level" />
+			</xsl:apply-templates>
+			<span class="markup">
+				<xsl:text>&gt;</xsl:text>
 			</span>
-			<xsl:apply-templates select="@*" mode="tree"/>
-			<xsl:apply-templates select="." mode="namespace"/>
-			<span class="markup">></span>
 			<div class="children">
-				<xsl:apply-templates select="." mode="display">
+				<xsl:apply-templates select="." mode="xdisplay">
 					<xsl:with-param name="level" select="$level" />
 				</xsl:apply-templates>
-				<xsl:apply-templates mode="tree">
+				<xsl:apply-templates select="node()" mode="xmltree">
 					<xsl:with-param name="level" select="$level + 1" />
 				</xsl:apply-templates>
 				<div>
-					<span class="switch_space">&#160;</span>
-					<span class="markup">&lt;/</span>
+					<span class="switch_space">
+						<xsl:text>&#160;</xsl:text>
+					</span>
+					<span class="markup">
+						<xsl:text>&lt;/</xsl:text>
+					</span>
 					<span class="nodeName element-{translate(name(), ':', '_')}">
 						<xsl:value-of select="name()"/>
 					</span>
-					<span class="markup">></span>
+					<span class="markup">
+						<xsl:text>></xsl:text>
+					</span>
 				</div>
 			</div>
 		</div>
 	</xsl:template>
 
-	<xsl:template match="*[text() and not (comment() or processing-instruction())]" mode="tree">
+	<xsl:template match="*[text() and not (comment() or processing-instruction())]" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<div class="element">
 			<span class="switch_space">&#160;</span>
-			<span class="markup">&lt;</span>
+			<span class="markup">
+				<xsl:text>&lt;</xsl:text>
+			</span>
 			<span class="nodeName element-{translate(name(), ':', '_')}">
 				<xsl:value-of select="name()"/>
 			</span>
-			<xsl:apply-templates select="@*" mode="tree"/>
-			<xsl:apply-templates select="." mode="namespace"/>
+			<xsl:apply-templates select="@*" mode="xmltree"/>
+			<xsl:apply-templates select="." mode="xnamespace">
+				<xsl:with-param name="level" select="$level" />
+			</xsl:apply-templates>
 			<span class="markup">></span>
-			<span class="--text">
+			<span class="text">
 				<xsl:value-of select="."/>
 			</span>
 			<span class="markup">&lt;/</span>
@@ -358,8 +489,20 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template match="@*" mode="tree">
-		<xsl:text>&#160;</xsl:text>
+	<xsl:template match="@*" mode="xmltree">
+		<span class="markup">&#160;</span>
+		<span class="attrName attribute-{name()}">
+			<xsl:value-of select="name()"/>
+		</span>
+		<span class="markup">="</span>
+		<span class="attrValue">
+			<xsl:value-of select="."/>
+		</span>
+		<span class="markup">"</span>
+	</xsl:template>
+
+	<xsl:template match="@*[contains(name(), ':')]" mode="xmltree">
+		<span class="markup">&#160;</span>
 		<span class="attrName attribute-{translate(name(), ':', '_')}">
 			<xsl:value-of select="name()"/>
 		</span>
@@ -370,16 +513,16 @@
 		<span class="markup">"</span>
 	</xsl:template>
 
-	<xsl:template match="text()" mode="tree">
-		<span class="--text">
+	<xsl:template match="text()" mode="xmltree">
+		<span class="text">
 			<xsl:value-of select="."/>
 		</span>
 	</xsl:template>
 
-	<xsl:template match="comment()" mode="tree">
+	<xsl:template match="comment()" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<div class="comment">
-			<xsl:apply-templates select="." mode="switch">
+			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
 			<span class="markup">&lt;&#33;&#45;&#45;</span>
@@ -393,7 +536,7 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template match="processing-instruction()" mode="tree">
+	<xsl:template match="processing-instruction()" mode="xmltree">
 		<div class="element">
 			<span class="switch_space">&#160;</span>
 			<span class="markup">&lt;?</span>
@@ -406,7 +549,7 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template match="processing-instruction('xml')" mode="tree">
+	<xsl:template match="processing-instruction('xml')" mode="xmltree">
 		<div class="element">
 			<span class="switch_space">&#160;</span>
 			<span class="markup">&lt;?</span>
@@ -423,10 +566,13 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="namespace">
-		<xsl:if test="namespace-uri(.)">
+	<xsl:template match="node()" mode="xnamespace">
+		<xsl:param name="level" select="1"/>
+		<xsl:variable name="thisNamespace" select="namespace-uri(.)"/>
+		<xsl:variable name="parentNamespace" select="namespace-uri(parent::*)"/>
+		<xsl:if test="$thisNamespace and ($level = 1 or $parentNamespace != $thisNamespace)">
 			<span class="nsattrib">
-				<xsl:text>&#160;</xsl:text>
+				<span class="markup">&#160;</span>
 				<span class="attrName">
 					<xsl:choose>
 						<xsl:when test="contains(name(), ':')">
@@ -440,38 +586,19 @@
 				</span>
 				<span class="markup">="</span>
 				<span class="attrValue">
-					<xsl:value-of select="namespace-uri(.)"/>
+					<a href="{namespace-uri(.)}" target="_blank">
+						<xsl:value-of select="namespace-uri(.)"/>
+					</a>
 				</span>
 				<span class="markup">"</span>
 			</span>
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="@href" mode="tree">
-		<xsl:text>&#160;</xsl:text>
-		<span class="attrName attribute-href">
-			<xsl:value-of select="name(.)"/>
-		</span>
-		<span class="markup">="</span>
-		<span class="attrValue">
-			<xsl:choose>
-				<xsl:when test="string-length($path) and (name(parent::node()) = 'xsl:include' or name(parent::node()) = 'xsl:import')">
-					<a href="?{$path}{.}">
-						<xsl:value-of select="."/>
-					</a>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="."/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</span>
-		<span class="markup">"</span>
-	</xsl:template>
-
-	<xsl:template match="node()" mode="switch">
+	<xsl:template match="node()" mode="xswitch">
 		<xsl:param name="level"/>
 		<xsl:choose>
-			<xsl:when test="$level &lt;= $expand-levels">
+			<xsl:when test="$expandLevels = '*' or $level &lt;= $expandLevels">
 				<span class="switch">-</span>
 			</xsl:when>
 			<xsl:otherwise>
@@ -480,9 +607,9 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="node()" mode="display">
+	<xsl:template match="node()" mode="xdisplay">
 		<xsl:param name="level"/>
-		<xsl:if test="$level &gt; $expand-levels">
+		<xsl:if test="$expandLevels != '*' and $level &gt; $expandLevels">
 			<xsl:attribute name="style">display:none</xsl:attribute>
 		</xsl:if>
 	</xsl:template>

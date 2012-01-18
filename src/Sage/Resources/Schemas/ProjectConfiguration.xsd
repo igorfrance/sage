@@ -47,14 +47,16 @@
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="package" minOccurs="0" maxOccurs="1" type="config.package"/>
-			<xs:element name="scripts" minOccurs="0" maxOccurs="1">
+			<xs:element name="libraries" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="library" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
 								<xs:attribute name="name" use="required"/>
 								<xs:attribute name="version" use="optional"/>
-								<xs:attribute name="path" use="required"/>
+								<xs:attribute name="type" use="required" type="resourceType"/>
+								<xs:attribute name="path" use="required" type="p:nonEmptyString"/>
+								<xs:attribute name="global" use="optional" default="false" type="xs:boolean"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -77,6 +79,10 @@
 						<xs:element name="view" type="config.view" minOccurs="1" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
+				<xs:unique name="uniqueMetaViewName">
+					<xs:selector xpath="p:view"/>
+					<xs:field xpath="@name"/>
+				</xs:unique>
 			</xs:element>
 			<xs:element name="modules" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -358,6 +364,13 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="head"/>
 			<xs:enumeration value="body"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="resourceType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="script"/>
+			<xs:enumeration value="style"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

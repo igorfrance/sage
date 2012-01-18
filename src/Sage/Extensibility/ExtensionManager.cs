@@ -30,7 +30,7 @@ namespace Sage.Extensibility
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 
-			string pluginPath = context.Path.Resolve(context.Path.PluginPath);
+			string pluginPath = context.Path.Resolve(context.Path.ExtensionPath);
 			if (!Directory.Exists(pluginPath))
 				return;
 

@@ -80,7 +80,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="assets\css\devtools.css" />
     <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.js" />
     <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
     <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xml" />
@@ -91,6 +90,7 @@
     <Content Include="assets\modules\XmlTree\XmlTree.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="assets\scripts\lib\tooltip.js" />
     <Content Include="assets\views\shared\elements.html" />
     <Content Include="assets\views\tests\directory-tree.html" />
     <Content Include="assets\views\tests\syntax-highlighting.html" />
@@ -99,7 +99,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\scripts\lib\aeon.js" />
-    <EmbeddedResource Include="assets\css\logview.css" />
     <EmbeddedResource Include="assets\views\logview\thread-log.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>

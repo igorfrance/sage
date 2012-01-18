@@ -11,9 +11,14 @@
 
 	<xsl:param name="mode" select="'translate'"/>
 	<xsl:param name="locale" select="'en'"/>
+	<!--
 	<xsl:param name="dictionary" select="document('test-dictionary.xml')/*"/>
 	<xsl:param name="fallbacks" select="document('test-fallbacks.xml')/*"/>
 	<xsl:param name="globalvariables" select="document('test-variables.xml')/*"/>
+	-->
+	<xsl:param name="dictionary"/>
+	<xsl:param name="fallbacks"/>
+	<xsl:param name="globalvariables"/>
 
 	<!--
 
@@ -149,7 +154,7 @@
 				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				{<xsl:value-of select="@ref"/>}<xsl:value-of select="count($globalvariables)"/>
+				{<xsl:value-of select="@ref"/>}
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>

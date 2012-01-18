@@ -1,26 +1,63 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html class="dashboard"
 	xmlns:sage="http://www.cycle99.com/projects/sage"
 	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
 	xmlns:logic="http://www.cycle99.com/projects/sage/logic"
-	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization">
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
-		<title>Welcome to Sage!</title>
-		<link type="text/css" rel="stylesheet" href="assets/css/tutorial.css"/>
-		<script type="text/javascript" src="assets/scripts/lib/aeon.js"></script>
-		<script type="text/javascript" src="assets/scripts/tutorial/home.js"></script>
-		<!--[if gte IE 9]>
-			<style type="text/css">
-				.gradient {
-					 filter: none;
-				}
-			</style>
-		<![endif]-->
+		<title>Sage <sage:version/></title>
+		<link type="text/css" rel="stylesheet" href="{assetpath}/css/tutorial.css" />
+		<script type="text/javascript" src="{assetpath}/scripts/dashboard.js"></script>
+		<meta http-equiv="cache-control" content="no-cache"/>
 	</head>
 	<body>
+
+		<div id="navigation">
+			<h1>
+				<span>Sage</span>
+			</h1>
+			<ul class="general">
+				<li>
+					<a href="documentation/obtaining.html">Obtaining Sage</a>
+				</li>
+				<li class="separator"></li>
+				<li>
+					Installing
+				</li>
+				<li>
+					<a href="documentation/installing-new.html">Installing a new Sage project</a>
+				</li>
+				<li>
+					<a href="documentation/installing-example.html">Installing the example Sage project</a>
+				</li>
+				<li class="separator"></li>
+				<li>
+					<a href="documentation/building.html">Building Sage</a>
+				</li>
+			</ul>
+			<h2>Documentation</h2>
+			<ul class="documentation">
+				<li>
+					<a href="documentation/xml-as-a-language.html">XML as a language</a>
+				</li>
+				<li>
+					<a href="documentation/document-transform-flow.html">Document transform flow</a>
+				</li>
+				<li>
+					<a href="documentation/resource-processing.html">Resource processing</a>
+				</li>
+				<li>
+					<a href="documentation/extensibility.html">Extensibility</a>
+				</li>
+				<li>
+					<a href="documentation/configuration.html">Configuration</a>
+				</li>
+			</ul>
+		</div>
 
 		<div id="welcome">
 			<div class="valign">
@@ -38,13 +75,7 @@
 		</div>
 
 		<div id="examples">
-			<div class="valign">
-				<div class="vcell">
-					<h2>Examples</h2>
-					<xi:include href="../shared/navigation.xml"
-						xpointer="xpointer(/navigation/ul[@class='examples'])"/>
-				</div>
-			</div>
+			<mod:ViewInspector/>
 		</div>
 
 	</body>

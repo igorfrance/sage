@@ -1,9 +1,9 @@
 ﻿.xmltree
-	{ font: 11px Verdana; border-bottom: 1px solid #ccc; }
+	{ font: 11pt Consolas; }
 .xmltree *
 	{ text-align: left; }
 .xmltree .xmlroot
-	{ white-space: nowrap; padding: 10px; }
+	{ white-space: nowrap; padding: 10px 0; }
 .xmltree .toolbar
 	{ font-size: 10px; padding: 4px 7px; overflow: hidden; background: #F5F5F5; border-radius: 4px; }
 .xmltree .toolbar a
@@ -22,14 +22,8 @@
 	{ cursor: pointer; color: blue; }
 .xmltree .comment
 	{ margin-left: 22px; color: #A7A7A7; }
-.xmltree .element
-	{ overflow: hidden; }
-.xmltree .children
-	{ overflow: hidden; clear: left; }
 .xmltree .element .element
 	{ margin-left: 15px; }
-.xmltree .element span
-	{	float: left; }
 .xmltree .nodeName
 	{ color: #CC0000; }
 .xmltree .attrName
@@ -37,7 +31,7 @@
 .xmltree .attrValue
 	{ font-weight: bold;  }
 .xmltree .text
-	{ font-weight: bold;  }
+	{ color: #323232;  }
 .xmltree .markup
 	{ color: blue; }
 .xmltree .comment .markup
@@ -49,9 +43,19 @@
 .xmltree .ns
 	{ color: blue; }
 .xmltree .switch
-	{ color: #FF0000; cursor: pointer; width: 8px; text-align: right; font-weight: bold; padding-right: 2px; }
+	{ display: inline-block; color: #FF0000; cursor: pointer; width: 8px; text-align: right; font-weight: bold; padding-right: 2px; }
 .xmltree .switch_space
-	{ width: 10px; }
+	{ display: inline-block; width: 10px; }
+
+.xmltree.wrap .element span
+	{	float: left; }
+.xmltree.wrap .element
+	{ overflow: hidden; }
+.xmltree.wrap .element .children
+	{ overflow: hidden; clear: left; }
+.xmltree.namespaces .nsattrib
+	{	display: inline; }
+
 
 .xmltree .nsattrib
 	{ font-weight: normal; display: none; }

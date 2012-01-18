@@ -19,12 +19,13 @@
 	/// </summary>
 	public class ResourceManager
 	{
-		private static readonly Dictionary<string, CopyNodeHandler> nodeHandlerRegistry = new Dictionary<string, CopyNodeHandler>();
-		private static readonly Dictionary<string, CopyTextHandler> textHandlerRegistry = new Dictionary<string, CopyTextHandler>();
+		private static readonly Dictionary<string, ProcessNode> nodeHandlerRegistry = new Dictionary<string, ProcessNode>();
+		private static readonly Dictionary<string, ProcessText> textHandlerRegistry = new Dictionary<string, ProcessText>();
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceManager).FullName);
-		private readonly SageContext context;
 		private const string MissingPhrasePlaceholder = "{{{0}}}";
+		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceManager).FullName);
+		private static readonly Regex escapeCleanupExpression = new Regex(@"\{({[^}]+})}", RegexOptions.Compiled);
+		private readonly SageContext context;
 		private static Regex textReplaceExpression;
 
 		static ResourceManager()
@@ -43,13 +44,13 @@
 					{
 						foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
 						{
-							CopyNodeHandler del = (CopyNodeHandler) Delegate.CreateDelegate(typeof(CopyNodeHandler), methodInfo);
+							ProcessNode del = (ProcessNode) Delegate.CreateDelegate(typeof(ProcessNode), methodInfo);
 							ResourceManager.RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, del);
 						}
 
 						foreach (TextHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextHandlerAttribute), false))
 						{
-							CopyTextHandler del = (CopyTextHandler) Delegate.CreateDelegate(typeof(CopyTextHandler), methodInfo);
+							ProcessText del = (ProcessText) Delegate.CreateDelegate(typeof(ProcessText), methodInfo);
 							foreach (string variable in attrib.Variables)
 							{
 								ResourceManager.RegisterTextHandler(variable, del);
@@ -85,7 +86,7 @@
 		/// <param name="nodeName">The name of the node for wihch the handler is being registered.</param>
 		/// <param name="nodeNamespace">The namespace of the node for wihch the handler is being registered.</param>
 		/// <param name="handler">The method that will will handle the node.</param>
-		public static void RegisterNodeHandler(XmlNodeType nodeType, string nodeName, string nodeNamespace, CopyNodeHandler handler)
+		public static void RegisterNodeHandler(XmlNodeType nodeType, string nodeName, string nodeNamespace, ProcessNode handler)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(nodeName));
 			Contract.Requires<ArgumentNullException>(handler != null);
@@ -106,7 +107,7 @@
 			}
 		}
 
-		public static void RegisterTextHandler(string variableName, CopyTextHandler handler)
+		public static void RegisterTextHandler(string variableName, ProcessText handler)
 		{
 			if (string.IsNullOrEmpty(variableName))
 				throw new ArgumentNullException("variableName");
@@ -128,7 +129,7 @@
 				textHandlerRegistry.Add(variableName, handler);
 			}
 
-			textReplaceExpression = new Regex("\\$?{(" + string.Join("|", textHandlerRegistry.Keys.ToArray()) + ")}",
+			textReplaceExpression = new Regex("\\$?(?<!{){(" + string.Join("|", textHandlerRegistry.Keys.ToArray()) + ")}",
 				RegexOptions.IgnoreCase);
 		}
 
@@ -308,6 +309,8 @@
 							string varName = m.Groups[1].Value.ToLower();
 							return textHandlerRegistry[varName](varName, context);
 						});
+
+						result.Value = escapeCleanupExpression.Replace(result.Value, "$1");
 					}
 
 					break;
@@ -320,7 +323,7 @@
 			return result;
 		}
 
-		internal static CopyNodeHandler GetNodeHandler(XmlNode node)
+		internal static ProcessNode GetNodeHandler(XmlNode node)
 		{
 			string key = ResourceManager.QualifyName(node);
 			if (nodeHandlerRegistry.ContainsKey(key))

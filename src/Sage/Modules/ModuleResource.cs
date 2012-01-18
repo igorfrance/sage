@@ -30,13 +30,23 @@
 			Contract.Requires<ArgumentNullException>(ownerDoc != null);
 			Contract.Requires<ArgumentNullException>(context != null);
 
+			XmlElement result;
 			string resourcePath = context.Path.GetModulePath(this.ModuleName, this.Path);
-
-			XmlElement result = ownerDoc.CreateElement("sage:resource", XmlNamespaces.SageNamespace);
-			result.SetAttribute("type", this.Type.ToString().ToLower());
-			result.SetAttribute("location", this.Location.ToString().ToLower());
-			result.SetAttribute("path", context.Path.GetRelativeWebPath(resourcePath, true));
-
+			if (this.Type == ResourceType.Style)
+			{
+				result = ownerDoc.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
+				result.SetAttribute("type", "text/css");
+				result.SetAttribute("rel", "stylesheet");
+				result.SetAttribute("href", context.Path.GetRelativeWebPath(resourcePath, true));
+			}
+			else
+			{
+				result = ownerDoc.CreateElement("xhtml:script", XmlNamespaces.XHtmlNamespace);
+				result.SetAttribute("type", "text/javascript");
+				result.SetAttribute("language", "javascript");
+				result.SetAttribute("src", context.Path.GetRelativeWebPath(resourcePath, true));
+			}
+			
 			return result;
 		}
 	}

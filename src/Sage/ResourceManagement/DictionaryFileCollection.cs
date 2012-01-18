@@ -22,7 +22,7 @@
 		{
 			this.context = context;
 
-			CategoryInfo info = context.Config.Categories[this.Category];
+			CategoryInfo info = context.ProjectConfiguration.Categories[this.Category];
 			this.Locales = new List<string>(info.Locales);
 
 			this.Refresh();

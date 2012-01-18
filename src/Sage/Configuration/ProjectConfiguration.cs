@@ -36,7 +36,7 @@
 
 		private ProjectConfiguration()
 		{
-			this.Modules = new List<ModuleConfiguration>();
+			this.Modules = new Dictionary<string, ModuleConfiguration>();
 			this.Categories = new Dictionary<string, CategoryInfo>();
 			this.Locales = new Dictionary<string, LocaleInfo>();
 			this.MetaViews = new MetaViewDictionary();
@@ -45,7 +45,7 @@
 			this.Links = new Dictionary<string, LinkInfo>();
 			this.Routing = new RoutingConfiguration();
 			this.PathTemplates = new PathTemplates();
-			this.ScriptLibraries = new Dictionary<string, ScriptLibraryInfo>();
+			this.ResourceLibraries = new Dictionary<string, ResourceLibraryInfo>();
 
 			this.SharedCategory = "shared";
 			this.DefaultLocale = "default";
@@ -221,7 +221,7 @@
 			private set;
 		}
 
-		public Dictionary<string, ScriptLibraryInfo> ScriptLibraries
+		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries
 		{
 			get;
 			private set;
@@ -293,7 +293,7 @@
 		/// <summary>
 		/// Gets the dictionary that defines how module names map to module classes that implement them.
 		/// </summary>
-		public IList<ModuleConfiguration> Modules
+		public Dictionary<string, ModuleConfiguration> Modules
 		{
 			get;
 			private set;
@@ -478,13 +478,13 @@
 			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
 			{
 				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode);
-				this.Modules.Add(moduleConfig);
+				this.Modules.Add(moduleConfig.Name, moduleConfig);
 			}
 
-			foreach (XmlElement libraryNode in configNode.SelectNodes("p:scripts/p:library", nm))
+			foreach (XmlElement libraryNode in configNode.SelectNodes("p:libraries/p:library", nm))
 			{
-				ScriptLibraryInfo info = new ScriptLibraryInfo(libraryNode);
-				this.ScriptLibraries.Add(info.Name, info);
+				ResourceLibraryInfo info = new ResourceLibraryInfo(libraryNode);
+				this.ResourceLibraries.Add(info.Name, info);
 			}
 
 			foreach (XmlElement locale in configNode.SelectNodes("p:globalization/p:locale", nm))
@@ -572,15 +572,15 @@
 				this.Links.Add(name, extensionConfig.Links[name]);
 			}
 
-			foreach (string name in extensionConfig.ScriptLibraries.Keys)
+			foreach (string name in extensionConfig.ResourceLibraries.Keys)
 			{
-				if (this.ScriptLibraries.ContainsKey(name))
+				if (this.ResourceLibraries.ContainsKey(name))
 				{
 					log.WarnFormat("Skipped registering script library '{0}' from extension '{1}' because a script library with the same name already exists.", name, extensionName);
 					continue;
 				}
 
-				this.ScriptLibraries.Add(name, extensionConfig.ScriptLibraries[name]);
+				this.ResourceLibraries.Add(name, extensionConfig.ResourceLibraries[name]);
 			}
 
 			foreach (string name in extensionConfig.MetaViews.Keys)
@@ -594,15 +594,15 @@
 				this.MetaViews.Add(name, extensionConfig.MetaViews[name]);
 			}
 
-			foreach (ModuleConfiguration module in extensionConfig.Modules)
+			foreach (string name in extensionConfig.Modules.Keys)
 			{
-				if (this.Modules.Where(m => m.Name == module.Name).Count() != 0)
+				if (this.Modules.ContainsKey(name))
 				{
-					log.WarnFormat("Skipped registering module '{0}' from extension '{1}' because a module with the same name already exists.", module.Name, extensionName);
+					log.WarnFormat("Skipped registering module '{0}' from extension '{1}' because a module with the same name already exists.", name, extensionName);
 					continue;
 				}
 
-				this.Modules.Add(module);
+				this.Modules.Add(name, extensionConfig.Modules[name]);
 			}
 		}
 	}

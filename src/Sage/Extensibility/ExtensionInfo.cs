@@ -38,11 +38,21 @@ namespace Sage.Extensibility
 			this.InstallLogFile = Path.ChangeExtension(this.SourceArchive, ".history.xml");
 
 			if (!Directory.Exists(this.SourceDirectory))
+			{
 				this.ExtractArchive();
-
+			}
 			else if (this.ArchiveDate > Directory.GetLastWriteTime(this.SourceDirectory))
 			{
-				Directory.Delete(this.SourceDirectory);
+				try
+				{
+					Directory.Delete(this.SourceDirectory);
+				}
+				catch (Exception ex)
+				{
+					log.ErrorFormat("Could not delete the source directory '{0}' for extension '{1}': {2}.",
+						this.SourceDirectory, this.Name, ex.Message);
+				}
+
 				this.ExtractArchive();
 			}
 

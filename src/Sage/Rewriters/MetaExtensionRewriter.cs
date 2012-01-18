@@ -70,7 +70,7 @@
 			
 			QueryString query = new QueryString(HttpContext.Current.Request.Url.Query);
 			string view = query.GetString(MetaViewDictionary.ParamNameMetaView);
-			if (view != null && !context.Config.MetaViews.ContainsKey(view))
+			if (view != null && !context.ProjectConfiguration.MetaViews.ContainsKey(view))
 				view = null;
 
 			//// \.(html|xml|xmlx|htmlx)$

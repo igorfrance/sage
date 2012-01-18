@@ -61,7 +61,7 @@
 				if (rewriteOn != null)
 					return rewriteOn.Value;
 
-				return context.Config.UrlRewritingOn;
+				return context.ProjectConfiguration.UrlRewritingOn;
 			}
 
 			set
@@ -86,7 +86,7 @@
 			get
 			{
 				if (RewritingOn)
-					return context.Config.UrlRewritePrefix.Replace(
+					return context.ProjectConfiguration.UrlRewritePrefix.Replace(
 						"{category}", context.Category).Replace("{locale}", context.Locale);
 
 				return string.Empty;
@@ -360,13 +360,13 @@
 		/// <paramref name="linkName"/>.</exception>
 		internal string FormatAndRewriteUrl(string linkName, NameValueCollection parameters, bool includeActiveQuery)
 		{
-			if (!context.Config.Links.ContainsKey(linkName))
+			if (!context.ProjectConfiguration.Links.ContainsKey(linkName))
 			{
 				log.ErrorFormat("The url configuration doesn't contain a url with name '{0}'", linkName);
 				return linkName + "??";
 			}
 
-			LinkInfo link = context.Config.Links[linkName];
+			LinkInfo link = context.ProjectConfiguration.Links[linkName];
 			string linkPattern = link.Pattern;
 
 			if (!string.IsNullOrWhiteSpace(link.Url))

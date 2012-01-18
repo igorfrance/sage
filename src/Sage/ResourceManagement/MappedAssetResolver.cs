@@ -3,10 +3,6 @@
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Net;
-	using System.Xml;
-
-	using Sage.Configuration;
 
 	[UrlResolver(Scheme = MappedAssetResolver.Scheme)]
 	public class MappedAssetResolver : ISageXmlUrlResolver
@@ -30,12 +26,12 @@
 
 		private string GetAssetPath(SageContext context, string resource)
 		{
-			foreach (string key in context.Config.AssetPrefixes.Keys)
+			foreach (string key in context.ProjectConfiguration.AssetPrefixes.Keys)
 			{
 				if (!resource.StartsWith(key))
 					continue;
 
-				string assetPath = context.Config.AssetPrefixes[key];
+				string assetPath = context.ProjectConfiguration.AssetPrefixes[key];
 				string resourcePath = resource.Replace(key, assetPath).Trim('/');
 				return context.Path.Resolve(resourcePath);
 			}

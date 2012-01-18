@@ -4,9 +4,10 @@
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
 	xmlns:sage="http://www.cycle99.com/projects/sage"
 	xmlns:kelp="http://www.cycle99.com/projects/kelp"
+	xmlns:set="http://www.cycle99.com/projects/sage/xslt/extensions/set"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	xmlns="http://www.w3.org/1999/xhtml"
-	exclude-result-prefixes="sage mod kelp xhtml">
+	exclude-result-prefixes="sage mod kelp set xhtml">
 
 	<xsl:include href="sage://resources/modules.xslt" />
 	<xsl:include href="sageresx://sage/resources/xslt/logic.xsl" />
@@ -22,18 +23,22 @@
 		doctype-system="about:legacy-compat"/>
 
 	<xsl:template match="sage:view">
-		<xsl:apply-templates select="sage:response/sage:model/node()"/>
+		<xsl:apply-templates select="$response/sage:model/node()"/>
 	</xsl:template>
 
 	<xsl:template match="sage:basehref">
-		<base href="{/sage:view/sage:request/@basehref}"/>
+		<base href="{$request/@basehref}"/>
+	</xsl:template>
+
+	<xsl:template match="sage:version">
+		<xsl:value-of select="$request/sage:assembly/@version"/>
 	</xsl:template>
 
 	<xsl:template match="xhtml:html">
 		<html>
 			<xsl:apply-templates select="@*"/>
 			<xsl:attribute name="data-thread">
-				<xsl:value-of select="/sage:view/sage:request/@thread" />
+				<xsl:value-of select="$request/@thread" />
 			</xsl:attribute>
 			<xsl:if test="$request/@developer = 1">
 				<xsl:attribute name="data-developer">1</xsl:attribute>
@@ -43,10 +48,13 @@
 	</xsl:template>
 
 	<xsl:template match="xhtml:head">
+		<xsl:variable name="styles" select="$response/sage:resources/sage:head/xhtml:link | xhtml:link"/>
+		<xsl:variable name="scripts" select="$response/sage:resources/sage:head/xhtml:script | xhtml:script"/>
 		<head>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates select="node()"/>
-			<xsl:apply-templates select="$response/sage:resources/sage:resource[@location='head']"/>
+			<xsl:apply-templates select="node()[local-name() != 'script' and local-name() != 'link']"/>
+			<xsl:apply-templates select="set:distinct($styles, '@href')"/>
+			<xsl:apply-templates select="set:distinct($scripts, '@src')"/>
 		</head>
 	</xsl:template>
 
@@ -54,7 +62,8 @@
 		<body>
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="node()"/>
-			<xsl:apply-templates select="$response/sage:resources/sage:resource[@location='body']"/>
+			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:style"/>
+			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:script"/>
 		</body>
 	</xsl:template>
 
@@ -62,9 +71,7 @@
 		<xsl:for-each select="document(@src)/*/kelp:resource">
 			<xsl:choose>
 				<xsl:when test="@exists = 'false'">
-					<xsl:comment>
-						File not found: <xsl:value-of select="@path"/>
-					</xsl:comment>
+					<xsl:comment> File not found: <xsl:value-of select="@path"/> </xsl:comment>
 				</xsl:when>
 				<xsl:otherwise>
 					<script type="text/javascript" language="javascript" src="{@src}"></script>
@@ -98,6 +105,13 @@
 
 	<xsl:template match="@xml:base"/>
 
+	<xsl:template match="xhtml:*">
+		<xsl:element name="{local-name()}">
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="node()"/>
+		</xsl:element>
+	</xsl:template>
+
 	<xsl:template match="*">
 		<xsl:element name="{name()}" namespace="{namespace-uri()}">
 			<xsl:apply-templates select="@*"/>
@@ -112,7 +126,7 @@
 	</xsl:template>
 
 	<xsl:template match="text()">
-		<xsl:value-of select="normalize-space(.)"/>
+		<xsl:value-of select="."/>
 	</xsl:template>
 
 </xsl:stylesheet>

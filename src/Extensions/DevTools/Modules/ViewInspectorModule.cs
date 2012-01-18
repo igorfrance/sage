@@ -21,7 +21,7 @@
 			XmlElement metaElement = dataElement.AppendElement("mod:meta", XmlNamespaces.ModulesNamespace);
 
 			SageContext context = configuration.Context;
-			foreach (string name in context.Config.MetaViews.Keys)
+			foreach (string name in context.ProjectConfiguration.MetaViews.Keys)
 			{
 				XmlElement viewElement = metaElement.AppendElement("mod:view", XmlNamespaces.ModulesNamespace);
 				viewElement.InnerText = name;

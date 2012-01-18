@@ -185,7 +185,7 @@
 					throw;
 			}
 
-			this.Config = config ?? ProjectConfiguration.Current;
+			this.ProjectConfiguration = config ?? ProjectConfiguration.Current;
 			this.ApplicationPath = HostingEnvironment.ApplicationVirtualPath;
 			this.PhysicalApplicationPath = HostingEnvironment.ApplicationPhysicalPath;
 			this.Query = new QueryString();
@@ -210,14 +210,14 @@
 				this.PhysicalApplicationPath = httpContext.Request.PhysicalApplicationPath;
 			}
 
-			this.Locale = this.Query.GetString(LocaleVariableName, this.Config.DefaultLocale);
+			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
 			this.Category = this.Query.GetString(CategoryVariableName);
 
-			if (string.IsNullOrEmpty(this.Category) || !this.Config.Categories.ContainsKey(this.Category))
-				this.Category = this.Config.DefaultCategory;
+			if (string.IsNullOrEmpty(this.Category) || !this.ProjectConfiguration.Categories.ContainsKey(this.Category))
+				this.Category = this.ProjectConfiguration.DefaultCategory;
 
 			if (string.IsNullOrEmpty(this.Locale))
-				this.Locale = this.Config.DefaultLocale;
+				this.Locale = this.ProjectConfiguration.DefaultLocale;
 
 			this.Query.Remove(LocaleVariableName);
 			this.Query.Remove(CategoryVariableName);
@@ -265,7 +265,7 @@
 			}
 		}
 
-		public ProjectConfiguration Config { get; internal set; }
+		public ProjectConfiguration ProjectConfiguration { get; internal set; }
 
 		/// <summary>
 		/// Gets the last modification date cache.
@@ -336,7 +336,7 @@
 		{
 			get
 			{
-				return this.Config.IsDeveloperIp(this.Request.UserHostAddress) ||
+				return this.ProjectConfiguration.IsDeveloperIp(this.Request.UserHostAddress) ||
 					(this.Session["developer"] != null && (bool) this.Session["developer"]);
 			}
 		}
@@ -354,7 +354,7 @@
 		{
 			get
 			{
-				return Config.Locales[this.Locale];
+				return ProjectConfiguration.Locales[this.Locale];
 			}
 		}
 
@@ -465,6 +465,87 @@
 		}
 
 		/// <summary>
+		/// Gets an <see cref="XmlElement"/> that contains information about this context.
+		/// </summary>
+		/// <param name="ownerDocument">The <see cref="XmlDocument"/> to use to create the element.</param>
+		/// <returns>An <see cref="XmlElement"/> that contains information about the current request</returns>
+		/// <exception cref="ArgumentNullException">
+		/// <paramref name="ownerDocument"/> is <c>null</c>.
+		/// </exception>
+		public XmlElement ToXml(XmlDocument ownerDocument)
+		{
+			if (ownerDocument == null)
+				throw new ArgumentNullException("ownerDocument");
+
+			XmlElement resultElement = ownerDocument.CreateElement("sage:request", XmlNamespaces.SageNamespace);
+			HttpRequestBase request = this.Request;
+			Uri requestUri = new Uri(this.Url.VisibleUrl);
+
+			resultElement.SetAttribute("apppath", request.ApplicationPath);
+			resultElement.SetAttribute("basehref", this.BaseHref);
+			resultElement.SetAttribute("method", request.HttpMethod);
+			resultElement.SetAttribute("localip", request.ServerVariables["LOCAL_ADDR"]);
+			resultElement.SetAttribute("remoteip", request.ServerVariables["REMOTE_ADDR"]);
+
+			resultElement.SetAttribute("category", this.Category);
+			resultElement.SetAttribute("locale", this.Locale);
+			resultElement.SetAttribute("latin", ProjectConfiguration.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
+			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
+			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
+			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugMode ? "1" : "0");
+
+			XmlElement pathNode = resultElement.AppendElement("sage:path", XmlNamespaces.SageNamespace);
+			pathNode.SetAttribute("assetPath", this.Path.GetRelativeWebPath(this.Path.AssetPath));
+			pathNode.SetAttribute("sharedAssetPath", this.Path.GetRelativeWebPath(this.Path.SharedAssetPath));
+			pathNode.SetAttribute("modulePath", this.Path.GetRelativeWebPath(this.Path.ModulePath));
+
+			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
+			addressNode.SetAttribute("url", this.Url.VisibleUrl);
+			if (request.UrlReferrer != null)
+				addressNode.SetAttribute("referrer", request.UrlReferrer.ToString());
+
+			addressNode.SetAttribute("servername", requestUri.Host);
+			addressNode.SetAttribute("servernamefull", string.Format("{0}://{1}", requestUri.Scheme, requestUri.Authority));
+			addressNode.SetAttribute("scriptname", requestUri.LocalPath.TrimEnd('/'));
+			addressNode.SetAttribute("scriptnamefull", requestUri.PathAndQuery);
+			addressNode.SetAttribute("querystring", requestUri.Query);
+
+			// browser element
+			XmlElement browserNode = resultElement.AppendElement("sage:useragent", XmlNamespaces.SageNamespace);
+			browserNode.SetAttribute("value", request.UserAgent);
+			if (request.Browser != null)
+			{
+				browserNode.SetAttribute("name", request.Browser.Browser);
+				browserNode.SetAttribute("version", request.Browser.Version);
+				browserNode.SetAttribute("version.major", request.Browser.MajorVersion.ToString());
+				browserNode.SetAttribute("version.minor", request.Browser.MinorVersion.ToString());
+			}
+
+			XmlElement assemblyNode = resultElement.AppendElement("sage:assembly", XmlNamespaces.SageNamespace);
+			var version = Assembly.GetExecutingAssembly().GetName().Version;
+			assemblyNode.SetAttribute("version", version.ToString());
+
+			resultElement.AppendChild(new QueryString(requestUri.Query).ToXml(ownerDocument, "sage:querystring", XmlNamespaces.SageNamespace));
+			resultElement.AppendChild(new QueryString(request.Cookies).ToXml(ownerDocument, "sage:cookies", XmlNamespaces.SageNamespace));
+			if (request.HttpMethod == "POST")
+				resultElement.AppendChild(new QueryString(request.Form).ToXml(ownerDocument, "sage:form", XmlNamespaces.SageNamespace));
+
+			XmlElement dateNode = resultElement.AppendElement("sage:dateTime", XmlNamespaces.SageNamespace);
+			dateNode.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
+			dateNode.SetAttribute("time", DateTime.Now.ToString("HH:mm:ss"));
+
+			dateNode.SetAttribute("day", DateTime.Now.ToString("dd"));
+			dateNode.SetAttribute("month", DateTime.Now.ToString("MM"));
+			dateNode.SetAttribute("year", DateTime.Now.ToString("yyyy"));
+
+			dateNode.SetAttribute("hour", DateTime.Now.ToString("HH"));
+			dateNode.SetAttribute("minute", DateTime.Now.ToString("mm"));
+			dateNode.SetAttribute("second", DateTime.Now.ToString("ss"));
+
+			return resultElement;
+		}
+
+		/// <summary>
 		/// Selects the case that matches the condition specified with the <paramref name="switchNode"/> and returns it's contents.
 		/// </summary>
 		/// <param name="switchNode">The node that specifies the condition</param>
@@ -553,11 +634,17 @@
 			return valueNode;
 		}
 
-		[TextHandler("assetpath", "sharedassetpath", "modulepath")]
+		[TextHandler("assetpath", "locale", "category", "sharedassetpath", "modulepath")]
 		internal static string ResolvePathVariable(string variable, SageContext context)
 		{
 			switch (variable)
 			{
+				case "locale":
+					return context.Locale;
+
+				case "category":
+					return context.Category;
+
 				case "assetpath":
 					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
 
@@ -569,87 +656,6 @@
 			}
 
 			return string.Format("{{?{0}?}}", variable);
-		}
-
-		/// <summary>
-		/// Gets an <see cref="XmlElement"/> that contains information about this context.
-		/// </summary>
-		/// <param name="ownerDocument">The <see cref="XmlDocument"/> to use to create the element.</param>
-		/// <returns>An <see cref="XmlElement"/> that contains information about the current request</returns>
-		/// <exception cref="ArgumentNullException">
-		/// <paramref name="ownerDocument"/> is <c>null</c>.
-		/// </exception>
-		public XmlElement ToXml(XmlDocument ownerDocument)
-		{
-			if (ownerDocument == null)
-				throw new ArgumentNullException("ownerDocument");
-
-			XmlElement resultElement = ownerDocument.CreateElement("sage:request", XmlNamespaces.SageNamespace);
-			HttpRequestBase request = this.Request;
-			Uri requestUri = new Uri(this.Url.VisibleUrl);
-
-			resultElement.SetAttribute("apppath", request.ApplicationPath);
-			resultElement.SetAttribute("basehref", this.BaseHref);
-			resultElement.SetAttribute("method", request.HttpMethod);
-			resultElement.SetAttribute("localip", request.ServerVariables["LOCAL_ADDR"]);
-			resultElement.SetAttribute("remoteip", request.ServerVariables["REMOTE_ADDR"]);
-
-			resultElement.SetAttribute("category", this.Category);
-			resultElement.SetAttribute("locale", this.Locale);
-			resultElement.SetAttribute("latin", Config.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
-			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
-			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
-			resultElement.SetAttribute("debug", Config.IsDebugMode ? "1" : "0");
-
-			XmlElement pathNode = resultElement.AppendElement("sage:path", XmlNamespaces.SageNamespace);
-			pathNode.SetAttribute("assetPath", this.Path.GetRelativeWebPath(this.Path.AssetPath));
-			pathNode.SetAttribute("sharedAssetPath", this.Path.GetRelativeWebPath(this.Path.SharedAssetPath));
-			pathNode.SetAttribute("modulePath", this.Path.GetRelativeWebPath(this.Path.ModulePath));
-
-			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
-			addressNode.SetAttribute("url", this.Url.VisibleUrl);
-			if (request.UrlReferrer != null)
-				addressNode.SetAttribute("referrer", request.UrlReferrer.ToString());
-
-			addressNode.SetAttribute("servername", requestUri.Host);
-			addressNode.SetAttribute("servernamefull", string.Format("{0}://{1}", requestUri.Scheme, requestUri.Authority));
-			addressNode.SetAttribute("scriptname", requestUri.LocalPath.TrimEnd('/'));
-			addressNode.SetAttribute("scriptnamefull", requestUri.PathAndQuery);
-			addressNode.SetAttribute("querystring", requestUri.Query);
-
-			// browser element
-			XmlElement browserNode = resultElement.AppendElement("sage:useragent", XmlNamespaces.SageNamespace);
-			browserNode.SetAttribute("value", request.UserAgent);
-			if (request.Browser != null)
-			{
-				browserNode.SetAttribute("name", request.Browser.Browser);
-				browserNode.SetAttribute("version", request.Browser.Version);
-				browserNode.SetAttribute("version.major", request.Browser.MajorVersion.ToString());
-				browserNode.SetAttribute("version.minor", request.Browser.MinorVersion.ToString());
-			}
-
-			XmlElement assemblyNode = resultElement.AppendElement("sage:assembly", XmlNamespaces.SageNamespace);
-			var version = Assembly.GetExecutingAssembly().GetName().Version;
-			assemblyNode.SetAttribute("version", version.ToString());
-
-			resultElement.AppendChild(new QueryString(requestUri.Query).ToXml(ownerDocument, "sage:querystring", XmlNamespaces.SageNamespace));
-			resultElement.AppendChild(new QueryString(request.Cookies).ToXml(ownerDocument, "sage:cookies", XmlNamespaces.SageNamespace));
-			if (request.HttpMethod == "POST")
-				resultElement.AppendChild(new QueryString(request.Form).ToXml(ownerDocument, "sage:form", XmlNamespaces.SageNamespace));
-
-			XmlElement dateNode = resultElement.AppendElement("sage:dateTime", XmlNamespaces.SageNamespace);
-			dateNode.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
-			dateNode.SetAttribute("time", DateTime.Now.ToString("HH:mm:ss"));
-
-			dateNode.SetAttribute("day", DateTime.Now.ToString("dd"));
-			dateNode.SetAttribute("month", DateTime.Now.ToString("MM"));
-			dateNode.SetAttribute("year", DateTime.Now.ToString("yyyy"));
-
-			dateNode.SetAttribute("hour", DateTime.Now.ToString("HH"));
-			dateNode.SetAttribute("minute", DateTime.Now.ToString("mm"));
-			dateNode.SetAttribute("second", DateTime.Now.ToString("ss"));
-
-			return resultElement;
 		}
 
 		/// <summary>
@@ -697,7 +703,7 @@
 			{
 				log.ErrorFormat(
 					"Property name '{0}' is invalid. Please make sure the name is a property of WhiteLabelContext",
-						propName);
+					propName);
 
 				return null;
 			}

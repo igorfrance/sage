@@ -34,5 +34,21 @@
 		{
 			return string.Format(format, value1, value2, value3, value4, value5);
 		}
+
+		public string replace(string input, string expression, string replacement)
+		{
+			if (string.IsNullOrEmpty(input))
+				return input;
+
+			try
+			{
+				Regex expr = new Regex(expression);
+				return expr.Replace(input, replacement ?? string.Empty);
+			}
+			catch (Exception ex)
+			{
+				return ex.Message;
+			}
+		}
 	}
 }

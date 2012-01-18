@@ -31,28 +31,18 @@
 			Contract.Requires<ArgumentNullException>(controller != null);
 			Contract.Requires<ArgumentNullException>(viewInfo != null);
 
-			string viewName = viewInfo.Action;
-			XmlNode configNode = viewInfo.ConfigDocument;
+			configElement = viewInfo.ConfigDocument.DocumentElement;
 
-			if (string.IsNullOrEmpty(viewName))
-				throw new ArgumentNullException("name");
-
-			if (configNode.NodeType == XmlNodeType.Document)
-				configNode = ((XmlDocument)configNode).DocumentElement;
-
-			if (configNode.NodeType != XmlNodeType.Element)
-				throw new ArgumentException("The node type of the supplied xml node should be either an element or a document node", "configNode");
-
-			this.Name = viewName;
+			this.Name = viewInfo.Action;
 			this.Controller = controller;
-			this.configElement = (XmlElement) configNode;
+			this.Info = viewInfo;
 			this.Modules = new Dictionary<string, IModule>();
 
 			SageModuleFactory factory = new SageModuleFactory();
 
 			if (!string.IsNullOrWhiteSpace(ModuleSelectXPath))
 			{
-				XmlNodeList moduleNodes = this.configElement.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
+				XmlNodeList moduleNodes = this.Info.ConfigDocument.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
 				log.DebugFormat("Found {0} module nodes in view configuration.", moduleNodes.Count);
 
 				foreach (XmlElement moduleElem in moduleNodes)
@@ -132,7 +122,7 @@
 
 		public ViewInput ProcessRequest()
 		{
-			ViewInput input = new ViewInput(this.Name, configElement);
+			ViewInput input = new ViewInput(this, configElement);
 
 			if (!string.IsNullOrWhiteSpace(ModuleSelectXPath))
 			{

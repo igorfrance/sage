@@ -16,7 +16,7 @@
 	/// </summary>
 	/// <remarks>
 	/// In order to hook into this resolver and provide custom resources that can be referred to in
-	/// url's, create a method that matches <see cref="SageResourceProvider"/> delegate and tag it with
+	/// url's, create a method that matches <see cref="GetResource"/> delegate and tag it with
 	/// <see cref="SageResourceProviderAttribute"/>. The name that you specify in the constructor for
 	/// <see cref="SageResourceProviderAttribute"/> is the string that follows <c>sage://resources/</c>.
 	/// </remarks>
@@ -28,13 +28,13 @@
 		/// </summary>
 		public const string Scheme = "sage";
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageResourceResolver).FullName);
-		private static readonly Dictionary<string, SageResourceProvider> providers;
+		private static readonly Dictionary<string, GetResource> providers;
 		private readonly List<string> dependencies = new List<string>();
 
 		static SageResourceResolver()
 		{
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-			providers = new Dictionary<string, SageResourceProvider>();
+			providers = new Dictionary<string, GetResource>();
 
 			foreach (Assembly a in Application.RelevantAssemblies)
 			{
@@ -50,7 +50,7 @@
 					{
 						foreach (SageResourceProviderAttribute attrib in methodInfo.GetCustomAttributes(typeof(SageResourceProviderAttribute), false))
 						{
-							SageResourceProvider del = (SageResourceProvider) Delegate.CreateDelegate(typeof(SageResourceProvider), methodInfo);
+							GetResource del = (GetResource) Delegate.CreateDelegate(typeof(GetResource), methodInfo);
 							if (providers.ContainsKey(attrib.ResourceName))
 							{
 								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",

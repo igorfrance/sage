@@ -27,7 +27,7 @@
 		public override void Render(ViewContext viewContext, TextWriter writer)
 		{
 			SageController controller = (SageController) viewContext.Controller;
-			XmlDocument requestXml = controller.GetViewXml(viewContext);
+			XmlDocument requestXml = controller.PrepareViewXml(viewContext);
 
 			QueryString query = new QueryString(viewContext.HttpContext.Request.QueryString);
 			bool prettyPrint = query.HasValid("pretty", "1|true|yes");

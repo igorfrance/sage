@@ -36,17 +36,17 @@
 			this.context = context;
 
 			this.FilePath = path;
-			this.Name = new ResourceName(path, context.Config.Categories[context.Category]);
+			this.Name = new ResourceName(path, context.ProjectConfiguration.Categories[context.Category]);
 			this.SourceDirectory = Path.GetDirectoryName(path);
 
 			if (UrlResolver.GetScheme(path) == "file")
 			{
-				this.TargetDirectory = Path.Combine(SourceDirectory, context.Config.PathTemplates.GlobalizedDirectory);
+				this.TargetDirectory = Path.Combine(SourceDirectory, context.ProjectConfiguration.PathTemplates.GlobalizedDirectory);
 			}
 			else
 			{
 				string converted = path.ReplaceAll(convertScheme, "$1/$2");
-				string expanded = Path.Combine(context.Config.PathTemplates.GlobalizedDirectoryForNonFileResources, converted);
+				string expanded = Path.Combine(context.ProjectConfiguration.PathTemplates.GlobalizedDirectoryForNonFileResources, converted);
 
 				this.SourceDirectory =
 				this.TargetDirectory = context.Path.Resolve(Path.GetDirectoryName(expanded));
@@ -94,7 +94,7 @@
 		{
 			get
 			{
-				CategoryInfo category = context.Config.Categories[context.Category];
+				CategoryInfo category = context.ProjectConfiguration.Categories[context.Category];
 				string pattern1 = string.Concat(this.Name.FileName, "*", this.Name.Extension);
 				Regex pattern2 = new Regex(
 					string.Format(
@@ -253,10 +253,10 @@
 			if (string.IsNullOrEmpty(locale))
 				throw new ArgumentNullException("locale");
 
-			if (!context.Config.Locales.ContainsKey(locale))
+			if (!context.ProjectConfiguration.Locales.ContainsKey(locale))
 				throw new ArgumentException(string.Format("The specified value '{0}' is not a valid locale", locale), "locale");
 
-			if (!context.Config.Categories[context.Category].Locales.Contains(locale))
+			if (!context.ProjectConfiguration.Categories[context.Category].Locales.Contains(locale))
 				throw new ArgumentException(string.Format("Category '{0}' hasn't been configured for locale '{1}'", context.Category, locale), "locale");
 
 			CacheableXmlDocument sourceDoc = this.LoadSourceDocument(locale);
@@ -265,7 +265,7 @@
 
 			var dependencies = new List<string> { GetGlobalizedName(locale, true) };
 
-			if (!context.Config.AreResourcesPreGenerated)
+			if (!context.ProjectConfiguration.AreResourcesPreGenerated)
 			{
 				DictionaryFileCollection dictionaries = Globalizer.GetTranslationDictionaryCollection(context);
 				DateTime? resourceFirstGlobalized = this.GetDateFirstGlobalized(dictionaries.Locales);

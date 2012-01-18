@@ -7,8 +7,16 @@
 	exclude-result-prefixes="sage mod">
 
 	<xsl:template match="mod:XmlTree">
+		<xsl:param name="config" select="mod:config"/>
 		<div class="xmltree">
-			<xsl:apply-templates select="." mode="xmltree-toolbar"/>
+			<xsl:attribute name="class">
+				<xsl:text>xmltree</xsl:text>
+				<xsl:if test="$config/mod:wrap = 'true'"> wrap</xsl:if>
+				<xsl:if test="$config/mod:namespaces = 'true'"> namespaces</xsl:if>
+			</xsl:attribute>
+			<xsl:if test="count($config) = 0 or $config/mod:toolbar = 'true'">
+				<xsl:apply-templates select="." mode="xmltree-toolbar"/>
+			</xsl:if>
 			<div class="xmlroot">
 				<xsl:apply-templates select="mod:data/node()" mode="xmltree">
 					<xsl:with-param name="level" select="1" />
