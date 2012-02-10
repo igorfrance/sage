@@ -1,7 +1,9 @@
 ﻿<!DOCTYPE html>
 <html
 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:sage="http://www.cycle99.com/projects/sage"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
@@ -11,13 +13,126 @@
 	<body>
 		<h1>XML Tree</h1>
 
-		<xi:include href="sagexi://views/shared/elements.html"
-			xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class]) "/>
+		<mod:XmlTree>
+			<mod:data xml:space="">
+				<sage:literal>
+					<intl:variables>
+						<intl:variable id="supernovaUrl">
+							<intl:value locale="uk">http://shop.adidas.co.uk/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+							<intl:value locale="de">http://shop.adidas.de/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+							<intl:value locale="nl">http://shop.adidas.nl/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+							<intl:value locale="fr">http://shop.adidas.fr/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+							<intl:value locale="ca">http://www.shopadidas.ca/pages/products/productListPage.jsf?;c=Categories~Sports~SRunning&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+							<intl:value locale="ru">http://shop.adidas.ru/on/demandware.store/</intl:value>
+							<intl:value locale="kr">http://shop.adidas.co.kr/PF050101.action?S_PROD_NM=%EC%88%98%ED%8D%BC%EB%85%B8%EB%B0%94</intl:value>
+							<intl:value locale="us">http://www.shopadidas.com/N?searchTerm=adidas_+Supernova&amp;cm_sp=Brand_Running-_-Footwear-_-Shop_SupernovaGlide</intl:value>
+							<intl:value locale="jp">http://shop.adidas.jp/pc/item/?cat2Id=adisn</intl:value>
+						</intl:variable>
+					</intl:variables>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
 
+		<h2>Embedding the xml directly in mod:data element</h2>
+		<mod:XmlTree>
+			<mod:data>
+				<xml>
+					<node>I have been embedded directly in the data element. I have been embedded directly in the data element. I have been embedded directly in the data element.</node>
+				</xml>
+			</mod:data>
+		</mod:XmlTree>
+
+		<h2>X-including an xml in mod:data element using xi:include element</h2>
+		<mod:XmlTree>
+			<mod:data>
+				<xi:include href="../shared/elements.html"/>
+			</mod:data>
+		</mod:XmlTree>
+
+		<h2>Showing the xi:include element without processing it</h2>
+		<mod:XmlTree>
+			<mod:config>
+				<mod:source>example.html</mod:source>
+				<mod:noIncludes>true</mod:noIncludes>
+			</mod:config>
+		</mod:XmlTree>
+
+		<h2>Loading an external document</h2>
 		<mod:XmlTree>
 			<mod:config>
 				<mod:source>../shared/elements.html</mod:source>
 			</mod:config>
+		</mod:XmlTree>
+
+		<h2>Filtering to just a portion of the document</h2>
+		<mod:XmlTree>
+			<mod:config>
+				<mod:source>../shared/elements.html</mod:source>
+				<mod:xpath>//li</mod:xpath>
+				<mod:namespaces>
+					<mod:namespace prefix="x">http://www.w3.org/1999/xhtml</mod:namespace>
+				</mod:namespaces>
+			</mod:config>
+		</mod:XmlTree>
+
+		<h2>Adding highlighting to specified elements</h2>
+		<mod:XmlTree>
+			<mod:config>
+				<mod:highlight>
+					<mod:element>intl:localize</mod:element>
+					<mod:element>intl:if</mod:element>
+					<mod:element>intl:else</mod:element>
+				</mod:highlight>
+			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<mod:MastHead>
+						<mod:config>
+							<mod:mastheads>
+								<xi:include href="configuration/mastheads/chewy_mango.xml"/>
+								<xi:include href="configuration/mastheads/tropical_strawberry.xml"/>
+								<intl:localize>
+									<intl:if locale="jp">
+										<xi:include href="configuration/mastheads/winter_surprise_v1.xml"/>
+									</intl:if>
+									<intl:else>
+										<xi:include href="configuration/mastheads/winter_surprise_v2.xml"/>
+									</intl:else>
+								</intl:localize>
+							</mod:mastheads>
+						</mod:config>
+					</mod:MastHead>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<h2>Adding highlighting to specified namespace</h2>
+		<mod:XmlTree>
+			<mod:config>
+				<mod:highlight>
+					<mod:namespace>http://www.cycle99.com/projects/sage/internationalization</mod:namespace>
+				</mod:highlight>
+			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<mod:MastHead>
+						<mod:config>
+							<mod:mastheads>
+								<xi:include href="configuration/mastheads/chewy_mango.xml"/>
+								<xi:include href="configuration/mastheads/tropical_strawberry.xml"/>
+								<intl:localize>
+									<intl:if locale="jp">
+										<xi:include href="configuration/mastheads/winter_surprise_v1.xml"/>
+									</intl:if>
+									<intl:else>
+										<xi:include href="configuration/mastheads/winter_surprise_v2.xml"/>
+									</intl:else>
+								</intl:localize>
+							</mod:mastheads>
+						</mod:config>
+					</mod:MastHead>
+				</sage:literal>
+			</mod:data>
 		</mod:XmlTree>
 
 	</body>

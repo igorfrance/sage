@@ -71,57 +71,78 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\LogViewController.cs" />
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Controllers\DevController.cs" />
     <Compile Include="Controllers\RouteDebuggerController.cs" />
-    <Compile Include="Modules\IO\DirectoryTreeModule.cs" />
-    <Compile Include="Modules\Source\SyntaxHighlighterModule.cs" />
-    <Compile Include="Modules\Source\XmlTreeModule.cs" />
+    <Compile Include="Modules\DeveloperToolbarModule.cs" />
+    <Compile Include="Modules\DirectoryTreeModule.cs" />
+    <Compile Include="Modules\LogViewerModule.cs" />
+    <Compile Include="Modules\ModularLanguageDefinition.cs" />
+    <Compile Include="Modules\SyntaxHighlighterModule.cs" />
+    <Compile Include="Modules\XmlTreeModule.cs" />
     <Compile Include="Modules\ViewInspectorModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.js" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xml" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xsl" />
-    <EmbeddedResource Include="assets\modules\XmlTree\XmlTree.xsl" />
-    <Content Include="assets\modules\XmlTree\XmlTree.js" />
-    <Content Include="assets\modules\XmlTree\XmlTree.css" />
-    <Content Include="assets\modules\XmlTree\XmlTree.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="assets\scripts\lib\tooltip.js" />
+    <Content Include="assets\css\devtools.css" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\DeveloperToolbar.css" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\DeveloperToolbar.js" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\DeveloperToolbar.xsl" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\circ_loading.gif" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\close.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\devtools.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\error.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\gear.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\log.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\ok.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\unknown.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\warning.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\xml.png" />
+    <Content Include="assets\lib\modules\DeveloperToolbar\icons\xmlx.png" />
+    <Content Include="assets\lib\modules\LogViewer\LogViewer.css" />
+    <Content Include="assets\lib\modules\LogViewer\LogViewer.xsl" />
+    <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
+    <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.js" />
+    <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.xml" />
+    <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.xsl" />
+    <Content Include="assets\lib\modules\ViewInspector\images\close.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\gear.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\html.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\info.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\log.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\minimize.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\preloader1.gif" />
+    <Content Include="assets\lib\modules\ViewInspector\images\preloader2.gif" />
+    <Content Include="assets\lib\modules\ViewInspector\images\refresh.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\restore.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\xml.png" />
+    <Content Include="assets\lib\modules\ViewInspector\images\xmlx.png" />
+    <Content Include="assets\lib\modules\ViewInspector\ViewInspector.css" />
+    <Content Include="assets\lib\modules\ViewInspector\ViewInspector.js" />
+    <Content Include="assets\lib\modules\ViewInspector\ViewInspector.xsl" />
+    <Content Include="assets\lib\modules\XmlTree\XmlTree.css" />
+    <Content Include="assets\lib\modules\XmlTree\XmlTree.js" />
+    <Content Include="assets\lib\modules\XmlTree\XmlTree.xml" />
+    <Content Include="assets\lib\modules\XmlTree\XmlTree.xsl" />
+    <Content Include="assets\lib\scripts\aeon.tooltip.js" />
+    <Content Include="assets\views\dev\inspect.html" />
+    <Content Include="assets\views\dev\log.html" />
     <Content Include="assets\views\shared\elements.html" />
     <Content Include="assets\views\tests\directory-tree.html" />
     <Content Include="assets\views\tests\syntax-highlighting.html" />
     <Content Include="assets\views\tests\xml-tree.html" />
+    <Content Include="assets\xslt\default.xslt" />
     <Content Include="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\scripts\lib\aeon.js" />
-    <EmbeddedResource Include="assets\views\logview\thread-log.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="assets\views\logview\complete-log.xsl" />
+    <Content Include="assets\lib\scripts\aeon.js" />
     <Content Include="assets\views\home\index.html">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="assets\views\tests\index.html" />
     <Content Include="Global.asax" />
-    <Content Include="assets\modules\ViewInspector\images\close.png" />
-    <Content Include="assets\modules\ViewInspector\images\gear.png" />
-    <Content Include="assets\modules\ViewInspector\images\html.png" />
-    <Content Include="assets\modules\ViewInspector\images\log.png" />
-    <Content Include="assets\modules\ViewInspector\images\minimize.png" />
-    <Content Include="assets\modules\ViewInspector\images\preloader1.gif" />
-    <Content Include="assets\modules\ViewInspector\images\preloader2.gif" />
-    <Content Include="assets\modules\ViewInspector\images\refresh.png" />
-    <Content Include="assets\modules\ViewInspector\images\restore.png" />
-    <Content Include="assets\modules\ViewInspector\images\xml.png" />
-    <Content Include="assets\modules\ViewInspector\images\xmlx.png" />
-    <Content Include="assets\modules\ViewInspector\ViewInspector.css" />
-    <Content Include="assets\modules\ViewInspector\ViewInspector.js" />
-    <Content Include="assets\modules\ViewInspector\ViewInspector.xsl" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -143,17 +164,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="assets\modules\DirectoryTree\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xsd">
+    <None Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="assets\modules\ViewInspector\ViewInspector.xsd">
+    <None Include="assets\lib\modules\ViewInspector\ViewInspector.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="assets\modules\XmlTree\XmlTree.xsd">
+    <None Include="assets\lib\modules\XmlTree\XmlTree.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

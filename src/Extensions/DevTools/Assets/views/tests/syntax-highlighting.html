@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html
 	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
@@ -10,9 +10,10 @@
 	</head>
 	<body>
 		<h1>Syntax Highlighter</h1>
-		<xi:include href="sagexi://views/shared/elements.html"
+		<xi:include href="sageres://views/shared/elements.html"
 			xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class]) "/>
 
+		<h2>Highlighting javascript</h2>
 		<mod:SyntaxHighlighter>
 			<mod:config>
 				<mod:language>javascript</mod:language>
@@ -21,15 +22,57 @@
 					function testMyFunction(arg1, arg2)
 					{
 						if (arg1 > 200 && new Date().getMonth() == 11)
-							return arg2 * 4;
+						return arg2 * 4;
 
 						x |= RegExp.$1;
 
 						return arg2;
 					}
 
-				]]></mod:code>
+					]]></mod:code>
 			</mod:config>
 		</mod:SyntaxHighlighter>
+
+		<h2>Highlighting C# with custom keywords supplied</h2>
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>c#</mod:language>
+				<mod:keywords>
+					<mod:group name="type">
+						XmlNode|SageContext
+					</mod:group>
+				</mod:keywords>
+				<mod:code>
+
+					delegate XmlNode ProcessNode(XmlNode node, SageContext context);
+
+				</mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
+		<h2>Highlighting C# with comment-like text in string</h2>
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>c#</mod:language>
+				<mod:keywords>
+					<mod:group name="type">
+						NodeHandler|SageContext|XmlNode
+					</mod:group>
+					<mod:group name="enum">
+						XmlNodeType
+					</mod:group>
+					<mod:group name="value">
+						Element
+					</mod:group>
+				</mod:keywords>
+				<mod:code>
+
+					[NodeHandler(XmlNodeType.Element, "switch", "http://www.cycle99.com/projects/sage/contextualization")]
+					internal static XmlNode ProcessContextSwitchNode(XmlNode switchNode, SageContext context)
+
+				</mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
 	</body>
 </html>
