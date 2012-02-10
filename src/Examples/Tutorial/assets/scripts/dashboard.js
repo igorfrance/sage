@@ -13,11 +13,14 @@ sage.tutorial.Dashboard = new function Dashboard()
 
 		inspector = sage.dev.ViewInspector.current;
 		inspector.addListener("close", onViewInspectorClose);
+		inspector.addListener("info", onViewInspectorInfo);
+		inspector.addListener("contentloaded", onViewInspectorLoaded);
 
 		inspectorElement = jQuery("#examples");
 		welcomeElement = jQuery("#welcome");
 
 		jQuery("#navigation ul a").bind("click", onNavigationLinkClick);
+		jQuery("#navigation li.expandable").bind("click", onExpandableItemClick);
 	}
 
 	function showInspector()
@@ -38,9 +41,42 @@ sage.tutorial.Dashboard = new function Dashboard()
 		inspectorElement.fadeOut();
 	}
 
+	function expandNavigationGroup(li)
+	{
+		li.addClass("expanded");
+	}
+
+	function collapseNavigationGroup(li)
+	{
+		li.removeClass("expanded");
+	}
+
+	function toggleNavigationGroup(li)
+	{
+		if (li.hasClass("expanded"))
+			collapseNavigationGroup(li);
+		else
+			expandNavigationGroup(li);
+	}
+
 	function onViewInspectorClose()
 	{
 		hideInspector();
+	}
+
+	function onViewInspectorLoaded()
+	{
+		showInspector();
+	}
+
+	function onViewInspectorInfo()
+	{
+		showInspector();
+	}
+
+	function onExpandableItemClick(e)
+	{
+		toggleNavigationGroup(jQuery(this));
 	}
 
 	function onNavigationLinkClick()
@@ -48,8 +84,8 @@ sage.tutorial.Dashboard = new function Dashboard()
 		try
 		{
 			showInspector();
-
 			inspector.inspect(this.href);
+			expandNavigationGroup(jQuery(this).closest("li.expandable"));
 		}
 		catch(e)
 		{

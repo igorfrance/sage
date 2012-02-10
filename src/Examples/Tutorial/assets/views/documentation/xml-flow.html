@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Document transform flow</title>
+	</head>
+	<body>
+
+		<h1>Document transform flow</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="xml-flow"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+
+		<p>
+			When working with XML documents in Sage, the document goes through several processing steps before it is
+			returned to the caller. With controller view templates, the resulting document is processed and transformed even further.
+		</p>
+
+		<div class="imageframe right">
+			<img src="{assetpath}/images/diagrams/xml-transform-flow.jpg" alt="XML transform flow overview"/>
+		</div>
+
+		<ol>
+			<li>
+				<h5><a sage:attrib="href:url(xml-flow-localize)">Localize Xml *</a></h5>
+				<p>
+					The localized version of the source document is opened. Depending on the settings, this step is done either
+					inline or as a part of the batch process for the whole project. The localization is done and a localized
+					version opened only if the document uses entities from the Sage's
+					<a href="href:url(internationalization.html">internationalization</a> namespace.
+				</p>
+			</li>
+			<li>
+				<h5><a sage:attrib="href:url(xml-flow-copy-tree)">Copy Xml Tree</a></h5>
+				<p>
+					Every xml document opened through Sage will be processed node by node as a tree, starting at
+					the root and drilling down recursively through child nodes. Registered node and text handlers have full control
+					over how the entity they are handling will appear in the document.
+				</p>
+			</li>
+			<li>
+				<h5><a sage:attrib="href:url(xml-flow-expand-modules)">Expand Modules **</a></h5>
+				<p>
+					Each module in the view template is executed as a backend <code>IModule</code> instance. The module may or may not
+					have a specific backend component. In case the module doesn't have one, the default <code>NullModule</code> is
+					used. The modules that do have a backend component will typically append content into the module element's data
+					node, altough they can potentically modify the module element in any way.
+				</p>
+			</li>
+			<li>
+				<h5><a sage:attrib="href:url(xml-flow-xslt-transform)">XSLT transform **</a></h5>
+				<p>
+					The prepared and processed view template is finally transformed using the XSLT template associated with the
+					view. Modules may provide their own XSLT which will then be used to render the HTML associated with the modules
+					in the view template.
+				</p>
+			</li>
+		</ol>
+		<ul class="small clear">
+			<li>&#160;&#160;* only XML document referencing internationalization namespace</li>
+			<li>** only XML documents opened as controller views</li>
+		</ul>
+
+	</body>
+</html>

@@ -1,0 +1,46 @@
+﻿/**
+ * LogViewer
+ */
+.logviewer,
+.logviewer *
+	{ margin: 0; padding: 0; border: 0; font-size: 10px; font-family: Verdana; vertical-align: baseline;
+	  position: static; float: none; cursor: default; }
+.logviewer
+	{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; }	  
+.logviewer table
+	{ border-collapse: collapse; table-layout: fixed; }
+.logviewer th
+	{ text-align: left; cursor: default;  }
+.logviewer .header
+	{ position: absolute; left: 0; right: 0; top: 0; height: 15px; z-index: 1; }
+.logviewer .header table,
+.logviewer .header table th
+	{ padding: 1px; }
+
+.logviewer .content
+	{ position: absolute; left: 0; right: 0; top: 15px; bottom: 0; z-index: 0; overflow: auto; }
+.logviewer .content table
+	{ min-width: 1000px; }
+.logviewer .content td
+	{ padding: 0px 1px; height: 14px; overflow: hidden; }
+.logviewer .content td div
+	{ height: 12px; overflow: hidden; white-space: pre; padding: 2px; text-overflow: ellipsis; }
+
+/** Default color scheme */
+.logviewer .header 
+	{ background-color: #cecece; border-bottom: 1px solid #aaa; }
+.logviewer .header table,
+.logviewer .header table th
+	{ background-color: #CECECE; border: 1px solid #CECECE; color: #7F7F7F; }
+.logviewer .content  td
+	{ border: 1px solid #eee; }
+.logviewer tr.DEBUG td
+	{ color: #7f7f7f; }
+.logviewer tr.INFO td
+	{ color: #3333ff; }
+.logviewer tr.WARN td
+	{ color: #d96c00; }
+.logviewer tr.ERROR td
+	{ color: #ff0000; font-weight: bold; }
+.logviewer tr.FATAL td
+	{ color: #ff0000; font-weight: bold; font-style: italic; }

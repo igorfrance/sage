@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Step 1: Localize template document - Document transform flow</title>
+	</head>
+	<body>
+
+		<h1>Step 1: Localize template document</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="xml-flow-localize"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+
+		<div class="imageframe right">
+			<img src="{assetpath}/images/diagrams/xml-transform-flow-localize.jpg" alt="Step 1: Localize template document"/>
+		</div>
+
+		<p>
+			In this step, Sage localizes XML documents that reference <a sage:attrib="href:url(sage-namespaces)">internationalization namespace</a>.
+		</p>
+		<p>
+			This localization produces a separate document for each of the locales configured for the current project, with
+			all internationalization features resolved.
+		</p>
+		<p>
+			The localization can be done either:
+		</p>
+		<ul>
+			<li>
+				on-the-fly, each time any of the related resources change, or
+			</li>
+			<li>
+				the whole category can be pre-localized in a single batch step, and Sage then configured to not attempt
+				any localization.
+			</li>
+		</ul>
+		<p>
+			This is typically used on production environment, as it speeds up responses by having pregenerated the
+			localizations already.
+		</p>
+		<p>
+			On development setups, this step will happen per resources, as required each time the source or one of it's
+			related files changes. Prior to opening the localized version of the file, the file will be localized and
+			the localized version will be returned.
+		</p>
+		<p>
+			<b>The localization will happen only if the document references the
+			<a sage:attrib="href:url(sage-namespaces)">internationalization namespace</a>.</b>
+		</p>
+
+		<h2 class="section">How it works</h2>
+
+		<p>
+			When localizing a resource, Sage generates a separate localized file for each locale in the project. By default,
+			the localized files are saved in a subdirectory '_target' within the file's source directory, this location is
+			configurable.
+		</p>
+
+		<div class="process-flow" id="document_process_flow">
+			<div class="state from">
+				<div class="wrapper">
+					<div class="line">
+						<label>Localized file:</label>
+					</div>
+					<div class="line">
+						<span class="value">~/assets/views/customer/support.html</span>
+					</div>
+				</div>
+			</div>
+			<div class="change">
+				<div class="image"></div>
+			</div>
+			<div class="state to">
+				<div class="line">
+					<label>Generated files:</label>
+				</div>
+				<div class="line">~/assets/views/customer/_target/support-uk.html</div>
+				<div class="line">~/assets/views/customer/_target/support-fr.html</div>
+				<div class="line">~/assets/views/customer/_target/support-de.html</div>
+				<div class="line">~/assets/views/customer/_target/support-nl.html</div>
+				<div class="line">~/assets/views/customer/_target/support-es.html</div>
+			</div>
+		</div>
+
+		<h5 class="remarks">Remarks</h5>
+
+		<p>
+			One thing to note is that for each of the target locales a resource is being localized to, Sage will check
+			weather a separate file, specific to that locale exists. Consider the following configuration:
+		</p>
+
+		<mod:XmlTree>
+			<mod:data>
+				<locale name="ar" dictionaryNames="ar,la,es,en" resourceNames="ar,la,es,default"/>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p class="section">
+			With the above configuration in place, when localizing a resource "support.html", the file names Sage will
+			attempt to open will be, in this order:
+		</p>
+
+		<ul>
+			<li>support-<b>ar</b>.html (<b>Argentina</b>)</li>
+			<li>support-<b>la</b>.html (<b>Latin America</b>)</li>
+			<li>support-<b>es</b>.html (<b>Spain</b>)</li>
+			<li>support.html (<b>Generic</b>)</li>
+		</ul>
+
+		<p>
+			The first existing file will be used, and the search stops.
+		</p>
+
+	</body>
+</html>

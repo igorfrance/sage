@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html
 	xmlns:sage="http://www.cycle99.com/projects/sage"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
@@ -13,41 +14,70 @@
 
 		<h1>XML as a language</h1>
 
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="xml-as-a-language"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
 		<p>
-			In Sage, XML is everywhere. The templates are XML (either XSLT, XHTML or both), view data comes in as XML,
-			<a href="documentation/configuration.html">configuration</a> is specified with XML and the system is extended using XML.
+			Sage makes extensive use of XML. View templates are XML (either XSLT, XHTML or both), view data comes in as XML,
+			<a sage:attrib="href:url(configuration)">configuration</a> is specified with XML and the system can be
+			extended using XML (without being limited to XML only).
 		</p>
 		<p>
-			Extensive <a href="documentation/document-transform-flow.html">XML processing facilities</a> enable use of various
+			Extensive <a sage:attrib="href:url(xml-flow)">XML processing facilities</a> enable use of various
 			XML techniques and technologies.
 		</p>
 
-		<h3>XIncludes</h3>
+		<h4>X-Include</h4>
+		<p>
+			XML Inclusions (<a href="http://www.w3.org/TR/xinclude/">http://www.w3.org/TR/xinclude/</a>) enable
+			inclusions of full or partial XML documents from external resources into the current XML document. Sage uses
+			<a sage:attrib="href:url(sage-libraries)">Mvp.Xml implementation</a> of X-Include module.
+		</p>
+		<ul class="examples">
+			<li>
+				<a href="examples/xinclude/include-document.html">Example: Including a complete document</a>
+			</li>
+			<li>
+				<a href="examples/xinclude/include-fragment.html">Example: Including a document fragment</a>
+			</li>
+		</ul>
+
+		<h4>Internationalization</h4>
+		<p>
+			Sage features a simple but powerful set of internationalization features through the use of special tags that
+			can be used anywhere where XML/XHTML is used.
+		</p>
+		<ul class="examples">
+			<li>
+				<a href="examples/internationalization/using-phrases.html">Example: Using phrases</a>
+			</li>
+			<li>
+				<a href="examples/internationalization/using-variables.html">Example: Using variables</a>
+			</li>
+			<li>
+				<a href="examples/internationalization/localization-blocks.html">Example: Localization blocks</a>
+			</li>
+		</ul>
+
+		<h4>Modules</h4>
 		<p>
 			TODO
 		</p>
 
-		<h3>Globalization</h3>
+		<h4>Node and text handlers</h4>
 		<p>
 			TODO
 		</p>
 
-		<h3>Modules</h3>
+		<h4>XSLT</h4>
 		<p>
 			TODO
 		</p>
 
-		<h3>Node and text handlers</h3>
-		<p>
-			TODO
-		</p>
-
-		<h3>XSLT</h3>
-		<p>
-			TODO
-		</p>
-
-		<h3>XSLT Extension Objects</h3>
+		<h4>XSLT Extension Objects</h4>
 		<p>
 			TODO
 		</p>

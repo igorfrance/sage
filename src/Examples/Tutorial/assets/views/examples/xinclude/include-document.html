@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>Using X-Includes: Including a document</title>
+	</head>
+
+	<body>
+		<h1>Including a complete document</h1>
+		<p>
+			To include a complete document, specify it's path at the value of the <code>xi:include</code> element's
+			<code>href</code> attribute:
+		</p>
+		<mod:XmlTree>
+			<mod:config>
+				<mod:source>example.html</mod:source>
+				<mod:noIncludes>yes</mod:noIncludes>
+			</mod:config>
+		</mod:XmlTree>
+	</body>
+
+</html>

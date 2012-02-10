@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Merging with Kelp</title>
+	</head>
+	<body>
+
+		<h1>Merging with Kelp</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="resource-processing-kelp"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			When working with web application and software in generale, dividing the code in small, reusable and well-organized
+			files produces much more maintanable projects than if everything were to be in single large files.
+			That's why developers frequently organize their script and styles in many separate documents, organized in
+			various ways. A moderately complex web page can easily end up with 20+ individual scripts or stylesheets that
+			need to be loaded for the page to be fully functional.
+		</p>
+		<p>
+			The downside of this approach is that since each of these resources needs to be accessed individually, there is
+			some latency added to each request and the overall experience of the site will be slower than if all of those
+			resources were to be in the same file, where possible. And the more resources there are, the more noticable this
+			difference will be.
+		</p>
+		<p>
+			The approach Sage uses is to use <a href="url(kelp)">Kelp</a> to open files that may be merged, and depending on
+			whether the <a href="url(configuration-project)">project is configured</a> to merge resources or not to output
+			a single script element with everything merged, or to output individual script elements for all resources that
+			have been merged in the source file.
+		</p>
+		<p>
+			This makes it possible to have all scripts and stylesheets served as individual resources during development,
+			and have them all merged when the project gets deployed to production, simply by changing a configuration property.
+		</p>
+
+		<h2 class="section">Merging</h2>
+		<p>
+			Kelp supports including JavaScript and CSS files by using a special comment syntax.
+		</p>
+
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>javascript</mod:language>
+			</mod:config>
+			<mod:code>
+				var x = 10;
+				/*# Include: relative/path.js */
+			</mod:code>
+		</mod:SyntaxHighlighter>
+
+	</body>
+</html>
