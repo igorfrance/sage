@@ -10,8 +10,8 @@
     <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TutorialR</RootNamespace>
-    <AssemblyName>TutorialR</AssemblyName>
+    <RootNamespace>Sage.Tutorial</RootNamespace>
+    <AssemblyName>Sage.Tutorial</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
@@ -74,16 +74,23 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\configuration\dictionary\en.xml" />
+    <Content Include="assets\configuration\navigation.xml" />
+    <Content Include="assets\lib\modules\breadcrumb\breadcrumb.css" />
+    <Content Include="assets\lib\modules\breadcrumb\breadcrumb.js" />
+    <Content Include="assets\lib\modules\breadcrumb\breadcrumb.xsl" />
+    <Content Include="assets\lib\modules\breadcrumb\expand.png" />
+    <Content Include="assets\lib\modules\breadcrumb\expanded.png" />
     <Content Include="assets\scripts\dashboard.js" />
-    <Content Include="assets\views\documentation\installation.html" />
     <Content Include="Project.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\css\gradients.css" />
     <Content Include="assets\css\tutorial.css" />
-    <Content Include="assets\scripts\lib\aeon.js" />
+    <Content Include="assets\lib\scripts\aeon.js" />
     <Content Include="assets\views\examples\image-processing.html" />
     <Content Include="assets\views\examples\resource-compression.html" />
     <Content Include="assets\views\examples\resource-merging.html" />
@@ -98,7 +105,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Kelp\Kelp.csproj">
@@ -111,7 +120,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="assets\views\documentation\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
