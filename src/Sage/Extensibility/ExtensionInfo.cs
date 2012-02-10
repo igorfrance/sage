@@ -1,3 +1,28 @@
+/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
 namespace Sage.Extensibility
 {
 	using System;
@@ -11,6 +36,7 @@ namespace Sage.Extensibility
 	using ICSharpCode.SharpZipLib.Core;
 	using ICSharpCode.SharpZipLib.Zip;
 	using Kelp.Core.Extensions;
+	using Kelp.IO;
 	using log4net;
 
 	using Sage.Configuration;
@@ -21,17 +47,21 @@ namespace Sage.Extensibility
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionInfo).FullName);
 
 		private readonly IOrderedEnumerable<InstallLog> orderedLogs;
+		private readonly SageContext context;
 		private List<Assembly> assemblies;
 		private bool loaded;
 
-		internal ExtensionInfo(string pluginArchive)
+		internal ExtensionInfo(string pluginArchive, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(pluginArchive));
+			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentException>(File.Exists(pluginArchive));
+
+			this.context = context;
 
 			this.Name = Path.GetFileNameWithoutExtension(pluginArchive);
 			this.ArchiveDate = File.GetLastWriteTime(pluginArchive).Max(File.GetCreationTime(pluginArchive));
-			this.Assets = new List<string>();
+			this.SourceAssets = new List<string>();
 			this.AssembyNames = new List<string>();
 			this.SourceArchive = pluginArchive;
 			this.SourceDirectory = Path.ChangeExtension(pluginArchive, null);
@@ -68,13 +98,15 @@ namespace Sage.Extensibility
 			string assetdir = Path.Combine(this.SourceDirectory, "assets");
 			if (Directory.Exists(assetdir))
 			{
-				this.Assets.AddRange(
+				this.SourceAssets.AddRange(
 					Directory.GetFiles(assetdir, "*.*", SearchOption.AllDirectories));
 			}
 
 			string configPath = Path.Combine(this.SourceDirectory, "Extension.config");
 			if (File.Exists(configPath))
 				this.Config = ProjectConfiguration.Create(configPath);
+
+			this.TargetAssets = this.SourceAssets.Select(this.GetTargetPath).ToList();
 
 			orderedLogs = from i in InstallHistory
 						  orderby i.Date
@@ -84,6 +116,14 @@ namespace Sage.Extensibility
 		public string Name { get; private set; }
 
 		public DateTime ArchiveDate { get; private set; }
+
+		public DateTime? LastInstallDate
+		{
+			get
+			{
+				return this.orderedLogs.Last(l => l.Result == InstallState.Installed).Date;
+			}
+		}
 
 		public ProjectConfiguration Config { get; private set; }
 
@@ -100,7 +140,9 @@ namespace Sage.Extensibility
 
 		public List<string> AssembyNames { get; private set; }
 
-		public List<string> Assets { get; private set; }
+		public List<string> SourceAssets { get; private set; }
+
+		public List<string> TargetAssets { get; private set; }
 
 		public List<InstallLog> InstallHistory { get; private set; }
 
@@ -129,13 +171,21 @@ namespace Sage.Extensibility
 			}
 		}
 
-		public void Update(SageContext context)
+		public bool IsMissingResources
 		{
-			Uninstall();
-			Install(context);
+			get
+			{
+				return this.TargetAssets.Any(targetAsset => !File.Exists(targetAsset));
+			}
 		}
 
-		public void Install(SageContext context)
+		public void Update(bool forceUpdate = false)
+		{
+			Uninstall(forceUpdate);
+			Install();
+		}
+
+		public void Install()
 		{
 			if (this.IsInstalled)
 				this.Uninstall();
@@ -146,7 +196,7 @@ namespace Sage.Extensibility
 
 			try
 			{
-				foreach (string file in this.Assets)
+				foreach (string file in this.SourceAssets)
 				{
 					string childPath = file.ToLower().Replace(this.SourceDirectory.ToLower(), string.Empty);
 					string targetPath = context.Path.Resolve(childPath);
@@ -155,13 +205,30 @@ namespace Sage.Extensibility
 					Directory.CreateDirectory(targetDir);
 
 					InstallItem entry = installLog.AddFile(targetPath);
+					entry.CrcCode = Crc32.GetHash(file);
+
 					if (File.Exists(targetPath))
 					{
-						entry.State = InstallState.NotInstalled;
-						continue;
+						if (!this.HasInstalled(targetPath))
+						{
+							log.WarnFormat("Extension {1}: skipped installing '{0}' because a file with the same name already exists, and it doesn't originate from this extension.",
+								targetPath, this.Name);
+
+							entry.State = InstallState.NotInstalled;
+							continue;
+						}
+
+						if (Crc32.GetHash(targetPath) != entry.CrcCode)
+						{
+							log.WarnFormat("Extension {1}: not overwriting previously installed file '{0}' because it has been changed.",
+								targetPath, this.Name);
+
+							entry.State = InstallState.NotInstalled;
+							continue;
+						}
 					}
 
-					File.Copy(file, targetPath);
+					File.Copy(file, targetPath, true);
 					entry.State = InstallState.Installed;
 				}
 
@@ -185,7 +252,17 @@ namespace Sage.Extensibility
 				installLog.Result == InstallState.Installed ? "succeeded" : "failed");
 		}
 
-		public void Uninstall()
+		public void Refresh()
+		{
+			foreach (string sourcePath in this.SourceAssets)
+			{
+				string targetPath = GetTargetPath(sourcePath);
+				if (!File.Exists(targetPath))
+					File.Copy(sourcePath, targetPath, true);
+			}
+		}
+
+		public void Uninstall(bool deleteChangedFiles = false)
 		{
 			if (!this.IsInstalled)
 				return;
@@ -193,7 +270,7 @@ namespace Sage.Extensibility
 			log.DebugFormat("Uninstalling extension '{0}'", this.Name);
 
 			var installLog = orderedLogs.Last();
-			Rollback(installLog);
+			Rollback(installLog, deleteChangedFiles);
 			SaveLog(installLog);
 		}
 
@@ -211,9 +288,21 @@ namespace Sage.Extensibility
 			loaded = true;
 		}
 
-		public CacheableXmlDocument GetDictionary(SageContext context, string locale)
+		public bool HasInstalled(string itemPath)
 		{
-			SageContext pluginContext = GetExtensionContext(context);
+			InstallLog firstInstall = orderedLogs.FirstOrDefault(l => l.Items.FirstOrDefault(i => i.Path == itemPath) != null);
+			if (firstInstall != null)
+			{
+				InstallItem item = firstInstall.Items.First(i => i.Path == itemPath);
+				return item.State == InstallState.Installed;
+			}
+
+			return false;
+		}
+
+		public CacheableXmlDocument GetDictionary(string locale)
+		{
+			SageContext pluginContext = GetExtensionContext();
 			string path = pluginContext.Path.GetDictionaryPath(locale);
 			if (File.Exists(path))
 				return pluginContext.Resources.LoadXml(path);
@@ -221,16 +310,30 @@ namespace Sage.Extensibility
 			return null;
 		}
 
-		private SageContext GetExtensionContext(SageContext context)
+		private SageContext GetExtensionContext()
 		{
 			return new SageContext(context, this.Config);
 		}
 
-		private void Rollback(InstallLog installLog)
+		private void Rollback(InstallLog installLog, bool deleteChangedFiles = false)
 		{
 			log.DebugFormat("Rolling back log extension '{0}'", this.Name);
-			foreach (InstallItem file in installLog.Items.Where(f => f.State == InstallState.Installed))
+
+			IEnumerable<InstallItem> installedItems = installLog.Items.Where(f => f.State == InstallState.Installed);
+			foreach (InstallItem file in installedItems)
 			{
+				if (!File.Exists(file.Path))
+				{
+					file.State = InstallState.UnInstalled;
+					continue;
+				}
+
+				if (!deleteChangedFiles && Crc32.GetHash(file.Path) != file.CrcCode)
+				{
+					log.WarnFormat("The file '{0}' has changed since it was installed, it will not be deleted", file.Path);
+					continue;
+				}
+
 				try
 				{
 					File.Delete(file.Path);
@@ -312,6 +415,12 @@ namespace Sage.Extensibility
 
 			foreach (XmlElement element in logDoc.SelectNodes("/plugin/install"))
 				this.InstallHistory.Add(new InstallLog(element));
+		}
+
+		private string GetTargetPath(string assetPath)
+		{
+			string childPath = assetPath.ToLower().Replace(this.SourceDirectory.ToLower(), string.Empty);
+			return context.Path.Resolve(childPath);
 		}
 	}
 }

@@ -1,4 +1,29 @@
-﻿namespace Sage.Modules
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Modules
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,6 +31,7 @@
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	/// <summary>
 	/// Represents the result returned by a module after processing a request.
@@ -19,11 +45,11 @@
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ModuleResult"/> class, using the specified <paramref name="status"/> and 
+		/// Initializes a new instance of the <see cref="ModuleResult"/> class, using the specified <paramref name="status"/> and
 		/// <paramref name="resultElement"/>.
 		/// </summary>
-		/// <param name="status">The status of this result.</param>
 		/// <param name="resultElement">The content of this result.</param>
+		/// <param name="status">The status of this result.</param>
 		public ModuleResult(XmlElement resultElement, ModuleResultStatus status = ModuleResultStatus.Ok)
 			: this(status)
 		{
@@ -40,9 +66,12 @@
 		}
 
 		/// <summary>
-		/// The result element contain this module's data. This value can be a <c>null</c> if no data is returned or
-		/// is not applicable for the module.
+		/// Gets or sets the result element that contains this module's data. 
 		/// </summary>
+		/// <remarks>
+		/// This value can be a <c>null</c> if no data is returned or
+		/// is not applicable for the module.
+		/// </remarks>
 		public XmlElement ResultElement
 		{
 			get;
@@ -67,21 +96,6 @@
 
 				return null;
 			}
-		}
-
-		public XmlElement PrependDataElement(XmlNode dataElement)
-		{
-			return (XmlElement) PrependDataNode(dataElement);
-		}
-
-		public XmlNode PrependDataNode(XmlNode dataNode)
-		{
-			if (dataNode == null)
-				throw new ArgumentNullException("dataNode");
-			if (this.ResultElement == null)
-				throw new InvalidOperationException("The ResultElement property is null");
-
-			return AppendOrPrependDataNode(dataNode, true);
 		}
 
 		public XmlElement AppendDataElement(XmlNode dataElement = null)

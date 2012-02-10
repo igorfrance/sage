@@ -1,4 +1,29 @@
-﻿namespace Sage
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage
 {
 	using System;
 	using System.Collections.Specialized;
@@ -6,10 +31,12 @@
 	using System.Web;
 	using System.Xml;
 
-	using Kelp.Core;
+	using Kelp;
 	using Kelp.Core.Extensions;
+
 	using log4net;
 	using Sage.Configuration;
+	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 
 	/// <summary>
@@ -17,18 +44,13 @@
 	/// </summary>
 	public class UrlGenerator
 	{
+		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'\w[\w\.]*):(?'AttribValue'.*)$", RegexOptions.Compiled);
+		private static readonly Regex urlFunction = new Regex(@"^url\((.*)\)$", RegexOptions.Compiled);
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlGenerator).FullName);
 		private readonly SageContext context;
 
 		private static readonly Regex linkPlaceholder = new Regex(@"(?!>^|[^{])\{([^{}]+)\}(?!\})");
-
-		private bool? rewriteOn;
-
-		static UrlGenerator()
-		{
-			ResourceManager.RegisterNodeHandler(
-				XmlNodeType.Element, "link", XmlNamespaces.ModulesNamespace, ProcessXmlLink);
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UrlGenerator"/> class, using the specified <paramref name="context"/>.
@@ -37,38 +59,25 @@
 		public UrlGenerator(SageContext context)
 		{
 			this.context = context;
+			this.RewritingOn = !string.IsNullOrEmpty(context.ProjectConfiguration.UrlRewritePrefix);
 		}
 
 		public SageContext Context
 		{
 			get
 			{
-				return context;
+				return this.context;
 			}
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether URL rewriting is on.
+		/// Gets a value indicating whether URL rewriting is on.
 		/// </summary>
 		/// <value><c>true</c> if URL rewriting is on; otherwise, <c>false</c>.</value>
 		/// <remarks>
 		/// If no RewritingOn hasn't been set prior to getting the value, The setting is taken from the Project.Config
 		/// </remarks>
-		public bool RewritingOn
-		{
-			get
-			{
-				if (rewriteOn != null)
-					return rewriteOn.Value;
-
-				return context.ProjectConfiguration.UrlRewritingOn;
-			}
-
-			set
-			{
-				rewriteOn = value;
-			}
-		}
+		public bool RewritingOn { get; private set; }
 
 		/// <summary>
 		/// Gets the current rewrite prefix of the url, if any.
@@ -85,7 +94,7 @@
 		{
 			get
 			{
-				if (RewritingOn)
+				if (!this.RewritingOn)
 					return context.ProjectConfiguration.UrlRewritePrefix.Replace(
 						"{category}", context.Category).Replace("{locale}", context.Locale);
 
@@ -127,7 +136,7 @@
 		}
 
 		/// <summary>
-		/// Returns the full url of the current request (taking any rewriting into account).
+		/// Gets the full url of the current request (taking any rewriting into account).
 		/// </summary>
 		/// <returns></returns>
 		public string VisibleUrl
@@ -271,6 +280,7 @@
 		/// Resolves a link href based on the attributes of the specified <paramref name="linkElement"/>.
 		/// </summary>
 		/// <param name="linkElement">The element that contains attributes that define the link to resolve.</param>
+		/// <returns>The URL from the configuration file, with values and encoding as specified by the element</returns>
 		/// <remarks>
 		/// <para>The attributes on the element that will be taken into account:</para>
 		/// <list type="table">
@@ -279,43 +289,33 @@
 		/// <description>Description</description>
 		/// </listheader>
 		/// <item>
-		/// <term><c>linkId</c></term>
+		/// <term><c>id</c></term>
 		/// <description>
 		/// The id of the URL of the link to resolve:
-		/// <para><c>&lt;mod:link linkId="AthleteList" /&gt;</c></para>
-		/// <para>
-		/// Assuming that there is a URL with id <c>AthleteList</c> configured in the main configuration file, this method
-		/// will resolve the link within the current context and return it's value:
-		/// </para>
-		/// <c>outdoor/com/athletes</c>
+		/// <para><c>&lt;sage:link id="CustomerSuport" /&gt;</c></para>
 		/// </description>
 		/// </item>
 		/// <item>
-		/// <term><term><c>linkValues</c></term></term>
+		/// <term><term><c>values</c></term></term>
 		/// <description>
-		/// To add formatting values to the resulting URL, such as the ID of a specified athlete, use the <c>linkValues</c>
+		/// To add formatting values to the resulting URL, such as the ID of the current customer, use the <c>values</c>
 		/// attribute:
-		/// <para><c>&lt;mod:link linkId="Athlete" linkValues="id=huber-45"/&gt;</c></para>
-		/// <para>
-		/// Assuming that the URL with ID <c>Athlete</c> provides a format value <c>id</c>, the resulting
-		/// URL could look like this:
-		/// </para>
-		/// <c>outdoor/com/athlete/huber-45</c>
+		/// <para><c>&lt;sage:link id="CustomerSuport" values="id=${CustomerID}"/&gt;</c></para>
 		/// </description>
 		/// </item>
 		/// <item>
-		/// <term><term><c>urlEncode</c></term></term>
+		/// <term><term><c>encode</c></term></term>
 		/// <description>
-		/// To URL-encode the resulting URL, use the <c>urlEncode</c> attribute and set it's value to "1", "true", or "yes".
+		/// To URL-encode the resulting URL, use the <c>encode</c> attribute and set it's value to "1", "true", or "yes".
 		/// </description>
 		/// </item>
 		/// </list>
 		/// </remarks>
 		public string GetUrl(XmlElement linkElement)
 		{
-			string linkName = linkElement.GetAttribute("linkId");
-			string linkValues = linkElement.GetAttribute("linkValues");
-			bool urlEncode = linkElement.GetAttribute("urlEncode").ContainsAnyOf("yes", "true", "1");
+			string linkName = linkElement.GetAttribute("ref");
+			string linkValues = linkElement.GetAttribute("values");
+			bool urlEncode = linkElement.GetAttribute("encode").ContainsAnyOf("yes", "true", "1");
 
 			string linkHref = null;
 
@@ -349,6 +349,61 @@
 			return string.Concat(RewritePrefix.TrimEnd('/'), "/", url.TrimStart('/'));
 		}
 
+		[NodeHandler(XmlNodeType.Element, "link", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageLinkElement(XmlNode linkNode, SageContext context)
+		{
+			XmlElement linkElem = (XmlElement) linkNode;
+			string linkHref = context.Url.GetUrl(linkElem);
+
+			if (!string.IsNullOrEmpty(linkHref))
+			{
+				linkElem.SetAttribute("href", linkHref);
+			}
+
+			return linkElem;
+		}
+
+		[NodeHandler(XmlNodeType.Element, "url", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageUrlElement(XmlNode linkNode, SageContext context)
+		{
+			string linkHref = context.Url.GetUrl((XmlElement) linkNode);
+
+			if (!string.IsNullOrEmpty(linkHref))
+			{
+				if (linkNode.NodeType == XmlNodeType.Element)
+					return linkNode.OwnerDocument.CreateTextNode(linkHref);
+			}
+
+			return linkNode;
+		}
+
+		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageAttribute(XmlNode attribNode, SageContext context)
+		{
+			Match match;
+
+			if ((match = attribSpec.Match(attribNode.InnerText)).Success)
+			{
+				string attribName = match.Groups["AttribName"].Value;
+				string attribValue = match.Groups["AttribValue"].Value;
+
+				XmlAttribute result = attribNode.OwnerDocument.CreateAttribute(attribName);
+				result.InnerText = GetAttributeValue(attribValue, context);
+
+				return result;
+			}
+
+			return attribNode;
+		}
+
+		[NodeHandler(XmlNodeType.Attribute, "href", "")]
+		internal static XmlNode ProcessHrefAttribute(XmlNode attribNode, SageContext context)
+		{
+			string attribValue = GetAttributeValue(attribNode.InnerText, context);
+			attribNode.InnerText = ResourceManager.ProcessString(attribValue, context);
+			return attribNode;
+		}
+
 		/// <summary>
 		/// Formats and rewrites the link pattern with the specified <paramref name="linkName"/>.
 		/// </summary>
@@ -363,14 +418,11 @@
 			if (!context.ProjectConfiguration.Links.ContainsKey(linkName))
 			{
 				log.ErrorFormat("The url configuration doesn't contain a url with name '{0}'", linkName);
-				return linkName + "??";
+				return string.Format("javascript:alert('Unresolved link: {0}')", linkName);
 			}
 
 			LinkInfo link = context.ProjectConfiguration.Links[linkName];
-			string linkPattern = link.Pattern;
-
-			if (!string.IsNullOrWhiteSpace(link.Url))
-				linkPattern = link.Url;
+			string linkPattern = link.Url;
 
 			QueryString query = new QueryString(context.Query);
 			QueryString formatValues = new QueryString { { "locale", context.Locale }, { "category", context.Category } };
@@ -414,20 +466,24 @@
 			return resultUrl;
 		}
 
-		private static XmlNode ProcessXmlLink(XmlNode linkNode, SageContext context)
+		private static string GetAttributeValue(string attribValue, SageContext context)
 		{
-			XmlElement linkElem = (XmlElement) linkNode.CloneNode(true);
-			string linkHref = context.Url.GetUrl(linkElem);
+			Match match;
+			string result = attribValue;
+			if ((match = urlFunction.Match(attribValue)).Success)
+			{
+				string[] parameters = match.Groups[1].Value.Split(',');
 
-			bool replaceNode = linkElem.GetAttribute("replaceNode").ContainsAnyOf("yes", "true", "1");
-			if (string.IsNullOrEmpty(linkHref))
-				return linkElem;
+				string linkId = parameters[0].Trim();
+				string linkValues = parameters.Length > 1 ? parameters[1].Trim() : null;
+				bool encode = parameters.Length > 2 && parameters[2].Trim().EqualsAnyOf("true", "yes", "1");
 
-			if (replaceNode)
-				return linkNode.OwnerDocument.CreateTextNode(linkHref);
+				string linkHref = context.Url.GetUrl(linkId, linkValues);
+				if (!string.IsNullOrEmpty(linkHref))
+					return encode ? HttpUtility.UrlEncode(linkHref) : linkHref;
+			}
 
-			linkElem.SetAttribute("href", linkHref);
-			return linkElem;
+			return result;
 		}
 	}
 }

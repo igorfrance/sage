@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 [assembly: Guid("26d37712-4f75-4279-a483-203719a54708")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("Sage.Test")]
 [assembly: InternalsVisibleTo("Sage.Build")]

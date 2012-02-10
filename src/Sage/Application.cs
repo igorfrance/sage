@@ -1,4 +1,29 @@
-﻿namespace Sage
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,24 +33,20 @@
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
-	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Routing;
 
-	using Kelp.Core;
 	using Kelp.Core.Extensions;
-
-	using Sage.Extensibility;
 
 	using log4net;
 
 	using Sage.Configuration;
 	using Sage.Controllers;
+	using Sage.Extensibility;
 	using Sage.Routing;
 	using Sage.Views;
-	using System.Diagnostics;
 
 	/// <summary>
 	/// Implements the <see cref="HttpApplication"/> class for this web application.
@@ -59,7 +80,7 @@
 							foreach (string path in files)
 							{
 								Assembly asmb = Assembly.LoadFrom(path);
-								if (asmb.GetReferencedAssemblies().Where(a => a.FullName == currentAssembly.FullName).Count() != 0)
+								if (asmb.GetReferencedAssemblies().Count(a => a.FullName == currentAssembly.FullName) != 0)
 								{
 									relevantAssemblies.Add(asmb);
 								}
@@ -95,7 +116,7 @@
 					break;
 			}
 
-			if (typeName.IndexOf(",") != -1)
+			if (typeName.IndexOf(",", StringComparison.Ordinal) != -1)
 			{
 				return GetType(typeName.ReplaceAll(@",.*$", string.Empty));
 			}
@@ -172,8 +193,8 @@
 
 			log.Debug("Manually registering route '' to GenericController.Action");
 			RouteTable.Routes.MapRouteLowercase(
-				"GenericController.Default",
-				String.Empty,
+				"GenericController.Default", 
+				string.Empty,
 				new { controller = "Generic", action = "Action" });
 
 			log.Debug("Manually registering route '*' to GenericController.Action");
@@ -188,7 +209,7 @@
 		/// </summary>
 		protected virtual void Application_Start()
 		{
-			log.DebugFormat("Application started");
+			log.InfoFormat("Application started");
 
 			IControllerFactory controllerFactory = new SageControllerFactory();
 			Initialize(controllerFactory);
@@ -216,7 +237,9 @@
 			string shutDownStack = (string) runtime.GetType().InvokeMember(
 				"_shutDownStack", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
 
-			log.DebugFormat("Application has shut down with message: \n{0} \nStack: \n{1}", shutDownMessage, shutDownStack);
+			log.InfoFormat("Application has shut down.", shutDownMessage, shutDownStack);
+			log.DebugFormat("	Shutdown message:{0}", shutDownMessage);
+			log.DebugFormat("	Shutdown stack:\n{0}", shutDownStack);
 		}
 
 		/// <summary>
@@ -233,12 +256,12 @@
 				Thread.CurrentThread.Name = DateTime.Now.Ticks.ToString();
 				if (HttpContext.Current != null)
 				{
-					log.DebugFormat(
+					log.InfoFormat(
 						"Request {0} started, thread name set to {1}", HttpContext.Current.Request.Url, Thread.CurrentThread.Name);
 				}
 				else
 				{
-					log.DebugFormat("Request started, thread name set to {0}", Thread.CurrentThread.Name);
+					log.InfoFormat("Request started, thread name set to {0}", Thread.CurrentThread.Name);
 				}
 			}
 		}
@@ -250,7 +273,10 @@
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		protected virtual void Application_EndRequest(object sender, EventArgs e)
 		{
-			log.DebugFormat("Request ended");
+			var startTime = long.Parse(Thread.CurrentThread.Name);
+			var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+
+			log.InfoFormat("Request completed in {0}ms.", elapsed.Milliseconds);
 		}
 
 		/// <summary>

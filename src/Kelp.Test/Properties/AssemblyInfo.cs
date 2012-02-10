@@ -2,8 +2,8 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Kelp Resource Handling Test")]
-[assembly: AssemblyDescription("Provides unit tests for Kelp Resource Handling")]
+[assembly: AssemblyTitle("Kelp.Test")]
+[assembly: AssemblyDescription("Provides unit tests for Kelp")]
 
 [assembly: ComVisible(false)]
 [assembly: Guid("9c8a88d6-a59c-4f02-9e7c-fa81e101febc")]

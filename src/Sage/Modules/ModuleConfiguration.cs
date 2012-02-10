@@ -1,4 +1,29 @@
-﻿namespace Sage.Modules
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Modules
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,12 +31,12 @@
 	using System.Linq;
 	using System.Xml;
 
-	using Sage.Views;
-
-	using log4net;
+	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
+	using Sage.Views;
 
 	/// <summary>
 	/// Contains module configuration information.
@@ -19,8 +44,6 @@
 	public class ModuleConfiguration
 	{
 		private const string DefaultXslt = @"<xsl:stylesheet version=""1.0"" xmlns:xsl=""http://www.w3.org/1999/XSL/Transform"" xmlns=""http://www.w3.org/1999/xhtml""/>";
-		private static readonly ILog log = LogManager.GetLogger(typeof(ModuleConfiguration).FullName);
-
 		private readonly List<ModuleResource> resources = new List<ModuleResource>();
 		private Type moduleType;
 
@@ -78,16 +101,10 @@
 				this.Dependencies.Add(dependencyNode.GetAttribute("ref"));
 			}
 
-			var scriptNodes = configElement.SelectNodes("p:resources/p:script", XmlNamespaces.Manager);
-			foreach (XmlElement scriptNode in scriptNodes)
+			var resourceNodes = configElement.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
+			foreach (XmlElement scriptNode in resourceNodes)
 			{
 				this.resources.Add(new ModuleResource(scriptNode, this.Name));
-			}
-
-			var styleNodes = configElement.SelectNodes("p:resources/p:style", XmlNamespaces.Manager);
-			foreach (XmlElement styleNode in styleNodes)
-			{
-				this.resources.Add(new ModuleResource(styleNode, this.Name));
 			}
 
 			var libraryNodes = configElement.SelectNodes("p:resources/p:library", XmlNamespaces.Manager);
@@ -101,6 +118,9 @@
 			{
 				this.Stylesheets.Add(stylesheetNode.GetAttribute("path"));
 			}
+
+			this.AutoLocation = (ModuleAutoLocation) Enum.Parse(typeof(ModuleAutoLocation), 
+				configElement.GetAttribute("auto"), true);
 		}
 
 		private ModuleConfiguration()
@@ -109,6 +129,7 @@
 			this.Stylesheets = new List<string>();
 			this.Dependencies = new List<string>();
 			this.Libraries = new List<string>();
+			this.AutoLocation = ModuleAutoLocation.None;
 		}
 
 		public List<ModuleResource> Resources
@@ -122,7 +143,7 @@
 				{
 					foreach (ModuleResource resource in config.Resources)
 					{
-						if (result.Where(r => r.Path == resource.Path).Count() != 0)
+						if (result.Count(r => r.Path == resource.Path) != 0)
 							continue;
 
 						result.Add(resource);
@@ -141,11 +162,21 @@
 
 		public string Name { get; private set; }
 
+		public ModuleAutoLocation AutoLocation { get; private set; }
+
 		public Type Type
 		{
 			get
 			{
-				return moduleType ?? (moduleType = Application.GetType(this.TypeName));
+				if (moduleType == null)
+				{
+					if (!string.IsNullOrEmpty(this.TypeName))
+						moduleType = Application.GetType(this.TypeName);
+					else
+						moduleType = typeof(NullModule);
+				}
+
+				return moduleType;
 			}
 		}
 
@@ -177,6 +208,24 @@
 
 			XsltTransform.ExcludeNamespacesPrefixResults(resultDoc);
 			return resultDoc;
+		}
+
+		[NodeHandler(XmlNodeType.Element, "head", XmlNamespaces.XHtmlNamespace)]
+		[NodeHandler(XmlNodeType.Element, "body", XmlNamespaces.XHtmlNamespace)]
+		internal static XmlNode ProcessHtmlElement(XmlNode htmlNode, SageContext context)
+		{
+			ModuleAutoLocation location = htmlNode.LocalName == "head" ? ModuleAutoLocation.Head : ModuleAutoLocation.Body;
+
+			IEnumerable<ModuleConfiguration> autoModules =
+				context.ProjectConfiguration.Modules.Values.Where(m => m.AutoLocation == location);
+
+			XmlNode resultNode = ResourceManager.CopyNode(htmlNode, context);
+			foreach (ModuleConfiguration module in autoModules)
+			{
+				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
+			}
+
+			return resultNode;
 		}
 
 		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)

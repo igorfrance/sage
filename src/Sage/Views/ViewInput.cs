@@ -1,18 +1,40 @@
-﻿namespace Sage.Views
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Views
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
-	using System.Collections.Generic;
 	using System.Xml;
 
-	using Kelp.Core;
-
-	using Sage.ResourceManagement;
-
+	using Kelp;
 	using log4net;
-	using Sage.Configuration;
 	using Sage.Modules;
+	using Sage.ResourceManagement;
 
 	/// <summary>
 	/// Implements a class that handles per-request input XML handling.
@@ -33,6 +55,7 @@
 
 			this.context = viewConfiguration.Context;
 
+			this.Action = viewConfiguration.Info.Action;
 			this.ViewConfiguration = viewConfiguration;
 			this.ModuleResults = new Dictionary<string, List<ModuleResult>>();
 		}
@@ -50,47 +73,40 @@
 			this.ConfigNode = (XmlElement) viewElement.CloneNode(true);
 		}
 
-		public List<ModuleResource> Resources
+		public string Action { get; private set; }
+
+		public List<Resource> Resources
 		{
 			get
 			{
-				var result = new List<ModuleResource>();
-				foreach (ModuleConfiguration module in this.modules.Values)
-				{
-					foreach (ModuleResource resource in module.Resources)
-					{
-						if (result.Where(r => r.Path == resource.Path).Count() != 0)
-							continue;
+				var result = new List<Resource>();
+				var config = context.ProjectConfiguration;
+				var currentPath = context.Request.Path;
 
-						result.Add(resource);
-					}
-				}
+				var matchingLibs = new List<ResourceLibraryInfo>(
+					config.ResourceLibraries.Values.Where(l => l.MatchesPath(currentPath)));
 
-				return result;
-			}
-		}
+				foreach (ResourceLibraryInfo library in matchingLibs)
+					result.AddRange(library.Resources);
 
-		public List<ResourceLibraryInfo> Libraries
-		{
-			get
-			{
-				var config = this.ViewConfiguration.Context.ProjectConfiguration;
-				var result = new List<ResourceLibraryInfo>(config.ResourceLibraries.Values.Where(l => l.IsGlobal));
 				foreach (ModuleConfiguration module in this.modules.Values)
 				{
 					foreach (string name in module.Libraries)
 					{
 						if (!config.ResourceLibraries.ContainsKey(name))
+						{
+							log.ErrorFormat("Module '{0}' is referencing non-existent library '{1}'", module.Name, name);
 							continue;
+						}
 
-						if (result.Where(r => r.Name == name).Count() != 0)
-							continue;
-
-						result.Add(config.ResourceLibraries[name]);
+						ResourceLibraryInfo library = config.ResourceLibraries[name];
+						result.AddRange(library.Resources);
 					}
+
+					result.AddRange(module.Resources);
 				}
 
-				return result;
+				return result.Distinct().ToList();
 			}
 		}
 
@@ -102,7 +118,7 @@
 		public XmlElement ConfigNode { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the module result status of the controller action that was run.
+		/// Gets the module result status of the controller action that was run.
 		/// </summary>
 		public ModuleResultStatus ResultStatus
 		{
@@ -123,23 +139,18 @@
 		}
 
 		/// <summary>
-		/// Provides a dictionary that contains the results of processing each module configured for the current controller.
+		/// Gets a dictionary that contains the results of processing each module configured for the current controller.
 		/// </summary>
-		public Dictionary<string, List<ModuleResult>> ModuleResults
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, List<ModuleResult>> ModuleResults { get; private set; }
 
 		public bool IsMissingData<T>()
 		{
-			ModuleConfiguration config = SageModuleFactory.Modules.Values.Where(c => c.Type == typeof(T)).FirstOrDefault();
+			ModuleConfiguration config = SageModuleFactory.Modules.Values.FirstOrDefault(c => c.Type == typeof(T));
 			if (config != null)
 			{
 				return 
 					this.ModuleResults.ContainsKey(config.Name) &&
-					this.ModuleResults[config.Name].Where(r => r.Status == ModuleResultStatus.NoData)
-						.Count() == 0;
+					this.ModuleResults[config.Name].Count(r => r.Status == ModuleResultStatus.NoData) == 0;
 			}
 
 			return true;

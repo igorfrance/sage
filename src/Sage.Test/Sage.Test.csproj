@@ -81,9 +81,6 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Categories.cs" />
-    <Compile Include="Configuration\CategoryConfigurationTest.cs" />
-    <Compile Include="Configuration\CategoryInfoTest.cs" />
-    <Compile Include="Configuration\ControllerViewInfoTest.cs" />
     <Compile Include="Configuration\IpAddressTests.cs" />
     <Compile Include="Configuration\ProjectConfigurationTests.cs" />
     <Compile Include="ControllerFactoryExtensions.cs" />

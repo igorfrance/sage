@@ -2,8 +2,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Kelp Resource Handling")]
-[assembly: AssemblyDescription("Provides capabilities for merging and minifying web resources, such as javascripts and stylesheets")]
+[assembly: AssemblyTitle("Kelp")]
+[assembly: AssemblyDescription("Provides various common utilities work working with .NET and .NET web applications.")]
 
 [assembly: ComVisible(false)]
 [assembly: Guid("d3cfe3ea-1ddd-44d2-b024-59f45e966084")]

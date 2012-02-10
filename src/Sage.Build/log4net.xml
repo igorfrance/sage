@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <log4net threshold="ALL">
 	
-	<!-- This logger logs everything to debug console (output -> debug in visual studio when debugging)  -->
-	<appender name="TraceLogger" type="log4net.Appender.TraceAppender">
+	<appender name="ColoredConsoleAppender" type="log4net.Appender.ColoredConsoleAppender">
+		<mapping>
+			<level value="ERROR" />
+			<foreColor value="Red, HighIntensity" />
+		</mapping>
+		<mapping>
+			<level value="DEBUG" />
+			<foreColor value="White" />
+		</mapping>
+		<mapping>
+			<level value="WARN" />
+			<foreColor value="Yellow" />
+		</mapping>
+		<mapping>
+			<level value="INFO" />
+			<foreColor value="Green" />
+		</mapping>
+		<mapping>
+			<level value="FATAL" />
+			<foreColor value="White" />
+			<backColor value="Red, HighIntensity" />
+		</mapping>
 		<layout type="log4net.Layout.PatternLayout">
-			<conversionPattern value="%-5p %c - %m%n" />
+			<conversionPattern value="%message%newline" />
 		</layout>
 	</appender>
 	
@@ -21,7 +41,7 @@
 	<root>
 		<level value="ALL" />
 		<appender-ref ref="MainLogger" />
-		<appender-ref ref="TraceLogger" />
+		<appender-ref ref="ColoredConsoleAppender" />
 	</root>
 	
 </log4net>

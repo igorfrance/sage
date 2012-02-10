@@ -1,4 +1,29 @@
-﻿namespace Sage.ResourceManagement
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.ResourceManagement
 {
 	using System;
 	using System.Collections.Generic;
@@ -45,7 +70,7 @@
 						foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
 						{
 							ProcessNode del = (ProcessNode) Delegate.CreateDelegate(typeof(ProcessNode), methodInfo);
-							ResourceManager.RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, del);
+							RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, del);
 						}
 
 						foreach (TextHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextHandlerAttribute), false))
@@ -53,7 +78,7 @@
 							ProcessText del = (ProcessText) Delegate.CreateDelegate(typeof(ProcessText), methodInfo);
 							foreach (string variable in attrib.Variables)
 							{
-								ResourceManager.RegisterTextHandler(variable, del);
+								RegisterTextHandler(variable, del);
 							}
 						}
 					}
@@ -168,7 +193,7 @@
 		{
 		    Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
-		    return LoadXmlDocument(path, null);
+			return LoadXmlDocument(path, null);
 		}
 
 		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, string schemaPath)
@@ -202,22 +227,27 @@
 				throw new FileNotFoundException(string.Format("The xml document '{0}' could not be loaded", path));
 			}
 
-			CacheableXmlDocument result = null;
 			bool isXslt = Path.GetExtension(path).ToLower().Contains("xsl");
 			bool tryGlobalize = !isXslt && context != null;
+
+			CacheableXmlDocument result;
 			if (tryGlobalize)
 			{
-				XmlResource resource = new XmlResource(path, context);
-				result = resource.Load(context.Locale);
+				try
+				{
+					result = LoadGlobalizedDocument(path, context);
+				}
+				catch (GlobalizationError err)
+				{
+					log.ErrorFormat("Failed to globalize '{0}': {1}", path, err.Message);
+					result = LoadSourceDocument(path, context);
+				}
+
 				result.ReplaceChild(ResourceManager.CopyNode(result.DocumentElement, context), result.DocumentElement);
 			}
 			else
 			{
-				UrlResolver resolver = new UrlResolver(context);
-				result = new CacheableXmlDocument();
-				result.Load(path, resolver);
-				result.AddDependencies(path);
-				result.AddDependencies(resolver.Dependencies.ToArray());
+				result = LoadSourceDocument(path, context);
 			}
 
 			return result;
@@ -264,8 +294,7 @@
 
 		public CacheableXmlDocument LoadXml(string path)
 		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException("path");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
 			return LoadXmlDocument(path, context);
 		}
@@ -283,14 +312,17 @@
 				case XmlNodeType.Element:
 					result = node.OwnerDocument.CreateElement(node.Name, node.NamespaceURI);
 
-					foreach (XmlAttribute attribute in node.Attributes)
+					XmlNodeList attributes = node.SelectNodes("@*");
+					XmlNodeList children = node.SelectNodes("node()");
+
+					foreach (XmlAttribute attribute in attributes)
 					{
 						XmlNode processed = GetNodeHandler(attribute)(attribute, context);
 						if (processed != null)
 							result.Attributes.Append((XmlAttribute) processed);
 					}
 
-					foreach (XmlNode child in node.ChildNodes)
+					foreach (XmlNode child in children)
 					{
 						XmlNode processed = GetNodeHandler(child)(child, context);
 						if (processed != null)
@@ -302,16 +334,7 @@
 				case XmlNodeType.Attribute:
 				case XmlNodeType.Text:
 					result = node.CloneNode(true);
-					if (textReplaceExpression != null)
-					{
-						result.Value = textReplaceExpression.Replace(result.Value, delegate(Match m)
-						{
-							string varName = m.Groups[1].Value.ToLower();
-							return textHandlerRegistry[varName](varName, context);
-						});
-
-						result.Value = escapeCleanupExpression.Replace(result.Value, "$1");
-					}
+					result.Value = ProcessString(result.Value, context);
 
 					break;
 
@@ -321,6 +344,21 @@
 			}
 
 			return result;
+		}
+
+		internal static string ProcessString(string value, SageContext context)
+		{
+			if (textReplaceExpression != null)
+			{
+				value = textReplaceExpression.Replace(value, delegate(Match m)
+				{
+					string varName = m.Groups[1].Value.ToLower();
+					return textHandlerRegistry[varName](varName, context);
+				});
+			}
+
+			value = escapeCleanupExpression.Replace(value, "$1");
+			return value;
 		}
 
 		internal static ProcessNode GetNodeHandler(XmlNode node)
@@ -392,6 +430,25 @@
 				return string.Concat((int) node.NodeType, "_", node.LocalName);
 
 			return string.Concat((int) node.NodeType, "_", node.NamespaceURI, ":", node.LocalName);
+		}
+
+		private static CacheableXmlDocument LoadGlobalizedDocument(string path, SageContext context)
+		{
+			XmlResource resource = new XmlResource(path, context);
+			CacheableXmlDocument result = resource.Load(context.Locale);
+
+			return result;
+		}
+
+		private static CacheableXmlDocument LoadSourceDocument(string path, SageContext context)
+		{
+			UrlResolver resolver = new UrlResolver(context);
+			CacheableXmlDocument result = new CacheableXmlDocument();
+			result.Load(path, resolver);
+			result.AddDependencies(path);
+			result.AddDependencies(resolver.Dependencies.ToArray());
+
+			return result;
 		}
 	}
 }

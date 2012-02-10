@@ -52,6 +52,14 @@
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
     <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <CodeContractsInferRequires>False</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsDisjunctiveRequires>False</CodeContractsDisjunctiveRequires>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -110,8 +118,11 @@
     <Compile Include="Configuration\RoutingConfiguration.cs" />
     <Compile Include="Configuration\PathTemplates.cs" />
     <Compile Include="Configuration\UnconfiguredLocaleException.cs" />
+    <Compile Include="ResourceManagement\GlobalizationError.cs" />
+    <Compile Include="ResourceManagement\Resource.cs" />
     <Compile Include="ResourceManagement\ResourceHandler.cs" />
     <Compile Include="ResourceManagement\ResourceLibraryInfo.cs" />
+    <Compile Include="ResourceManagement\SageIncludeReader.cs" />
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
@@ -139,10 +150,9 @@
     <Compile Include="LastModifiedCache.cs" />
     <Compile Include="Modules\IModuleFactory.cs" />
     <Compile Include="ResourceManagement\EntityResult.cs" />
-    <Compile Include="ResourceManagement\MappedAssetResolver.cs" />
     <Compile Include="ResourceManagement\ISageXmlUrlResolver.cs" />
     <Compile Include="ResourceManagement\UrlResolver.cs" />
-    <Compile Include="ResourceManagement\UrlResolverAttribute.cs" />
+    <Compile Include="Extensibility\UrlResolverAttribute.cs" />
     <Compile Include="Modules\IModule.cs" />
     <Compile Include="Modules\SageModuleFactory.cs" />
     <Compile Include="Modules\ModuleResult.cs" />
@@ -156,10 +166,8 @@
     <Compile Include="ResourceManagement\EmbeddedResourceResolver.cs" />
     <Compile Include="ResourceManagement\GlobalizationSummary.cs" />
     <Compile Include="ResourceManagement\Globalizer.cs" />
-    <Compile Include="ResourceManagement\NamespaceDoc.cs" />
     <Compile Include="ResourceManagement\ResourceManager.cs" />
     <Compile Include="ResourceManagement\ResourceName.cs" />
-    <Compile Include="ResourceManagement\XmlIncludeResolver.cs" />
     <Compile Include="ResourceManagement\XmlResource.cs" />
     <Compile Include="ResourceManagement\CodeFileUnmergeResolver.cs" />
     <Compile Include="Routing\LowerCaseRoute.cs" />

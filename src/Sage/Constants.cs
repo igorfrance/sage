@@ -1,4 +1,29 @@
-﻿namespace Sage
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage
 {
 	using System.Xml;
 
@@ -26,6 +51,13 @@
 		Specific = 1,
 		Category = 2,
 		Project = 3,
+	}
+
+	public enum ModuleAutoLocation
+	{
+		None = 0,
+		Head = 1,
+		Body = 2,
 	}
 
 	/// <summary>
@@ -101,15 +133,27 @@
 	/// </summary>
 	public enum ResourceType
 	{
+		Undefined = 0,
+
 		/// <summary>
-		/// Inidicates a script resource.
+		/// Indicates a script resource.
 		/// </summary>
 		Script = 1,
 
 		/// <summary>
-		/// Inidicates a style resource.
+		/// Indicates a style resource.
 		/// </summary>
 		Style = 2,
+
+		/// <summary>
+		/// Indicates an XML document resource.
+		/// </summary>
+		Document = 3,
+
+		/// <summary>
+		/// Indicates an XSLT stylesheet resource.
+		/// </summary>
+		Stylesheet = 4,
 	}
 
 	/// <summary>
@@ -118,12 +162,17 @@
 	public enum ResourceLocation
 	{
 		/// <summary>
-		/// Inidicates the HTML &lt;head/&gt; element.
+		/// Inidicates that the resource is meant to appear in the input XML document, not in the final HTML directly.
+		/// </summary>
+		Data = 0,
+
+		/// <summary>
+		/// Inidicates that the resource is meant to appear in the HTML &lt;head/&gt; element.
 		/// </summary>
 		Head = 1,
 
 		/// <summary>
-		/// Inidicates the HTML &lt;body/&gt; element.
+		/// Inidicates that the resource is meant to appear in the HTML &lt;body/&gt; element.
 		/// </summary>
 		Body = 2,
 	}

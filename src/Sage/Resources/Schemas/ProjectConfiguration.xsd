@@ -52,11 +52,28 @@
 					<xs:sequence>
 						<xs:element name="library" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
+								<xs:choice>
+									<xs:element name="resources" minOccurs="1" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="config.resource"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="include" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:choice>
+												<xs:element name="always" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="url" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType mixed="true">
+														<!--<xs:attribute name="compare" type="compareType" use="optional" default="matches"/>-->
+													</xs:complexType>
+												</xs:element>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
 								<xs:attribute name="name" use="required"/>
-								<xs:attribute name="version" use="optional"/>
-								<xs:attribute name="type" use="required" type="resourceType"/>
-								<xs:attribute name="path" use="required" type="p:nonEmptyString"/>
-								<xs:attribute name="global" use="optional" default="false" type="xs:boolean"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -65,13 +82,6 @@
 					<xs:selector xpath="p:library"/>
 					<xs:field xpath="@name"/>
 				</xs:unique>
-			</xs:element>
-			<xs:element name="assets" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="prefix" type="config.prefix" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
 			</xs:element>
 			<xs:element name="metaViews" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -102,6 +112,10 @@
 					</xs:sequence>
 					<xs:attribute name="rewritePrefix" use="optional" type="nonEmptyString"/>
 				</xs:complexType>
+				<xs:unique name="UniqueLinkName">
+					<xs:selector xpath="link"/>
+					<xs:field xpath="@name"/>
+				</xs:unique>
 			</xs:element>
 			<xs:element name="routing" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -167,7 +181,7 @@
 			<xs:element name="libraries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="routes" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="links" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="metaviews" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="metaViews" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
 		</xs:choice>
 	</xs:complexType>
 
@@ -192,16 +206,18 @@
 	<xs:complexType name="text.element" mixed="true">
 	</xs:complexType>
 
-	<xs:complexType name="config.prefix">
-		<xs:attribute name="key" use="required" type="nonEmptyString"/>
-		<xs:attribute name="value" use="required" type="nonEmptyString"/>
-	</xs:complexType>
-
 	<xs:complexType name="config.view">
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
 		<xs:attribute name="contentType" use="required" type="nonEmptyString"/>
 		<xs:attribute name="type" use="required" type="nonEmptyString"/>
 		<xs:attribute name="path" use="optional" type="nonEmptyString"/>
+		<xs:attribute name="description" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:minLength value="25"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="config.module">
@@ -247,27 +263,35 @@
 								<xs:attribute name="ref" use="required"/>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="script" minOccurs="1" maxOccurs="unbounded" type="config.module.resource"/>
-						<xs:element name="style" minOccurs="1" maxOccurs="unbounded" type="config.module.resource"/>
+						<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="config.resource"/>
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
 		<xs:attribute name="name" use="required" type="xs:Name"/>
 		<xs:attribute name="type" use="optional" type="nonEmptyString"/>
-	</xs:complexType>
-
-	<xs:complexType name="config.module.resource">
-		<xs:attribute name="location" use="optional" type="resourceLocation" default="head"/>
-		<xs:attribute name="path" use="required" type="nonEmptyString"/>
+		<xs:attribute name="auto" use="optional" default="none">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="none"/>
+					<xs:enumeration value="head"/>
+					<xs:enumeration value="body"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="config.link">
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
-		<xs:attribute name="pattern" use="required" type="xs:string"/>
 		<xs:attribute name="url" use="required" type="xs:string"/>
 	</xs:complexType>
 
+	<xs:complexType name="config.resource">
+		<xs:attribute name="type" type="p:resourceType" use="required"/>
+		<xs:attribute name="location" type="p:resourceLocation" use="required"/>
+		<xs:attribute name="path" type="xs:string" use="required"/>
+	</xs:complexType>
+	
 	<xs:complexType name="config.route">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="constraint" minOccurs="0" maxOccurs="1">
@@ -364,6 +388,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="head"/>
 			<xs:enumeration value="body"/>
+			<xs:enumeration value="data"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -371,6 +396,16 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="script"/>
 			<xs:enumeration value="style"/>
+			<xs:enumeration value="document"/>
+			<xs:enumeration value="stylesheet"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="compareType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="equals"/>
+			<xs:enumeration value="matches"/>
+			<xs:enumeration value="contains"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

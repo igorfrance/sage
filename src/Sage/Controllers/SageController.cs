@@ -1,4 +1,29 @@
-﻿namespace Sage.Controllers
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Controllers
 {
 	using System;
 	using System.Collections.Generic;
@@ -11,6 +36,7 @@
 
 	using Kelp;
 	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	using Sage.Extensibility;
 
@@ -81,22 +107,14 @@
 		}
 
 		/// <summary>
-		/// Gets the <see cref="SageContext"/> current to this controller.
+		/// Gets or sets the <see cref="SageContext"/> current to this controller.
 		/// </summary>
-		public SageContext Context
-		{
-			get;
-			set;
-		}
+		public SageContext Context { get; set; }
 
 		/// <summary>
-		/// Gets the list of files that this document consists of or depends on.
+		/// Gets or sets the list of files that this document consists of or depends on.
 		/// </summary>
-		public List<string> Dependencies
-		{
-			get;
-			protected set;
-		}
+		public List<string> Dependencies { get; protected set; }
 
 		/// <summary>
 		/// Gets the name of this controller.
@@ -110,30 +128,36 @@
 		}
 
 		/// <summary>
-		/// Provides a dictionary for meta information that can be passed between the controller and the views.
+		/// Gets a dictionary for meta information that can be passed between the controller and the views.
 		/// </summary>
-		internal NameValueCollection MetaData
-		{
-			get;
-			private set;
-		}
+		internal NameValueCollection MetaData { get; private set; }
 
 		/// <summary>
-		/// Indicates whether this instance is shared.
+		/// Gets a value indicating whether this instance is shared.
 		/// </summary>
-		internal bool IsShared
-		{
-			get;
-			private set;
-		}
+		internal bool IsShared { get; private set; }
 
 		/// <summary>
 		/// Sets the HttpStatus to Not Found (404) and returns an <see cref="EmptyResult"/>.
 		/// </summary>
+		/// <returns>Empty result</returns>
 		public ActionResult PageNotFound()
 		{
 			Context.Response.StatusCode = 404;
 			return new EmptyResult();
+		}
+
+		public ActionResult SageView(string viewName)
+		{
+			ViewInfo info = new ViewInfo(this, viewName);
+			if (info.Exists)
+			{
+				ViewInput result = this.ProcessView(info);
+				return this.View(result.Action, result);
+			}
+
+			log.FatalFormat("The specified view name '{0}' doesn't exist.", viewName);
+			return this.PageNotFound();
 		}
 
 		public virtual ViewInput ProcessView(ViewInfo viewInfo)
@@ -170,33 +194,36 @@
 			XmlElement viewRoot = result.AppendElement("sage:view", XmlNamespaces.SageNamespace);
 			viewRoot.SetAttribute("controller", this.ControllerName);
 			viewRoot.SetAttribute("action", action);
+			viewRoot.AppendElement(this.Context.ToXml(result));
 
-			XmlElement requestNode = viewRoot.AppendElement(this.Context.ToXml(result));
 			XmlElement responseNode = viewRoot.AppendElement("sage:response", XmlNamespaces.SageNamespace);
 
 			if (input != null && input.ConfigNode != null)
 			{
-				if ((input.Resources.Count + input.Libraries.Count) != 0)
+				if (input.Resources.Count != 0)
 				{
 					XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
 
-					IEnumerable<ModuleResource> headResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Head);
-					IEnumerable<ModuleResource> bodyResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Body);
+					List<Resource> headResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Head).ToList();
+					List<Resource> bodyResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Body).ToList();
+					List<Resource> dataResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Data).ToList();
 
-					if ((input.Libraries.Count + headResources.Count()) != 0)
+					foreach (Resource resource in dataResources)
+					{
+						resourceRoot.AppendChild(resource.ToXml(result, this.Context));
+					}
+
+					if (headResources.Count != 0)
 					{
 						XmlNode headNode = resourceRoot.AppendElement("sage:head", XmlNamespaces.SageNamespace);
-						foreach (ResourceLibraryInfo library in input.Libraries)
-							headNode.AppendChild(library.ToXml(result, this.Context));
-
-						foreach (ModuleResource resource in headResources)
+						foreach (Resource resource in headResources)
 							headNode.AppendChild(resource.ToXml(result, this.Context));
 					}
 
-					if (bodyResources.Count() != 0)
+					if (bodyResources.Count != 0)
 					{
 						XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
-						foreach (ModuleResource resource in bodyResources)
+						foreach (Resource resource in bodyResources)
 							bodyNode.AppendChild(resource.ToXml(result, this.Context));
 					}
 
@@ -242,22 +269,13 @@
 		}
 
 		/// <summary>
-		/// Provides a hook to initialize the controller from a unit test
-		/// </summary>
-		/// <param name="requestContext">The request context.</param>
-		internal void InitializeForTesting(RequestContext requestContext)
-		{
-			this.Initialize(requestContext);
-		}
-
-		/// <summary>
 		/// Gets the path info about the view template and configuration file corresponding to this controller 
 		/// and the specified <paramref name="viewName"/>.
 		/// </summary>
 		/// <param name="viewName">Name of the action for which to get the path info.</param>
 		/// <returns>The path info about the view template and configuration file corresponding to this controller 
 		/// and the specified <paramref name="viewName"/></returns>
-		internal virtual ViewInfo GetViewInfo(string viewName)
+		public virtual ViewInfo GetViewInfo(string viewName)
 		{
 			if (!viewInfo.ContainsKey(viewName))
 				viewInfo.Add(viewName,
@@ -280,10 +298,19 @@
 		/// </remarks>
 		/// <param name="actionName">The name of the action for which to retrieve the last modification date.</param>
 		/// <returns>The last modified date for the specified <paramref name="actionName"/>.</returns>
-		internal virtual DateTime? GetLastModificationDate(string actionName)
+		public virtual DateTime? GetLastModificationDate(string actionName)
 		{
 			ViewInfo info = GetViewInfo(actionName);
 			return info.LastModified;
+		}
+
+		/// <summary>
+		/// Provides a hook to initialize the controller from a unit test
+		/// </summary>
+		/// <param name="requestContext">The request context.</param>
+		internal void InitializeForTesting(RequestContext requestContext)
+		{
+			this.Initialize(requestContext);
 		}
 
 		protected virtual XmlDocument FilterViewXml(ViewContext viewContext, XmlDocument viewXml)
@@ -343,7 +370,7 @@
 		protected override void Initialize(RequestContext requestContext)
 		{
 			base.Initialize(requestContext);
-			this.Context = new SageContext(requestContext.HttpContext);
+			this.Context = new SageContext(this.ControllerContext);
 		}
 	}
 }

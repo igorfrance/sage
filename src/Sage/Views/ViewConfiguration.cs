@@ -1,4 +1,29 @@
-﻿namespace Sage.Views
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Views
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,10 +31,8 @@
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
-
-	using Sage.Configuration;
-
 	using log4net;
+	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.Modules;
 
@@ -126,16 +149,24 @@
 
 			if (!string.IsNullOrWhiteSpace(ModuleSelectXPath))
 			{
-				foreach (XmlElement moduleElement in input.ConfigNode.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager))
+				XmlNodeList moduleNodes = input.ConfigNode.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
+				foreach (XmlElement moduleElement in moduleNodes)
 				{
 					IModule module = this.Controller.CreateModule(moduleElement);
 					ModuleResult result = module.ProcessRequest(moduleElement, this);
-					input.AddModuleResult(moduleElement.LocalName, result);
 
-					if (result.ResultElement != null)
+					if (result == null)
 					{
-						XmlNode newElement = input.ConfigNode.OwnerDocument.ImportNode(result.ResultElement, true);
-						moduleElement.ParentNode.ReplaceChild(newElement, moduleElement);
+						moduleElement.ParentNode.RemoveChild(moduleElement);
+					}
+					else
+					{
+						input.AddModuleResult(moduleElement.LocalName, result);
+						if (result.ResultElement != null)
+						{
+							XmlNode newElement = input.ConfigNode.OwnerDocument.ImportNode(result.ResultElement, true);
+							moduleElement.ParentNode.ReplaceChild(newElement, moduleElement);
+						}
 					}
 				}
 			}

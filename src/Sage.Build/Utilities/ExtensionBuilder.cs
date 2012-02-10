@@ -1,4 +1,29 @@
-﻿namespace Sage.Build.Utilities
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Build.Utilities
 {
 	using System;
 	using System.Collections.Generic;
@@ -11,18 +36,19 @@
 	using ICSharpCode.SharpZipLib.Zip;
 
 	using Kelp.Core.Extensions;
-	using Sage.Configuration;
+	using Kelp.Extensions;
 
 	using log4net;
+	using Sage.Configuration;
 
 	internal class ExtensionBuilder : IUtility
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionBuilder).FullName);
 
+		private readonly ZipEntryFactory zipEntryFactory = new ZipEntryFactory();
 		private NameValueCollection arguments;
 		private string applicationPath;
 		private string extensionName;
-		private readonly ZipEntryFactory zipEntryFactory = new ZipEntryFactory();
 
 		public string CommandName
 		{
@@ -88,11 +114,6 @@
 					string.Format("The specified project configuration path '{0}' doesn't exist", configPath));
 			}
 
-			log.DebugFormat("Application path is '{0}'.", applicationPath);
-			log.DebugFormat("System config path is '{0}'.", systemConfigPath);
-			log.DebugFormat("Extension config path is '{0}'.", extensionConfigPath);
-			log.DebugFormat("Config path is '{0}'.", configPath);
-
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = extensionConfig.SelectSingleElement("p:configuration/p:extension", nm);
@@ -105,6 +126,10 @@
 				extensionName = Path.ChangeExtension(config.Name, "zip");
 				targetPath = Path.Combine(Path.GetDirectoryName(applicationPath), extensionName);
 			}
+
+			log.InfoFormat("Building extension '{0}'.", extensionName);
+			log.DebugFormat("     (source: {0})", applicationPath);
+			log.DebugFormat("     (target: {0})", targetPath);
 
 			if (File.Exists(targetPath))
 				File.Delete(targetPath);
@@ -140,7 +165,7 @@
 				CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:view", configRoot, extensionRoot);
 				CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
 				CopyConfiguration(config.Package.Links, "p:links", "p:link", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Libraries, "p:scripts", "p:library", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
 				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
 				extensionConfig.Save(extensionConfigPath);
@@ -151,6 +176,17 @@
 				zipfile.Finish();
 				zipfile.Close();
 			}
+
+			log.InfoFormat("Extension build completed");
+		}
+
+		private static XmlDocument CreateExtensionConfigurationDocument(string extensionName)
+		{
+			XmlDocument result = new XmlDocument();
+			result.LoadXml(string.Format("<configuration xmlns='{0}'><extension name='{1}'></extension></configuration>",
+				XmlNamespaces.ProjectConfigurationNamespace, extensionName));
+
+			return result;
 		}
 
 		private void CopyConfiguration(PackageGroup group, string parentName, string childName, XmlElement source, XmlElement target)
@@ -167,15 +203,6 @@
 						source.SelectSingleNode(xpath, XmlNamespaces.Manager), true));
 				}
 			}
-		}
-
-		private static XmlDocument CreateExtensionConfigurationDocument(string extensionName)
-		{
-			XmlDocument result = new XmlDocument();
-			result.LoadXml(string.Format("<configuration xmlns='{0}'><extension name='{1}'></extension></configuration>",
-				XmlNamespaces.ProjectConfigurationNamespace, extensionName));
-
-			return result;
 		}
 
 		private void PackFile(ZipOutputStream zipfile, string filePath, string targetName)

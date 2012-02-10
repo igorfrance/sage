@@ -1,10 +1,35 @@
-﻿namespace Sage.ResourceManagement
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.ResourceManagement
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Text.RegularExpressions;
 	using System.Xml;
-
-	using Kelp.Core.Extensions;
 
 	public class ResourceLibraryInfo
 	{
@@ -12,46 +37,45 @@
 		{
 			Contract.Requires<ArgumentNullException>(configElem != null);
 
-			this.Name = configElem.GetAttribute("name");
-			this.Version = configElem.GetAttribute("version");
-			this.Path = configElem.GetAttribute("path");
-			this.IsGlobal = configElem.GetAttribute("global").EqualsAnyOf("yes", "true", "1");
-			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), configElem.GetAttribute("type"), true);
-		}
+			var nm = XmlNamespaces.Manager;
 
-		public bool IsGlobal { get; private set; }
+			this.Name = configElem.GetAttribute("name");
+			this.Resources = new List<Resource>();
+			this.IncludeUrls = new List<Regex>();
+
+			foreach (XmlElement resourceElem in configElem.SelectNodes("p:resources/p:resource", nm))
+				this.Resources.Add(new Resource(resourceElem));
+
+			foreach (XmlElement childElem in configElem.SelectNodes("p:includes/*", nm))
+			{
+				if (childElem.LocalName == "always")
+					this.IncludeAlways = true;
+
+				if (childElem.LocalName == "url")
+					this.IncludeUrls.Add(new Regex(childElem.InnerText));
+			}
+		}
 
 		public string Name { get; private set; }
 
-		public ResourceType Type { get; private set; }
+		public bool IncludeAlways { get; private set; }
 
-		public string Version { get; private set; }
+		public List<Resource> Resources { get; private set; }
 
-		public string Path { get; private set; }
+		public List<Regex> IncludeUrls { get; private set; }
 
-		public XmlElement ToXml(XmlDocument ownerDocument, SageContext context)
+		internal bool MatchesPath(string url)
 		{
-			Contract.Requires<ArgumentNullException>(ownerDocument != null);
-			Contract.Requires<ArgumentNullException>(context != null);
+			if (this.IncludeAlways)
+				return true;
 
-			XmlElement result;
-			string resourcePath = context.Path.Resolve(this.Path);
-			if (this.Type == ResourceType.Style)
+			foreach (Regex regex in IncludeUrls)
 			{
-				result = ownerDocument.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("type", "text/css");
-				result.SetAttribute("rel", "stylesheet");
-				result.SetAttribute("href", context.Path.GetRelativeWebPath(resourcePath, true));
-			}
-			else
-			{
-				result = ownerDocument.CreateElement("xhtml:script", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("type", "text/javascript");
-				result.SetAttribute("language", "javascript");
-				result.SetAttribute("src", context.Path.GetRelativeWebPath(resourcePath, true));
+				if (regex.Match(url).Success)
+					return true;
 			}
 
-			return result;
+			return false;
 		}
 	}
 }

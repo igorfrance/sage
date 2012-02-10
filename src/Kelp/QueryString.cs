@@ -1,4 +1,29 @@
-﻿namespace Kelp.Core
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Kelp
 {
 	using System;
 	using System.Collections.Generic;
@@ -21,9 +46,11 @@
 		}
 
 		/// <summary>
-		/// Copies the non-empty entries from the specified <see cref="NameValueCollection"/> to a new <see cref="QueryString"/>.
+		/// Initializes a new instance of the <see cref="QueryString"/> class, copying non-empty entries 
+		/// from the specified <paramref name="collection"/> into this instance.
 		/// </summary>
-		/// <param name="collection">The <see cref="NameValueCollection"/> to copy to the new <see cref="QueryString"/> instance.</param>
+		/// <param name="collection">The <see cref="NameValueCollection"/> to copy to the new 
+		/// <see cref="QueryString"/> instance.</param>
 		public QueryString(NameValueCollection collection)
 		{
 			if (collection == null)
@@ -57,24 +84,14 @@
 		}
 
 		/// <summary>
-		/// Parses the specified <paramref name="queryString"/> and populates the new <see cref="QueryString"/> with it.
+		/// Initializes a new instance of the <see cref="QueryString"/> class, and populates it with
+		/// values parsed the specified <paramref name="queryString"/>.
 		/// </summary>
 		/// <param name="queryString">The query string that contains the name/value pairs to use.</param>
 		public QueryString(string queryString)
 		{
 			if (!string.IsNullOrEmpty(queryString))
 				Parse(queryString);
-		}
-
-		/// <summary>
-		/// Formats the specified <paramref name="formatString"/>, parses the resulting value and populates the new 
-		/// <see cref="QueryString"/> with it.
-		/// </summary>
-		/// <param name="formatString">The string that contains format template.</param>
-		/// <param name="formatValues">The values to use for formatting <paramref name="formatString"/>.</param>
-		public QueryString(string formatString, params string[] formatValues)
-			: this(string.Format(formatString, formatValues))
-		{
 		}
 
 		/// <summary>
@@ -98,22 +115,22 @@
 				queryString = queryString.Substring(1);
 
 			string[] values = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-			for (int i = 0; i < values.Length; i++)
+			foreach (string t in values)
 			{
-				if (values[i] == string.Empty)
+				if (t == string.Empty)
 					continue;
 
-				int index = values[i].IndexOf('=');
+				int index = t.IndexOf('=');
 				if (index != -1)
 				{
-					string name = values[i].Substring(0, index);
-					string value = values[i].Substring(index + 1);
+					string name = t.Substring(0, index);
+					string value = t.Substring(index + 1);
 					if (name != string.Empty)
 						this.Add(name, value);
 				}
 				else
 				{
-					this.Add(values[i], string.Empty);
+					this.Add(t, string.Empty);
 				}
 			}
 
@@ -267,7 +284,7 @@
 			bool result = false;
 			string value = this[key];
 			if (value != null)
-				Boolean.TryParse(value, out result);
+				bool.TryParse(value, out result);
 
 			return result;
 		}
@@ -386,7 +403,7 @@
 				return defaultValue;
 
 			long result;
-			if (!Int64.TryParse(this[key], out result))
+			if (!long.TryParse(this[key], out result))
 				return defaultValue;
 
 			return result;
@@ -422,7 +439,7 @@
 		{
 			decimal result = 0;
 			if (this[key] != null)
-				Decimal.TryParse(this[key], out result);
+				decimal.TryParse(this[key], out result);
 
 			return result;
 		}
@@ -508,7 +525,7 @@
 		public List<string> GetList(string key, string expression)
 		{
 			Regex test = null;
-			if (!String.IsNullOrEmpty(expression))
+			if (!string.IsNullOrEmpty(expression))
 				test = new Regex(expression);
 
 			List<string> list = new List<string>();
@@ -516,11 +533,7 @@
 			if (value != null)
 			{
 				string[] values = value.Split(',');
-				for (int i = 0; i < values.Length; i++)
-				{
-					if (test == null || test.Match(values[i]).Success)
-						list.Add(values[i]);
-				}
+				list.AddRange(values.Where(t => test == null || test.Match(t).Success));
 			}
 
 			return list;
@@ -558,9 +571,7 @@
 			string[] pairs = new string[this.Count];
 
 			for (int i = 0; i < this.Count; i++)
-				pairs[i] = this.GetKey(i) + "=" + (string.IsNullOrEmpty(this[i])
-					? string.Empty
-					: this[i]);
+				pairs[i] = string.Concat(this.GetKey(i), "=", this[i] ?? string.Empty);
 
 			string result = string.Join("&", pairs);
 			if (prependQuestionMark && result.Length != 0)

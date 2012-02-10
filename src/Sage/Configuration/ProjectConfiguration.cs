@@ -1,4 +1,29 @@
-﻿namespace Sage.Configuration
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
@@ -7,16 +32,13 @@
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
-	using System.Web;
 	using System.Xml;
-	using System.Xml.Schema;
 
 	using Kelp.Core.Extensions;
-
-	using Sage.Extensibility;
-	using Sage.Modules;
+	using Kelp.Extensions;
 
 	using log4net;
+	using Sage.Modules;
 	using Sage.ResourceManagement;
 
 	/// <summary>
@@ -41,7 +63,6 @@
 			this.Locales = new Dictionary<string, LocaleInfo>();
 			this.MetaViews = new MetaViewDictionary();
 			this.DeveloperIps = new List<IpAddress>();
-			this.AssetPrefixes = new Dictionary<string, string>();
 			this.Links = new Dictionary<string, LinkInfo>();
 			this.Routing = new RoutingConfiguration();
 			this.PathTemplates = new PathTemplates();
@@ -152,7 +173,7 @@
 		}
 
 		/// <summary>
-		/// Path templates for various system-required files.
+		/// Gets the path templates for various system-required files.
 		/// </summary>
 		public PathTemplates PathTemplates
 		{
@@ -188,7 +209,7 @@
 		}
 
 		/// <summary>
-		/// Gets or sets the base pattern for constructing URLs.
+		/// Gets the base pattern for constructing URLs.
 		/// </summary>
 		public string UrlRewritePrefix
 		{
@@ -197,7 +218,7 @@
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether URL rewriting is on.
+		/// Gets a value indicating whether URL rewriting is on.
 		/// </summary>
 		/// <value><c>true</c> if URL rewriting is on; otherwise, <c>false</c>.</value>
 		public bool UrlRewritingOn
@@ -212,7 +233,7 @@
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating the current project has been configured for debugging.
+		/// Gets a value indicating whether the current project has been configured for debugging.
 		/// </summary>
 		/// <value><c>true</c> if debugging is on; otherwise, <c>false</c>.</value>
 		public bool IsDebugMode
@@ -222,15 +243,6 @@
 		}
 
 		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Gets the dictionary of asset resource mappings; where keys are asset aliases, and values are the actual paths to these assets.
-		/// </summary>
-		public Dictionary<string, string> AssetPrefixes
 		{
 			get;
 			private set;
@@ -332,7 +344,7 @@
 		/// </returns>
 		public bool IsDeveloperIp(string clientIpAddress)
 		{
-			return this.DeveloperIps.Where(a => a.Matches(clientIpAddress)).Count() != 0;
+			return this.DeveloperIps.Count(a => a.Matches(clientIpAddress)) != 0;
 		}
 
 		/// <summary>
@@ -409,7 +421,6 @@
 
 			XmlElement configNode = configDoc.SelectSingleElement("/p:configuration/*", nm);
 
-			string nodeValue;
 			XmlElement routingNode = configNode.SelectSingleElement("p:routing", nm);
 			XmlElement pathsNode = configNode.SelectSingleElement("p:paths", nm);
 
@@ -418,7 +429,7 @@
 			this.Categories = new Dictionary<string, CategoryInfo>();
 			this.Locales = new Dictionary<string, LocaleInfo>();
 
-			nodeValue = configNode.GetAttribute("name");
+			string nodeValue = configNode.GetAttribute("name");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.Name = nodeValue;
 
@@ -465,6 +476,10 @@
 
 			if (routingNode != null)
 				this.Routing.ParseConfiguration(routingNode);
+
+			XmlElement linksNode = configNode.SelectSingleElement("p:links", nm);
+			if (linksNode != null)
+				this.UrlRewritePrefix = linksNode.GetAttribute("rewritePrefix");
 
 			foreach (XmlElement linkNode in configNode.SelectNodes("p:links/p:link", nm))
 			{
@@ -528,16 +543,6 @@
 			{
 				IpAddress address = new IpAddress(elem);
 				this.DeveloperIps.Add(address);
-			}
-
-			foreach (XmlElement elem in configNode.SelectNodes("p:assets/p:prefix", nm))
-			{
-				var key = elem.GetAttribute("key");
-				var value = elem.GetAttribute("value");
-				if (this.AssetPrefixes.ContainsKey(key))
-					this.AssetPrefixes[key] = value;
-				else
-					this.AssetPrefixes.Add(key, value);
 			}
 
 			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));

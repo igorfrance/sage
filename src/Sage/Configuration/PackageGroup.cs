@@ -1,4 +1,29 @@
-﻿namespace Sage.Configuration
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
@@ -30,6 +55,10 @@
 					this.Excludes.Add(excludeNode.InnerText.Trim());
 			}
 		}
+
+		public List<string> Includes { get; private set; }
+
+		public List<string> Excludes { get; private set; }
 
 		public List<string> GetFiles(SageContext context)
 		{
@@ -67,7 +96,6 @@
 					result = ExcludeAllFilesFrom(result, context, exclude);
 			}
 
-
 			return result;
 		}
 
@@ -76,39 +104,43 @@
 			List<string> includes = new List<string>();
 			foreach (string include in this.Includes)
 			{
-				if (include == "*")
+				string test = include;
+				if (test == "*")
 					includes.AddRange(names);
 
 				else if (include.StartsWith("*") && include.EndsWith("*"))
-					includes.AddRange(names.Where(n => n.Contains(include.Replace("*", string.Empty))));
+				{
+					includes.AddRange(names.Where(n => n.Contains(test.Replace("*", string.Empty))));
+				}
 
 				else if (include.EndsWith("*"))
-					includes.AddRange(names.Where(n => n.StartsWith(include.Replace("*", string.Empty))));
+					includes.AddRange(names.Where(n => n.StartsWith(test.Replace("*", string.Empty))));
 
 				else if (include.StartsWith("*"))
-					includes.AddRange(names.Where(n => n.EndsWith(include.Replace("*", string.Empty))));
+					includes.AddRange(names.Where(n => n.EndsWith(test.Replace("*", string.Empty))));
 
 				else
-					includes.AddRange(names.Where(n => n == include));
+					includes.AddRange(names.Where(n => n == test));
 			}
 
 			List<string> excludes = new List<string>();
 			foreach (string exclude in this.Excludes)
 			{
-				if (exclude == "*")
+				string test = exclude;
+				if (test == "*")
 					throw new InvalidOperationException("Exclude group is not allowed to be single wildcard '*' (meaning 'all').");
 
 				if (exclude.StartsWith("*") && exclude.EndsWith("*"))
-					excludes.AddRange(names.Where(n => !n.Contains(exclude.Replace("*", string.Empty))));
+					excludes.AddRange(names.Where(n => !n.Contains(test.Replace("*", string.Empty))));
 
 				else if (exclude.EndsWith("*"))
-					excludes.AddRange(names.Where(n => !n.StartsWith(exclude.Replace("*", string.Empty))));
+					excludes.AddRange(names.Where(n => !n.StartsWith(test.Replace("*", string.Empty))));
 
 				else if (exclude.StartsWith("*"))
-					excludes.AddRange(names.Where(n => !n.EndsWith(exclude.Replace("*", string.Empty))));
+					excludes.AddRange(names.Where(n => !n.EndsWith(test.Replace("*", string.Empty))));
 
 				else
-					excludes.AddRange(names.Where(n => n != exclude));
+					excludes.AddRange(names.Where(n => n != test));
 			}
 
 			includes = includes.Distinct().ToList();
@@ -116,10 +148,6 @@
 
 			return includes.Where(include => !excludes.Contains(include)).ToList();
 		}
-
-		public List<string> Includes { get; private set; }
-
-		public List<string> Excludes { get; private set; }
 
 		private static List<string> GetAllFilesInDirectory(SageContext context, string directory)
 		{
@@ -170,13 +198,13 @@
 			return result;
 		}
 
-		private List<string> ExcludeAllFilesInDirectory(List<string> files, SageContext context, string directory)
+		private List<string> ExcludeAllFilesInDirectory(IEnumerable<string> files, SageContext context, string directory)
 		{
 			string resolved = context.Path.Resolve(directory).ToLower();
 			return files.Where(f => !f.ToLower().StartsWith(resolved)).ToList();
 		}
 
-		private List<string> ExcludeAllFilesOfTypeInDirectory(List<string> files, SageContext context, string directory, string filter)
+		private List<string> ExcludeAllFilesOfTypeInDirectory(IEnumerable<string> files, SageContext context, string directory, string filter)
 		{
 			string resolved = context.Path.Resolve(directory).ToLower();
 			string extension = filter.Replace("*", string.Empty).ToLower();
@@ -184,7 +212,7 @@
 			return files.Where(f => !(f.ToLower().StartsWith(resolved) && f.ToLower().EndsWith(extension))).ToList();
 		}
 
-		private List<string> ExcludeAllFilesStartingWithInDirectory(List<string> files, SageContext context, string startsWith)
+		private List<string> ExcludeAllFilesStartingWithInDirectory(IEnumerable<string> files, SageContext context, string startsWith)
 		{
 			string directory = Path.GetDirectoryName(startsWith);
 			string filter = Path.GetFileName(startsWith).ToLower();
@@ -194,11 +222,11 @@
 			return files.Where(f => !(f.ToLower().StartsWith(resolved) && Path.GetFileName(f).ToLower().StartsWith(filter))).ToList();
 		}
 
-		private List<string> ExcludeAllFilesFrom(List<string> files, SageContext context, string filepath)
+		private List<string> ExcludeAllFilesFrom(IEnumerable<string> files, SageContext context, string filepath)
 		{
 			List<string> excludeFiles = GetAllFilesFrom(context, filepath);
 
-			return files.Where(f => excludeFiles.Where(e => e.ToLower() == f.ToLower()).Count() == 0).ToList();
+			return files.Where(f => excludeFiles.Count(e => e.ToLower() == f.ToLower()) == 0).ToList();
 		}
 	}
 }

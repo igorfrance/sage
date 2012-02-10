@@ -9,7 +9,7 @@
 	xmlns="http://www.w3.org/1999/xhtml"
 	exclude-result-prefixes="sage mod kelp set xhtml">
 
-	<xsl:include href="sage://resources/modules.xslt" />
+	<xsl:include href="sageres://modules.xslt" />
 	<xsl:include href="sageresx://sage/resources/xslt/logic.xsl" />
 
 	<xsl:variable name="view" select="/sage:view"/>
@@ -34,6 +34,10 @@
 		<xsl:value-of select="$request/sage:assembly/@version"/>
 	</xsl:template>
 
+	<xsl:template match="sage:literal">
+		<xsl:apply-templates select="node()"/>
+	</xsl:template>
+
 	<xsl:template match="xhtml:html">
 		<html>
 			<xsl:apply-templates select="@*"/>
@@ -53,8 +57,8 @@
 		<head>
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="node()[local-name() != 'script' and local-name() != 'link']"/>
-			<xsl:apply-templates select="set:distinct($styles, '@href')"/>
-			<xsl:apply-templates select="set:distinct($scripts, '@src')"/>
+			<xsl:apply-templates select="set:distinct($styles, '@href', true())"/>
+			<xsl:apply-templates select="set:distinct($scripts, '@src', true())"/>
 		</head>
 	</xsl:template>
 
@@ -64,6 +68,7 @@
 			<xsl:apply-templates select="node()"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:style"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:script"/>
+			<xsl:apply-templates select="." mode="execute-libraries"/>
 		</body>
 	</xsl:template>
 
@@ -95,6 +100,13 @@
 		</xsl:for-each>
 	</xsl:template>
 
+	<xsl:template match="sage:link">
+		<a>
+			<xsl:apply-templates select="@*[name() != 'ref' and name() != 'values' and name() != 'escape']"/>
+			<xsl:apply-templates select="node()"/>
+		</a>
+	</xsl:template>
+
 	<xsl:template match="sage:resource[@type='script']">
 		<script type="text/javascript" language="javascript" src="{@path}"></script>
 	</xsl:template>
@@ -103,7 +115,7 @@
 		<link type="text/css" rel="stylesheet" href="{@path}" />
 	</xsl:template>
 
-	<xsl:template match="@xml:base"/>
+	<xsl:template match="@xml:base | @xml:space"/>
 
 	<xsl:template match="xhtml:*">
 		<xsl:element name="{local-name()}">
@@ -129,4 +141,6 @@
 		<xsl:value-of select="."/>
 	</xsl:template>
 
+	<xsl:template match="*" mode="execute-libraries"/>
+	
 </xsl:stylesheet>

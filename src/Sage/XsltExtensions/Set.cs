@@ -1,4 +1,29 @@
-﻿namespace Sage.XsltExtensions
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.XsltExtensions
 {
 	using System;
 	using System.Collections.Generic;
@@ -34,13 +59,17 @@
 			while (clone.MoveNext())
 			{
 				XPathNavigator selected = clone.Current.SelectSingleNode(xpath);
-				if (selected == null && !includeNullEntries)
-					continue;
-
-				string selection = selected != null ? selected.Value : string.Empty;
-				if (!selections.Contains(selection))
+				if (selected == null)
 				{
-					selections.Add(selection);
+					if (includeNullEntries)
+						result.Add(new NodeInfo(clone.Current));
+
+					continue;
+				}
+
+				if (!selections.Contains(selected.Value))
+				{
+					selections.Add(selected.Value);
 					result.Add(new NodeInfo(clone.Current));
 				}
 			}
@@ -78,10 +107,7 @@
 
 					if (!string.IsNullOrEmpty(node.NamespaceURI))
 					{
-						string prefix = !string.IsNullOrEmpty(node.Prefix) ? node.Prefix : GeneratePrefix();
-						if (!namespaces.ContainsKey(prefix))
-							namespaces.Add(prefix, node.NamespaceURI);
-
+						string prefix = GetPrefix(node);
 						name = string.Concat(prefix, ":", node.LocalName);
 					}
 
@@ -107,38 +133,54 @@
 				XmlNamespaceManager nm = new XmlNamespaceManager(new NameTable());
 				foreach (NodeInfo info in nodes)
 				{
-					foreach (string prefix in info.namespaces.Keys.Where(p => !nm.HasNamespace(p)))
+					foreach (string namespaceUri in info.namespaces.Keys)
 					{
-						nm.AddNamespace(prefix, info.namespaces[prefix]);
+						string prefix = info.namespaces[namespaceUri];
+						if (!nm.HasNamespace(prefix))
+							nm.AddNamespace(prefix, namespaceUri);
 					}
 				}
 
 				return nm;
 			}
 
-			private static int GetNodeIndex(XPathNavigator navigator)
+			private int GetNodeIndex(XPathNavigator navigator)
 			{
-				XmlNamespaceManager man = new XmlNamespaceManager(new NameTable());
-				man.AddNamespace(navigator.Prefix, navigator.NamespaceURI);
+				string namespaceUri = navigator.NamespaceURI;
+				string prefix = namespaces[namespaceUri];
 
-				return 1 + navigator.Select(string.Format("preceding-sibling::{0}", navigator.Name), man).Count;
+				XmlNamespaceManager man = new XmlNamespaceManager(new NameTable());
+				man.AddNamespace(prefix, namespaceUri);
+
+				return 1 + navigator.Select(string.Format("preceding-sibling::{0}:{1}", prefix, navigator.LocalName), man).Count;
 			}
 
-			private string GeneratePrefix()
+			private string GetPrefix(XPathNavigator node)
 			{
-				int minAscii = 97;
-				int maxAscii = 122;
+				if (namespaces.ContainsKey(node.NamespaceURI))
+					return namespaces[node.NamespaceURI];
 
-				Random random = new Random();
 				string prefix = string.Empty;
-				while (prefix == string.Empty || namespaces.ContainsKey(prefix))
+				if (!string.IsNullOrEmpty(node.Prefix))
 				{
-					prefix = string.Concat(
-						(char) (minAscii + random.Next(maxAscii - minAscii)),
-						(char) (minAscii + random.Next(maxAscii - minAscii)),
-						(char) (minAscii + random.Next(maxAscii - minAscii)));
+					prefix = node.Prefix;
+				}
+				else
+				{
+					int minAscii = 97;  // a
+					int maxAscii = 122; // z
+
+					Random random = new Random();
+					while (prefix == string.Empty || namespaces.ContainsKey(prefix))
+					{
+						prefix = string.Concat(
+							(char) (minAscii + random.Next(maxAscii - minAscii)),
+							(char) (minAscii + random.Next(maxAscii - minAscii)),
+							(char) (minAscii + random.Next(maxAscii - minAscii)));
+					}
 				}
 
+				namespaces.Add(node.NamespaceURI, prefix);
 				return prefix;
 			}
 		}

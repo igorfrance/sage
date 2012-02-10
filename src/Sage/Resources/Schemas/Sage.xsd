@@ -8,24 +8,33 @@
 	
 	<xs:element name="basehref"/>
 	
-	<xs:element name="link">
-		<xs:complexType>
-			<xs:attribute name="linkId" use="optional"/>
-			<xs:attribute name="linkValues" use="optional"/>
-			<xs:attribute name="urlEncode" use="optional" type="xs:boolean"/>
-			<xs:attribute name="href" use="optional"/>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="link" type="sage:link" />
+
+	<xs:element name="url" type="sage:link" />
+	
+	<xs:attribute name="url"/>
 	
 	<xs:complexType name="generic" mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:any namespace="http://www.w3.org/1999/xhtml"/>
 			<xs:any namespace="http://www.cycle99.com/projects/sage"/>
 			<xs:any namespace="http://www.cycle99.com/projects/sage/internationalization"/>
 			<xs:any namespace="http://www.w3.org/2003/XInclude"/>
 		</xs:choice>
 		<xs:anyAttribute namespace="
+										 http://www.w3.org/1999/xhtml
 										 http://www.cycle99.com/projects/sage 
 										 http://www.cycle99.com/projects/sage/internationalization"/>
+	</xs:complexType>
+	
+	<xs:complexType name="link">
+		<xs:complexContent>
+			<xs:extension base="sage:generic">
+				<xs:attribute name="id" use="required"/>
+				<xs:attribute name="values" use="optional"/>
+				<xs:attribute name="encode" use="optional" type="xs:boolean" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	
 </xs:schema>

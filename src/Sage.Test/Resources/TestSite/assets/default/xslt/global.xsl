@@ -84,7 +84,7 @@
 	</xsl:template>
 
 	<xsl:template match="sage:style[@merged]">
-		<xsl:for-each select="document(concat('sage://', @merged))/*/resource">
+		<xsl:for-each select="document(concat('kelp://', @merged))/*/resource">
 			<xsl:choose>
 				<xsl:when test="@exists = 'false'">
 					<xsl:comment>
@@ -112,7 +112,7 @@
 	</xsl:template>
 
 	<xsl:template match="sage:script[@merged]">
-		<xsl:for-each select="document(concat('sage://', @merged))/*/resource">
+		<xsl:for-each select="document(concat('kelp://', @merged))/*/resource">
 			<xsl:choose>
 				<xsl:when test="@exists = 'false'">
 					<xsl:comment>

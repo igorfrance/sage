@@ -40,10 +40,12 @@
 						
 					.problem-description
 						{ margin-bottom: 20px; }
+					.problem-file
+						{ margin-bottom: 20px; }
 					.problem-source
 						{	color: #009966; }
 					.problem-message
-						{ font-weight: bold; margin-bottom: 30px; }
+						{ font-weight: bold; margin-bottom: 5px; }
 					.problem-details .switch 
 						{ font-size: 12px; }
 					.problem-details .switch a
@@ -68,24 +70,22 @@
 				<h1>
 					<xsl:apply-templates select="." mode="problem-title"/>
 				</h1>
+				<div class="problem-message">
+					Message:
+					<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
+				</div>
+				<xsl:if test="@sourceuri">
+					<div class="problem-file">
+						File:
+						<span class="problem-source"><xsl:value-of select="@sourceuri"/>.</span>
+					</div>
+				</xsl:if>
 				<div class="problem-description">
 					<xsl:apply-templates select="." mode="problem-description"/>
 				</div>
 				<h3>Suggestion:</h3>
 				<div class="problem-suggestion">
 					<xsl:apply-templates select="." mode="problem-suggestion"/>
-				</div>
-				<xsl:if test="@sourceuri">
-					<div class="problem-file">
-						File:
-						<span class="problem-source"><xsl:value-of select="@sourceuri"/>, </span>
-						<span class="line">line <xsl:value-of select="@linenumber" />, </span>
-						<span class="column">position <xsl:value-of select="@lineposition" />.</span>
-					</div>
-				</xsl:if>
-				<div class="problem-message">
-					Message:
-					<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
 				</div>
 				<div class="problem-details">
 					<span class="switch">(<a href="javascript:expandProblemDetail()">Click to show technical details about this error</a>)</span>

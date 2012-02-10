@@ -1,4 +1,29 @@
-﻿namespace Sage.ResourceManagement
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.ResourceManagement
 {
 	using System;
 	using System.Collections.Generic;
@@ -7,9 +32,10 @@
 	using System.Reflection;
 	using System.Xml;
 
-	using Sage.Extensibility;
+	using Mvp.Xml.XInclude;
 
 	using log4net;
+	using Sage.Extensibility;
 
 	/// <summary>
 	/// Implements a custom resolver for various resource providers.
@@ -18,7 +44,7 @@
 	/// In order to hook into this resolver and provide custom resources that can be referred to in
 	/// url's, create a method that matches <see cref="GetResource"/> delegate and tag it with
 	/// <see cref="SageResourceProviderAttribute"/>. The name that you specify in the constructor for
-	/// <see cref="SageResourceProviderAttribute"/> is the string that follows <c>sage://resources/</c>.
+	/// <see cref="SageResourceProviderAttribute"/> is the string that follows <c>sageres://</c>.
 	/// </remarks>
 	[UrlResolver(Scheme = SageResourceResolver.Scheme)]
 	public class SageResourceResolver : ISageXmlUrlResolver
@@ -26,7 +52,7 @@
 		/// <summary>
 		/// The scheme associated with this resolver;
 		/// </summary>
-		public const string Scheme = "sage";
+		public const string Scheme = "sageres";
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageResourceResolver).FullName);
 		private static readonly Dictionary<string, GetResource> providers;
 		private readonly List<string> dependencies = new List<string>();
@@ -39,9 +65,9 @@
 			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
-							where 
-								t.IsClass && 
-								t.GetMethods(flags).Where(m => m.GetCustomAttributes(typeof(SageResourceProviderAttribute), false).Count() != 0).Count() != 0
+							where
+								t.IsClass &&
+								t.GetMethods(flags).Count(m => m.GetCustomAttributes(typeof(SageResourceProviderAttribute), false).Count() != 0) != 0
 							select t;
 
 				foreach (Type type in types)
@@ -54,8 +80,8 @@
 							if (providers.ContainsKey(attrib.ResourceName))
 							{
 								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",
-									ResourceManager.GetDelegateSignature(providers[attrib.ResourceName]), 
-									attrib.ResourceName, 
+									ResourceManager.GetDelegateSignature(providers[attrib.ResourceName]),
+									attrib.ResourceName,
 									ResourceManager.GetDelegateSignature(del));
 							}
 
@@ -70,46 +96,41 @@
 		public EntityResult GetEntity(UrlResolver parent, SageContext context, string resourceUri)
 		{
 			string resourceName = GetResourceName(resourceUri);
-			CacheableXmlDocument resourceDoc = null;
+				XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(parent);
+
+			CacheableXmlDocument resourceDoc;
+
+			// first check if we have a registered provider for the specified resour name
 			if (providers.ContainsKey(resourceName))
-				resourceDoc = providers[resourceName](context, resourceUri);
-
-			if (resourceDoc == null)
 			{
-				if (providers.Count == 0)
-				{
-					throw new ArgumentException(string.Format("The resource with uri '{0}' could not be resolved. There are currently no resource providers registered, so any call to '{1}'... will fail.", resourceUri, GetResourcePrefix()));
-				}
+				log.DebugFormat("Found a specific resource provider for {0}: {1}.{2}",
+					resourceUri,
+					providers[resourceName].GetType().Name,
+					providers[resourceName].Method.Name);
 
-				throw new ArgumentException(string.Format("The resource with uri '{0}' could not be resolved. The supported uris are: \n{1}", resourceUri, string.Join("\n", GetValidResourceUris())));
+				resourceDoc = providers[resourceName](context, resourceUri);
+			}
+			else
+			{
+				string sourcePath = context.Path.Expand(resourceName);
+				if (sourcePath == null || !File.Exists(sourcePath))
+					throw new FileNotFoundException(string.Format("The specified resource '{0}' doesn't exist.", resourceUri));
+
+				resourceDoc = context.Resources.LoadXml(sourcePath);
 			}
 
-			XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(parent);
 			XmlReader reader = XmlReader.Create(new StringReader(resourceDoc.OuterXml), settings, resourceUri);
 			return new EntityResult { Entity = reader, Dependencies = resourceDoc.Dependencies };
 		}
 
 		private string GetResourceName(string uri)
 		{
-			return uri.Replace(GetResourcePrefix(), string.Empty);
+			return uri.Replace(GetResourcePrefix(), string.Empty).Trim('/', '\\');
 		}
 
 		private string GetResourcePrefix()
 		{
-			return Scheme + "://resources/";
-		}
-
-		private IEnumerable<string> GetValidResourceUris()
-		{
-			List<string> result = new List<string>();
-
-			string prefix = GetResourcePrefix();
-			foreach (string key in providers.Keys)
-			{
-				result.Add(prefix + key);
-			}
-
-			return result;
+			return Scheme + "://";
 		}
 	}
 }

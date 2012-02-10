@@ -71,6 +71,14 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <CodeContractsInferRequires>False</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsDisjunctiveRequires>False</CodeContractsDisjunctiveRequires>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -117,16 +125,16 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constants.cs" />
-    <Compile Include="Core\Extensions\DateTimeExtensions.cs" />
-    <Compile Include="Core\Extensions\ExceptionExtensions.cs" />
-    <Compile Include="Core\Extensions\IEnumerableExtensions.cs" />
-    <Compile Include="Core\Extensions\StopwatchExtensions.cs" />
-    <Compile Include="Core\Extensions\StringExtensions.cs" />
-    <Compile Include="Core\Extensions\XmlDocumentExtensions.cs" />
-    <Compile Include="Core\Extensions\XmlNodeExtensions.cs" />
-    <Compile Include="Core\OrderedDictionary.cs" />
-    <Compile Include="Core\QueryString.cs" />
-    <None Include="Core\SortedSet.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\StopwatchExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\XmlDocumentExtensions.cs" />
+    <Compile Include="Extensions\XmlNodeExtensions.cs" />
+    <Compile Include="OrderedDictionary.cs" />
+    <Compile Include="QueryString.cs" />
+    <None Include="SortedSet.cs" />
     <Compile Include="HttpMock\HttpApplicationStateMock.cs" />
     <Compile Include="HttpMock\HttpCachePolicyMock.cs" />
     <Compile Include="HttpMock\HttpContextMock.cs" />
@@ -163,6 +171,7 @@
     <Compile Include="Imaging\Quantizer.cs" />
     <Compile Include="Imaging\Filters\QueryFilter.cs" />
     <Compile Include="Imaging\ValueRange.cs" />
+    <Compile Include="IO\Crc32.cs" />
     <Compile Include="IXmlConvertible.cs" />
     <Compile Include="ResourceHandling\ConfigurableAttribute.cs" />
     <Compile Include="ResourceHandling\GifFile.cs" />

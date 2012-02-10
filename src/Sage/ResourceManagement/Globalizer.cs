@@ -1,4 +1,29 @@
-﻿namespace Sage.ResourceManagement
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.ResourceManagement
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,7 +33,8 @@
 	using System.Text;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
+
 	using log4net;
 
 	using Sage.Configuration;
@@ -65,7 +91,7 @@
 			foreach (string locale in coll.Locales)
 			{
 				if (coll.Dictionaries[locale].Document == null)
-					throw new ApplicationException(string.Format(
+					throw new GlobalizationError(string.Format(
 						"The locale '{0}' in category '{1}' doesn't have any dictionary files", locale, coll.Category));
 
 				CacheableXmlDocument input;
@@ -88,30 +114,15 @@
 				StringBuilder builder = new StringBuilder();
 				XmlWriter diagnoseWriter = XmlWriter.Create(builder, settings);
 
-				bool transformSuccess = false;
-
 				try
 				{
 					this.Transform(input, context.CategoryConfiguration, coll, locale, translateWriter, GlobalizeType.Translate);
 					this.Transform(input, context.CategoryConfiguration, coll, locale, diagnoseWriter, GlobalizeType.Diagnose);
-					transformSuccess = true;
 				}
 				finally
 				{
 					translateWriter.Close();
 					diagnoseWriter.Close();
-
-					if (!transformSuccess)
-						try
-						{
-							// if transform failed, it's better to delete the file as it's presence
-							// indicates to the auto-globalizer that the localication exists and is 
-							// therefore considered valid.
-							File.Delete(outputPath);
-						}
-						catch (IOException)
-						{
-						}
 				}
 
 				XmlDocument diagnostics = new XmlDocument();

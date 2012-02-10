@@ -1,4 +1,29 @@
-﻿namespace Sage
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage
 {
 	using System;
 	using System.Collections.Generic;
@@ -15,6 +40,7 @@
 	using Kelp;
 	using Kelp.Core;
 	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	using log4net;
 
@@ -317,7 +343,7 @@
 		}
 
 		/// <summary>
-		/// Indicates whether the system should load the latest resources without considering the cache.
+		/// Gets a value indicating whether the system should load the latest resources without considering the cache.
 		/// </summary>
 		public bool ForceRefresh { get; private set; }
 
@@ -565,7 +591,6 @@
 			XmlElement switchElem = (XmlElement) switchNode;
 
 			string propName = switchElem.GetAttribute("property");
-			string propValue;
 			string key = switchElem.GetAttribute("key");
 
 			if (string.IsNullOrEmpty(propName))
@@ -576,7 +601,7 @@
 				return switchNode;
 			}
 
-			propValue = GetContextProperty(context, propName, key);
+			string propValue = GetContextProperty(context, propName, key);
 
 			int caseNum = 0;
 			bool caseFound = false;
@@ -634,13 +659,16 @@
 			return valueNode;
 		}
 
-		[TextHandler("assetpath", "locale", "category", "sharedassetpath", "modulepath")]
+		[TextHandler("assetpath", "sharedassetpath", "modulepath", "locale", "category", "basehref")]
 		internal static string ResolvePathVariable(string variable, SageContext context)
 		{
 			switch (variable)
 			{
 				case "locale":
 					return context.Locale;
+
+				case "basehref":
+					return context.BaseHref;
 
 				case "category":
 					return context.Category;

@@ -1,8 +1,34 @@
-﻿namespace Kelp.SyntaxHighlighting
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Kelp.SyntaxHighlighting
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
@@ -22,26 +48,20 @@
 		/// </summary>
 		public const string ClassNameString = "string";
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LanguageDefinition"/> class, using the specified
-		/// <paramref name="name"/>.
-		/// </summary>
-		/// <param name="name">The name of the language this definition represents (e.g. 'javascript').</param>
-		/// <param name="caseSensitive">If set to <c>true</c>, indicates that this language is case sensitive.</param>
-		public LanguageDefinition(string name, bool caseSensitive = true)
+		public LanguageDefinition(bool caseSensitive = true)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(name));
-
-			this.Name = name;
-			this.CaseSensitive = caseSensitive;
-
-			this.Quotes = new List<string>();
-			this.Comments = new List<string>();
+			this.QuoteDelimiters = new List<string>();
+			this.LineCommentDelimiters = new List<string>();
 			this.Expressions = new List<ExpressionGroup>();
+			this.CommentDelimiters = new List<string[]>();
 		}
 
+		public string EscapeChar { get; set; }
+
+		public string[] Regexp { get; protected set; }
+
 		/// <summary>
-		/// Gets the ID of the language. 
+		/// Gets or sets the name of the language. 
 		/// </summary>
 		/// <remarks>
 		/// This value will be includes in the class name of the syntax highlighted block.
@@ -55,21 +75,24 @@
 		public bool CaseSensitive { get; protected set; }
 
 		/// <summary>
-		/// Gets or sets the language's quote expressions.
+		/// Gets or sets the list of language's quote delimiters.
 		/// </summary>
-		/// <value>The quote expressions for this language.</value>
-		public IList<string> Quotes { get; protected set; }
+		public List<string> QuoteDelimiters { get; protected set; }
 
 		/// <summary>
-		/// Gets or sets the language's comment expressions.
+		/// Gets or sets the list of language's single line comment delimiters.
 		/// </summary>
-		/// <value>The comment expressions for this language.</value>
-		public IList<string> Comments { get; protected set; }
+		public List<string> LineCommentDelimiters { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets the list of language's comment delimiters.
+		/// </summary>
+		public List<string[]> CommentDelimiters { get; protected set; }
 
 		/// <summary>
 		/// Gets or sets the language expression groups.
 		/// </summary>
 		/// <value>The groups of expressions to use with this language.</value>
-		public IList<ExpressionGroup> Expressions { get; protected set; }
+		public List<ExpressionGroup> Expressions { get; protected set; }
 	}
 }

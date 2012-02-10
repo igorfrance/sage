@@ -1,53 +1,51 @@
-﻿namespace Sage.Modules
+﻿/**
+ * Open Source Initiative OSI - The MIT License (MIT):Licensing
+ * [OSI Approved License]
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2011 Igor France
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ */
+namespace Sage.Modules
 {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	public class ModuleResource
+	using Sage.ResourceManagement;
+
+	public class ModuleResource : Resource
 	{
 		public ModuleResource(XmlElement resourceNode, string moduleName)
+			: base(resourceNode)
 		{
-			Contract.Requires<ArgumentNullException>(resourceNode != null);
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(moduleName));
 
 			this.ModuleName = moduleName;
-			this.Path = resourceNode.GetAttribute("path");
-			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), resourceNode.LocalName, true);
-			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), resourceNode.GetAttribute("location"), true);
 		}
 
 		public string ModuleName { get; private set; }
 
-		public string Path { get; private set; }
-
-		public ResourceType Type { get; private set; }
-
-		public ResourceLocation Location { get; private set; }
-
-		public XmlElement ToXml(XmlDocument ownerDoc, SageContext context)
+		public override string GetResolvedPhysicalPath(SageContext context)
 		{
-			Contract.Requires<ArgumentNullException>(ownerDoc != null);
-			Contract.Requires<ArgumentNullException>(context != null);
-
-			XmlElement result;
-			string resourcePath = context.Path.GetModulePath(this.ModuleName, this.Path);
-			if (this.Type == ResourceType.Style)
-			{
-				result = ownerDoc.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("type", "text/css");
-				result.SetAttribute("rel", "stylesheet");
-				result.SetAttribute("href", context.Path.GetRelativeWebPath(resourcePath, true));
-			}
-			else
-			{
-				result = ownerDoc.CreateElement("xhtml:script", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("type", "text/javascript");
-				result.SetAttribute("language", "javascript");
-				result.SetAttribute("src", context.Path.GetRelativeWebPath(resourcePath, true));
-			}
-			
-			return result;
+			return context.Path.GetModulePath(this.ModuleName, this.Path);
 		}
 	}
 }

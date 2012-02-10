@@ -90,7 +90,7 @@
 		<xsl:variable name="validnodes" select="intl:if[sage:localeMatchesCondition($locale, @locale, $fallbacks/locale)]"/>
 		<xsl:choose>
 			<xsl:when test="count($validnodes) != 0">
-				<xsl:apply-templates select="$validnodes"/>
+				<xsl:apply-templates select="$validnodes[1]"/>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:apply-templates select="intl:else"/>
@@ -292,51 +292,31 @@
 
 	]]></msxsl:script>
 
-
-<xsl:template match="@locale">
+	<xsl:template match="sage:literal">
+		<xsl:apply-templates select="." mode="preserve"/>
+	</xsl:template>
 	
-</xsl:template>
+	<xsl:template match="*" mode="preserve">
+		<xsl:element name="{name()}" namespace="{namespace-uri()}">
+			<xsl:apply-templates select="@*" mode="preserve"/>
+			<xsl:apply-templates select="node()" mode="preserve"/>
+		</xsl:element>
+	</xsl:template>
 
-<xsl:template match="testNode">
+	<xsl:template match="@*" mode="preserve">
+		<xsl:attribute name="{name()}" namespace="{namespace-uri()}">
+			<xsl:value-of select="."/>
+		</xsl:attribute>
+	</xsl:template>
+
+	<xsl:template match="text()" mode="preserve">
+		<xsl:value-of select="."/>
+	</xsl:template>
 	
-</xsl:template>
+	<xsl:template match="comment()" mode="preserve">
+		<xsl:comment>
+			<xsl:value-of select="."/>
+		</xsl:comment>
+	</xsl:template>
 
-<xsl:template match="nonEnglishNode">
-	
-</xsl:template>
-</xsl:stylesheet><!-- Stylus Studio meta-information - (c) 2004-2009. Progress Software Corporation. All rights reserved.
-
-<metaInformation>
-	<scenarios>
-		<scenario default="yes" name="Internationalization" userelativepaths="yes" externalpreview="no" url="..\..\..\Sage.Test\Resources\TestSite\assets\default\configuration\tests\internationalization-test1.xml" htmlbaseurl="" outputurl=""
-		          processortype="msxmldotnet2" useresolver="no" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline=""
-		          postprocessadditionalpath="" postprocessgeneratedext="" validateoutput="no" validator="internal" customvalidator="">
-			<advancedProp name="sInitialMode" value=""/>
-			<advancedProp name="bXsltOneIsOkay" value="true"/>
-			<advancedProp name="bSchemaAware" value="true"/>
-			<advancedProp name="bXml11" value="false"/>
-			<advancedProp name="iValidation" value="0"/>
-			<advancedProp name="bExtensions" value="true"/>
-			<advancedProp name="iWhitespace" value="0"/>
-			<advancedProp name="sInitialTemplate" value=""/>
-			<advancedProp name="bTinyTree" value="true"/>
-			<advancedProp name="xsltVersion" value="2.0"/>
-			<advancedProp name="bWarnings" value="true"/>
-			<advancedProp name="bUseDTD" value="false"/>
-			<advancedProp name="iErrorHandling" value="fatal"/>
-		</scenario>
-	</scenarios>
-	<MapperMetaTag>
-		<MapperInfo srcSchemaPathIsRelative="yes" srcSchemaInterpretAsXML="no" destSchemaPath="" destSchemaRoot="" destSchemaPathIsRelative="yes" destSchemaInterpretAsXML="no">
-			<SourceSchema srcSchemaPath="..\..\..\Sage.Test\Resources\TestSite\assets\default\configuration\tests\internationalization-test1.xml" srcSchemaRoot="testcase" AssociatedInstance="" loaderFunction="document" loaderFunctionUsesURI="no"/>
-			<SourceSchema srcSchemaPath="test-dictionary.xml" srcSchemaRoot="intl:dictionary" AssociatedInstance="file:///g:/cycle99/projects/web/sage.git/src/Sage/Resources/Xslt/test-dictionary.xml" loaderFunction="document" loaderFunctionUsesURI="no"/>
-		</MapperInfo>
-		<MapperBlockPosition>
-			<template match="/"></template>
-			<template match="intl:localize"></template>
-		</MapperBlockPosition>
-		<TemplateContext></TemplateContext>
-		<MapperFilter side="source"></MapperFilter>
-	</MapperMetaTag>
-</metaInformation>
--->
+</xsl:stylesheet>
