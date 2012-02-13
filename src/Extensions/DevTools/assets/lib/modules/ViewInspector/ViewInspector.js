@@ -85,9 +85,16 @@ sage.dev.ViewInspector = function ViewInspector()
 			.bind("mouseup", onDocumentMouseUp)
 			.bind("mousemove", onDocumentMouseMove);
 
-		var initialUrl = viewInspector.attr("data-view");
-		if (initialUrl)
-			setViewInspectorState({ url: escape(initialUrl) });
+		var hashParam = $url.getHashParam(stateParamName);
+		if (!hashParam)
+		{
+			var initialUrl = viewInspector.attr("data-view");
+			var initialInspector = viewInspector.attr("data-inspector");
+			if (initialUrl)
+			{
+				setViewInspectorState({ url: escape(initialUrl), inspector: initialInspector });
+			}
+		}
 
 		setTimeout(updateLoop, tick);
 	};
@@ -111,8 +118,11 @@ sage.dev.ViewInspector = function ViewInspector()
 	function setHashInspectorState()
 	{
 		var state = getHashInspectorState();
-		var escapedState = escape(state);
-		$url.setHashParam(stateParamName, escapedState);
+		var currentState = $url.getHashParam(stateParamName);
+		var updatedState = escape(state);
+
+		if (currectState != updatedState)
+			$url.setHashParam(stateParamName, updatedState);
 	}
 
 	function clearViewInspectorState()
@@ -133,6 +143,9 @@ sage.dev.ViewInspector = function ViewInspector()
 
 			if (currentLayout == layoutType.DOUBLE && state.inspector == null)
 				state.inspector = currentState.inspector || defaultInspector;
+
+			else if (currentLayout == layoutType.SINGLE && state.inspector != null)
+				executeCommand("doubleFrame");
 		}
 
 		if (currentLayout == layoutType.DOUBLE)

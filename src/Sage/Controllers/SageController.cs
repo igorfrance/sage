@@ -200,13 +200,14 @@ namespace Sage.Controllers
 
 			if (input != null && input.ConfigNode != null)
 			{
-				if (input.Resources.Count != 0)
+				var inputResources = input.Resources;
+				if (inputResources.Count != 0)
 				{
 					XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
 
-					List<Resource> headResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Head).ToList();
-					List<Resource> bodyResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Body).ToList();
-					List<Resource> dataResources = input.Resources.Where(r => r.Location == Sage.ResourceLocation.Data).ToList();
+					List<Resource> headResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Head).ToList();
+					List<Resource> bodyResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Body).ToList();
+					List<Resource> dataResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Data).ToList();
 
 					foreach (Resource resource in dataResources)
 					{

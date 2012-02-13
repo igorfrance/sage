@@ -44,6 +44,8 @@ namespace Sage.Views
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewInput).FullName);
 		private readonly OrderedDictionary<string, ModuleConfiguration> modules = new OrderedDictionary<string, ModuleConfiguration>();
 		private readonly SageContext context;
+		private readonly List<Resource> autoResources = new List<Resource>();
+		private readonly List<Resource> moduleResources = new List<Resource>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewInput"/> class.
@@ -71,6 +73,15 @@ namespace Sage.Views
 			Contract.Requires<ArgumentException>(viewElement != null);
 
 			this.ConfigNode = (XmlElement) viewElement.CloneNode(true);
+
+			var config = context.ProjectConfiguration;
+			var currentPath = context.Request.Path;
+
+			var matchingLibs = new List<ResourceLibraryInfo>(
+				config.ResourceLibraries.Values.Where(l => l.MatchesPath(currentPath)));
+
+			foreach (ResourceLibraryInfo library in matchingLibs)
+				autoResources.AddRange(library.Resources);
 		}
 
 		public string Action { get; private set; }
@@ -79,32 +90,8 @@ namespace Sage.Views
 		{
 			get
 			{
-				var result = new List<Resource>();
-				var config = context.ProjectConfiguration;
-				var currentPath = context.Request.Path;
-
-				var matchingLibs = new List<ResourceLibraryInfo>(
-					config.ResourceLibraries.Values.Where(l => l.MatchesPath(currentPath)));
-
-				foreach (ResourceLibraryInfo library in matchingLibs)
-					result.AddRange(library.Resources);
-
-				foreach (ModuleConfiguration module in this.modules.Values)
-				{
-					foreach (string name in module.Libraries)
-					{
-						if (!config.ResourceLibraries.ContainsKey(name))
-						{
-							log.ErrorFormat("Module '{0}' is referencing non-existent library '{1}'", module.Name, name);
-							continue;
-						}
-
-						ResourceLibraryInfo library = config.ResourceLibraries[name];
-						result.AddRange(library.Resources);
-					}
-
-					result.AddRange(module.Resources);
-				}
+				var result = new List<Resource>(autoResources);
+				result.AddRange(moduleResources);
 
 				return result.Distinct().ToList();
 			}
@@ -143,19 +130,6 @@ namespace Sage.Views
 		/// </summary>
 		public Dictionary<string, List<ModuleResult>> ModuleResults { get; private set; }
 
-		public bool IsMissingData<T>()
-		{
-			ModuleConfiguration config = SageModuleFactory.Modules.Values.FirstOrDefault(c => c.Type == typeof(T));
-			if (config != null)
-			{
-				return 
-					this.ModuleResults.ContainsKey(config.Name) &&
-					this.ModuleResults[config.Name].Count(r => r.Status == ModuleResultStatus.NoData) == 0;
-			}
-
-			return true;
-		}
-
 		internal void AddModuleResult(string moduleTagName, ModuleResult result)
 		{
 			if (!this.ModuleResults.ContainsKey(moduleTagName))
@@ -166,6 +140,8 @@ namespace Sage.Views
 
 		private void AddModuleType(string moduleTagName)
 		{
+			var config = this.context.ProjectConfiguration;
+
 			this.ModuleResults.Add(moduleTagName, new List<ModuleResult>());
 			if (this.modules.ContainsKey(moduleTagName))
 				return;
@@ -173,9 +149,10 @@ namespace Sage.Views
 			// add the module and all its references to this object's module dictionary
 			ModuleConfiguration moduleConfig = SageModuleFactory.GetModuleConfiguration(moduleTagName);
 			this.modules.Add(moduleTagName, moduleConfig);
-			foreach (string name in moduleConfig.Dependencies.Where(n => !modules.ContainsKey(n)))
+
+			foreach (string name in moduleConfig.Dependencies.Where(n => !this.modules.ContainsKey(n)))
 			{
-				if (!context.ProjectConfiguration.Modules.ContainsKey(name))
+				if (!config.Modules.ContainsKey(name))
 				{
 					log.ErrorFormat("Module '{0}' referenced from module '{1}' was not found.",
 						name, moduleConfig.Name);
@@ -183,13 +160,13 @@ namespace Sage.Views
 					continue;
 				}
 
-				this.modules.Add(name, context.ProjectConfiguration.Modules[name]);
+				this.modules.Add(name, this.context.ProjectConfiguration.Modules[name]);
 			}
 
 			// reorder the modules by dependencies
-			List<ModuleConfiguration> temp = new List<ModuleConfiguration>(modules.Values);
+			List<ModuleConfiguration> temp = new List<ModuleConfiguration>(this.modules.Values);
 			int index = 0;
-			while (index < modules.Count)
+			while (index < this.modules.Count)
 			{
 				ModuleConfiguration module = temp[index];
 				bool changed = false;
@@ -200,23 +177,38 @@ namespace Sage.Views
 
 					ModuleConfiguration reference = context.ProjectConfiguration.Modules[name];
 					int other = temp.IndexOf(reference);
-					if (other > index)
-					{
-						temp[index] = reference;
-						temp[other] = module;
-						changed = true;
-						break;
-					}
+					if (other <= index)
+						continue;
+
+					temp[index] = reference;
+					temp[other] = module;
+					changed = true;
+					break;
 				}
 
 				if (!changed)
 					index++;
 			}
 
-			modules.Clear();
+			this.modules.Clear();
+			this.moduleResources.Clear();
+
 			foreach (ModuleConfiguration module in temp)
 			{
-				modules.Add(module.Name, module);
+				this.modules.Add(module.Name, module);
+				foreach (string name in module.Libraries)
+				{
+					if (!config.ResourceLibraries.ContainsKey(name))
+					{
+						log.ErrorFormat("Module '{0}' is referencing non-existent library '{1}'", module.Name, name);
+						continue;
+					}
+
+					ResourceLibraryInfo library = config.ResourceLibraries[name];
+					this.moduleResources.AddRange(library.Resources);
+				}
+
+				this.moduleResources.AddRange(module.Resources);
 			}
 		}
 	}

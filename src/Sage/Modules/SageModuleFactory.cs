@@ -37,7 +37,6 @@ namespace Sage.Modules
 	{
 		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SageModuleFactory).FullName);
 		private static IDictionary<string, ModuleConfiguration> moduleDictionary;
-		private static IDictionary<string, string> moduleTagNames;
 
 		public static IDictionary<string, ModuleConfiguration> Modules
 		{
@@ -55,11 +54,20 @@ namespace Sage.Modules
 								if (config.Type == null)
 									continue;
 
-								string typeName = config.Type.FullName;
-								if (temp.ContainsKey(typeName))
-									temp[typeName] = config;
-								else
-									temp.Add(typeName, config);
+								foreach (string tagName in config.TagNames)
+								{
+									if (temp.ContainsKey(tagName))
+									{
+										log.WarnFormat("Overwriting previous registration for tag name '{0}' ({1}) with {2}",
+											tagName, temp[tagName].Type.FullName, config.Type.FullName);
+
+										temp[tagName] = config;
+									}
+									else
+									{
+										temp.Add(tagName, config);
+									}
+								}
 							}
 
 							moduleDictionary = temp;
@@ -71,44 +79,16 @@ namespace Sage.Modules
 			}
 		}
 
-		internal static IDictionary<string, string> ModuleTagNames
-		{
-			get
-			{
-				lock (log)
-				{
-					if (moduleTagNames == null)
-					{
-						var temp = new Dictionary<string, string>();
-						lock (log)
-						{
-							foreach (string typeName in Modules.Keys)
-							{
-								ModuleConfiguration config = Modules[typeName];
-								foreach (string tagName in config.TagNames)
-								{
-									if (temp.ContainsKey(tagName))
-										temp[tagName] = typeName;
-									else
-										temp.Add(tagName, typeName);
-								}
-							}
-
-							moduleTagNames = temp;
-						}
-					}
-
-					return moduleTagNames;
-				}
-			}
-		}
-
 		public IModule CreateModule(XmlElement moduleNode)
 		{
 			if (moduleNode == null)
 				throw new ArgumentNullException("moduleNode");
 
-			Type moduleType = GetModuleType(moduleNode.LocalName);
+			string tagName = moduleNode.LocalName;
+			if (!Modules.ContainsKey(tagName))
+				return null;
+
+			Type moduleType = Modules[tagName].Type;
 
 			ConstructorInfo[] constructors = moduleType.GetConstructors();
 			IModule result = (IModule) constructors[0].Invoke(new object[] { });
@@ -120,20 +100,10 @@ namespace Sage.Modules
 			if (string.IsNullOrEmpty(tagName))
 				throw new ArgumentNullException("tagName");
 
-			if (!ModuleTagNames.ContainsKey(tagName))
+			if (!Modules.ContainsKey(tagName))
 				throw new ArgumentException(string.Format("The tag name '{0}' is not valid", tagName));
 
-			string configName = ModuleTagNames[tagName];
-			return Modules[configName];
-		}
-
-		private static Type GetModuleType(string tagName)
-		{
-			if (string.IsNullOrEmpty(tagName))
-				throw new ArgumentNullException("tagName");
-
-			ModuleConfiguration config = GetModuleConfiguration(tagName);
-			return config.Type;
+			return Modules[tagName];
 		}
 
 		private static Dictionary<string, ModuleConfiguration> DiscoverAvailableModules()
@@ -147,7 +117,10 @@ namespace Sage.Modules
 				foreach (var type in modules)
 				{
 					var config = new ModuleConfiguration(type);
-					types.Add(config.Type.FullName, config);
+					foreach (string tagName in config.TagNames)
+					{
+						types.Add(tagName, config);
+					}
 				}
 			}
 

@@ -52,7 +52,7 @@
 					<xs:sequence>
 						<xs:element name="library" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
-								<xs:choice>
+								<xs:choice minOccurs="0" maxOccurs="2">
 									<xs:element name="resources" minOccurs="1" maxOccurs="1">
 										<xs:complexType>
 											<xs:sequence>
@@ -64,9 +64,9 @@
 										<xs:complexType>
 											<xs:choice>
 												<xs:element name="always" minOccurs="0" maxOccurs="1"/>
-												<xs:element name="url" minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="path" minOccurs="0" maxOccurs="unbounded">
 													<xs:complexType mixed="true">
-														<!--<xs:attribute name="compare" type="compareType" use="optional" default="matches"/>-->
+														<xs:attribute name="compare" type="compareType" use="optional" default="wildcard"/>
 													</xs:complexType>
 												</xs:element>
 											</xs:choice>
@@ -403,9 +403,9 @@
 
 	<xs:simpleType name="compareType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="equals"/>
-			<xs:enumeration value="matches"/>
-			<xs:enumeration value="contains"/>
+			<xs:enumeration value="regex"/>
+			<xs:enumeration value="wildcard"/>
+			<xs:enumeration value="literal"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

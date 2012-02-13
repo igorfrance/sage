@@ -118,7 +118,7 @@ namespace Sage.Views
 						lock (log)
 						{
 							List<string> parts = new List<string>();
-							foreach (string name in SageModuleFactory.ModuleTagNames.Keys)
+							foreach (string name in SageModuleFactory.Modules.Keys)
 							{
 								parts.Add(string.Format(".//mod:{0}", name));
 							}

@@ -27,6 +27,13 @@ namespace Sage
 {
 	using System.Xml;
 
+	public enum CompareType
+	{
+		Wildcard,
+		Regexp,
+		Literal,
+	}
+
 	public enum ConfigurationType
 	{
 		System,
