@@ -200,6 +200,10 @@ namespace Sage.Controllers
 
 			if (input != null && input.ConfigNode != null)
 			{
+				responseNode
+					.AppendElement("sage:model", XmlNamespaces.SageNamespace)
+					.AppendChild(result.ImportNode(input.ConfigNode, true));
+
 				var inputResources = input.Resources;
 				if (inputResources.Count != 0)
 				{
@@ -227,10 +231,6 @@ namespace Sage.Controllers
 						foreach (Resource resource in bodyResources)
 							bodyNode.AppendChild(resource.ToXml(result, this.Context));
 					}
-
-					responseNode
-						.AppendElement("sage:model", XmlNamespaces.SageNamespace)
-						.AppendChild(result.ImportNode(input.ConfigNode, true));
 				}
 			}
 

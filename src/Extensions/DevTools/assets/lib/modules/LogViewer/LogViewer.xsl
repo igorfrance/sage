@@ -18,9 +18,9 @@
 			<div class="header">
 				<table width="100%" cellpadding="0" cellspacing="0">
 					<colgroup>
-						<col width="50"/>
-						<col width="50"/>
-						<col width="50"/>
+						<col width="60"/>
+						<col width="60"/>
+						<col width="60"/>
 						<col width="200"/>
 						<col/>
 					</colgroup>
@@ -42,9 +42,9 @@
 	<xsl:template match="mod:LogViewer/mod:data/mod:log">
 		<table width="100%" cellpadding="0" cellspacing="0" class="{@source}">
 			<colgroup>
-				<col width="50"/>
-				<col width="50"/>
-				<col width="50"/>
+				<col width="60"/>
+				<col width="60"/>
+				<col width="60"/>
 				<col width="200"/>
 				<col/>
 			</colgroup>
@@ -69,13 +69,13 @@
 					<xsl:value-of select="@duration"/>
 				</div>
 			</td>
-			<td class="logger tooltip" title="{@logger}">
-				<div>
+			<td class="logger">
+				<div class="tooltip" data-title="{@logger}" data-obscureOnly="true">
 					<xsl:value-of select="@logger"/>
 				</div>
 			</td>
-			<td class="message tooltip" title="{@message}" height="14">
-				<div>
+			<td class="message">
+				<div class="tooltip" data-title="{@message}" data-obscureOnly="true">
 					<xsl:value-of select="@message"/>
 				</div>
 			</td>

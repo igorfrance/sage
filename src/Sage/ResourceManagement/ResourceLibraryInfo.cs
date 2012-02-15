@@ -41,10 +41,14 @@ namespace Sage.ResourceManagement
 
 			this.Name = configElem.GetAttribute("name");
 			this.Resources = new List<Resource>();
+			this.Dependencies = new List<string>();
 			this.IncludePaths = new Dictionary<string, PathComparer>();
 
 			foreach (XmlElement resourceElem in configElem.SelectNodes("p:resources/p:resource", nm))
 				this.Resources.Add(new Resource(resourceElem));
+
+			foreach (XmlElement dependencyElement in configElem.SelectNodes("p:dependencies/p:library", nm))
+				this.Dependencies.Add(dependencyElement.GetAttribute("ref"));
 
 			foreach (XmlElement childElem in configElem.SelectNodes("p:include/*", nm))
 			{
@@ -90,6 +94,8 @@ namespace Sage.ResourceManagement
 		public bool IncludeAlways { get; private set; }
 
 		public List<Resource> Resources { get; private set; }
+
+		public List<string> Dependencies { get; private set; }
 
 		public Dictionary<string, PathComparer> IncludePaths { get; private set; }
 

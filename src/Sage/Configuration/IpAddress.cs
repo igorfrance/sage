@@ -82,20 +82,12 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the 32bit integer version of the lower bound IP address.
 		/// </summary>
-		public uint Address
-		{
-			get;
-			private set;
-		}
+		public uint Address { get;  set; }
 
 		/// <summary>
 		/// Gets the 32bit integer version of the higher bound IP address. For single IP addresses this value is zero (0).
 		/// </summary>
-		public uint To
-		{
-			get;
-			private set;
-		}
+		public uint To { get;  set; }
 
 		/// <summary>
 		/// Converts the specified <paramref name="address"/> from string to a 32bit integer.

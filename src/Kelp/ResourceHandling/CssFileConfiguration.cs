@@ -59,11 +59,7 @@ namespace Kelp.ResourceHandling
 			this.Parse(configurationElement, typeof(CssSettings), this.Settings);
 		}
 
-		public CssSettings Settings
-		{
-			get;
-			private set;
-		}
+		public CssSettings Settings { get;  set; }
 
 		protected override List<string> BoolProps
 		{

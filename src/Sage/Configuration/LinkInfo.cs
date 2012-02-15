@@ -52,5 +52,10 @@ namespace Sage.Configuration
 		/// Gets the URL of this link (for non-dynamic links).
 		/// </summary>
 		public string Url { get; private set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1})", this.Name, this.Url);
+		}
 	}
 }

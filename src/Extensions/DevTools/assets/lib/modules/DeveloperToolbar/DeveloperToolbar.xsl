@@ -12,12 +12,12 @@
 
 			<div class="background"></div>
 			<div class="content">
-				<div class="icon"></div>
+				<div class="icon tooltip" title="Unknown status"></div>
 				<div class="status">
-					<span class="text">
+					<span class="text tooltip" data-hideOn="click, blur" data-useFades="true">
 						<label></label>
 					</span>
-					<span class="time">
+					<span class="time tooltip">
 						<label></label>
 					</span>
 				</div>

@@ -43,7 +43,6 @@ namespace Sage.Views
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(MsXsltTransform).FullName);
 		private readonly XslCompiledTransform processor;
-		private readonly XmlWriterSettings settings;
 
 		public MsXsltTransform(SageContext context, IXPathNavigable stylesheetMarkup)
 		{
@@ -54,16 +53,6 @@ namespace Sage.Views
 
 			this.processor = new XslCompiledTransform();
 			this.processor.Load(stylesheetMarkup, XsltSettings.TrustedXslt, resolver);
-
-			this.settings = new XmlWriterSettings
-			{
-				Encoding = this.processor.OutputSettings.Encoding,
-				Indent = this.processor.OutputSettings.Indent,
-				CloseOutput = this.processor.OutputSettings.CloseOutput,
-				NewLineChars = "\r\n",
-				NewLineHandling = NewLineHandling.Replace,
-			};
-
 			this.dependencies.AddRange(resolver.Dependencies);
 		}
 
@@ -71,7 +60,7 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.settings;
+				return this.processor.OutputSettings;
 			}
 		}
 
@@ -82,10 +71,6 @@ namespace Sage.Views
 
 		public override void Transform(XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{
-			Contract.Requires<ArgumentNullException>(inputXml != null);
-			Contract.Requires<ArgumentNullException>(outputWriter != null);
-			Contract.Requires<ArgumentNullException>(context != null);
-
 			Stopwatch sw = new Stopwatch();
 			long milliseconds = sw.TimeMilliseconds(delegate
 			{
@@ -96,14 +81,30 @@ namespace Sage.Views
 				UrlResolver resolver = new UrlResolver(context);
 				XsltArgumentList transformArgs = this.GetArguments(arguments);
 
-				processor.Transform(reader, transformArgs, output, resolver);
+				try
+				{
+					processor.Transform(reader, transformArgs, output, resolver);
 
-				reader.Close();
-				output.Close();
-				xmlWriter.Close();
+					reader.Close();
+					output.Close();
+					xmlWriter.Close();
+				}
+				catch (XmlException ex)
+				{
+					ProblemType problemType = DetectProblemType(ex);
+					throw new SageHelpException(problemType, ex);
+				}
 			});
 
 			log.DebugFormat("Transform completed in {0}ms", milliseconds);
+		}
+
+		private ProblemType DetectProblemType(Exception ex)
+		{
+			if (ex.Message.Contains("does not have a root element"))
+				return ProblemType.TransformResultMissingRootElement;
+
+			return ProblemType.TransformError;
 		}
 	}
 }

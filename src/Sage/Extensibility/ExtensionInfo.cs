@@ -310,6 +310,11 @@ namespace Sage.Extensibility
 			return null;
 		}
 
+		public override string ToString()
+		{
+			return string.Format("{0}", this.Name);
+		}
+
 		private SageContext GetExtensionContext()
 		{
 			return new SageContext(context, this.Config);

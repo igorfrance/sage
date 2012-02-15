@@ -124,29 +124,17 @@ namespace Sage.Configuration
 		/// <value>
 		/// <c>true</c> if the resources have been pre-generated; otherwise, <c>false</c>.
 		/// </value>
-		public bool AreResourcesPreGenerated
-		{
-			get;
-			private set;
-		}
+		public bool AreResourcesPreGenerated { get;  set; }
 
 		/// <summary>
 		/// Gets the default category to fall back to if not specific category has been specified.
 		/// </summary>
-		public string DefaultCategory
-		{
-			get;
-			private set;
-		}
+		public string DefaultCategory { get;  set; }
 
 		/// <summary>
 		/// Gets the default locale to fall back to if not specific locale has been specified.
 		/// </summary>
-		public string DefaultLocale
-		{
-			get;
-			private set;
-		}
+		public string DefaultLocale { get;  set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the resources (script and styles) should be merged.
@@ -154,11 +142,7 @@ namespace Sage.Configuration
 		/// <value>
 		/// <c>true</c> if the resources should be merged; otherwise, <c>false</c>.
 		/// </value>
-		public bool MergeResources
-		{
-			get;
-			private set;
-		}
+		public bool MergeResources { get;  set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the current project runs in multi-category mode.
@@ -166,56 +150,32 @@ namespace Sage.Configuration
 		/// <value>
 		/// <c>true</c> if the current project runs in multi-category mode; otherwise, <c>false</c>.
 		/// </value>
-		public bool MultiCategory
-		{
-			get;
-			private set;
-		}
+		public bool MultiCategory { get;  set; }
 
 		/// <summary>
 		/// Gets the path templates for various system-required files.
 		/// </summary>
-		public PathTemplates PathTemplates
-		{
-			get;
-			private set;
-		}
+		public PathTemplates PathTemplates { get;  set; }
 
 		/// <summary>
 		/// Gets the routing configuration for the current project.
 		/// </summary>
-		public RoutingConfiguration Routing
-		{
-			get;
-			private set;
-		}
+		public RoutingConfiguration Routing { get;  set; }
 
 		/// <summary>
 		/// Gets the resource path configuration variable; this is the base path for all resources.
 		/// </summary>
-		public string AssetPath
-		{
-			get;
-			private set;
-		}
+		public string AssetPath { get;  set; }
 
 		/// <summary>
 		/// Gets the name of the shared category.
 		/// </summary>
-		public string SharedCategory
-		{
-			get;
-			private set;
-		}
+		public string SharedCategory { get;  set; }
 
 		/// <summary>
 		/// Gets the base pattern for constructing URLs.
 		/// </summary>
-		public string UrlRewritePrefix
-		{
-			get;
-			private set;
-		}
+		public string UrlRewritePrefix { get;  set; }
 
 		/// <summary>
 		/// Gets a value indicating whether URL rewriting is on.
@@ -236,17 +196,9 @@ namespace Sage.Configuration
 		/// Gets a value indicating whether the current project has been configured for debugging.
 		/// </summary>
 		/// <value><c>true</c> if debugging is on; otherwise, <c>false</c>.</value>
-		public bool IsDebugMode
-		{
-			get;
-			private set;
-		}
+		public bool IsDebugMode { get;  set; }
 
-		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries { get;  set; }
 
 		/// <summary>
 		/// Gets the list of locales available within categories.
@@ -256,60 +208,36 @@ namespace Sage.Configuration
 		/// comma-separated lists of locale identifiers.
 		/// </remarks>
 		/// <see cref="CategoryInfo"/>
-		public Dictionary<string, CategoryInfo> Categories
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, CategoryInfo> Categories { get;  set; }
 
-		public PackageConfiguration Package { get; private set; }
+		public ExtensionPackageConfiguration Package { get; private set; }
 
 		/// <summary>
 		/// Gets the list of IP addresses or address ranges to be considered as developers.
 		/// </summary>
-		public List<IpAddress> DeveloperIps
-		{
-			get;
-			private set;
-		}
+		public List<IpAddress> DeveloperIps { get;  set; }
 
 		/// <summary>
 		/// Gets the <see cref="NameValueCollection"/> of name/pattern link values as parsed from the configuration node.
 		/// </summary>
-		public Dictionary<string, LinkInfo> Links
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, LinkInfo> Links { get;  set; }
 
 		/// <summary>
 		/// Gets the dictionary of defined locales.
 		/// </summary>
 		/// <see cref="LocaleInfo"/>
-		public Dictionary<string, LocaleInfo> Locales
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, LocaleInfo> Locales { get;  set; }
 
 		/// <summary>
 		/// Gets the collection of global, shared meta views as defined in the configuration file.
 		/// </summary>
 		/// <see cref="MetaViewInfo"/>
-		public MetaViewDictionary MetaViews
-		{
-			get;
-			private set;
-		}
+		public MetaViewDictionary MetaViews { get;  set; }
 
 		/// <summary>
 		/// Gets the dictionary that defines how module names map to module classes that implement them.
 		/// </summary>
-		public Dictionary<string, ModuleConfiguration> Modules
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, ModuleConfiguration> Modules { get;  set; }
 
 		public static ProjectConfiguration Create(string configPath, string parentConfigPath = null)
 		{
@@ -369,6 +297,11 @@ namespace Sage.Configuration
 				result = info.IsLatinCharset;
 
 			return result;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1})", this.Name, this.Type);
 		}
 
 		internal static void Initialize()
@@ -545,7 +478,7 @@ namespace Sage.Configuration
 				this.DeveloperIps.Add(address);
 			}
 
-			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));
+			this.Package = new ExtensionPackageConfiguration(configNode.SelectSingleNode("p:package", nm));
 		}
 
 		internal void RegisterExtension(ProjectConfiguration extensionConfig)

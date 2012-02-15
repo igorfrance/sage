@@ -82,6 +82,11 @@ namespace Sage.Configuration
 		/// </summary>
 		public XsltTransform Processor { get; private set; }
 
+		public override string ToString()
+		{
+			return string.Format("{0} ({1}) ({2}) ({3})", this.Name, this.ContentType, this.ViewPath, this.TypeName);
+		}
+
 		internal MetaViewInfo Load(SageContext context)
 		{
 			if (!string.IsNullOrWhiteSpace(this.ViewPath))

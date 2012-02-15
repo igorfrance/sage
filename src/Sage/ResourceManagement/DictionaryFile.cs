@@ -118,20 +118,12 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the locale of this <see cref="DictionaryFile"/>.
 		/// </summary>
-		public string Locale
-		{
-			get;
-			private set;
-		}
+		public string Locale { get;  set; }
 
 		/// <summary>
 		/// Gets the dictionary of phrases from the final merged dictionary, with all the fallbacks resolved.
 		/// </summary>
-		public Dictionary<string, string> Items
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, string> Items { get;  set; }
 
 		/// <summary>
 		/// Gets the <see cref="XmlDocument"/> that contains all translation phrase combined by priority.

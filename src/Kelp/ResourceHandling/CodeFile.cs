@@ -186,10 +186,7 @@ namespace Kelp.ResourceHandling
 		/// Gets or sets the delegate method that handles resolving (mapping) or relative paths.
 		/// </summary>
 		public Func<string, string> MapPath
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Gets the recursive list of files this file includes either directly or through it's includes.
@@ -316,18 +313,11 @@ namespace Kelp.ResourceHandling
 		/// Gets or sets the content-type of this code file.
 		/// </summary>
 		internal string ContentType
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		internal abstract string ConfigurationSettings { get; }
 
-		internal string CachedConfigurationSettings
-		{
-			get;
-			private set;
-		}
+		internal string CachedConfigurationSettings { get;  set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the cached <see cref="CodeFile"/> needs to be refreshed.

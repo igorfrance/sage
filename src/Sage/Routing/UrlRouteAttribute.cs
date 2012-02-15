@@ -45,22 +45,35 @@ namespace Sage.Routing
 	public class UrlRouteAttribute : Attribute
 	{
 		/// <summary>
-		/// Optional name of the route.  Route names must be unique per route.
+		/// Gets or sets the name of the route.
 		/// </summary>
+		/// <remarks>
+		/// This value is optional, but route names must be unique.
+		/// </remarks>
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Path of the URL route.  This is relative to the root of the web site.
-		/// Do not append a "/" prefix.  Specify empty string for the root page.
+		/// Gets or sets the path of the URL route.
 		/// </summary>
+		/// <remarks>
+		/// This is relative to the root of the web site.
+		/// Do not append a "/" prefix. Specify empty string for the root page.
+		/// </remarks>
 		public string Path { get; set; }
 
 		/// <summary>
-		/// Optional order in which to add the route (default is 0).  Routes
-		/// with lower order values will be added before those with higher.
+		/// Gets or sets the order in which to add the route (default is 0).
+		/// </summary>
+		/// <remarks>
+		/// Routes with lower order values will be added before those with higher.
 		/// Routes that have the same order value will be added in undefined
 		/// order with respect to each other.
-		/// </summary>
+		/// </remarks>
 		public int Order { get; set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1})", this.Name, this.Path);
+		}
 	}
 }

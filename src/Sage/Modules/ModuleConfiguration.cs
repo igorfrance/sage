@@ -154,11 +154,7 @@ namespace Sage.Modules
 			}
 		}
 
-		public List<string> Libraries
-		{
-			get;
-			private set;
-		}
+		public List<string> Libraries { get;  set; }
 
 		public string Name { get; private set; }
 
@@ -187,6 +183,11 @@ namespace Sage.Modules
 		public IList<string> Stylesheets { get; private set; }
 
 		public IList<string> Dependencies { get; private set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1}) ({2})", this.Name, string.Join(",", this.TagNames), this.Type);
+		}
 
 		[SageResourceProvider("modules.xslt")]
 		internal static CacheableXmlDocument GetModulesXslt(SageContext context, string resourceUri)

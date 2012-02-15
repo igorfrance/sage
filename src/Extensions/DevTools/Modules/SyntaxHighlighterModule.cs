@@ -53,9 +53,6 @@ namespace Sage.DevTools.Modules
 
 		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
 		{
-			Contract.Requires<ArgumentNullException>(moduleElement != null);
-			Contract.Requires<ArgumentNullException>(configuration != null);
-
 			SageContext context = configuration.Context;
 			Initialize(context);
 

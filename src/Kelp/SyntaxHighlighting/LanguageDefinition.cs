@@ -94,5 +94,10 @@ namespace Kelp.SyntaxHighlighting
 		/// </summary>
 		/// <value>The groups of expressions to use with this language.</value>
 		public List<ExpressionGroup> Expressions { get; protected set; }
+
+		public override string ToString()
+		{
+			return this.Name;
+		}
 	}
 }

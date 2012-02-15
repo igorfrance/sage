@@ -77,11 +77,7 @@ namespace Kelp.ResourceHandling
 			}
 		}
 
-		internal string TemporaryDirectory
-		{
-			get;
-			private set;
-		}
+		internal string TemporaryDirectory { get;  set; }
 
 		internal ScriptFileConfiguration Script { get; private set; }
 

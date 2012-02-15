@@ -1,9 +1,10 @@
 ﻿Type.registerNamespace("sage.dev");
 
-sage.dev.Toolbar = new function ()
+sage.dev.Toolbar = new function Toolbar()
 {
 	var $toolbar, $icon, $text, $time, $commands, $frame, $iframe, $logbody;
 	var hideTimeout = 100, hideTimeoutId = null;
+	var tooltip;
 	var parameters = { basehref: "", thread: "0", url: escape(document.location) };
 	var status = { log: [], errors: 0, warnings: 0, clientTime: 0, serverTime: 0 };
 
@@ -24,6 +25,8 @@ sage.dev.Toolbar = new function ()
 			.append("<div id='developer-frame'><iframe frameborder='no'></iframe><div class='close' title='Close'></div></div>")
 			.find("#developer-frame");
 
+		tooltip = $ctrl.getControl($text[0]);
+
 		$iframe = $frame.find("iframe");
 
 		parameters.thread = $toolbar.attr("data-thread");
@@ -42,67 +45,137 @@ sage.dev.Toolbar = new function ()
 		loadLogHtml();
 	}
 
-	function setStatusIcon(status)
+	function setStatusClass(status)
 	{
 		$icon.removeClass("ok error warn loading").addClass(status);
 	}
 
 	function updateStatus()
 	{
-		var statusName = "", statusText = "";
+		var statusClass = "", statusText = "", errorText;
+
 		if (status.errors)
 		{
-			statusName = "error";
+			statusClass = "error";
 			statusText = String.format("{0} {1}.", status.errors, status.errors == 1 ? "error" : "errors");
+			errorText = Enumerable.from(status.log)
+				.where("$.severity == 'ERROR'").select("\"<div class='error'>\" + $.message + \"</div>\"").toArray().join(String.EMPTY);
 		}
 		else if (status.warnings)
 		{
-			statusName = "warning";
+			statusClass = "warning";
 			statusText = String.format("{0} {1}.", status.warnings, status.warnings == 1 ? "warning" : "warnings");
+			errorText = Enumerable.from(status.log)
+				.where("$.severity == 'WARN'").select("\"<div class='error'>\" + $.message + \"</div>\"").toArray().join(String.EMPTY);
 		}
 		else if (status.log.length)
 		{
-			statusName = "ok";
+			statusClass = "ok";
 			statusText = "OK.";
+			errorText = "Ok";
 		}
+
+		// required for chrome, don't remove without verifying that it still works correctly
+		//$toolbar.css({ width: $icon.outerWidth() });
 
 		if (statusText)
 		{
 			$text.find("label").text(statusText);
-			if (status.errors + status.warnings != 0)
-				$text.animate({ width: $text.prop("scrollWidth") }, 50);
+			$icon.attr("title", errorText);
+			$text.attr("title", errorText);
+			if (tooltip && (status.errors + status.warnings != 0))
+			{
+				$text.animate({ width: $text.prop("scrollWidth") }, 50, function onExpandComplete()
+				{
+					tooltip.show();
+				});
+			}
 		}
 
 		if (status.serverTime || status.clientTime)
 		{
-			$time.find("label").text("{0}ms / {1}ms".format(status.serverTime, status.clientTime));
+			$time
+				.find("label")
+				.text("{0}ms / {1}ms".format(status.serverTime, status.clientTime));
+			$time
+				.attr("title", "Server-side request: {0}ms, Client-side initialization: {1}ms".format(status.serverTime, status.clientTime));
 		}
 
-		setStatusIcon(statusName);
+		setStatusClass(statusClass);
 	}
 
 	function loadLogHtml()
 	{
-		setStatusIcon("loading");
+		setStatusClass("loading");
 		$iframe.attr("src", expandUrl(logUrl));
+	}
+
+	function disableTooltip()
+	{
+		if (tooltip)
+		{
+			tooltip.hide();
+			tooltip.setSettingsValue("hideOn", "mouseout");
+			tooltip.setSettingsValue("useFades", false);
+		}
+
+		$toolbar.find(".tooltip").addClass(".tooltip-suspend");
+	}
+
+	function enableTooltip()
+	{
+		$toolbar.find(".tooltip").removeClass(".tooltip-suspend");
 	}
 
 	function expandToolbar()
 	{
-		if (status.errors + status.warnings == 0)
-			$text.animate({ width: $text.prop("scrollWidth") }, 50);
+		disableTooltip();
 
-		$time.animate({ width: $time.prop("scrollWidth") }, 50);
-		$commands.animate({ width: $commands.prop("scrollWidth") }, 50);
+		var totalWidth = getTotalToolbarWidth();
+		$toolbar.animate({ width: totalWidth }, 50, enableTooltip);
+	}
+
+	function getTotalToolbarWidth()
+	{
+		var content = $toolbar.find(".content");
+		var totalWidth =
+			$icon.prop("offsetWidth") +
+			$text.prop("scrollWidth") +
+			$time.prop("scrollWidth") +
+			(parseInt(content.css("paddingLeft")) || 0) +
+			(parseInt(content.css("paddingRight")) || 0) +
+			getTotalCommandsWidth();
+
+		return totalWidth;
+	}
+
+	function getTotalCommandsWidth()
+	{
+		var totalWidth = 0;
+		var groups = $commands.find(".group");
+		for (var i = 0; i < groups.length; i++)
+		{
+			var g = groups.eq(i);
+			totalWidth += g.prop("scrollWidth");
+			totalWidth += parseInt(g.css("marginLeft")) || 0;
+			totalWidth += parseInt(g.css("marginRight")) || 0;
+		}
+
+		return totalWidth;
 	}
 
 	function contractToolbar()
 	{
-		if (status.errors + status.warnings == 0)
-			$text.animate({ width: 0 }, 50);
+		var content = $toolbar.find(".content");
+		var targetWidth =
+			$icon.prop("offsetWidth") +
+			(parseInt(content.css("paddingLeft")) || 0) +
+			(parseInt(content.css("paddingRight")) || 0);
 
-		$time.animate({ width: 0 }, 50);
-		$commands.animate({ width: 0 }, 50);
+		if ((status.errors + status.warnings) != 0)
+			targetWidth += $text.prop("scrollWidth");
+
+		$toolbar.animate({ width: targetWidth }, 50, enableTooltip);
 	}
 
 	function expandUrl(template)
@@ -179,7 +252,7 @@ sage.dev.Toolbar = new function ()
 
 	function onDeveloperFrameLoaded()
 	{
-		setStatusIcon(String.EMPTY);
+		setStatusClass(String.EMPTY);
 
 		// this works because we are on the same domain
 		$logbody = jQuery($iframe[0].contentWindow.document.body);
@@ -208,7 +281,7 @@ sage.dev.Toolbar = new function ()
 		if (entry != null && entry.message.match(/\b(\d+)ms\b/))
 			status.serverTime = RegExp.$1;
 
-		var maxHeight = $(document.body).prop("scrollHeight") / 2;
+		var maxHeight = $(document.body).prop("offsetHeight") / 2;
 		var targetHeight = 0;
 
 		$frame.css({ display: "block", visibility: "hidden" });
@@ -217,7 +290,7 @@ sage.dev.Toolbar = new function ()
 		for (var i = 0; i < children.length; i++)
 			targetHeight += children.eq(i).prop("scrollHeight");
 
-		$frame.css({ display: "none", visibility: "visible", height: targetHeight });
+		$frame.css({ display: "none", visibility: "visible", height: Math.min(maxHeight, targetHeight) });
 
 		updateStatus();
 	}

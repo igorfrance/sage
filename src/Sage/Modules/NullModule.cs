@@ -38,8 +38,6 @@ namespace Sage.Modules
 
 		public ModuleResult ProcessRequest(XmlElement moduleNode, ViewConfiguration configuration)
 		{
-			Contract.Requires<ArgumentNullException>(moduleNode != null);
-
 			log.WarnFormat("The module element '{0}' maps to '{1}'.",
 				moduleNode.Name, typeof(NullModule).Name);
 

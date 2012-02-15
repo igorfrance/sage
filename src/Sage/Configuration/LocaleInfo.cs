@@ -88,11 +88,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the name of this locale.
 		/// </summary>
-		public string Name
-		{
-			get;
-			private set;
-		}
+		public string Name { get; private set; }
 
 		/// <summary>
 		/// Gets the <see cref="CultureInfo"/> associated with this locale.
@@ -123,11 +119,7 @@ namespace Sage.Configuration
 		/// A locale can have one or more other locales it can fall back to in case a language phrase is not available in
 		/// that locale.
 		/// </remarks>
-		public List<string> DictionaryNames
-		{
-			get;
-			private set;
-		}
+		public List<string> DictionaryNames { get; private set; }
 
 		/// <summary>
 		/// Gets the list of fallback resource names.
@@ -136,11 +128,7 @@ namespace Sage.Configuration
 		/// A locale can have one or more other locales it can fall back to in case a resource is not available in
 		/// that locale.
 		/// </remarks>
-		public List<string> ResourceNames
-		{
-			get;
-			private set;
-		}
+		public List<string> ResourceNames { get; private set; }
 
 		/// <summary>
 		/// Determines whether this locale is a subset of the specified <paramref name="locale"/>.
@@ -226,6 +214,13 @@ namespace Sage.Configuration
 			}
 
 			return FormatAsShortDate(date);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1}) ({2})", this.Name,
+				string.Join(",", this.DictionaryNames),
+				string.Join(",", this.ResourceNames));
 		}
 	}
 }

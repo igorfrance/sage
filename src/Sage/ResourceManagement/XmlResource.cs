@@ -81,35 +81,19 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the <see cref="ResourceName"/> of this resource.
 		/// </summary>
-		public ResourceName Name
-		{
-			get;
-			private set;
-		}
+		public ResourceName Name { get;  set; }
 
 		/// <summary>
 		/// Gets the full file path of this resource.
 		/// </summary>
-		public string FilePath
-		{
-			get;
-			private set;
-		}
+		public string FilePath { get;  set; }
 
 		/// <summary>
 		/// The directory in which globalized files will be saved.
 		/// </summary>
-		public string TargetDirectory
-		{
-			get;
-			private set;
-		}
+		public string TargetDirectory { get;  set; }
 
-		public string SourceDirectory
-		{
-			get;
-			private set;
-		}
+		public string SourceDirectory { get;  set; }
 
 		/// <summary>
 		/// Gets the last modified date of this resource's main file.

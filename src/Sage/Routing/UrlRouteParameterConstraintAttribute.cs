@@ -34,13 +34,18 @@ namespace Sage.Routing
 	public class UrlRouteParameterConstraintAttribute : Attribute
 	{
 		/// <summary>
-		/// Name of the route parameter on which to apply the constraint.
+		/// Gets or sets the name of the route parameter on which to apply the constraint.
 		/// </summary>
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Regular expression constraint to test on the route parameter value in the URL.
+		/// Gets or sets the regular expression constraint to test on the route parameter value in the URL.
 		/// </summary>
 		public string Expression { get; set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1})", this.Name, this.Expression);
+		}
 	}
 }

@@ -45,11 +45,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the default controller namespace for routes that don't define the namespace explicitly.
 		/// </summary>
-		public string DefaultNamespace
-		{
-			get;
-			private set;
-		}
+		public string DefaultNamespace { get;  set; }
 
 		/// <summary>
 		/// Parses the routing configuration from the specified configuration element.

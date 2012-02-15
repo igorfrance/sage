@@ -50,20 +50,12 @@ namespace Kelp.Imaging
 		/// <summary>
 		/// Gets the minimum value in the range.
 		/// </summary>
-		public int Min
-		{
-			get;
-			private set;
-		}
+		public int Min { get;  set; }
 
 		/// <summary>
 		/// Gets the maximum value in the range.
 		/// </summary>
-		public int Max
-		{
-			get;
-			private set;
-		}
+		public int Max { get;  set; }
 
 		/// <summary>
 		/// Returns the specified <paramref name="value"/> if it falls in range, otherwise either tha 
@@ -115,19 +107,11 @@ namespace Kelp.Imaging
 		/// <summary>
 		/// Gets the minimum value in the range.
 		/// </summary>
-		public double Min
-		{ 
-			get; 
-			private set;
-		}
+		public double Min { get; private set; }
 
 		/// <summary>
 		/// Gets the maximum value in the range.
 		/// </summary>
-		public double Max
-		{
-			get;
-			private set;
-		}
+		public double Max { get;  set; }
 	}
 }

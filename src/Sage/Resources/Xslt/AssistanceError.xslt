@@ -3,6 +3,7 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:param name="problemType" select="0"/>
+	<xsl:param name="path"/>
 	
 	<xsl:include href="error.xslt"/>
 
@@ -74,10 +75,20 @@
 					Message:
 					<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
 				</div>
-				<xsl:if test="@sourceuri">
+				<xsl:if test="string-length(@sourceuri) or $path">
 					<div class="problem-file">
 						File:
-						<span class="problem-source"><xsl:value-of select="@sourceuri"/>.</span>
+						<span class="problem-source">
+							<xsl:choose>
+								<xsl:when test="$path">
+									<xsl:value-of select="$path"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="@sourceuri"/>
+								</xsl:otherwise>
+							</xsl:choose>
+							<xsl:text>.</xsl:text>
+						</span>
 					</div>
 				</xsl:if>
 				<div class="problem-description">
@@ -117,6 +128,15 @@
 			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
 				At least one category needs to be configured
 			</xsl:when>
+			<xsl:when test="$problemType = 'TransformResultMissingRootElement'">
+				Transform result missing
+			</xsl:when>
+			<xsl:when test="$problemType = 'TransformError'">
+				Transform error
+			</xsl:when>
+			<xsl:when test="$problemType = 'XsltLoadError'">
+				XSLT load error
+			</xsl:when>
 			<xsl:otherwise>An error was caught</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -124,7 +144,8 @@
 	<xsl:template match="/exception" mode="problem-description">
 		<xsl:choose>
 			<xsl:when test="$problemType = 'InvalidMarkup' or $problemType = 'InvalidHtmlMarkup'">
-				Sage speaks XML, and therefore any XML needs to be valid. <br/>				HTML templates must parse as XHTML in order for them to use usable.
+				Sage speaks XML, and therefore any XML needs to be valid. <br/>
+				HTML templates must parse as XHTML in order for them to use usable.
 			</xsl:when>
 			<xsl:when test="$problemType = 'MissingNamespaceDeclaration'">
 				One or more elements in the XML document are using a qualified name without specifying the name's 
@@ -140,6 +161,15 @@
 			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
 				The current project is configured as multicategory <code><![CDATA[<project .. multiCategory="true">...</project>]]></code>,
 				but there are no categories defined.
+			</xsl:when>
+			<xsl:when test="$problemType = 'TransformResultMissingRootElement'">
+				The XSLT transform produced no result.
+			</xsl:when>
+			<xsl:when test="$problemType = 'TransformError'">
+				An error happened during the XSLT transformation. 
+			</xsl:when>
+			<xsl:when test="$problemType = 'XsltLoadError'">
+				An error happened during loading of the XSLT stylesheet.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -212,6 +242,13 @@
 		locales="ae,ar,at,au,be,br,ca,cf,ch,cn,com,de,dk,es,fi,fr,gr,hk,hu,id,in,it,jp,kr,la,my,nl,no,nz,ph,pl,pt,ru,se,sg,th,tw,uk,us,vn,za"
 		/>
 </categories>]]></code>
+			</xsl:when>
+			<xsl:when test="$problemType = 'TransformResultMissingRootElement'">
+				Make sure that the XSLT you use is contains the necessary template to process the 
+				supplied input document.
+			</xsl:when>
+			<xsl:when test="$problemType = 'TransformError' or $problemType = 'XsltLoadError'">
+				Read the message and try to resolve the problem.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>

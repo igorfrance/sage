@@ -81,11 +81,7 @@ namespace Kelp.ResourceHandling
 		/// <summary>
 		/// Gets the delegate method that handles resolving (mapping) or relative paths.
 		/// </summary>
-		public Func<string, string> MapPath
-		{
-			get;
-			private set;
-		}
+		public Func<string, string> MapPath { get;  set; }
 
 		/// <summary>
 		/// Gets the query filter associated with this image.
@@ -178,10 +174,7 @@ namespace Kelp.ResourceHandling
 		/// Gets or sets a value indicating whether to use cache with this image file instance
 		/// </summary>
 		public bool UseCache
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Gets the codec info to use when saving this image file instance.

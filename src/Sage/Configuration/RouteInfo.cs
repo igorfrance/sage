@@ -67,64 +67,41 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the name of this route.
 		/// </summary>
-		public string Name
-		{
-			get;
-			private set;
-		}
+		public string Name { get;  set; }
 
 		/// <summary>
 		/// Gets the namespace of this controller that handles this route.
 		/// </summary>
-		public string Namespace
-		{
-			get;
-			private set;
-		}
+		public string Namespace { get;  set; }
 
 		/// <summary>
 		/// Gets the path of this route.
 		/// </summary>
-		public string Path
-		{
-			get;
-			private set;
-		}
+		public string Path { get;  set; }
 
 		/// <summary>
 		/// Gets the name of the controller that handles this route.
 		/// </summary>
-		public string Controller
-		{
-			get;
-			private set;
-		}
+		public string Controller { get;  set; }
 
 		/// <summary>
 		/// Gets the name of the controller action that handles this route.
 		/// </summary>
-		public string Action
-		{
-			get;
-			private set;
-		}
+		public string Action { get;  set; }
 
 		/// <summary>
 		/// Gets the constraints associated with this route.
 		/// </summary>
-		public Dictionary<string, string> Constraints
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, string> Constraints { get;  set; }
 
 		/// <summary>
 		/// Gets the defaults associated with this route.
 		/// </summary>
-		public Dictionary<string, string> Defaults
+		public Dictionary<string, string> Defaults { get;  set; }
+
+		public override string ToString()
 		{
-			get;
-			private set;
+			return string.Format("{0} ({1}) ({2}/{3})", this.Name, this.Path, this.Controller, this.Action);
 		}
 	}
 }

@@ -84,11 +84,7 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the list of files that this document consists of / depends on.
 		/// </summary>
-		public ReadOnlyCollection<string> Dependencies
-		{
-			get;
-			private set;
-		}
+		public ReadOnlyCollection<string> Dependencies { get;  set; }
 
 		public static XmlReaderSettings CreateReaderSettings(XmlUrlResolver resolver)
 		{

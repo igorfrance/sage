@@ -302,7 +302,14 @@ namespace Sage.Views
 				{
 					if (this.ViewSource != ViewSource.BuiltIn)
 					{
-						processor = XsltTransform.Create(this.context, this.ViewPath);
+						try
+						{
+							processor = XsltTransform.Create(this.context, this.ViewPath);
+						}
+						catch (Exception ex)
+						{
+							throw new SageHelpException(ProblemType.XsltLoadError, ex, this.ViewPath);
+						}
 					}
 					else
 					{

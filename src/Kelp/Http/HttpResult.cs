@@ -43,7 +43,7 @@ namespace Kelp.Http
 
 		private static readonly Regex correctCssPaths =
 			new Regex(@"url\s*\(\s*(""|')?(.*?)\1?\)", RegexOptions.IgnoreCase);
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpResult"/> class, using the specified
 		/// <paramref name="response"/>.
@@ -84,11 +84,7 @@ namespace Kelp.Http
 		/// <value>
 		/// 	<c>true</c> if this instance represents a text response; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsTextResponse 
-		{
-			get; 
-			private set;
-		}
+		public bool IsTextResponse { get;  set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this instance represents an HTML text response.
@@ -96,82 +92,47 @@ namespace Kelp.Http
 		/// <value>
 		/// 	<c>true</c> if this instance represents an HTML text response; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsHtmlResponse 
-		{
-			get; 
-			private set;
-		}
+		public bool IsHtmlResponse { get;  set; }
 
 		/// <summary>
 		/// Gets the content type of this instance.
 		/// </summary>
-		public string ContentType
-		{
-			get; 
-			private set;
-		}
+		public string ContentType { get;  set; }
 
 		/// <summary>
 		/// Gets the charset of this instance.
 		/// </summary>
-		public string Charset
-		{
-			get; 
-			private set;
-		}
+		public string Charset { get;  set; }
 
 		/// <summary>
 		/// Gets the encoding of this instance.
 		/// </summary>
-		public string Encoding
-		{
-			get; 
-			private set;
-		}
+		public string Encoding { get;  set; }
 
 		/// <summary>
 		/// Gets the length (in bytes) of this instance.
 		/// </summary>
-		public long Length
-		{
-			get; 
-			private set;
-		}
+		public long Length { get;  set; }
 
 		/// <summary>
 		/// Gets the text of this instance (if the result is a text result).
 		/// </summary>
-		public string Text
-		{
-			get; 
-			private set;
-		}
+		public string Text { get;  set; }
 
 		/// <summary>
 		/// Gets the binary data of this instance (if the result is a binary result).
 		/// </summary>
-		public byte[] Data
-		{
-			get; private set;
-		}
+		public byte[] Data { get; private set; }
 
 		/// <summary>
-		/// Gets the Uri of the Internet resource that responded to this request. 
+		/// Gets the Uri of the Internet resource that responded to this request.
 		/// </summary>
-		public Uri Uri
-		{
-			get;
-			private set;
-		}
+		public Uri Uri { get;  set; }
 
 		/// <summary>
 		/// Gets the headers that are associated with this response from the server.
 		/// </summary>
-		public NameValueCollection ResponseHeaders
-		{
-			get;
-			private set;
-		}
+		public NameValueCollection ResponseHeaders { get;  set; }
 
 		/// <summary>
 		/// Gets the response status of this result

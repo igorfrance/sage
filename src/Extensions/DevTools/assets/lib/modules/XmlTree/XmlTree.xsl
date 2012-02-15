@@ -98,7 +98,7 @@
 			<span class="markup">
 				<xsl:text>&gt;</xsl:text>
 			</span>
-			<div class="children">ZZZ
+			<div class="children">
 				<xsl:apply-templates select="." mode="xdisplay">
 					<xsl:with-param name="level" select="$level" />
 				</xsl:apply-templates>

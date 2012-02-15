@@ -50,6 +50,9 @@ namespace Sage
 		MissingConfigurationFile,
 		ConfigurationMissingLocales,
 		ConfigurationMissingCategories,
+		TransformError,
+		TransformResultMissingRootElement,
+		XsltLoadError,
 	}
 
 	public enum ViewSource

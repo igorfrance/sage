@@ -62,7 +62,7 @@ namespace Kelp.HttpMock
 		/// <returns>true if the user was authenticated; otherwise, false.</returns>
 		public bool IsAuthenticated
 		{
-			get { return !String.IsNullOrEmpty(name); }
+			get { return !string.IsNullOrEmpty(name); }
 		}
 
 		/// <summary>
@@ -72,6 +72,11 @@ namespace Kelp.HttpMock
 		public string Name
 		{
 			get { return name; }
+		}
+
+		public override string ToString()
+		{
+			return this.Name;
 		}
 	}
 }

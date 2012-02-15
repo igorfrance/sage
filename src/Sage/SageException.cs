@@ -61,11 +61,7 @@ namespace Sage
 			}
 		}
 
-		public virtual Exception Exception
-		{
-			get;
-			protected set;
-		}
+		public virtual Exception Exception { get;  set; }
 
 		public virtual void Render(SageContext context, TextWriter writer)
 		{

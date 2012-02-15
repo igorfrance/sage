@@ -57,16 +57,9 @@ namespace Sage.Modules
 								foreach (string tagName in config.TagNames)
 								{
 									if (temp.ContainsKey(tagName))
-									{
-										log.WarnFormat("Overwriting previous registration for tag name '{0}' ({1}) with {2}",
-											tagName, temp[tagName].Type.FullName, config.Type.FullName);
-
 										temp[tagName] = config;
-									}
 									else
-									{
 										temp.Add(tagName, config);
-									}
 								}
 							}
 

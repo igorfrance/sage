@@ -35,13 +35,18 @@ namespace Sage.Routing
 	public class UrlRouteParameterDefaultAttribute : Attribute
 	{
 		/// <summary>
-		/// Name of the route parameter for which to supply the default value.
+		/// Gets or sets the name of the route parameter for which to supply the default value.
 		/// </summary>
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Default value to set on the route parameter if not specified in the URL.
+		/// Gets or sets the default value to set on the route parameter if not specified in the URL.
 		/// </summary>
 		public object Value { get; set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} (default: {1})", this.Name, this.Value);
+		}
 	}
 }

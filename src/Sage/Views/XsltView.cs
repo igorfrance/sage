@@ -28,6 +28,7 @@ namespace Sage.Views
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.IO;
+	using System.Text;
 	using System.Web.Mvc;
 	using System.Xml;
 
@@ -73,9 +74,10 @@ namespace Sage.Views
 			Contract.Requires<ArgumentException>(viewContext.Controller is SageController);
 			Contract.Requires<ArgumentNullException>(textWriter != null);
 			Contract.Requires<ArgumentNullException>(template != null);
-
+			
 			SageController controller = (SageController) viewContext.Controller;
 			XmlDocument requestXml = controller.PrepareViewXml(viewContext);
+
 			template.Transform(requestXml, textWriter, controller.Context);
 		}
 	}

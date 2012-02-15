@@ -52,11 +52,22 @@
 					<xs:sequence>
 						<xs:element name="library" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
-								<xs:choice minOccurs="0" maxOccurs="2">
+								<xs:choice minOccurs="0" maxOccurs="3">
 									<xs:element name="resources" minOccurs="1" maxOccurs="1">
 										<xs:complexType>
 											<xs:sequence>
 												<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="config.resource"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="library" minOccurs="1" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:attribute name="ref" use="required"/>
+													</xs:complexType>
+												</xs:element>
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>

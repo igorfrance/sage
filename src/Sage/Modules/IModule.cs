@@ -25,15 +25,29 @@
  */
 namespace Sage.Modules
 {
+	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
-
 	using Sage.Views;
 
 	/// <summary>
 	/// Defines the common interface for all modules.
 	/// </summary>
+	[ContractClass(typeof(ModuleContract))]
 	public interface IModule
 	{
 		ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration);
+	}
+
+	[ContractClassFor(typeof(IModule))]
+	public abstract class ModuleContract : IModule
+	{
+		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		{
+			Contract.Requires<ArgumentNullException>(moduleElement != null);
+			Contract.Requires<ArgumentNullException>(configuration != null);
+
+			return default(ModuleResult);
+		}
 	}
 }

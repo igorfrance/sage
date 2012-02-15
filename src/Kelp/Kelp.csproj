@@ -79,6 +79,7 @@
     <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
     <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
     <CodeContractsDisjunctiveRequires>False</CodeContractsDisjunctiveRequires>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -173,7 +174,6 @@
     <Compile Include="Imaging\ValueRange.cs" />
     <Compile Include="IO\Crc32.cs" />
     <Compile Include="IXmlConvertible.cs" />
-    <Compile Include="ResourceHandling\ConfigurableAttribute.cs" />
     <Compile Include="ResourceHandling\GifFile.cs" />
     <Compile Include="ResourceHandling\CssFileConfiguration.cs" />
     <Compile Include="ResourceHandling\FileTypeConfiguration.cs" />

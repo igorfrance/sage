@@ -68,11 +68,7 @@ namespace Sage.ResourceManagement
 		/// Gets the list of locales that this collection contains.
 		/// </summary>
 		/// <value>The locales.</value>
-		public List<string> Locales
-		{
-			get;
-			private set;
-		}
+		public List<string> Locales { get;  set; }
 
 		/// <summary>
 		/// Gets the latest modified date of all objects in this collection.
@@ -96,11 +92,7 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the dictionary of localization files to use for translation.
 		/// </summary>
-		public Dictionary<string, DictionaryFile> Dictionaries
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, DictionaryFile> Dictionaries { get;  set; }
 
 		/// <summary>
 		/// (Re) loads the constituent translation dictionaries.

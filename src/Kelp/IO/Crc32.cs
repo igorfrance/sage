@@ -30,10 +30,13 @@ namespace Kelp.IO
 	using System.IO;
 	using System.Security.Cryptography;
 
+	/// <summary>
+	/// Implements CRC2 hashing algorithm.
+	/// </summary>
 	public class Crc32 : HashAlgorithm
 	{
-		public const uint DefaultPolynomial = 0xedb88320;
-		public const uint DefaultSeed = 0xffffffff;
+		private const uint DefaultPolynomial = 0xedb88320;
+		private const uint DefaultSeed = 0xffffffff;
 
 		private readonly uint seed;
 		private readonly uint[] table;
@@ -41,6 +44,9 @@ namespace Kelp.IO
 		private static uint[] defaultTable;
 		private uint hash;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Crc32"/> class.
+		/// </summary>
 		public Crc32()
 		{
 			table = InitializeTable(DefaultPolynomial);
@@ -121,7 +127,7 @@ namespace Kelp.IO
 			uint[] createTable = new uint[256];
 			for (int i = 0; i < 256; i++)
 			{
-				uint entry = (UInt32) i;
+				uint entry = (uint) i;
 				for (int j = 0; j < 8; j++)
 					if ((entry & 1) == 1)
 						entry = (entry >> 1) ^ polynomial;
@@ -144,12 +150,14 @@ namespace Kelp.IO
 				{
 					crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];
 				}
+
 			return crc;
 		}
 
 		private static byte[] UInt32ToBigEndianBytes(uint x)
 		{
-			return new[] {
+			return new[]
+			{
 				(byte)((x >> 24) & 0xff),
 				(byte)((x >> 16) & 0xff),
 				(byte)((x >> 8) & 0xff),

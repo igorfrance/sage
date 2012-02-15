@@ -26,7 +26,6 @@
 namespace Sage.Views
 {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Xml;
 
 	/// <summary>

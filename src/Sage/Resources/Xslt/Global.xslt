@@ -23,7 +23,16 @@
 		doctype-system="about:legacy-compat"/>
 
 	<xsl:template match="sage:view">
-		<xsl:apply-templates select="$response/sage:model/node()"/>
+		<xsl:choose>
+			<xsl:when test="count($response/sage:model/node()) = 0">
+				<html>
+					VOID MODEL
+				</html>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="$response/sage:model/node()"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="sage:basehref">
@@ -44,9 +53,6 @@
 			<xsl:attribute name="data-thread">
 				<xsl:value-of select="$request/@thread" />
 			</xsl:attribute>
-			<xsl:if test="$request/@developer = 1">
-				<xsl:attribute name="data-developer">1</xsl:attribute>
-			</xsl:if>
 			<xsl:apply-templates select="node()"/>
 		</html>
 	</xsl:template>
@@ -66,7 +72,7 @@
 		<body>
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="node()"/>
-			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:style"/>
+			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:link"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:script"/>
 			<xsl:apply-templates select="." mode="execute-libraries"/>
 		</body>
@@ -142,5 +148,5 @@
 	</xsl:template>
 
 	<xsl:template match="*" mode="execute-libraries"/>
-	
+
 </xsl:stylesheet>

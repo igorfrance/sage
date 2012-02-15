@@ -74,14 +74,28 @@ namespace Sage.Views
 
 			this.ConfigNode = (XmlElement) viewElement.CloneNode(true);
 
-			var config = context.ProjectConfiguration;
-			var currentPath = context.Request.Path;
+			var config = this.context.ProjectConfiguration;
+			var currentPath = this.context.Request.Path;
 
 			var matchingLibs = new List<ResourceLibraryInfo>(
 				config.ResourceLibraries.Values.Where(l => l.MatchesPath(currentPath)));
 
 			foreach (ResourceLibraryInfo library in matchingLibs)
-				autoResources.AddRange(library.Resources);
+			{
+				foreach (string libraryRef in library.Dependencies)
+				{
+					if (!config.ResourceLibraries.ContainsKey(libraryRef))
+					{
+						log.ErrorFormat("Library '{0}' is referencing a non-existing library '{1}'.", library.Name, libraryRef);
+						continue;
+					}
+
+					ResourceLibraryInfo referenced = config.ResourceLibraries[libraryRef];
+					this.autoResources.AddRange(referenced.Resources);
+				}
+
+				this.autoResources.AddRange(library.Resources);
+			}
 		}
 
 		public string Action { get; private set; }
@@ -205,6 +219,18 @@ namespace Sage.Views
 					}
 
 					ResourceLibraryInfo library = config.ResourceLibraries[name];
+					foreach (string libraryRef in library.Dependencies)
+					{
+						if (!config.ResourceLibraries.ContainsKey(libraryRef))
+						{
+							log.ErrorFormat("Library '{0}' is referencing a non-existing library '{1}'.", library.Name, libraryRef);
+							continue;
+						}
+
+						ResourceLibraryInfo referenced = config.ResourceLibraries[libraryRef];
+						this.moduleResources.AddRange(referenced.Resources);
+					}
+
 					this.moduleResources.AddRange(library.Resources);
 				}
 

@@ -60,10 +60,7 @@ namespace Sage.Modules
 		/// Gets or sets the result status.
 		/// </summary>
 		public ModuleResultStatus Status
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Gets or sets the result element that contains this module's data. 
@@ -73,19 +70,12 @@ namespace Sage.Modules
 		/// is not applicable for the module.
 		/// </remarks>
 		public XmlElement ResultElement
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Gets the dictionary of arbitrary module result data, specific to each module.
 		/// </summary>
-		public Dictionary<string, object> ModuleData
-		{
-			get;
-			private set;
-		}
+		public Dictionary<string, object> ModuleData { get;  set; }
 
 		public XmlDocument OwnerDocument
 		{

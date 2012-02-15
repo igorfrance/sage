@@ -43,11 +43,15 @@ namespace Sage
 			this.ProblemType = type;
 		}
 
-		public ProblemType ProblemType
+		public SageHelpException(ProblemType type, Exception actual, string path)
+			: this(type, actual)
 		{
-			get;
-			private set;
+			this.Path = path;
 		}
+
+		public ProblemType ProblemType { get;  set; }
+
+		public string Path { get; private set; }
 
 		public override string StylesheetPath
 		{
@@ -61,6 +65,8 @@ namespace Sage
 		{
 			Dictionary<string, object> arguments = base.GetTransformArguments(context);
 			arguments.Add("problemType", ProblemType.ToString());
+			if (this.Path != null)
+				arguments.Add("path", this.Path);
 
 			return arguments;
 		}

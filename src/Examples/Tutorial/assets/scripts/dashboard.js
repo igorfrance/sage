@@ -20,7 +20,6 @@ sage.tutorial.Dashboard = new function Dashboard()
 		welcomeElement = jQuery("#welcome");
 
 		jQuery("#navigation ul a").bind("click", onNavigationLinkClick);
-		jQuery("#navigation li.expandable").bind("click", onExpandableItemClick);
 	}
 
 	function showInspector()
@@ -41,24 +40,6 @@ sage.tutorial.Dashboard = new function Dashboard()
 		inspectorElement.fadeOut();
 	}
 
-	function expandNavigationGroup(li)
-	{
-		li.addClass("expanded");
-	}
-
-	function collapseNavigationGroup(li)
-	{
-		li.removeClass("expanded");
-	}
-
-	function toggleNavigationGroup(li)
-	{
-		if (li.hasClass("expanded"))
-			collapseNavigationGroup(li);
-		else
-			expandNavigationGroup(li);
-	}
-
 	function onViewInspectorClose()
 	{
 		hideInspector();
@@ -72,11 +53,6 @@ sage.tutorial.Dashboard = new function Dashboard()
 	function onViewInspectorInfo()
 	{
 		showInspector();
-	}
-
-	function onExpandableItemClick(e)
-	{
-		toggleNavigationGroup(jQuery(this));
 	}
 
 	function onNavigationLinkClick()
@@ -95,6 +71,6 @@ sage.tutorial.Dashboard = new function Dashboard()
 		return false;
 	}
 
-	$init.registerMain(setup);
+	$(window).ready(setup);
 };
 

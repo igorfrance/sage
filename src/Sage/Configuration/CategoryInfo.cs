@@ -27,11 +27,8 @@ namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
 	using System.Xml;
-
-	using Sage.ResourceManagement;
 
 	/// <summary>
 	/// Contains configuration information about a category (such as 'football' or 'outdoor').
@@ -61,15 +58,21 @@ namespace Sage.Configuration
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CategoryInfo"/> struct.
+		/// Initializes a new instance of the <see cref="CategoryInfo"/> class. 
 		/// </summary>
-		/// <param name="categoryElement">The <see cref="XmlElement"/> that contains information about this category.</param>
-		/// <param name="definedLocales">The defined locales configured for the whole project.</param>
+		/// <param name="categoryElement">
+		/// The <see cref="XmlElement"/> that contains information about this category.
+		/// </param>
+		/// <param name="definedLocales">
+		/// The defined locales configured for the whole project.
+		/// </param>
 		/// <exception cref="ConfigurationError">
 		/// If the path configuration variable 'GlobalizedNameFormat' is missing from the project configuration.
 		/// </exception>
-		/// <exception cref="ConfigurationError">If the project's globalization configuration doesn't contain one of the 
-		/// locales specified for this category.</exception>
+		/// <exception cref="ConfigurationError">
+		/// If the project's globalization configuration doesn't contain one of the 
+		/// locales specified for this category.
+		/// </exception>
 		public CategoryInfo(XmlElement categoryElement, IDictionary<string, LocaleInfo> definedLocales)
 		{
 			this.Name = categoryElement.GetAttribute("name");
@@ -93,37 +96,21 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the name of this category.
 		/// </summary>
-		public string Name
-		{
-			get;
-			private set;
-		}
+		public string Name { get;  set; }
 
 		/// <summary>
 		/// Gets the locales that are applicable to this category.
 		/// </summary>
-		public List<string> Locales
-		{
-			get;
-			private set;
-		}
+		public List<string> Locales { get;  set; }
 
 		/// <summary>
 		/// Gets the list of localized file name suffixes valid for this category.
 		/// </summary>
-		public List<string> Suffixes
-		{
-			get;
-			private set;
-		}
+		public List<string> Suffixes { get;  set; }
 
-		/// <summary>
-		/// Gets the physical path to the root directory of this category.
-		/// </summary>
-		public string PhysicalPath
+		public override string ToString()
 		{
-			get;
-			private set;
+			return this.Name;
 		}
 	}
 }

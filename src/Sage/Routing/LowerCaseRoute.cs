@@ -81,11 +81,7 @@ namespace Sage.Routing
 		/// <summary>
 		/// Gets or sets the name or this route.
 		/// </summary>
-		public string Name
-		{
-			get;
-			set;
-		}
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Returns information about the URL that is associated with the route.
@@ -103,6 +99,11 @@ namespace Sage.Routing
 				path.VirtualPath = path.VirtualPath.ToLowerInvariant();
 
 			return path;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1})", this.Name, this.Url);
 		}
 	}
 }

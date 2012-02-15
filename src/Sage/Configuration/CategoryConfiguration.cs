@@ -71,5 +71,10 @@ namespace Sage.Configuration
 			CacheableXmlDocument schemaDocument = ResourceManager.LoadXmlDocument(configurationPath, null, ConfigSchemaPath);
 			return new CategoryConfiguration(schemaDocument);
 		}
+
+		public override string ToString()
+		{
+			return this.Name;
+		}
 	}
 }

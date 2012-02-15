@@ -155,38 +155,25 @@ namespace Kelp.Imaging.Filters
 		/// <summary>
 		/// Gets or sets the interpolation mode to use with resampling.
 		/// </summary>
-		public InterpolationMode Interpolation
-		{ 
-			get; 
-			set;
-		}
+		public InterpolationMode Interpolation { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to preserve the ratio when resampling.
 		/// </summary>
 		public bool PreserveRatio
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to disable enlargin of the image when resampling.
 		/// </summary>
 		public bool DontEnlarge
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Gets or sets the fit type of the resample
 		/// </summary>
 		public ResampleFitType FitType
-		{
-			get;
-			set;
-		}
+		 { get; set; }
 
 		/// <summary>
 		/// Applies the filter to the specified input <paramref name="source"/> bitmap and returns the result

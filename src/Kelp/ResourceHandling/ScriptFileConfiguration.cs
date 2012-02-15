@@ -77,11 +77,7 @@ namespace Kelp.ResourceHandling
 
 		public new bool Enabled { get; private set; }
 
-		public CodeSettings Settings
-		{
-			get;
-			private set;
-		}
+		public CodeSettings Settings { get;  set; }
 
 		protected override List<string> BoolProps
 		{

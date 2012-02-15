@@ -102,7 +102,7 @@
     <Compile Include="Configuration\LocaleInfo.cs" />
     <Compile Include="Configuration\MetaViewDictionary.cs" />
     <Compile Include="Configuration\MetaViewInfo.cs" />
-    <Compile Include="Configuration\PackageConfiguration.cs" />
+    <Compile Include="Configuration\ExtensionPackageConfiguration.cs" />
     <Compile Include="Configuration\PackageGroup.cs" />
     <Compile Include="Extensibility\Constants.cs" />
     <Compile Include="Extensibility\InstallItem.cs" />

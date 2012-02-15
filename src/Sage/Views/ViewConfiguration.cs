@@ -132,11 +132,7 @@ namespace Sage.Views
 			}
 		}
 
-		internal Dictionary<string, IModule> Modules
-		{
-			get;
-			private set;
-		}
+		internal Dictionary<string, IModule> Modules { get;  set; }
 
 		public static ViewConfiguration Create(SageController controller, ViewInfo viewInfo)
 		{
@@ -172,6 +168,11 @@ namespace Sage.Views
 			}
 
 			return input;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} ({1})", this.Name, this.Controller.ControllerName);
 		}
 	}
 }

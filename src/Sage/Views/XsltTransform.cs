@@ -23,12 +23,14 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+
 namespace Sage.Views
 {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
@@ -45,15 +47,19 @@ namespace Sage.Views
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 
+	[ContractClass(typeof(XsltTransformContract))]
 	public abstract class XsltTransform
 	{
 		protected readonly List<string> dependencies = new List<string>();
+
 		private const string CacheKeyFormat = "XSLT_{0}";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(XsltTransform).FullName);
+
 		private static readonly Dictionary<string, object> extensions;
 
 		private readonly Hashtable parameterArguments;
+
 		private readonly Hashtable extensionArguments;
 
 		static XsltTransform()
@@ -61,19 +67,18 @@ namespace Sage.Views
 			extensions = new Dictionary<string, object>();
 			foreach (Assembly a in Application.RelevantAssemblies)
 			{
-				var types = from t in a.GetTypes()
-							where t.IsClass && !t.IsAbstract
-							select t;
+				var types = from t in a.GetTypes() where t.IsClass && !t.IsAbstract select t;
 
-				foreach (Type type in types.Where(t => t.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false).Length != 0))
+				foreach (
+					Type type in types.Where(t => t.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false).Length != 0))
 				{
 					try
 					{
 						ConstructorInfo ctor = type.GetConstructor(new Type[] { });
 						object instance = ctor.Invoke(new object[] { });
 
-						XsltExtensionObjectAttribute attrib = (XsltExtensionObjectAttribute)
-							type.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false)[0];
+						XsltExtensionObjectAttribute attrib =
+							(XsltExtensionObjectAttribute)type.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false)[0];
 
 						extensions.Add(attrib.Namespace, instance);
 						log.DebugFormat("Successfully created the XSLT extension object '{0}'.", type.FullName);
@@ -94,9 +99,9 @@ namespace Sage.Views
 
 			FieldInfo fi1 = typeof(XsltArgumentList).GetField("parameters", BindingFlags.NonPublic | BindingFlags.Instance);
 			FieldInfo fi2 = typeof(XsltArgumentList).GetField("extensions", BindingFlags.NonPublic | BindingFlags.Instance);
-			
-			parameterArguments = (Hashtable) fi1.GetValue(this.Arguments);
-			extensionArguments = (Hashtable) fi2.GetValue(this.Arguments);
+
+			parameterArguments = (Hashtable)fi1.GetValue(this.Arguments);
+			extensionArguments = (Hashtable)fi2.GetValue(this.Arguments);
 		}
 
 		public XsltArgumentList Arguments { get; private set; }
@@ -129,7 +134,9 @@ namespace Sage.Views
 			object cachedItem;
 			string key = string.Format(CacheKeyFormat, stylesheetPath);
 			if ((cachedItem = context.Cache.Get(key)) != null && cachedItem is XsltTransform)
-				return (XsltTransform) cachedItem;
+			{
+				return (XsltTransform)cachedItem;
+			}
 
 			CacheableXmlDocument stylesheetDocument = ResourceManager.LoadXmlDocument(stylesheetPath, context);
 			ExcludeNamespacesPrefixResults(stylesheetDocument);
@@ -159,20 +166,26 @@ namespace Sage.Views
 			return result;
 		}
 
-		public abstract void Transform(XmlNode inputXml, TextWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
+		public abstract void Transform(
+			XmlNode inputXml, TextWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
 
-		public abstract void Transform(XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
+		public abstract void Transform(
+			XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
 
 		internal static void ExcludeNamespacesPrefixResults(CacheableXmlDocument document)
 		{
 			if (document.DocumentElement == null)
+			{
 				return;
+			}
 
 			List<string> prefixes = new List<string>();
 			foreach (XmlAttribute attribute in document.DocumentElement.Attributes)
 			{
 				if (attribute.Name.StartsWith("xmlns:"))
+				{
 					prefixes.Add(attribute.Name.Substring(6));
+				}
 			}
 
 			document.DocumentElement.SetAttribute("exclude-result-prefixes", string.Join(" ", prefixes.ToArray()));
@@ -181,20 +194,43 @@ namespace Sage.Views
 		protected XsltArgumentList GetArguments(Dictionary<string, object> arguments)
 		{
 			if (arguments == null || arguments.Count == 0)
+			{
 				return this.Arguments;
+			}
 
 			XsltArgumentList result = new XsltArgumentList();
 			foreach (string key in extensionArguments.Keys)
+			{
 				result.AddExtensionObject(key, extensionArguments[key]);
+			}
 
 			foreach (string key in parameterArguments.Keys)
+			{
 				if (!arguments.ContainsKey(key))
+				{
 					result.AddParam(key, string.Empty, parameterArguments[key]);
+				}
+			}
 
 			foreach (string key in arguments.Keys)
+			{
 				result.AddParam(key, string.Empty, arguments[key]);
+			}
 
 			return result;
+		}
+	}
+
+	[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed. Suppression is OK here.")]
+	[ContractClassFor(typeof(XsltTransform))]
+	public abstract class XsltTransformContract : XsltTransform
+	{
+		public override void Transform(
+			XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
+		{
+			Contract.Requires<ArgumentNullException>(inputXml != null);
+			Contract.Requires<ArgumentNullException>(inputXml != null);
+			Contract.Requires<ArgumentNullException>(context != null);
 		}
 	}
 }

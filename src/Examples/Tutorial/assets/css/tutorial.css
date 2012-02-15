@@ -26,8 +26,7 @@ html.dashboard body
 
 
 h1
-	{ color: #54596F; font-size: 32px; font-weight: normal; margin-bottom: 40px; text-shadow: 1px 1px 3px #666;
-    filter: dropshadow(color=#000000, offx=2, offy=2); }
+	{ color: #54596F; font-size: 32px; font-weight: normal; margin-bottom: 40px; text-shadow: 1px 1px 3px #666; }
 h1 + .breadcrumb
 	{ margin: -40px 0 40px 0; }
 
@@ -256,7 +255,9 @@ html.dashboard .view-inspector .contenttoolbar {
   -webkit-box-shadow: 0 0 27px rgba(0, 0, 0, 0.80);
 }
 
-
+/**
+ * Syntaxbox
+ */
 .syntaxbox
 	{ margin-bottom: 20px; }
 

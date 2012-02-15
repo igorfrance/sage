@@ -101,6 +101,7 @@
     <Content Include="assets\lib\modules\DeveloperToolbar\icons\warning.png" />
     <Content Include="assets\lib\modules\DeveloperToolbar\icons\xml.png" />
     <Content Include="assets\lib\modules\DeveloperToolbar\icons\xmlx.png" />
+    <Content Include="assets\lib\modules\LogViewer\LogViewer.js" />
     <Content Include="assets\lib\modules\LogViewer\LogViewer.css" />
     <Content Include="assets\lib\modules\LogViewer\LogViewer.xsl" />
     <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
