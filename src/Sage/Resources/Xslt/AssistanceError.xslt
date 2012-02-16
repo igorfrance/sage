@@ -47,6 +47,8 @@
 						{	color: #009966; }
 					.problem-message
 						{ font-weight: bold; margin-bottom: 5px; }
+					.problem-message.inner
+						{ font-size: 85%; color: #666; font-weight: normal; margin-top: -5px; }
 					.problem-details .switch 
 						{ font-size: 12px; }
 					.problem-details .switch a
@@ -71,10 +73,7 @@
 				<h1>
 					<xsl:apply-templates select="." mode="problem-title"/>
 				</h1>
-				<div class="problem-message">
-					Message:
-					<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
-				</div>
+				<xsl:apply-templates select="." mode="problem-message"/>
 				<xsl:if test="string-length(@sourceuri) or $path">
 					<div class="problem-file">
 						File:
@@ -107,8 +106,24 @@
 			</body>
 		</html>
 	</xsl:template>
+	
+	<xsl:template match="/exception" mode="problem-message">
+		<div class="problem-message">
+			<label>Message:</label>
+			<span class="text">
+				<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>
+			</span>
+		</div>
+		<xsl:apply-templates select="exception" mode="problem-message"/>
+	</xsl:template>
 
-	<xsl:template match="/exception" mode="problem-title">
+	<xsl:template match="exception/exception" mode="problem-message">
+		<div class="problem-message inner">
+			(<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>)
+		</div>
+	</xsl:template>
+	
+	<xsl:template match="exception" mode="problem-title">
 		<xsl:choose>
 			<xsl:when test="$problemType = 'InvalidMarkup'">
 				Invalid Markup Detected
@@ -141,7 +156,7 @@
 		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template match="/exception" mode="problem-description">
+	<xsl:template match="exception" mode="problem-description">
 		<xsl:choose>
 			<xsl:when test="$problemType = 'InvalidMarkup' or $problemType = 'InvalidHtmlMarkup'">
 				Sage speaks XML, and therefore any XML needs to be valid. <br/>
@@ -174,7 +189,7 @@
 		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template match="/exception" mode="problem-suggestion">
+	<xsl:template match="exception" mode="problem-suggestion">
 		<xsl:choose>
 			<xsl:when test="$problemType = 'InvalidMarkup' or $problemType = 'InvalidHtmlMarkup'">
 				Look in the source document for any unclosed tags, attribute quotes or unknown character entities.

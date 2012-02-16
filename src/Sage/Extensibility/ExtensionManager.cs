@@ -70,7 +70,7 @@ namespace Sage.Extensibility
 				}
 				else if (extension.IsUpdateAvailable)
 				{
-					extension.Update(true);
+					extension.Update();
 				}
 				else if (extension.IsMissingResources)
 				{

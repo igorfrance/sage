@@ -2,14 +2,17 @@
 
 sage.dev.Toolbar = new function Toolbar()
 {
-	var $toolbar, $icon, $text, $time, $commands, $frame, $iframe, $logbody;
+	var $toolbar, $icon, $text, $time, $commands, $frame, $iframe;
 	var hideTimeout = 100, hideTimeoutId = null;
-	var tooltip;
 	var parameters = { basehref: "", thread: "0", url: escape(document.location) };
 	var status = { log: [], errors: 0, warnings: 0, clientTime: 0, serverTime: 0 };
 
-	var logUrl = "{basehref}dev/log/{thread}";
+	var tooltip;
+	var logFrameLoaded = false;
+	var logUrl = "{basehref}dev/log/{thread}/?view={view}";
 	var inspectUrl = "{basehref}dev/inspect/?devtools=0#sage:vi=url%3D{url}%26inspector%3Dlog";
+
+	var namespaces = { mod: "http://www.cycle99.com/projects/sage/modules" };
 
 	function setup()
 	{
@@ -25,7 +28,7 @@ sage.dev.Toolbar = new function Toolbar()
 			.append("<div id='developer-frame'><iframe frameborder='no'></iframe><div class='close' title='Close'></div></div>")
 			.find("#developer-frame");
 
-		tooltip = $ctrl.getControl($text[0]);
+		tooltip = $ctrl.getControl($icon[0]);
 
 		$iframe = $frame.find("iframe");
 
@@ -34,7 +37,6 @@ sage.dev.Toolbar = new function Toolbar()
 
 		status.clientTime = (Number(new Date()) - window.__time) || 0;
 
-		$iframe.load(onDeveloperFrameLoaded);
 		$frame.find(".close").click(onCloseLogViewClick);
 		$toolbar.find(".meta .button").click(onMetaViewCommandClick);
 		$toolbar.find(".button.log").click(onLogCommandClick);
@@ -42,7 +44,7 @@ sage.dev.Toolbar = new function Toolbar()
 		$toolbar.hover(onToolbarMouseOver, onToolbarMouseOut);
 		$toolbar.show();
 
-		loadLogHtml();
+		loadLogData();
 	}
 
 	function setStatusClass(status)
@@ -50,7 +52,21 @@ sage.dev.Toolbar = new function Toolbar()
 		$icon.removeClass("ok error warn loading").addClass(status);
 	}
 
-	function updateStatus()
+	function getStatusClass()
+	{
+		if (status.errors)
+			return "error";
+
+		if (status.warnings)
+			return "warning";
+
+		if (status.log.length)
+			return "ok";
+
+		return String.EMPTY;
+	}
+
+	function updateToolbar()
 	{
 		var statusClass = "", statusText = "", errorText;
 
@@ -75,19 +91,18 @@ sage.dev.Toolbar = new function Toolbar()
 			errorText = "Ok";
 		}
 
-		// required for chrome, don't remove without verifying that it still works correctly
-		//$toolbar.css({ width: $icon.outerWidth() });
-
 		if (statusText)
 		{
+			$icon.attr("title", errorText)
 			$text.find("label").text(statusText);
-			$icon.attr("title", errorText);
-			$text.attr("title", errorText);
-			if (tooltip && (status.errors + status.warnings != 0))
+
+			if ((status.errors + status.warnings) != 0)
 			{
-				$text.animate({ width: $text.prop("scrollWidth") }, 50, function onExpandComplete()
+				var targetWidth = getToolbarMinWidth();
+				$toolbar.animate({ width: targetWidth }, 50, function onExpandComplete()
 				{
-					tooltip.show();
+					if (tooltip)
+						tooltip.show();
 				});
 			}
 		}
@@ -102,15 +117,10 @@ sage.dev.Toolbar = new function Toolbar()
 		}
 
 		setStatusClass(statusClass);
+		$toolbar.find(".content").css({ width: getTotalToolbarWidth() });
 	}
 
-	function loadLogHtml()
-	{
-		setStatusClass("loading");
-		$iframe.attr("src", expandUrl(logUrl));
-	}
-
-	function disableTooltip()
+	function expandToolbar()
 	{
 		if (tooltip)
 		{
@@ -119,32 +129,25 @@ sage.dev.Toolbar = new function Toolbar()
 			tooltip.setSettingsValue("useFades", false);
 		}
 
-		$toolbar.find(".tooltip").addClass(".tooltip-suspend");
-	}
-
-	function enableTooltip()
-	{
-		$toolbar.find(".tooltip").removeClass(".tooltip-suspend");
-	}
-
-	function expandToolbar()
-	{
-		disableTooltip();
-
 		var totalWidth = getTotalToolbarWidth();
-		$toolbar.animate({ width: totalWidth }, 50, enableTooltip);
+		$toolbar.find(".content").css({ width: getTotalToolbarWidth() });
+		$toolbar.animate({ width: totalWidth }, 50);
+	}
+
+	function shrinkToolbar()
+	{
+		var targetWidth = getToolbarMinWidth();
+		$toolbar.animate({ width: targetWidth }, 50);
 	}
 
 	function getTotalToolbarWidth()
 	{
 		var content = $toolbar.find(".content");
 		var totalWidth =
-			$icon.prop("offsetWidth") +
-			$text.prop("scrollWidth") +
-			$time.prop("scrollWidth") +
 			(parseInt(content.css("paddingLeft")) || 0) +
 			(parseInt(content.css("paddingRight")) || 0) +
-			getTotalCommandsWidth();
+			$toolbar.find(".status").outerWidth() +
+			$toolbar.find(".commands").outerWidth();
 
 		return totalWidth;
 	}
@@ -164,25 +167,62 @@ sage.dev.Toolbar = new function Toolbar()
 		return totalWidth;
 	}
 
-	function contractToolbar()
+	function getToolbarMinWidth()
 	{
 		var content = $toolbar.find(".content");
-		var targetWidth =
-			$icon.prop("offsetWidth") +
-			(parseInt(content.css("paddingLeft")) || 0) +
-			(parseInt(content.css("paddingRight")) || 0);
+		var totalWidth =
+			(parseInt(content.css("paddingLeft")) || 0);
 
 		if ((status.errors + status.warnings) != 0)
-			targetWidth += $text.prop("scrollWidth");
+		{
+			totalWidth += $text.prop("scrollWidth");
+			totalWidth += parseInt($text.css("marginLeft")) || 0;
+			totalWidth += parseInt($text.css("marginRight")) || 0;
+			totalWidth += parseInt(content.css("paddingRight")) || 0;
+		}
 
-		$toolbar.animate({ width: targetWidth }, 50, enableTooltip);
+		return totalWidth;
 	}
 
-	function expandUrl(template)
+	function loadLogData()
 	{
-		for (var name in parameters)
+		setStatusClass("loading");
+		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(document)
 		{
-			template = template.replace(new RegExp("\\{" + name + "\\}"), parameters[name]);
+			var rows = $xml.selectNodes(document, "//mod:log/mod:line", namespaces);
+			var entry = null;
+			for (var i = 0; i < rows.length; i++)
+			{
+				entry = {
+					severity: rows[i].getAttribute("severity"),
+					elapsed: rows[i].getAttribute("elapsed"),
+					duration: rows[i].getAttribute("duration"),
+					logger: rows[i].getAttribute("logger"),
+					message: rows[i].getAttribute("message")
+				};
+
+				if (entry.severity == "ERROR")
+					status.errors += 1;
+
+				if (entry.severity == "WARN")
+					status.warnings += 1;
+
+				status.log.push(entry);
+			}
+
+			if (entry != null && entry.message.match(/\b(\d+)ms\b/))
+				status.serverTime = RegExp.$1;
+
+			updateToolbar();
+		}});
+	}
+
+	function expandUrl(template, extraParams)
+	{
+		var params = jQuery.extend(parameters, extraParams);
+		for (var name in params)
+		{
+			template = template.replace(new RegExp("\\{" + name + "\\}"), params[name]);
 		}
 
 		return template;
@@ -198,7 +238,16 @@ sage.dev.Toolbar = new function Toolbar()
 
 	function showLogWindow()
 	{
-		$frame.show();
+		if (logFrameLoaded)
+		{
+			$frame.show();
+		}
+		else
+		{
+			setStatusClass("loading");
+			$iframe.load(onLogFrameLoaded);
+			$iframe.attr("src", expandUrl(logUrl, { view: "html" }));
+		}
 	}
 
 	function hideLogWindow()
@@ -216,17 +265,6 @@ sage.dev.Toolbar = new function Toolbar()
 			p.focus();
 		else
 			$log.warn("Could not open '{0}' in a new window. Is there a popup blocker running?", url);
-	}
-
-	function onToolbarMouseOver(e)
-	{
-		clearTimeout(hideTimeout);
-		expandToolbar();
-	}
-
-	function onToolbarMouseOut(e)
-	{
-		hideTimeoutId = setTimeout(contractToolbar, hideTimeout);
 	}
 
 	function onMetaViewCommandClick(e)
@@ -250,50 +288,35 @@ sage.dev.Toolbar = new function Toolbar()
 		document.location = expandUrl(inspectUrl);
 	}
 
-	function onDeveloperFrameLoaded()
+	function onToolbarMouseOver(e)
 	{
-		setStatusClass(String.EMPTY);
+		clearTimeout(hideTimeout);
+		expandToolbar();
+	}
+
+	function onToolbarMouseOut(e)
+	{
+		hideTimeoutId = setTimeout(shrinkToolbar, hideTimeout);
+	}
+
+	function onLogFrameLoaded()
+	{
+		setStatusClass(getStatusClass());
 
 		// this works because we are on the same domain
-		$logbody = jQuery($iframe[0].contentWindow.document.body);
-
-		var rows = $logbody.find(".logviewer .content table tr");
-		var entry = null;
-		for (var i = 0; i < rows.length; i++)
-		{
-			entry = {
-				severity: rows.eq(i).find("td.severity").text().trim(),
-				elapsed: rows.eq(i).find("td.elapsed").text().trim(),
-				duration: rows.eq(i).find("td.duration").text().trim(),
-				logger: rows.eq(i).find("td.logger").text().trim(),
-				message: rows.eq(i).find("td.message").text().trim()
-			};
-
-			if (entry.severity == "ERROR")
-				status.errors += 1;
-
-			if (entry.severity == "WARN")
-				status.warnings += 1;
-
-			status.log.push(entry);
-		}
-
-		if (entry != null && entry.message.match(/\b(\d+)ms\b/))
-			status.serverTime = RegExp.$1;
-
+		var logbody = jQuery($iframe[0].contentWindow.document.body);
 		var maxHeight = $(document.body).prop("offsetHeight") / 2;
 		var targetHeight = 0;
 
 		$frame.css({ display: "block", visibility: "hidden" });
 
-		var children = $logbody.find(".logviewer > *");
+		var children = logbody.find(".logviewer > *");
 		for (var i = 0; i < children.length; i++)
 			targetHeight += children.eq(i).prop("scrollHeight");
 
-		$frame.css({ display: "none", visibility: "visible", height: Math.min(maxHeight, targetHeight) });
-
-		updateStatus();
+		$frame.css({ visibility: "visible", height: Math.min(maxHeight, targetHeight) });
 	}
+
 
 	$(window).load(setup);
 };

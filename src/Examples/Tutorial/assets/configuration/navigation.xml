@@ -2,149 +2,148 @@
 <site:navigation xmlns:site="http://sage.cycle99.com/" xmlns:sage="http://www.cycle99.com/projects/sage">
 	<ul>
 		<li>
-			<a href="{basehref}">Sage</a>
+			<a href="url(documentation)">Sage</a>
 			<ul class="general">
 				<li>
-					<a sage:attrib="href:url(sage-license)">License</a>
+					<a href="url(sage-license)">License</a>
 				</li>
 				<li>
-					<a sage:attrib="href:url(sage-obtaining)">Obtaining</a>
+					<a href="url(sage-obtaining)">Obtaining</a>
 				</li>
 				<li>
-					<a sage:attrib="href:url(sage-building)">Building</a>
+					<a href="url(sage-building)">Building</a>
 				</li>
 				<li></li>
 				<li>
 					Installing
 					<ul>
 						<li>
-							<a sage:attrib="href:url(sage-installing-new)">New project</a>
+							<a href="url(sage-installing-new)">New project</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(sage-installing-example)">Example project</a>
+							<a href="url(sage-installing-example)">Example project</a>
 						</li>
 					</ul>
 				</li>
 			</ul>
-			<h2>Documentation</h2>
 			<ul class="documentation">
 				<li>
-					<a sage:attrib="href:url(xml-as-a-language)">XML as a language</a>
+					<a href="url(xml-as-a-language)">XML as a language</a>
 					<ul>
 						<li>
-							<a sage:attrib="href:url(sage-namespaces)">Available namespaces</a>
+							<a href="url(sage-namespaces)">Available namespaces</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(sage-uri-schemes)">Available URI schemes</a>
+							<a href="url(sage-uri-schemes)">Available URI schemes</a>
 						</li>
 					</ul>
 				</li>
 				<li>
-					<a sage:attrib="href:url(internationalization)">Internationalization</a>
+					<a href="url(internationalization)">Internationalization</a>
 					<ul>
 						<li>
-							<a sage:attrib="href:url(internationalization-phrases)">Phrase substitution</a>
+							<a href="url(internationalization-phrases)">Phrase substitution</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(internationalization-variables)">Variable substitution</a>
+							<a href="url(internationalization-variables)">Variable substitution</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(internationalization-conditionals)">Conditional rendering</a>
+							<a href="url(internationalization-conditionals)">Conditional rendering</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(internationalization-fallback)">Locale resolution</a>
+							<a href="url(internationalization-fallback)">Locale resolution</a>
 						</li>
 					</ul>
 				</li>
 				<li>
-					<a sage:attrib="href:url(xml-flow)">Document transform flow</a>
+					<a href="url(xml-flow)">Document transform flow</a>
 					<ul>
 						<li>
-							<a sage:attrib="href:url(xml-flow-localize)">1: Localize</a>
+							<a href="url(xml-flow-localize)">1: Localize</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(xml-flow-copy-tree)">2: Copy XML tree</a>
+							<a href="url(xml-flow-copy-tree)">2: Copy XML tree</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(xml-flow-expand-modules)">3: Expand modules</a>
+							<a href="url(xml-flow-expand-modules)">3: Expand modules</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(xml-flow-xslt-transform)">4: XSLT transform</a>
+							<a href="url(xml-flow-xslt-transform)">4: XSLT transform</a>
 						</li>
 					</ul>
 				</li>
 				<li>
-					<a sage:attrib="href:url(resource-processing)">Resource processing</a>
+					<a href="url(resource-processing)">Resource processing</a>
 					<ul>
 						<li>
-							<a sage:attrib="href:url(resource-processing-kelp)">Merging with Kelp</a>
+							<a href="url(resource-processing-kelp)">Merging with Kelp</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(resource-processing-compression)">Compression options</a>
+							<a href="url(resource-processing-compression)">Compression options</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(resource-processing-imaging)">Image processing</a>
+							<a href="url(resource-processing-imaging)">Image processing</a>
 						</li>
 					</ul>
 				</li>
 				<li>
-					<a sage:attrib="href:url(linking)">Linking</a>
+					<a href="url(linking)">Linking</a>
 				</li>
 				<li>
-					<a sage:attrib="href:url(kelp)">Kelp</a>
+					<a href="url(kelp)">Kelp</a>
 				</li>
 				<li>
-					<a sage:attrib="href:url(extensibility)">Extensibility</a>
+					<a href="url(extensibility)">Extensibility</a>
 					<ul>
 						<li>
-							<a sage:attrib="href:url(extensibility-modules)">Modules</a>
+							<a href="url(extensibility-modules)">Modules</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(extensibility-extensions)">Extensions</a>
+							<a href="url(extensibility-extensions)">Extensions</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(extensibility-handlers)">Node and text handlers</a>
+							<a href="url(extensibility-handlers)">Node and text handlers</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(extensibility-xml-filters)">View XML filters</a>
+							<a href="url(extensibility-xml-filters)">View XML filters</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(extensibility-resource-providers)">Resource providers</a>
+							<a href="url(extensibility-resource-providers)">Resource providers</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(extensibility-url-resolvers)">URL resolvers</a>
+							<a href="url(extensibility-url-resolvers)">URL resolvers</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(extensibility-xslt-extensions)">XSLT extension objects</a>
+							<a href="url(extensibility-xslt-extensions)">XSLT extension objects</a>
 						</li>
 					</ul>
 				</li>
 				<li>
-					<a sage:attrib="href:url(configuration)">Configuration</a>
+					<a href="url(configuration)">Configuration</a>
 					<ul>
 						<li>
 							<h5>Project.config</h5>
 						</li>
 						<li>
-							<a sage:attrib="href:url(configuration-project)">Project</a>
+							<a href="url(configuration-project)">Project</a>
 						</li>
 						<li>
 							<h5>Web.config</h5>
 						</li>
 						<li>
-							<a sage:attrib="href:url(configuration-rewriters)">Rewriters</a>
+							<a href="url(configuration-rewriters)">Rewriters</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(configuration-handlers)">Handlers</a>
+							<a href="url(configuration-handlers)">Handlers</a>
 						</li>
 						<li>
-							<a sage:attrib="href:url(configuration-compression)">Compression</a>
+							<a href="url(configuration-compression)">Compression</a>
 						</li>
 					</ul>
 				</li>
 				<li class="separator"></li>
 				<li>
-					<a sage:attrib="href:url(sage-libraries)">Libraries used</a>
+					<a href="url(sage-libraries)">Libraries used</a>
 				</li>
 			</ul>
 		</li>

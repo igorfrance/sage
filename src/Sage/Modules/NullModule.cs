@@ -26,7 +26,6 @@
 namespace Sage.Modules
 {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Xml;
 
 	using log4net;
@@ -38,9 +37,6 @@ namespace Sage.Modules
 
 		public ModuleResult ProcessRequest(XmlElement moduleNode, ViewConfiguration configuration)
 		{
-			log.WarnFormat("The module element '{0}' maps to '{1}'.",
-				moduleNode.Name, typeof(NullModule).Name);
-
 			return new ModuleResult(moduleNode);
 		}
 	}

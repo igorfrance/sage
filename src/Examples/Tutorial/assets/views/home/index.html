@@ -10,8 +10,7 @@
 	<head>
 		<sage:basehref/>
 		<title>Sage <sage:version/></title>
-		<link type="text/css" rel="stylesheet" href="{assetpath}/css/tutorial.css" />
-		<script type="text/javascript" src="{assetpath}/scripts/lib/jquery/shadowbox.js"></script>
+		<script type="text/javascript" src="{assetpath}/lib/scripts/jquery/shadowbox.js"></script>
 		<script type="text/javascript" src="{assetpath}/scripts/dashboard.js"></script>
 		<meta http-equiv="cache-control" content="no-cache"/>
 	</head>
@@ -27,13 +26,33 @@
 		<div id="welcome">
 			<div class="valign">
 				<div class="vcell">
-					<div class="button gradient">
+					<div class="circle gradient">
 						<div class="valign">
 							<div class="vcell">
 								<span>Welcome to</span>
 								<h1>Sage</h1>
 							</div>
 						</div>
+					</div>
+					<div class="buttons">
+						<a class="tooltip"
+						   data-orientation="BC"
+						   title="Download the latest stable build from our Team City server. Press 'Log in as guest' when prompted to authenticate."
+						   href="http://cycle99.com:808/viewLog.html?buildId=lastSuccessful&amp;buildTypeId=bt5&amp;tab=artifacts">
+							<span>Download</span>
+						</a>
+						<a class="tooltip"
+						   data-orientation="BC"
+						   title="Dive into documentation and learn more about Sage."
+							 href="javascript:;">
+							<span>Documentation</span>
+						</a>
+						<a class="tooltip"
+						   data-orientation="BC"
+						   title="Get Sage source code at the GitHub."
+							 href="https://github.com/igorfrance/Sage">
+							<span>Source</span>
+						</a>
 					</div>
 				</div>
 			</div>
