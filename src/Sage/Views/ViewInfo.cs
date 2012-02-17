@@ -55,8 +55,8 @@ namespace Sage.Views
 		/// Initializes a new instance of the <see cref="ViewInfo"/> class, using the specified 
 		/// <paramref name="controller"/> and <paramref name="action"/>.
 		/// </summary>
-		/// <param name="controller">The controller for which to create this object.</param>
-		/// <param name="action">The action for which to create this object.</param>
+		/// <param name="controller">The controller for which to create this instance.</param>
+		/// <param name="action">The controller action for which to create this instance.</param>
 		public ViewInfo(SageController controller, string action)
 		{
 			this.context = controller.Context;
@@ -326,12 +326,7 @@ namespace Sage.Views
 			}
 		}
 
-		/// <summary>
-		/// Returns a <see cref="String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="String"/> that represents this instance.
-		/// </returns>
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0}/{1} ({2})", Controller, Action, ViewPath);

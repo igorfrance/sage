@@ -26,10 +26,7 @@
 namespace Kelp.Imaging.Filters
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Drawing;
-	using System.Linq;
-	using System.Text;
 
 	/// <summary>
 	/// Implements a HSL filter.
@@ -84,11 +81,11 @@ namespace Kelp.Imaging.Filters
 				amountH = rangeH.GetValue(value);
 				if (amountH < 0)
 				{
-					convH = (float) (100 + amountH) * 0.01F;
+					convH = (100 + amountH) * 0.01F;
 				}
 				else if (amountH > 0)
 				{
-					convH = 1F + (float) amountH * 0.07F;
+					convH = 1F + (amountH * 0.07F);
 				}
 			}
 		}
@@ -108,11 +105,11 @@ namespace Kelp.Imaging.Filters
 				amountS = rangeS.GetValue(value);
 				if (amountS < 0)
 				{
-					convS = (float) (100 + amountS) * 0.01F;
+					convS = (100 + amountS) * 0.01F;
 				}
 				else if (amountS > 0)
 				{
-					convS = 1F + (float) amountS * 0.07F;
+					convS = 1F + (amountS * 0.07F);
 				}
 			}
 		}
@@ -132,11 +129,11 @@ namespace Kelp.Imaging.Filters
 				amountL = rangeL.GetValue(value);
 				if (amountL < 0)
 				{
-					convL = (float) (100 + amountL) * 0.01F;
+					convL = (100 + amountL) * 0.01F;
 				}
 				else if (amountL > 0)
 				{
-					convL = 1F + (float) amountL * 0.07F;
+					convL = 1F + (amountL * 0.07F);
 				}
 			}
 		}
@@ -151,13 +148,10 @@ namespace Kelp.Imaging.Filters
 		/// </returns>
 		public Bitmap Apply(Bitmap source)
 		{
-			if (source == null)
-				throw new ArgumentNullException("source");
-
-			if (Hue == 0 && Saturation == 0 && Lightness == 0)
+			if (this.Hue == 0 && this.Saturation == 0 && this.Lightness == 0)
 				return source;
 
-			Bitmap result = ColorSpace.HSL(source, convH, convS, convL);
+			Bitmap result = ColorSpace.HSL(source, this.convH, this.convS, this.convL);
 			return result;
 		}
 	}

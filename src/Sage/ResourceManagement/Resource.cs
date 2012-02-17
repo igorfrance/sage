@@ -29,8 +29,15 @@ namespace Sage.ResourceManagement
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
+	/// <summary>
+	/// Represents a file resource for use with Sage.
+	/// </summary>
 	public class Resource
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Resource"/> class, using the specified <paramref name="configElement"/>.
+		/// </summary>
+		/// <param name="configElement">The configuration element that defines this resource.</param>
 		public Resource(XmlElement configElement)
 		{
 			Contract.Requires<ArgumentNullException>(configElement != null);
@@ -40,33 +47,80 @@ namespace Sage.ResourceManagement
 			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), configElement.GetAttribute("location"), true);
 		}
 
+		/// <summary>
+		/// Gets or sets the type of this resource.
+		/// </summary>
 		public ResourceType Type { get; protected set; }
 
+		/// <summary>
+		/// Gets or sets the location of this resource.
+		/// </summary>
 		public ResourceLocation Location { get; protected set; }
 
+		/// <summary>
+		/// Gets or sets the path of this resource.
+		/// </summary>
 		public string Path { get; protected set; }
 
+		/// <summary>
+		/// Implements the operator ==.
+		/// </summary>
+		/// <param name="left">The value to the left of the operator.</param>
+		/// <param name="right">The value to the right of the operator.</param>
+		/// <returns>
+		/// <c>true</c> if the two values are equal; otherwise <c>false</c>.
+		/// </returns>
 		public static bool operator ==(Resource left, Resource right)
 		{
 			return Equals(left, right);
 		}
 
+		/// <summary>
+		/// Implements the operator !=.
+		/// </summary>
+		/// <param name="left">The value to the left of the operator.</param>
+		/// <param name="right">The value to the right of the operator.</param>
+		/// <returns>
+		/// <c>true</c> if the two values are NOT equal; otherwise <c>false</c>.
+		/// </returns>
 		public static bool operator !=(Resource left, Resource right)
 		{
 			return !Equals(left, right);
 		}
 
+		/// <summary>
+		/// Gets the resolved web-accessible path of this resource.
+		/// </summary>
+		/// <param name="context">The context under which this method is executed.</param>
+		/// <returns>
+		/// The resolved web-accessible path of this resource
+		/// </returns>
 		public virtual string GetResolvedWebPath(SageContext context)
 		{
 			string physicalPath = this.GetResolvedPhysicalPath(context);
 			return context.Path.GetRelativeWebPath(physicalPath, true);
 		}
 
+		/// <summary>
+		/// Gets the resolved physical path of this resource.
+		/// </summary>
+		/// <param name="context">The context under which this method is executed.</param>
+		/// <returns>
+		/// The resolved physical path of this resource
+		/// </returns>
 		public virtual string GetResolvedPhysicalPath(SageContext context)
 		{
 			return context.Path.Resolve(this.Path);
 		}
 
+		/// <summary>
+		/// Creates an XML element that represent this resource.
+		/// </summary>
+		/// <param name="ownerDocument">The owner document to use to create the element.</param>
+		/// <param name="context">The context under which this method is executed.</param>
+		/// <returns>
+		/// An XML element that represent this resource.
+		/// </returns>
 		public virtual XmlElement ToXml(XmlDocument ownerDocument, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(ownerDocument != null);
@@ -99,6 +153,13 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
+		/// <summary>
+		/// Compares this resource to another resource.
+		/// </summary>
+		/// <param name="other">The resource to compare this resource with.</param>
+		/// <returns>
+		/// <c>true</c> if the two values are equal; otherwise <c>false</c>.
+		/// </returns>
 		public bool Equals(Resource other)
 		{
 			if (other == null)
@@ -113,11 +174,13 @@ namespace Sage.ResourceManagement
 				other.Path.Equals(this.Path, StringComparison.InvariantCultureIgnoreCase);
 		}
 
+		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
 			return Equals(obj as Resource);
 		}
 
+		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
 			unchecked
@@ -129,6 +192,7 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1}) ({2})", this.Path, this.Type, this.Location);

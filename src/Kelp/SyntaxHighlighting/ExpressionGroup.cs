@@ -41,6 +41,11 @@ namespace Kelp.SyntaxHighlighting
 	/// </remarks>
 	public class ExpressionGroup
 	{
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExpressionGroup"/> class.
+        /// </summary>
+        /// <param name="groupElement">The group element.</param>
+        /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
 		public ExpressionGroup(XmlElement groupElement, bool caseSensitive)
 		{
 			Contract.Requires<ArgumentNullException>(groupElement != null);

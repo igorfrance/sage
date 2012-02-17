@@ -310,6 +310,7 @@ namespace Sage.Extensibility
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0}", this.Name);

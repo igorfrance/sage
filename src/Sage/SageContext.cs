@@ -265,6 +265,9 @@ namespace Sage
 			}
 		}
 
+		/// <summary>
+		/// Gets the custom data.
+		/// </summary>
 		public Dictionary<string, object> CustomData
 		{
 			get
@@ -291,6 +294,9 @@ namespace Sage
 			}
 		}
 
+		/// <summary>
+		/// Gets the project configuration.
+		/// </summary>
 		public ProjectConfiguration ProjectConfiguration { get; internal set; }
 
 		/// <summary>
@@ -304,8 +310,14 @@ namespace Sage
 		/// <value>The cache.</value>
 		public CacheWrapper Cache { get; private set; }
 
+		/// <summary>
+		/// Gets the route.
+		/// </summary>
 		public RouteBase Route { get; private set; }
 
+		/// <summary>
+		/// Gets the route values.
+		/// </summary>
 		public NameValueCollection RouteValues { get; private set; }
 
 		/// <summary>
@@ -730,7 +742,7 @@ namespace Sage
 			if (property == null)
 			{
 				log.ErrorFormat(
-					"Property name '{0}' is invalid. Please make sure the name is a property of WhiteLabelContext",
+					"Property name '{0}' is invalid. Please make sure the name matches a property of SageContext",
 					propName);
 
 				return null;

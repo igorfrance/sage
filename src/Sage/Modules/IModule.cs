@@ -36,13 +36,32 @@ namespace Sage.Modules
 	[ContractClass(typeof(ModuleContract))]
 	public interface IModule
 	{
-		ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration);
+		/// <summary>
+		/// Processes the specified <paramref name="moduleElement"/> and returns a <see cref="ModuleResult"/>.
+		/// </summary>
+		/// <param name="moduleElement">The XML element which represents this module.</param>
+		/// <param name="configuration">The <see cref="ViewConfiguration"/> instance in which the 
+		/// <paramref name="moduleElement"/> was used.</param>
+		/// <returns>
+		/// An object that contains the result of processing the element.
+		/// </returns>
+		/// <remarks>
+		/// A module will typically perform some back-end work (to getting some remote data from somewhere) and
+		/// provide the XML node with data to insert back into the <paramref name="moduleElement"/>. To remove the
+		/// element completely from the configuration document so that it doesn't appear at all in the result, this
+		/// method should return a <c>null</c>.
+		/// </remarks>
+		ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration);
 	}
 
+	/// <summary>
+	/// Provides contracts for <see cref="IModule"/>.
+	/// </summary>
 	[ContractClassFor(typeof(IModule))]
-	public abstract class ModuleContract : IModule
+	internal abstract class ModuleContract : IModule
 	{
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		/// <inheritdoc/>
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			Contract.Requires<ArgumentNullException>(moduleElement != null);
 			Contract.Requires<ArgumentNullException>(configuration != null);

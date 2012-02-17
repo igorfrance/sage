@@ -77,7 +77,7 @@ namespace Kelp.ResourceHandling
 
 		public new bool Enabled { get; private set; }
 
-		public CodeSettings Settings { get;  set; }
+		public CodeSettings Settings { get; private set; }
 
 		protected override List<string> BoolProps
 		{
@@ -94,6 +94,7 @@ namespace Kelp.ResourceHandling
 			get { return enumProps; }
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Serialize(typeof(CodeSettings), this.Settings);

@@ -26,6 +26,7 @@
 namespace Kelp.Http
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Net;
 	using System.Web;
 
@@ -56,8 +57,7 @@ namespace Kelp.Http
 		/// </returns>
 		public static HttpResult Fetch(string url, string proxifyUrl)
 		{
-			if (string.IsNullOrEmpty(url))
-				throw new ArgumentNullException("url");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(url));
 
 			WebRequest request = WebRequest.Create(HttpUtility.UrlDecode(url));
 			HttpWebResponse response = (HttpWebResponse) request.GetResponse();

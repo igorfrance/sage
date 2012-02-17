@@ -31,6 +31,8 @@ namespace Sage.Views
 	using System.Xml;
 
 	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
+
 	using log4net;
 	using Sage.Configuration;
 	using Sage.Controllers;
@@ -85,12 +87,24 @@ namespace Sage.Views
 			}
 		}
 
+		/// <summary>
+		/// Gets the name.
+		/// </summary>
 		public string Name { get; private set; }
 
+		/// <summary>
+		/// Gets the info.
+		/// </summary>
 		public ViewInfo Info { get; private set; }
 
+		/// <summary>
+		/// Gets the controller.
+		/// </summary>
 		public SageController Controller { get; private set; }
 
+		/// <summary>
+		/// Gets the context.
+		/// </summary>
 		public SageContext Context
 		{
 			get
@@ -99,6 +113,9 @@ namespace Sage.Views
 			}
 		}
 
+		/// <summary>
+		/// Gets the configuration element.
+		/// </summary>
 		public XmlElement ConfigurationElement
 		{
 			get
@@ -132,13 +149,23 @@ namespace Sage.Views
 			}
 		}
 
-		internal Dictionary<string, IModule> Modules { get;  set; }
+		internal Dictionary<string, IModule> Modules { get; private set; }
 
+		/// <summary>
+		/// Creates the specified controller.
+		/// </summary>
+		/// <param name="controller">The controller.</param>
+		/// <param name="viewInfo">The view info.</param>
+		/// <returns>TODO: Add documentation for Create.</returns>
 		public static ViewConfiguration Create(SageController controller, ViewInfo viewInfo)
 		{
 			return new ViewConfiguration(controller, viewInfo);
 		}
 
+		/// <summary>
+		/// Processes the request.
+		/// </summary>
+		/// <returns>TODO: Add documentation for ProcessRequest.</returns>
 		public ViewInput ProcessRequest()
 		{
 			ViewInput input = new ViewInput(this, configElement);
@@ -149,7 +176,7 @@ namespace Sage.Views
 				foreach (XmlElement moduleElement in moduleNodes)
 				{
 					IModule module = this.Controller.CreateModule(moduleElement);
-					ModuleResult result = module.ProcessRequest(moduleElement, this);
+					ModuleResult result = module.ProcessElement(moduleElement, this);
 
 					if (result == null)
 					{
@@ -170,6 +197,7 @@ namespace Sage.Views
 			return input;
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Controller.ControllerName);

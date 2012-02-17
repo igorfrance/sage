@@ -106,7 +106,7 @@ namespace Sage.DevTools.Modules
 		private bool directoriesOnly;
 		private XmlElement moduleElement;
 
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			SageContext context = configuration.Context;
 			this.moduleElement = moduleElement;

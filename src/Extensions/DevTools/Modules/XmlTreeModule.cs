@@ -43,7 +43,7 @@ namespace Sage.DevTools.Modules
 		private static readonly Regex defaultNamespaceNodes = new Regex(@"(/|^)([\w\.]+)(/|$)", RegexOptions.Compiled);
 		private static readonly ILog log = LogManager.GetLogger(typeof(XmlTreeModule).FullName);
 
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			SageContext context = configuration.Context;
 			ModuleResult result = new ModuleResult(moduleElement);

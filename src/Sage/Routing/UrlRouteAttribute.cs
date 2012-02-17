@@ -71,6 +71,7 @@ namespace Sage.Routing
 		/// </remarks>
 		public int Order { get; set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Path);

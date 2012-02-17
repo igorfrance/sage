@@ -36,7 +36,7 @@ namespace Sage.DevTools.Modules
 
 	public class DeveloperToolbarModule : IModule
 	{
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			SageContext context = configuration.Context;
 			if (!context.IsDeveloperRequest)

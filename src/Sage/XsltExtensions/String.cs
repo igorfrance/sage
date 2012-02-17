@@ -31,44 +31,108 @@ namespace Sage.XsltExtensions
 
 	using Sage.Extensibility;
 
+	/// <summary>
+	/// Provides several string-related utility methods for use in XSLT.
+	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.String)]
-	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter")]
+	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
+		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class String
 	{
-		public string format1(string format, string value1)
+		/// <summary>
+		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
+		/// </summary>
+		/// <param name="value">The string to format.</param>
+		/// <param name="param1">The first substitution value.</param>
+		/// <returns>
+		/// The formatted version of the specified <paramref name="value."/>
+		/// </returns>
+		public string format(string value, string param1)
 		{
-			return string.Format(format, value1);
+			return string.Format(value, param1);
 		}
 
-		public string format2(string format, string value1, string value2)
+		/// <summary>
+		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
+		/// </summary>
+		/// <param name="value">The string to format.</param>
+		/// <param name="param1">The first substitution value.</param>
+		/// <param name="param2">The second substitution value.</param>
+		/// <returns>
+		/// The formatted version of the specified <paramref name="value."/>
+		/// </returns>
+		public string format(string value, string param1, string param2)
 		{
-			return string.Format(format, value1, value2);
+			return string.Format(value, param1, param2);
 		}
 
-		public string format3(string format, string value1, string value2, string value3)
+		/// <summary>
+		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
+		/// </summary>
+		/// <param name="value">The string to format.</param>
+		/// <param name="param1">The first substitution value.</param>
+		/// <param name="param2">The second substitution value.</param>
+		/// <param name="param3">The third substitution value.</param>
+		/// <returns>
+		/// The formatted version of the specified <paramref name="value."/>
+		/// </returns>
+		public string format(string value, string param1, string param2, string param3)
 		{
-			return string.Format(format, value1, value2, value3);
+			return string.Format(value, param1, param2, param3);
 		}
 
-		public string format4(string format, string value1, string value2, string value3, string value4)
+		/// <summary>
+		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
+		/// </summary>
+		/// <param name="value">The string to format.</param>
+		/// <param name="param1">The first substitution value.</param>
+		/// <param name="param2">The second substitution value.</param>
+		/// <param name="param3">The third substitution value.</param>
+		/// <param name="param4">The fourth substitution value.</param>
+		/// <returns>
+		/// The formatted version of the specified <paramref name="value."/>
+		/// </returns>
+		public string format(string value, string param1, string param2, string param3, string param4)
 		{
-			return string.Format(format, value1, value2, value3, value4);
+			return string.Format(value, param1, param2, param3, param4);
 		}
 
-		public string format5(string format, string value1, string value2, string value3, string value4, string value5)
+		/// <summary>
+		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
+		/// </summary>
+		/// <param name="value">The string to format.</param>
+		/// <param name="param1">The first substitution value.</param>
+		/// <param name="param2">The second substitution value.</param>
+		/// <param name="param3">The third substitution value.</param>
+		/// <param name="param4">The fourth substitution value.</param>
+		/// <param name="param5">The fifth substitution value.</param>
+		/// <returns>
+		/// The formatted version of the specified <paramref name="value."/>
+		/// </returns>
+		public string format(string value, string param1, string param2, string param3, string param4, string param5)
 		{
-			return string.Format(format, value1, value2, value3, value4, value5);
+			return string.Format(value, param1, param2, param3, param4, param5);
 		}
 
-		public string replace(string input, string expression, string replacement)
+		/// <summary>
+		/// Searched the specified <paramref name="value"/> for <paramref name="expression"/> and replaces it with
+		/// specified <paramref name="replacement"/>.
+		/// </summary>
+		/// <param name="value">The string to replace.</param>
+		/// <param name="expression">The expression to look for.</param>
+		/// <param name="replacement">The replacement string to substitute with.</param>
+		/// <returns>
+		/// The processed version of speciried <paramref name="value"/>.
+		/// </returns>
+		public string replace(string value, string expression, string replacement)
 		{
-			if (string.IsNullOrEmpty(input))
-				return input;
+			if (string.IsNullOrEmpty(value))
+				return value;
 
 			try
 			{
 				Regex expr = new Regex(expression);
-				return expr.Replace(input, replacement ?? string.Empty);
+				return expr.Replace(value, replacement ?? string.Empty);
 			}
 			catch (Exception ex)
 			{

@@ -101,6 +101,11 @@ namespace Sage
 			}
 		}
 
+        /// <summary>
+        /// Gets the type with the specified <paramref name="typeName"/>.
+        /// </summary>
+        /// <param name="typeName">The name of the type to get.</param>
+        /// <returns>TODO: Add documentation for GetType</returns>
 		public static Type GetType(string typeName)
 		{
 			Contract.Requires<ArgumentNullException>(typeName != null);

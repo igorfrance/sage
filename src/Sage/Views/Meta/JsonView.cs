@@ -36,18 +36,27 @@ namespace Sage.Views.Meta
 	using Sage.Configuration;
 	using Sage.Controllers;
 
+	/// <summary>
+	/// Provides a JSON meta view of a view's input data.
+	/// </summary>
 	public class JsonView : MetaView
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="JsonView"/> class.
+		/// </summary>
+		/// <param name="viewInfo">The meta view associated with this view.</param>
+		/// <param name="wrapped">The actual view that this meta view wraps.</param>
 		public JsonView(MetaViewInfo viewInfo, IView wrapped)
 			: base(viewInfo, wrapped)
 		{
 		}
 
 		/// <summary>
-		/// Renders the specified view context by using the specified the writer object.
+		/// Renders the meta view of the view associated with the specified <paramref name="viewContext"/> 
+		/// and <paramref name="writer"/>.
 		/// </summary>
 		/// <param name="viewContext">The view context.</param>
-		/// <param name="writer">The writer object.</param>
+		/// <param name="writer">The writer to write to.</param>
 		public override void Render(ViewContext viewContext, TextWriter writer)
 		{
 			SageController controller = (SageController) viewContext.Controller;

@@ -31,7 +31,7 @@ namespace Kelp.IO
 	using System.Security.Cryptography;
 
 	/// <summary>
-	/// Implements CRC2 hashing algorithm.
+	/// Implements CRC32 hashing algorithm.
 	/// </summary>
 	public class Crc32 : HashAlgorithm
 	{
@@ -44,9 +44,9 @@ namespace Kelp.IO
 		private static uint[] defaultTable;
 		private uint hash;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Crc32"/> class.
-		/// </summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Crc32"/> class.
+        /// </summary>
 		public Crc32()
 		{
 			table = InitializeTable(DefaultPolynomial);
@@ -54,6 +54,11 @@ namespace Kelp.IO
 			Initialize();
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Crc32"/> class, using the specified <paramref name="polynomial"/> and <paramref name="seed"/>.
+        /// </summary>
+        /// <param name="polynomial">The polynomial.</param>
+        /// <param name="seed">The seed.</param>
 		public Crc32(uint polynomial, uint seed)
 		{
 			table = InitializeTable(polynomial);
@@ -61,11 +66,20 @@ namespace Kelp.IO
 			Initialize();
 		}
 
+        /// <summary>
+        /// Gets the size, in bits, of the computed hash code.
+        /// </summary>
+        /// <returns>The size, in bits, of the computed hash code.</returns>
 		public override int HashSize
 		{
 			get { return 32; }
 		}
 
+        /// <summary>
+        /// Gets the hash.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <returns>TODO: Add documentation for GetHash.</returns>
 		public static string GetHash(string filePath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(filePath));
@@ -74,6 +88,11 @@ namespace Kelp.IO
 				return GetHash(fs);
 		}
 
+        /// <summary>
+        /// Gets the hash.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns></returns>
 		public static string GetHash(Stream bytes)
 		{
 			Contract.Requires<ArgumentNullException>(bytes != null);
@@ -87,31 +106,64 @@ namespace Kelp.IO
 			return string.Join(string.Empty, hashString);
 		}
 
+        /// <summary>
+        /// Computes the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>TODO: Add documentation for Compute.</returns>
 		public static uint Compute(byte[] buffer)
 		{
 			return ~CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
 		}
 
+        /// <summary>
+        /// Computes the specified seed.
+        /// </summary>
+        /// <param name="seed">The seed.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>TODO: add documentation for Compute.</returns>
 		public static uint Compute(uint seed, byte[] buffer)
 		{
 			return ~CalculateHash(InitializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
 		}
 
+        /// <summary>
+        /// Computes the specified polynomial.
+        /// </summary>
+        /// <param name="polynomial">The polynomial.</param>
+        /// <param name="seed">The seed.</param>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>TODO: Add documentation for Compute.</returns>
 		public static uint Compute(uint polynomial, uint seed, byte[] buffer)
 		{
 			return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
 		}
 
+        /// <summary>
+        /// Initializes an implementation of the <see cref="T:System.Security.Cryptography.HashAlgorithm"/> class.
+        /// </summary>
 		public override sealed void Initialize()
 		{
 			hash = seed;
 		}
 
+        /// <summary>
+        /// Hashes the core.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="start">The start.</param>
+        /// <param name="length">The length.</param>
 		protected override void HashCore(byte[] buffer, int start, int length)
 		{
 			hash = CalculateHash(table, hash, buffer, start, length);
 		}
 
+        /// <summary>
+        /// When overridden in a derived class, finalizes the hash computation after the last data is processed by the cryptographic stream object.
+        /// </summary>
+        /// <returns>
+        /// The computed hash code.
+        /// </returns>
 		protected override byte[] HashFinal()
 		{
 			byte[] hashBuffer = UInt32ToBigEndianBytes(~hash);

@@ -28,9 +28,21 @@ namespace Sage.Extensibility
 	using System;
 	using System.Xml;
 
+	using Sage.ResourceManagement;
+
+	/// <summary>
+	/// Indicates that the method this attribute decorates should be used as a node handler for 
+	/// <see cref="ResourceManager.CopyNode"/>.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class NodeHandlerAttribute : Attribute
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NodeHandlerAttribute"/> class.
+		/// </summary>
+		/// <param name="nodeType">The type of the node being handled.</param>
+		/// <param name="nodeName">The name of the node being handled.</param>
+		/// <param name="ns">The namespace of the node being handled.</param>
 		public NodeHandlerAttribute(XmlNodeType nodeType, string nodeName, string ns = null)
 		{
 			this.NodeType = nodeType;
@@ -38,10 +50,19 @@ namespace Sage.Extensibility
 			this.Namespace = ns;
 		}
 
+		/// <summary>
+		/// Gets the type of the handled node.
+		/// </summary>
 		public XmlNodeType NodeType { get; private set; }
 
+		/// <summary>
+		/// Gets the name of the handled node.
+		/// </summary>
 		public string NodeName { get; private set; }
 
+		/// <summary>
+		/// Gets the namespace of the handled node.
+		/// </summary>
 		public string Namespace { get; private set; }
 	}
 }

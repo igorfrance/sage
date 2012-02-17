@@ -29,7 +29,7 @@ namespace Kelp.Test.Extensions
 	using System;
 	using System.Collections.Generic;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Machine.Specifications;
 
 	[Subject(typeof(IEnumerableExtensions)), Tags(Categories.Core)]

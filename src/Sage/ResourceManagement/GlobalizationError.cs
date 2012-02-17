@@ -32,10 +32,17 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class GlobalizationError : Exception
 	{
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GlobalizationError"/> class.
+        /// </summary>
 		public GlobalizationError()
 		{
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GlobalizationError"/> class, using the specified <paramref name="message"/>.
+        /// </summary>
+        /// <param name="message">The message.</param>
 		public GlobalizationError(string message)
 			: base(message)
 		{

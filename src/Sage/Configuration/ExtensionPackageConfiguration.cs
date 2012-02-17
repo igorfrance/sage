@@ -27,7 +27,7 @@ namespace Sage.Configuration
 {
 	using System.Xml;
 
-	public class ExtensionPackageConfiguration
+	internal class ExtensionPackageConfiguration
 	{
 		private static readonly XmlNamespaceManager Nm = XmlNamespaces.Manager;
 

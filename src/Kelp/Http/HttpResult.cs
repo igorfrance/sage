@@ -27,6 +27,7 @@ namespace Kelp.Http
 {
 	using System;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -51,8 +52,7 @@ namespace Kelp.Http
 		/// <param name="response">The response recieved from requesting a file over HTTP.</param>
 		public HttpResult(HttpWebResponse response)
 		{
-			if (response == null)
-				throw new ArgumentNullException("response");
+			Contract.Requires<ArgumentNullException>(response != null);
 
 			this.ContentType = (response.ContentType.IndexOf(";") == -1
 				? response.ContentType
@@ -84,7 +84,7 @@ namespace Kelp.Http
 		/// <value>
 		/// 	<c>true</c> if this instance represents a text response; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsTextResponse { get;  set; }
+		public bool IsTextResponse { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this instance represents an HTML text response.
@@ -92,32 +92,32 @@ namespace Kelp.Http
 		/// <value>
 		/// 	<c>true</c> if this instance represents an HTML text response; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsHtmlResponse { get;  set; }
+		public bool IsHtmlResponse { get; private set; }
 
 		/// <summary>
 		/// Gets the content type of this instance.
 		/// </summary>
-		public string ContentType { get;  set; }
+		public string ContentType { get; private set; }
 
 		/// <summary>
 		/// Gets the charset of this instance.
 		/// </summary>
-		public string Charset { get;  set; }
+		public string Charset { get; private set; }
 
 		/// <summary>
 		/// Gets the encoding of this instance.
 		/// </summary>
-		public string Encoding { get;  set; }
+		public string Encoding { get; private set; }
 
 		/// <summary>
 		/// Gets the length (in bytes) of this instance.
 		/// </summary>
-		public long Length { get;  set; }
+		public long Length { get; private set; }
 
 		/// <summary>
 		/// Gets the text of this instance (if the result is a text result).
 		/// </summary>
-		public string Text { get;  set; }
+		public string Text { get; private set; }
 
 		/// <summary>
 		/// Gets the binary data of this instance (if the result is a binary result).
@@ -127,12 +127,12 @@ namespace Kelp.Http
 		/// <summary>
 		/// Gets the Uri of the Internet resource that responded to this request.
 		/// </summary>
-		public Uri Uri { get;  set; }
+		public Uri Uri { get; private set; }
 
 		/// <summary>
 		/// Gets the headers that are associated with this response from the server.
 		/// </summary>
-		public NameValueCollection ResponseHeaders { get;  set; }
+		public NameValueCollection ResponseHeaders { get; private set; }
 
 		/// <summary>
 		/// Gets the response status of this result

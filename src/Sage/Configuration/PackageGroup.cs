@@ -32,7 +32,7 @@ namespace Sage.Configuration
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
-	public class PackageGroup
+	internal class PackageGroup
 	{
 		//// {assetpath}/somewhere/*
 		private static readonly Regex wildcardFolder = new Regex(@"(.*)(?:/\*)$");

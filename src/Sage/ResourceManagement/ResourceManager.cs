@@ -95,6 +95,9 @@ namespace Sage.ResourceManagement
 			this.context = context;
 		}
 
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
 		public SageContext Context
 		{
 			get
@@ -132,6 +135,11 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+        /// <summary>
+        /// Registers the text handler.
+        /// </summary>
+        /// <param name="variableName">Name of the variable.</param>
+        /// <param name="handler">The handler.</param>
 		public static void RegisterTextHandler(string variableName, ProcessText handler)
 		{
 			if (string.IsNullOrEmpty(variableName))
@@ -158,6 +166,11 @@ namespace Sage.ResourceManagement
 				RegexOptions.IgnoreCase);
 		}
 
+        /// <summary>
+        /// Gets the remote text file.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns>TODO: Add documentation for GetRemoteTextFile.</returns>
 		public static string GetRemoteTextFile(string url)
 		{
 			WebResponse response = GetHttpResponse(url, null, null);
@@ -169,16 +182,33 @@ namespace Sage.ResourceManagement
 			return responseText;
 		}
 
+        /// <summary>
+        /// Gets the delegate signature.
+        /// </summary>
+        /// <param name="d">The d.</param>
+        /// <returns>TODO: Add documentation for GetDelegateSignature.</returns>
 		public static string GetDelegateSignature(Delegate d)
 		{
 			return string.Concat(d.Method.DeclaringType.FullName, ".", d.Method.Name);
 		}
 
+        /// <summary>
+        /// Gets the HTTP response.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns>TODO: Add documentation for GetHttpResponse.</returns>
 		public static WebResponse GetHttpResponse(string url)
 		{
 			return GetHttpResponse(url, null, null);
 		}
 
+        /// <summary>
+        /// Gets the HTTP response.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <returns></returns>
 		public static WebResponse GetHttpResponse(string url, string username, string password)
 		{
 			WebRequest request = WebRequest.Create(url);
@@ -189,6 +219,11 @@ namespace Sage.ResourceManagement
 			return response;
 		}
 
+        /// <summary>
+        /// Loads the XML document.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>TODO: Add documentation for LoadXmlDocument.</returns>
 		public static CacheableXmlDocument LoadXmlDocument(string path)
 		{
 		    Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -196,6 +231,13 @@ namespace Sage.ResourceManagement
 			return LoadXmlDocument(path, null);
 		}
 
+        /// <summary>
+        /// Loads the XML document.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="schemaPath">The schema path.</param>
+        /// <returns>TODO: Add documentation for LoadXmlDocument.</returns>
 		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, string schemaPath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -207,6 +249,13 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
+        /// <summary>
+        /// Loads the XML document.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="schemas">The schemas.</param>
+        /// <returns></returns>
 		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, XmlSchemaSet schemas)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -218,6 +267,12 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
+        /// <summary>
+        /// Loads the XML document.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>TODO: Add documentation for LoadXmlDocument.</returns>
 		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -253,6 +308,11 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
+        /// <summary>
+        /// Validates the document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="schemaPath">The schema path.</param>
 		public static void ValidateDocument(XmlDocument document, string schemaPath)
 		{
 			Contract.Requires<ArgumentNullException>(document != null);
@@ -279,6 +339,11 @@ namespace Sage.ResourceManagement
 			ValidateDocument(document, schemaSet);
 		}
 
+        /// <summary>
+        /// Validates the document.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        /// <param name="schemaSet">The schema set.</param>
 		public static void ValidateDocument(XmlDocument document, XmlSchemaSet schemaSet)
 		{
 			Contract.Requires<ArgumentNullException>(document != null);
@@ -292,6 +357,11 @@ namespace Sage.ResourceManagement
 			});
 		}
 
+        /// <summary>
+        /// Loads the XML.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>TODO: Add documentation for LoadXml.</returns>
 		public CacheableXmlDocument LoadXml(string path)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));

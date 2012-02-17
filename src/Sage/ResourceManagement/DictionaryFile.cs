@@ -41,7 +41,7 @@ namespace Sage.ResourceManagement
 	/// Provides a base class for use with dictionary and settings translation.
 	/// </summary>
 	/// <remarks>
-	/// The White Label localization framework uses xml 'dictionaries' that contain locale-specific values which at translation
+	/// The Sage localization framework uses xml 'dictionaries' that contain locale-specific values which at translation
 	/// time get inserted at desired locations in XML configuration files. This class, provided a file path template, opens all
 	/// dictionaries applicable for a <c>locale</c>, and combines the localization 'items' into a single document, prioritizing them
 	/// as defined in the configuration of that <c>locale</c>.
@@ -118,12 +118,12 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the locale of this <see cref="DictionaryFile"/>.
 		/// </summary>
-		public string Locale { get;  set; }
+		public string Locale { get; private set; }
 
 		/// <summary>
 		/// Gets the dictionary of phrases from the final merged dictionary, with all the fallbacks resolved.
 		/// </summary>
-		public Dictionary<string, string> Items { get;  set; }
+		public Dictionary<string, string> Items { get; private set; }
 
 		/// <summary>
 		/// Gets the <see cref="XmlDocument"/> that contains all translation phrase combined by priority.

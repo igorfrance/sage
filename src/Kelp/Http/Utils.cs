@@ -28,13 +28,12 @@ namespace Kelp.Http
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Linq;
 	using System.Net;
-	using System.Text;
 	using System.Web;
 
-	using Kelp.ResourceHandling;
-
+	/// <summary>
+	/// Provides several common HTTP related utility methods.
+	/// </summary>
 	public static class Util
 	{
 		/// <summary>
@@ -43,16 +42,40 @@ namespace Kelp.Http
 		/// </summary>
 		public const int MaxDifferenceCachedDate = 2;
 
+		/// <summary>
+		/// Determines whether the specified <paramref name="context"/> represents a no-cache request.
+		/// </summary>
+		/// <param name="context">The context to check.</param>
+		/// <returns>
+		/// <c>true</c> if the specified <paramref name="context"/> represents a no-cache request; otherwise, <c>false</c>.
+		/// </returns>
 		public static bool IsNoCacheRequest(HttpContextBase context)
 		{
 			return context.Request.Headers["Cache-Control"] == "no-cache";
 		}
 
+		/// <summary>
+		/// Determines whether the specified <paramref name="context"/> represents a cached request.
+		/// </summary>
+		/// <param name="context">The context to check.</param>
+		/// <returns>
+		/// <c>true</c> if the specified <paramref name="context"/> represents a cached request; otherwise, <c>false</c>.
+		/// </returns>
 		public static bool IsCachedRequest(HttpContextBase context)
 		{
 			return context.Request.Headers["If-Modified-Since"] != null;
 		}
 
+		/// <summary>
+		/// Determines whether the specified <paramref name="lastModified"/> date is greater than the last modified
+		/// date associated with the request.
+		/// </summary>
+		/// <param name="context">The context to check.</param>
+		/// <param name="lastModified">The last modification date to test with.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <paramref name="lastModified"/> date is greater than the last modified
+		/// date associated with the request; otherwise, <c>false</c>.
+		/// </returns>
 		public static bool IsFileUpdatedSinceCached(HttpContextBase context, DateTime lastModified)
 		{
 			DateTime cachedDate = DateTime.Parse(context.Request.Headers["If-Modified-Since"]);
@@ -62,9 +85,9 @@ namespace Kelp.Http
 		}
 
 		/// <summary>
-		/// Sends the not-modified status to the browser.
+		/// Sends the not-modified status header to the responnse.
 		/// </summary>
-		/// <param name="context">The context under which this code is executing.</param>
+		/// <param name="context">The HTTP context that contains the request.</param>
 		public static void SendNotModified(HttpContextBase context)
 		{
 			context.Response.SuppressContent = true;
@@ -73,18 +96,22 @@ namespace Kelp.Http
 			context.Response.AddHeader("Content-Length", "0");
 		}
 
+		/// <summary>
+		/// Sets the response status code to 404 for the specified <paramref name="context"/>.
+		/// </summary>
+		/// <param name="context">The HTTP context that contains the request.</param>
 		public static void SendFileNotFound(HttpContextBase context)
 		{
 			context.Response.StatusCode = 404;
 		}
 
 		/// <summary>
-		/// Gets the last-modified datetime of the specified file.
+		/// Gets the last modification date of the specified <paramref name="filePath"/>.
 		/// </summary>
 		/// <param name="filePath">The file path.</param>
-		/// <returns>the last-modified datetime of the specified file</returns>
+		/// <returns>the last modification date of the specified file</returns>
 		/// <remarks>
-		/// The latest of the <em>LastWriteTime</em> and <em>CreationTime</em> is used
+		/// The greaer of the <em>LastWriteTime</em> and <em>CreationTime</em> associated with the request.
 		/// </remarks>
 		public static DateTime GetDateLastModified(string filePath)
 		{
@@ -96,10 +123,10 @@ namespace Kelp.Http
 		}
 
 		/// <summary>
-		/// Gets the last-modified datetime of a list of files.
+		/// Gets the latest modification date of specified list of <paramref name="files"/>.
 		/// </summary>
-		/// <param name="files">The files.</param>
-		/// <returns>The latest last-modified datetime of the <paramref name="files"/> list.</returns>
+		/// <param name="files">The files to check.</param>
+		/// <returns>The latest modification date of the specified list of <paramref name="files"/>.</returns>
 		public static DateTime GetDateLastModified(IEnumerable<string> files)
 		{
 			DateTime latestModified = new DateTime();

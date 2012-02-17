@@ -88,12 +88,10 @@ namespace Kelp.Extensions
 		/// <returns>The <paramref name="child"/> element that was appended.</returns>
 		public static XmlElement AppendElement(this XmlNode instance, XmlNode child)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-			if (child == null)
-				throw new ArgumentNullException("child");
+			Contract.Requires<ArgumentNullException>(instance != null);
+			Contract.Requires<ArgumentNullException>(child != null);
 
-			return (XmlElement)instance.AppendChild(child);
+			return (XmlElement) instance.AppendChild(child);
 		}
 
 		/// <summary>
@@ -104,10 +102,8 @@ namespace Kelp.Extensions
 		/// <returns>The element that was created and appended to <paramref name="instance"/>.</returns>
 		public static XmlElement AppendElement(this XmlNode instance, string elementName)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-			if (string.IsNullOrEmpty(elementName))
-				throw new ArgumentNullException("elementName");
+			Contract.Requires<ArgumentNullException>(instance != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(elementName));
 
 			XmlNode childNode = instance.OwnerDocument.CreateElement(elementName);
 			return (XmlElement) instance.AppendChild(childNode);
@@ -122,12 +118,9 @@ namespace Kelp.Extensions
 		/// <returns>The element that was created and appended to <paramref name="instance"/>.</returns>
 		public static XmlElement AppendElement(this XmlNode instance, string qualifiedName, string nodeNamespace)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-			if (string.IsNullOrEmpty(qualifiedName))
-				throw new ArgumentNullException("qualifiedName");
-			if (string.IsNullOrEmpty(nodeNamespace))
-				throw new ArgumentNullException("nodeNamespace");
+			Contract.Requires<ArgumentNullException>(instance != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(qualifiedName));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(nodeNamespace));
 
 			XmlDocument ownerDoc = instance.OwnerDocument ?? (XmlDocument) instance;
 			XmlNode childNode = ownerDoc.CreateElement(qualifiedName, nodeNamespace);
@@ -143,10 +136,8 @@ namespace Kelp.Extensions
 		/// <returns>The first XmlNode that matches the XPath expression and returns it an an <see cref="XmlElement"/></returns>
 		public static XmlElement SelectSingleElement(this XmlNode instance, string xpath, XmlNamespaceManager manager = null)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-			if (string.IsNullOrEmpty(xpath))
-				throw new ArgumentNullException("xpath");
+			Contract.Requires<ArgumentNullException>(instance != null);
+			Contract.Requires<ArgumentNullException>(xpath != null);
 
 			if (manager != null)
 				return instance.SelectSingleNode(xpath, manager) as XmlElement;

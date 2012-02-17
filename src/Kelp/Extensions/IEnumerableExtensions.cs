@@ -23,13 +23,12 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-namespace Kelp.Core.Extensions
+namespace Kelp.Extensions
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
-	using System.Text;
 
 	/// <summary>
 	/// Implements extensions to <see cref="IEnumerable&lt;T&gt;"/>.
@@ -39,7 +38,7 @@ namespace Kelp.Core.Extensions
 		/// <summary>
 		/// Creates a string of all values in the collection joined with the specified separator.
 		/// </summary>
-		/// <typeparam name="T">The <see cref="IEnumerable&lt;T&gt;"/> collection.</typeparam>
+		/// <typeparam name="T">The type of the collection</typeparam>
 		/// <param name="collection">The collection whose values should be joined.</param>
 		/// <param name="separator">The separator to use for joining the collection's values.</param>
 		/// <returns>The joined collection.</returns>
@@ -53,33 +52,21 @@ namespace Kelp.Core.Extensions
 			Contract.Requires<ArgumentNullException>(collection != null);
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(separator));
 
-			StringBuilder result = new StringBuilder();
-			for (int i = 0; i < collection.Count(); i++)
-			{
-				object item = collection.ElementAt(i);
-				if (item == null)
-					result.Append(string.Empty);
-				else
-					result.Append(item.ToString());
-
-				if (i < collection.Count() - 1)
-					result.Append(separator);
-			}
-
-			return result.ToString();
+			return string.Join(separator, collection.ToArray());
 		}
 
 		/// <summary>
 		/// Executes the specified <paramref name="action"/> on each of the elements in the <paramref name="collection"/>.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="T">The type of the collection</typeparam>
 		/// <param name="collection">The collection on which to operate.</param>
 		/// <param name="action">The action to apply to each of the elements.</param>
 		public static void ForEach<T>(this IEnumerable<T> collection, Action<T, int> action)
 		{
-			for (int i = 0; i < collection.Count(); i++)
+			List<T> list = collection.ToList();
+			for (int i = 0; i < list.Count; i++)
 			{
-				action(collection.ElementAt(i), i);
+				action(list[i], i);
 			}
 		}
 
@@ -92,9 +79,10 @@ namespace Kelp.Core.Extensions
 		/// if found and -1 if the item could not be found</returns>
 		public static int IndexOf(this IEnumerable<string> collection, string item)
 		{
-			for (int i = 0; i < collection.Count(); i++)
+			List<string> list = collection.ToList();
+			for (int i = 0; i < list.Count; i++)
 			{
-				if (collection.ElementAt(i) == item)
+				if (list[i] == item)
 					return i;
 			}
 

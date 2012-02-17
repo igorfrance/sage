@@ -30,26 +30,27 @@ namespace Sage.Configuration
 	using System.Xml;
 
 	/// <summary>
-	/// Contains configuration information about a single configured URL route.
+	/// Contains configuration information about a single URL route.
 	/// </summary>
 	public struct RouteInfo
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RouteInfo"/> struct.
+		/// Initializes a new instance of the <see cref="RouteInfo"/> struct, using the specified 
+		/// <paramref name="configurationElement"/>.
 		/// </summary>
-		/// <param name="routeConfig">The route configuration node.</param>
+		/// <param name="configurationElement">The route configuration element's.</param>
 		/// <exception cref="ArgumentNullException"><c>routeConfig</c> is null.</exception>
-		public RouteInfo(XmlElement routeConfig)
+		public RouteInfo(XmlElement configurationElement)
 			: this()
 		{
-			if (routeConfig == null)
-				throw new ArgumentNullException("routeConfig");
+			if (configurationElement == null)
+				throw new ArgumentNullException("configurationElement");
 
-			this.Name = routeConfig.GetAttribute("name");
-			this.Path = routeConfig.GetAttribute("path");
-			this.Controller = routeConfig.GetAttribute("controller");
-			this.Action = routeConfig.GetAttribute("action");
-			this.Namespace = routeConfig.GetAttribute("namespace");
+			this.Name = configurationElement.GetAttribute("name");
+			this.Path = configurationElement.GetAttribute("path");
+			this.Controller = configurationElement.GetAttribute("controller");
+			this.Action = configurationElement.GetAttribute("action");
+			this.Namespace = configurationElement.GetAttribute("namespace");
 
 			this.Constraints = new Dictionary<string, string>();
 			this.Defaults = new Dictionary<string, string>();
@@ -57,48 +58,49 @@ namespace Sage.Configuration
 			this.Defaults.Add("action", this.Action);
 			this.Defaults.Add("controller", this.Controller);
 
-			foreach (XmlElement constrNode in routeConfig.SelectNodes("p:constraint", XmlNamespaces.Manager))
+			foreach (XmlElement constrNode in configurationElement.SelectNodes("p:constraint", XmlNamespaces.Manager))
 				this.Constraints.Add(constrNode.GetAttribute("name"), constrNode.GetAttribute("expression"));
 
-			foreach (XmlElement constrNode in routeConfig.SelectNodes("p:default", XmlNamespaces.Manager))
+			foreach (XmlElement constrNode in configurationElement.SelectNodes("p:default", XmlNamespaces.Manager))
 				this.Defaults.Add(constrNode.GetAttribute("name"), constrNode.GetAttribute("value"));
 		}
 
 		/// <summary>
 		/// Gets the name of this route.
 		/// </summary>
-		public string Name { get;  set; }
+		public string Name { get; private set; }
 
 		/// <summary>
 		/// Gets the namespace of this controller that handles this route.
 		/// </summary>
-		public string Namespace { get;  set; }
+		public string Namespace { get; private set; }
 
 		/// <summary>
-		/// Gets the path of this route.
+		/// Gets the path associated with this route.
 		/// </summary>
-		public string Path { get;  set; }
+		public string Path { get; private set; }
 
 		/// <summary>
 		/// Gets the name of the controller that handles this route.
 		/// </summary>
-		public string Controller { get;  set; }
+		public string Controller { get; private set; }
 
 		/// <summary>
 		/// Gets the name of the controller action that handles this route.
 		/// </summary>
-		public string Action { get;  set; }
+		public string Action { get; private set; }
 
 		/// <summary>
 		/// Gets the constraints associated with this route.
 		/// </summary>
-		public Dictionary<string, string> Constraints { get;  set; }
+		public Dictionary<string, string> Constraints { get; private set; }
 
 		/// <summary>
-		/// Gets the defaults associated with this route.
+		/// Gets the default values associated with this route.
 		/// </summary>
-		public Dictionary<string, string> Defaults { get;  set; }
+		public Dictionary<string, string> Defaults { get; private set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1}) ({2}/{3})", this.Name, this.Path, this.Controller, this.Action);

@@ -33,11 +33,22 @@ namespace Sage.Modules
 
 	using Sage.Configuration;
 
+	using log4net;
+
+	/// <summary>
+	/// Provides the default factory for Sage modules.
+	/// </summary>
 	public class SageModuleFactory : IModuleFactory
 	{
-		private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(SageModuleFactory).FullName);
+		private static readonly ILog log = LogManager.GetLogger(typeof(SageModuleFactory).FullName);
 		private static IDictionary<string, ModuleConfiguration> moduleDictionary;
 
+		/// <summary>
+		/// Gets the dictionary of modules that can be used in the current project.
+		/// </summary>
+		/// <remarks>
+		/// The keys in this dictionary are the module tag names.
+		/// </remarks>
 		public static IDictionary<string, ModuleConfiguration> Modules
 		{
 			get
@@ -72,6 +83,7 @@ namespace Sage.Modules
 			}
 		}
 
+		/// <inheritdoc/>
 		public IModule CreateModule(XmlElement moduleNode)
 		{
 			if (moduleNode == null)

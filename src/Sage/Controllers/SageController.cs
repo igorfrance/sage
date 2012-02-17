@@ -27,7 +27,7 @@ namespace Sage.Controllers
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
 	using System.Web.Mvc;
@@ -35,13 +35,10 @@ namespace Sage.Controllers
 	using System.Xml;
 
 	using Kelp;
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 
-	using Sage.Extensibility;
-
 	using log4net;
-
+	using Sage.Extensibility;
 	using Sage.Modules;
 	using Sage.ResourceManagement;
 	using Sage.Views;
@@ -57,11 +54,12 @@ namespace Sage.Controllers
 		internal const string DefaultController = "home";
 		internal const string DefaultAction = "index";
 
-		protected Dictionary<string, ViewInfo> viewInfo = new Dictionary<string, ViewInfo>();
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageController).FullName);
 		private static readonly List<FilterViewXml> xmlFilters = new List<FilterViewXml>();
+
 		private readonly ControllerMessages messages = new ControllerMessages();
 		private readonly IModuleFactory moduleFactory = new SageModuleFactory();
+		private readonly Dictionary<string, ViewInfo> viewInfo = new Dictionary<string, ViewInfo>();
 
 		static SageController()
 		{
@@ -99,17 +97,15 @@ namespace Sage.Controllers
 		/// </summary>
 		protected SageController()
 		{
-			this.MetaData = new NameValueCollection();
-
 			this.messages = new ControllerMessages();
 			this.ViewData["messages"] = this.messages;
 			this.IsShared = this.GetType().GetCustomAttributes(typeof(SharedControllerAttribute), true).Count() != 0;
 		}
 
 		/// <summary>
-		/// Gets or sets the <see cref="SageContext"/> current to this controller.
+		/// Gets the <see cref="SageContext"/> with which this controller runs.
 		/// </summary>
-		public SageContext Context { get; set; }
+		public SageContext Context { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the list of files that this document consists of or depends on.
@@ -128,17 +124,17 @@ namespace Sage.Controllers
 		}
 
 		/// <summary>
-		/// Gets a dictionary for meta information that can be passed between the controller and the views.
+		/// Gets a value indicating whether this is a shared controller.
 		/// </summary>
-		internal NameValueCollection MetaData { get; private set; }
-
-		/// <summary>
-		/// Gets a value indicating whether this instance is shared.
-		/// </summary>
+		/// <remarks>
+		/// Shared controller is useful with multi-ategory projects. A shared controller's view are opened from
+		/// <see cref="PathResolver.SharedViewPath"/> instead of from <see cref="PathResolver.ViewPath"/>. This makes
+		/// it possible to have create views that are shared across all gategories in a multi-category project.
+		/// </remarks>
 		internal bool IsShared { get; private set; }
 
 		/// <summary>
-		/// Sets the HttpStatus to Not Found (404) and returns an <see cref="EmptyResult"/>.
+		/// Sets the HTTP status to not found (404) and returns an <see cref="EmptyResult"/>.
 		/// </summary>
 		/// <returns>Empty result</returns>
 		public ActionResult PageNotFound()
@@ -147,6 +143,12 @@ namespace Sage.Controllers
 			return new EmptyResult();
 		}
 
+		/// <summary>
+		/// Processes the view configuration associated with the specified <paramref name="viewName"/>, 
+		/// and returns an <see cref="ActionResult"/>.
+		/// </summary>
+		/// <param name="viewName">The of the view that should be rendered to response.</param>
+		/// <returns>The action result.</returns>
 		public ActionResult SageView(string viewName)
 		{
 			ViewInfo info = new ViewInfo(this, viewName);
@@ -160,22 +162,49 @@ namespace Sage.Controllers
 			return this.PageNotFound();
 		}
 
+		/// <summary>
+		/// Processes the view configuration associated with the specified <paramref name="viewName"/>, 
+		/// and returns a <see cref="ViewInput"/> instance that contains the result.
+		/// </summary>
+		/// <param name="viewName">The name of the view to process.</param>
+		/// <returns>
+		/// An object that contains the result of processing the view configuration
+		/// </returns>
+		public virtual ViewInput ProcessView(string viewName)
+		{
+			return ProcessView(new ViewInfo(this, viewName));
+		}
+
+		/// <summary>
+		/// Processes the view configuration associated with the specified <paramref name="viewInfo"/>, 
+		/// and returns a <see cref="ViewInput"/> instance that contains the result.
+		/// </summary>
+		/// <param name="viewInfo">The object that contains information about the view.</param>
+		/// <returns>
+		/// An object that contains the result of processing the view configuration
+		/// </returns>
 		public virtual ViewInput ProcessView(ViewInfo viewInfo)
 		{
 			ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
 			return config.ProcessRequest();
 		}
 
-		public virtual ViewInput ProcessView(string viewName)
-		{
-			return ProcessView(new ViewInfo(this, viewName));
-		}
-
+		/// <inheritdoc/>
 		public virtual IModule CreateModule(XmlElement moduleElement)
 		{
 			return moduleFactory.CreateModule(moduleElement);
 		}
 
+		/// <summary>
+		/// Wraps the previously processed view configuration input XML with the standard XML envelope that contains 
+		/// information about the current request, and the resources referenced by the modules and libraries in use by the 
+		/// the view.
+		/// </summary>
+		/// <param name="viewContext">The view context that contains the <see cref="ViewInput"/> that resulted from
+		/// previously processing the view configuration.</param>
+		/// <returns>
+		/// The actual XML document that will be used as input for the final XSLT transform.
+		/// </returns>
 		public virtual XmlDocument PrepareViewXml(ViewContext viewContext)
 		{
 			ViewInput input = viewContext.ViewData.Model as ViewInput;
@@ -270,12 +299,13 @@ namespace Sage.Controllers
 		}
 
 		/// <summary>
-		/// Gets the path info about the view template and configuration file corresponding to this controller 
-		/// and the specified <paramref name="viewName"/>.
+		/// Gets the view info corresponding to this controller and the specified <paramref name="viewName"/>.
 		/// </summary>
-		/// <param name="viewName">Name of the action for which to get the path info.</param>
-		/// <returns>The path info about the view template and configuration file corresponding to this controller 
-		/// and the specified <paramref name="viewName"/></returns>
+		/// <param name="viewName">The name of the view for which to get the info.</param>
+		/// <returns>
+		/// An object that contains information about the view template and configuration file that correspond to 
+		/// this controller and the vew with the specified <paramref name="viewName"/>.
+		/// </returns>
 		public virtual ViewInfo GetViewInfo(string viewName)
 		{
 			if (!viewInfo.ContainsKey(viewName))
@@ -286,7 +316,7 @@ namespace Sage.Controllers
 		}
 
 		/// <summary>
-		/// Gets the last modification date for the specified <paramref name="actionName"/>.
+		/// Gets the last modification date for the specified <paramref name="viewName"/>.
 		/// </summary>
 		/// <remarks>
 		/// Each action can and should be cached by the browsers. When subsequent requests come in, browsers will
@@ -297,11 +327,13 @@ namespace Sage.Controllers
 		/// includes. Therefore it is necessary to have this extra piece of logic to effectively determine what that
 		/// latest modification date is.
 		/// </remarks>
-		/// <param name="actionName">The name of the action for which to retrieve the last modification date.</param>
-		/// <returns>The last modified date for the specified <paramref name="actionName"/>.</returns>
-		public virtual DateTime? GetLastModificationDate(string actionName)
+		/// <param name="viewName">The name of the action for which to retrieve the last modification date.</param>
+		/// <returns>
+		/// The last modification date for the view with the specified <paramref name="viewName"/>.
+		/// </returns>
+		public virtual DateTime? GetLastModificationDate(string viewName)
 		{
-			ViewInfo info = GetViewInfo(actionName);
+			ViewInfo info = GetViewInfo(viewName);
 			return info.LastModified;
 		}
 
@@ -314,6 +346,15 @@ namespace Sage.Controllers
 			this.Initialize(requestContext);
 		}
 
+		/// <summary>
+		/// Filters the specified <paramref name="viewXml"/> by invoking all <see cref="FilterViewXml"/> delegates
+		/// that are accessible by the project at the time of initialization.
+		/// </summary>
+		/// <param name="viewContext">The view context under which this code is executed.</param>
+		/// <param name="viewXml">The XML document to filter.</param>
+		/// <returns>
+		/// The filtered version of the specified <paramref name="viewXml"/>.
+		/// </returns>
 		protected virtual XmlDocument FilterViewXml(ViewContext viewContext, XmlDocument viewXml)
 		{
 			foreach (FilterViewXml filter in xmlFilters)
@@ -330,13 +371,9 @@ namespace Sage.Controllers
 		/// <param name="type">The type of the message to add.</param>
 		/// <param name="messageText">The message to display.</param>
 		/// <param name="formatValues">Optional format values to use for formatting the message text.</param>
-		/// <exception cref="ArgumentNullException">
-		/// 	<paramref name="messageText"/> is <c>null</c> or empty.
-		/// </exception>
 		protected void AddMessage(MessageType type, string messageText, params string[] formatValues)
 		{
-			if (string.IsNullOrEmpty(messageText))
-				throw new ArgumentNullException("messageText");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(messageText));
 
 			var text = string.Format(messageText, formatValues);
 			var message = new ControllerMessage { Type = type, Text = text };
@@ -350,13 +387,9 @@ namespace Sage.Controllers
 		/// <param name="type">The type of the message to add.</param>
 		/// <param name="phraseId">The id of the phrase that contains the text associated with this message.</param>
 		/// <param name="formatValues">Optional format values to use for formatting the phrase text.</param>
-		/// <exception cref="ArgumentNullException">
-		/// 	<paramref name="phraseId"/> is <c>null</c>.
-		/// </exception>
 		protected void AddMessagePhrase(MessageType type, string phraseId, params string[] formatValues)
 		{
-			if (string.IsNullOrEmpty(phraseId))
-				throw new ArgumentNullException("phraseId");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(phraseId));
 
 			var phrase = this.Context.Resources.GetPhrase(phraseId);
 			var text = string.Format(phrase, formatValues);
@@ -365,7 +398,7 @@ namespace Sage.Controllers
 		}
 
 		/// <summary>
-		/// Initializes the controller.
+		/// Initializes the controller with a new <see cref="SageContext"/> instance.
 		/// </summary>
 		/// <param name="requestContext">The request context.</param>
 		protected override void Initialize(RequestContext requestContext)

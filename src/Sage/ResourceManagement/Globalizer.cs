@@ -40,6 +40,9 @@ namespace Sage.ResourceManagement
 	using Sage.Configuration;
 	using Sage.Views;
 
+	/// <summary>
+	/// Provides facilities for transforming XML resources into separate, localized versions.
+	/// </summary>
 	public class Globalizer
 	{
 		private const string XsltPath = "sageresx://sage/resources/xslt/internationalization.xslt";
@@ -142,6 +145,15 @@ namespace Sage.ResourceManagement
 			return summary;
 		}
 
+		/// <summary>
+		/// Transforms the specified input.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <param name="categoryConfig">The category config.</param>
+		/// <param name="collection">The collection.</param>
+		/// <param name="locale">The locale.</param>
+		/// <param name="output">The output.</param>
+		/// <param name="type">The type.</param>
 		public void Transform(XmlDocument input, CategoryConfiguration categoryConfig, DictionaryFileCollection collection, string locale, XmlWriter output, GlobalizeType type)
 		{
 			Contract.Requires<ArgumentNullException>(input != null);

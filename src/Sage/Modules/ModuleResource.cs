@@ -31,8 +31,16 @@ namespace Sage.Modules
 
 	using Sage.ResourceManagement;
 
+	/// <summary>
+	/// Represents a resource for use with modules.
+	/// </summary>
 	public class ModuleResource : Resource
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ModuleResource"/> class.
+		/// </summary>
+		/// <param name="resourceNode">The XML configuration node that represent this resource.</param>
+		/// <param name="moduleName">The name of the module this resource belongs to.</param>
 		public ModuleResource(XmlElement resourceNode, string moduleName)
 			: base(resourceNode)
 		{
@@ -41,8 +49,12 @@ namespace Sage.Modules
 			this.ModuleName = moduleName;
 		}
 
+		/// <summary>
+		/// Gets the name of the module this resource belongs to.
+		/// </summary>
 		public string ModuleName { get; private set; }
 
+		/// <inheritdoc/>
 		public override string GetResolvedPhysicalPath(SageContext context)
 		{
 			return context.Path.GetModulePath(this.ModuleName, this.Path);

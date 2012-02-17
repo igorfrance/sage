@@ -25,10 +25,34 @@
  */
 namespace Sage.Modules
 {
+	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
 
+	/// <summary>
+	/// Specifies the interface for Sage module factories.
+	/// </summary>
+	[ContractClass(typeof(ModuleFactoryContract))]
 	public interface IModuleFactory
 	{
+		/// <summary>
+		/// Creates a module instance based on the specified <paramref name="moduleElement"/>.
+		/// </summary>
+		/// <param name="moduleElement">The XML element that represents the module.</param>
+		/// <returns>
+		/// A module instance associated with the specified <paramref name="moduleElement"/>.
+		/// </returns>
 		IModule CreateModule(XmlElement moduleElement);
+	}
+
+	[ContractClassFor(typeof(IModuleFactory))]
+	internal abstract class ModuleFactoryContract : IModuleFactory
+	{
+		/// <inheritdoc/>
+		public IModule CreateModule(XmlElement moduleElement)
+		{
+			Contract.Requires<ArgumentNullException>(moduleElement != null);
+			return default(IModule);
+		}
 	}
 }

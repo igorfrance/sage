@@ -28,6 +28,7 @@ namespace Kelp.HttpMock
 	using System;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Web;
 
 	/// <summary>
@@ -364,17 +365,10 @@ namespace Kelp.HttpMock
 
 		private static Uri SetupUri(string path, string baseScheme, string baseServer, string baseAppPath)
 		{
-			if (path == null)
-				throw new ArgumentNullException("path");
-
-			if (string.IsNullOrEmpty(baseScheme))
-				throw new ArgumentNullException("baseScheme");
-
-			if (string.IsNullOrEmpty(baseServer))
-				throw new ArgumentNullException("baseServer");
-
-			if (string.IsNullOrEmpty(baseAppPath))
-				throw new ArgumentNullException("baseAppPath");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(path));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(baseScheme));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(baseServer));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(baseAppPath));
 
 			path = path.Replace("~", string.Empty);
 

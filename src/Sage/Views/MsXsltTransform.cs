@@ -39,11 +39,20 @@ namespace Sage.Views
 
 	using Sage.ResourceManagement;
 
+	/// <summary>
+	/// Provides a wrapper around <see cref="XslCompiledTransform"/>.
+	/// </summary>
 	public class MsXsltTransform : XsltTransform
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(MsXsltTransform).FullName);
 		private readonly XslCompiledTransform processor;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MsXsltTransform"/> class, using the specified 
+		/// <paramref name="stylesheetMarkup"/>.
+		/// </summary>
+		/// <param name="context">The current context.</param>
+		/// <param name="stylesheetMarkup">The markup to initialize the transform with.</param>
 		public MsXsltTransform(SageContext context, IXPathNavigable stylesheetMarkup)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
@@ -56,6 +65,9 @@ namespace Sage.Views
 			this.dependencies.AddRange(resolver.Dependencies);
 		}
 
+		/// <summary>
+		/// Gets the XML output settings of this XSLT transform.
+		/// </summary>
 		public override XmlWriterSettings OutputSettings
 		{
 			get
@@ -64,11 +76,13 @@ namespace Sage.Views
 			}
 		}
 
+		/// <inheritdoc/>
 		public override void Transform(XmlNode inputXml, TextWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{
 			Transform(inputXml, XmlWriter.Create(outputWriter, this.OutputSettings), context, arguments);
 		}
 
+		/// <inheritdoc/>
 		public override void Transform(XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{
 			Stopwatch sw = new Stopwatch();

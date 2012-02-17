@@ -89,14 +89,6 @@ namespace Sage.Routing
 			}
 		}
 
-		/// <summary>
-		/// Uses reflection to enumerate all Controller classes in the assembly and registers a route for each method declaring a <see cref="UrlRouteAttribute"/>.
-		/// </summary>
-		/// <exception cref="ApplicationException">
-		/// A controller's class name doesn't end with 'Controller'
-		/// - or -
-		/// A route path contains a '/' or '?' characters.
-		/// </exception>
 		private static List<MapRouteParams> GetRouteParamsFromAttributes(params Assembly[] assemblies)
 		{
 			List<MapRouteParams> routeParams = new List<MapRouteParams>();
@@ -152,18 +144,6 @@ namespace Sage.Routing
 			return routeParams;
 		}
 
-		/// <summary>
-		/// Maps a route.
-		/// </summary>
-		/// <param name="name">The name.</param>
-		/// <param name="url">The URL.</param>
-		/// <param name="defaults">The defaults.</param>
-		/// <param name="constraints">The constraints.</param>
-		/// <param name="namespaces">The namespaces.</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException">
-		/// <paramref name="url"/> or <paramref name="constraints"/> is <c>null</c>
-		/// </exception>
 		private static void MapRoute(string name, string url, 
 			IDictionary<string, object> defaults, IDictionary<string, object> constraints, ICollection<string> namespaces)
 		{
@@ -188,12 +168,6 @@ namespace Sage.Routing
 			RouteTable.Routes.Add(name, route);
 		}
 
-		/// <summary>
-		/// Gets the constraints.
-		/// </summary>
-		/// <param name="mi">The method info.</param>
-		/// <returns></returns>
-		/// <exception cref="ApplicationException"><c>ApplicationException</c>.</exception>
 		private static Dictionary<string, object> GetConstraints(MethodInfo mi)
 		{
 			Dictionary<string, object> constraints = new Dictionary<string, object>();
@@ -218,12 +192,6 @@ namespace Sage.Routing
 			return constraints;
 		}
 
-		/// <summary>
-		/// Gets the defaults.
-		/// </summary>
-		/// <param name="mi">The mi.</param>
-		/// <returns></returns>
-		/// <exception cref="ApplicationException"><c>ApplicationException</c>.</exception>
 		private static Dictionary<string, object> GetDefaults(MethodInfo mi)
 		{
 			Dictionary<string, object> defaults = new Dictionary<string, object>();

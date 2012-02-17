@@ -49,7 +49,7 @@ namespace Sage
 			this.Path = path;
 		}
 
-		public ProblemType ProblemType { get;  set; }
+		public ProblemType ProblemType { get; private set; }
 
 		public string Path { get; private set; }
 

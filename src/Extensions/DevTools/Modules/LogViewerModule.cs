@@ -76,7 +76,7 @@ namespace Sage.DevTools.Modules
 			}
 		}
 
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 

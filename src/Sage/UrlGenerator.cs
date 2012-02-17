@@ -62,6 +62,9 @@ namespace Sage
 			this.RewritingOn = !string.IsNullOrEmpty(context.ProjectConfiguration.UrlRewritePrefix);
 		}
 
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
 		public SageContext Context
 		{
 			get

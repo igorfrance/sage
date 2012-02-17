@@ -74,6 +74,7 @@ namespace Kelp.HttpMock
 			get { return name; }
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Name;

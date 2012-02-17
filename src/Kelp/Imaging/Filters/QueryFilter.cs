@@ -23,7 +23,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-// ReSharper disable MemberHidesStaticFromOuterClass
 namespace Kelp.Imaging.Filters
 {
 	using System;
@@ -31,8 +30,7 @@ namespace Kelp.Imaging.Filters
 	using System.Collections.Specialized;
 	using System.Drawing;
 	using System.Drawing.Drawing2D;
-
-	using Kelp.Core;
+	using System.Linq;
 
 	/// <summary>
 	/// Provides a predefined sequence of filters that can be applied to an image.
@@ -138,13 +136,10 @@ namespace Kelp.Imaging.Filters
 		/// returned.</returns>
 		public override Bitmap Apply(Bitmap inputImage)
 		{
-			if (activeFilters.Count != 0)
+			if (this.activeFilters.Count != 0)
 			{
 				Bitmap result = AForge.Imaging.Image.Clone(inputImage);
-				for (int i = 0; i < activeFilters.Count; i++)
-					result = activeFilters[i].Apply(result);
-
-				return result;
+				return this.activeFilters.Aggregate(result, (current, t) => t.Apply(current));
 			}
 
 			return inputImage;
@@ -152,17 +147,12 @@ namespace Kelp.Imaging.Filters
 
 		private static IFilter GetCropFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length != 4)
-				throw new ArgumentException("This arguments requires exactly 4 elements", "param");
-
 			int x, y, w, h;
 
-			Int32.TryParse(param[0], out x);
-			Int32.TryParse(param[1], out y);
-			Int32.TryParse(param[2], out w);
-			Int32.TryParse(param[3], out h);
+			int.TryParse(param[0], out x);
+			int.TryParse(param[1], out y);
+			int.TryParse(param[2], out w);
+			int.TryParse(param[3], out h);
 
 			if (w != 0 && h != 0)
 				return new Crop(new Rectangle(x, y, w, h));
@@ -172,23 +162,22 @@ namespace Kelp.Imaging.Filters
 
 		private static IFilter GetResampleFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires at least 1 element", "param");
-
-			int width = 0, height = 0;
+			int width, height = 0;
 			bool preserveRatio = true;
 			bool dontEnlarge = true;
 			InterpolationMode interpolation = InterpolationMode.HighQualityBicubic;
 
 			int.TryParse(param[0], out width);
+
 			if (param.Length > 1)
 				int.TryParse(param[1], out height);
+
 			if (param.Length > 2)
 				preserveRatio = param[2] != "0";
+
 			if (param.Length > 3)
 				dontEnlarge = param[3] != "0";
+
 			if (param.Length > 4)
 			{
 				interpolation = (InterpolationMode) 
@@ -209,108 +198,46 @@ namespace Kelp.Imaging.Filters
 
 		private static IFilter GetBrigthnessFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 element", "param");
-
-			int amount = 0;
-
-			Int32.TryParse(param[0], out amount);
-
-			if (amount != 0)
-				return new BrightnessMatrix(amount);
-
-			return null;
+			int amount;
+			return int.TryParse(param[0], out amount) ? new BrightnessMatrix(amount) : null;
 		}
 
 		private static IFilter GetContrastFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 element", "param");
-
-			int amount = 0;
-
-			Int32.TryParse(param[0], out amount);
-
-			if (amount != 0)
-				return new ContrastMatrix(amount);
-
-			return null;
+			int amount;
+			return int.TryParse(param[0], out amount) ? new ContrastMatrix(amount) : null;
 		}
 
 		private static IFilter GetGammaFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 element", "param");
-
-			int amount = 0;
-
-			Int32.TryParse(param[0], out amount);
-
-			if (amount != 0)
-				return new GammaMatrix(amount);
-
-			return null;
+			int amount;
+			return int.TryParse(param[0], out amount) ? new GammaMatrix(amount) : null;
 		}
 
 		private static IFilter GetMirrorHFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 elemen", "param");
-
-			if (param[0] == "1")
-				return new MirrorH();
-
-			return null;
+			return param[0] == "1" ? new MirrorH() : null;
 		}
 
 		private static IFilter GetMirrorVFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 elemen", "param");
-
-			if (param[0] == "1")
-				return new MirrorV();
-
-			return null;
+			return param[0] == "1" ? new MirrorV() : null;
 		}
 
 		private static IFilter GetGrayscaleFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 elemen", "param");
-
-			if (param[0] == "1")
-				return new GrayscaleMatrix();
-
-			return null;
+			return param[0] == "1" ? new GrayscaleMatrix() : null;
 		}
 
 		private static IFilter GetHslFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 3)
-				throw new ArgumentException("This arguments requires 3 elements", "param");
+			int h;
+			int s;
+			int l;
 
-			int h = 0;
-			int s = 0;
-			int l = 0;
-
-			Int32.TryParse(param[0], out h);
-			Int32.TryParse(param[1], out s);
-			Int32.TryParse(param[2], out l);
+			int.TryParse(param[0], out h);
+			int.TryParse(param[1], out s);
+			int.TryParse(param[2], out l);
 
 			if (h != 0 || s != 0 || l != 0)
 				return new HSLFilter(h, s, l);
@@ -320,18 +247,13 @@ namespace Kelp.Imaging.Filters
 
 		private static IFilter GetColorFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 3)
-				throw new ArgumentException("This arguments requires 3 elements", "param");
+			int r;
+			int g;
+			int b;
 
-			int r = 0;
-			int g = 0;
-			int b = 0;
-
-			Int32.TryParse(param[0], out r);
-			Int32.TryParse(param[1], out g);
-			Int32.TryParse(param[2], out b);
+			int.TryParse(param[0], out r);
+			int.TryParse(param[1], out g);
+			int.TryParse(param[2], out b);
 
 			if (r != 0 || g != 0 || b != 0)
 				return new ColorBalance(r, g, b);
@@ -341,40 +263,18 @@ namespace Kelp.Imaging.Filters
 
 		private static IFilter GetSepiaFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 elemen", "param");
-
-			if (param[0] == "1")
-				return new SepiaMatrix();
-
-			return null;
+			return param[0] == "1" ? new SepiaMatrix() : null;
 		}
 
 		private static IFilter GetSharpenFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 elemen", "param");
-
-			if (param[0] == "1")
-				return new GaussianSharpen(0.9, 1);
-
-			return null;
+			return param[0] == "1" ? new GaussianSharpen(0.9, 1) : null;
 		}
 
 		private static IFilter GetSharpenExFilter(string[] param, QueryString query)
 		{
-			if (param == null)
-				throw new ArgumentNullException("param", "This is a required argument");
-			if (param.Length < 1)
-				throw new ArgumentException("This arguments requires 1 element", "param");
-
-			int amount = 0;
-
-			Int32.TryParse(param[0], out amount);
+			int amount;
+			int.TryParse(param[0], out amount);
 
 			if (amount > 0 && amount < 100)
 				return new GaussianSharpen(amount * 0.025, 3);
@@ -387,11 +287,11 @@ namespace Kelp.Imaging.Filters
 			Dictionary<string, string[]> query = new Dictionary<string, string[]>();
 			foreach (string name in param.Keys)
 			{
-				if (!String.IsNullOrEmpty(name) && param[name] != null)
-				{
-					string[] value = param[name].Split(',');
-					query.Add(name, value);
-				}
+				if (string.IsNullOrEmpty(name) || param[name] == null)
+					continue;
+
+				string[] value = param[name].Split(',');
+				query.Add(name, value);
 			}
 
 			return query;
@@ -399,24 +299,24 @@ namespace Kelp.Imaging.Filters
 
 		private void ParseQuery(QueryString query)
 		{
-			activeQuery.Clear();
-			activeFilters.Clear();
+			this.activeQuery.Clear();
+			this.activeFilters.Clear();
 
-			Dictionary<string, string[]> param = GetQueryParam(query);
+			Dictionary<string, string[]> param = this.GetQueryParam(query);
 			foreach (string key in param.Keys)
 			{
-				if (filters.ContainsKey(key))
+				if (!filters.ContainsKey(key))
+					continue;
+
+				FilterDefinition filterDef = filters[key];
+				if (param[key].Length < filterDef.Arguments)
+					continue;
+
+				IFilter filter = filterDef.GetFilter(param[key], query);
+				if (filter != null)
 				{
-					FilterDefinition filterDef = filters[key];
-					if (param[key].Length >= filterDef.Arguments)
-					{
-						IFilter filter = filterDef.GetFilter(param[key], query);
-						if (filter != null)
-						{
-							activeFilters.Add(filter);
-							activeQuery.Add(key, query[key]);
-						}
-					}
+					this.activeFilters.Add(filter);
+					this.activeQuery.Add(key, query[key]);
 				}
 			}
 		}

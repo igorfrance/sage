@@ -193,12 +193,12 @@ namespace Sage
 	public static class XmlNamespaces
 	{
 		/// <summary>
-		/// Defines the prefix for the main White Label namespace.
+		/// Defines the prefix for the main Sage namespace.
 		/// </summary>
 		public const string SageNsPrefix = "sage";
 
 		/// <summary>
-		/// Defines the main White Label namespace.
+		/// Defines the main Sage namespace.
 		/// </summary>
 		public const string SageNamespace = "http://www.cycle99.com/projects/sage";
 

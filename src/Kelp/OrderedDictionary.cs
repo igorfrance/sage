@@ -28,6 +28,7 @@ namespace Kelp
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents a generic collection of key/value pairs that are ordered independently of the key and value.
@@ -38,9 +39,9 @@ namespace Kelp
 	{
 		private const int DefaultInitialCapacity = 0;
 
-		private static readonly string keyTypeName = typeof(TKey).FullName;
-		private static readonly string valueTypeName = typeof(TValue).FullName;
-		private static readonly bool valueTypeIsReferenceType = !typeof(ValueType).IsAssignableFrom(typeof(TValue));
+		private readonly string keyTypeName = typeof(TKey).FullName;
+		private readonly string valueTypeName = typeof(TValue).FullName;
+		private readonly bool valueTypeIsReferenceType = !typeof(ValueType).IsAssignableFrom(typeof(TValue));
 
 		private readonly IEqualityComparer<TKey> comparer;
 		private readonly int initialCapacity;
@@ -276,11 +277,11 @@ namespace Kelp
 		}
 
 		/// <summary>
-		/// Gets or sets the value with the specified key.
+		/// Gets the value with the specified key.
 		/// </summary>
 		/// <param name="key">The key of the value to get or set.</param>
-		/// <value>The value associated with the specified key. If the specified key is not found, attempting to get it 
-		/// returns <null/>, and attempting to set it creates a new element using the specified key.</value>
+		/// <returns>The value associated with the specified key. If the specified key is not found, attempting to get it 
+		/// returns <null/>, and attempting to set it creates a new element using the specified key.</returns>
 		public TValue this[TKey key]
 		{
 			get
@@ -303,10 +304,10 @@ namespace Kelp
 		}
 
 		/// <summary>
-		/// Gets or sets the value at the specified index.
+		/// Gets the value at the specified index.
 		/// </summary>
 		/// <param name="index">The zero-based index of the value to get or set.</param>
-		/// <value>The value of the item at the specified index.</value>
+		/// <returns>The value of the item at the specified index.</returns>
 		public TValue this[int index]
 		{
 			get
@@ -370,9 +371,6 @@ namespace Kelp
 		/// <remarks>This method performs a linear search; therefore it has a cost of O(n) at worst.</remarks>
 		public int IndexOfKey(TKey key)
 		{
-			if (key == null)
-				throw new ArgumentNullException("key");
-
 			for (int index = 0; index < this.List.Count; index++)
 			{
 				KeyValuePair<TKey, TValue> entry = this.List[index];
@@ -500,9 +498,6 @@ namespace Kelp
 		/// <exception cref="ArgumentNullException"><paramref name="key"/> is <c>null</c>.</exception>
 		public bool Remove(TKey key)
 		{
-			if (key == null)
-				throw new ArgumentNullException("key");
-
 			int index = this.IndexOfKey(key);
 			if (index >= 0)
 			{
@@ -589,7 +584,7 @@ namespace Kelp
 		/// </summary>
 		/// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection"/>. The <see cref="Array"/> must have zero-based indexing.</param>
 		/// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-		public void CopyTo(Array array, int index)
+		public virtual void CopyTo(Array array, int index)
 		{
 			if (array == null)
 				throw new ArgumentNullException("array");
@@ -599,15 +594,14 @@ namespace Kelp
 				throw new ArgumentOutOfRangeException("index", "The index must be non-negative");
 			if (index >= array.Length)
 				throw new ArgumentException("The index must be smaller than the length of the array", "index");
-			if (dictionary.Count > (array.Length - index))
+			if (this.Count > (array.Length - index))
 				throw new ArgumentException("The number of elements in current collection exceeds the available space in the specified array from the specified index to the array's end.");
 
 			for (int i = 0; i < this.list.Count; i++)
-			{
 				array.SetValue(this.list[i].Value, index + i);
-			}
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return "Count = " + this.Count;
@@ -661,7 +655,7 @@ namespace Kelp
 		/// </summary>
 		/// <param name="keyObject">The key object to check</param>
 		/// <returns>The key object, cast as the key type of the dictionary</returns>
-		private static TKey ConvertToKeyType(object keyObject)
+		private TKey ConvertToKeyType(object keyObject)
 		{
 			if (null == keyObject)
 				throw new ArgumentNullException("keyObject");
@@ -677,7 +671,7 @@ namespace Kelp
 		/// </summary>
 		/// <param name="value">The object to convert to the value type of the dictionary</param>
 		/// <returns>The value object, converted to the value type of the dictionary</returns>
-		private static TValue ConvertToValueType(object value)
+		private TValue ConvertToValueType(object value)
 		{
 			if (null == value)
 			{

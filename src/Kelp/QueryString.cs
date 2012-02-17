@@ -28,6 +28,7 @@ namespace Kelp
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web;
@@ -106,8 +107,7 @@ namespace Kelp
 		/// <returns>The current instance.</returns>
 		public QueryString Parse(string queryString)
 		{
-			if (string.IsNullOrEmpty(queryString))
-				throw new ArgumentNullException("queryString");
+			Contract.Requires<ArgumentNullException>(queryString != null);
 
 			this.Clear();
 
@@ -539,15 +539,7 @@ namespace Kelp
 			return list;
 		}
 
-		/// <summary>
-		/// Returns a <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.
-		/// </summary>
-		/// <returns>A <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.</returns>
-		/// <example>
-		/// var coll = new <see cref="NameValueCollection"/> {{ "color", "red" }, { "size", "large" }};
-		/// // The following line returns "color=red&amp;size=large":
-		/// var queryString = coll.ToQueryString();
-		/// </example>
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.ToString(false);

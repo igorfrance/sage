@@ -29,15 +29,29 @@ namespace Sage.Extensibility
 	using System.Collections.Generic;
 	using System.Linq;
 
+	using Sage.ResourceManagement;
+
+	/// <summary>
+	/// Indicates that the method this attribute decorates should be used as a text handler for 
+	/// <see cref="ResourceManager.CopyNode"/>.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class TextHandlerAttribute : Attribute
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextHandlerAttribute"/> class.
+		/// </summary>
+		/// <param name="variable">The name of a variable handled by the method this attribute decorates.</param>
 		public TextHandlerAttribute(string variable)
 			: this()
 		{
 			this.Variables.Add(variable);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextHandlerAttribute"/> class.
+		/// </summary>
+		/// <param name="variables">The names of variables handled by the method this attribute decorates.</param>
 		public TextHandlerAttribute(params string[] variables)
 			: this()
 		{
@@ -52,6 +66,9 @@ namespace Sage.Extensibility
 			this.Variables = new List<string>();
 		}
 
+		/// <summary>
+		/// Gets the names of variables handled by the method this attribute decorates.
+		/// </summary>
 		public IList<string> Variables { get; private set; }
 	}
 }

@@ -30,7 +30,7 @@ namespace Sage.Configuration
 	using System.Xml;
 
 	/// <summary>
-	/// Contains the 
+	/// Contains the URL routing configuration settings.
 	/// </summary>
 	public class RoutingConfiguration : Dictionary<string, RouteInfo>
 	{
@@ -43,9 +43,9 @@ namespace Sage.Configuration
 		}
 
 		/// <summary>
-		/// Gets the default controller namespace for routes that don't define the namespace explicitly.
+		/// Gets the default controller namespace for routes that don't define their namespace explicitly.
 		/// </summary>
-		public string DefaultNamespace { get;  set; }
+		public string DefaultNamespace { get; private set; }
 
 		/// <summary>
 		/// Parses the routing configuration from the specified configuration element.

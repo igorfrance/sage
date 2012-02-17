@@ -98,8 +98,14 @@ namespace Sage.Views
 			}
 		}
 
+		/// <summary>
+		/// Gets the action.
+		/// </summary>
 		public string Action { get; private set; }
 
+		/// <summary>
+		/// Gets the resources.
+		/// </summary>
 		public List<Resource> Resources
 		{
 			get
@@ -111,6 +117,9 @@ namespace Sage.Views
 			}
 		}
 
+		/// <summary>
+		/// Gets the view configuration.
+		/// </summary>
 		public ViewConfiguration ViewConfiguration { get; private set; }
 
 		/// <summary>

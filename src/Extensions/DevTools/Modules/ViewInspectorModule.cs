@@ -38,7 +38,7 @@ namespace Sage.DevTools.Modules
 
 	public class ViewInspectorModule : IModule
 	{
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			ModuleResult result = new ModuleResult(moduleElement);
 			XmlDocument ownerDoc = moduleElement.OwnerDocument;

@@ -156,7 +156,7 @@ namespace Sage.Test
 		}
 
 		/// <summary>
-		/// Creates the white label context using the specified <paramref name="category"/> and <paramref name="locale"/>.
+		/// Creates a Sage context using the specified <paramref name="category"/> and <paramref name="locale"/>.
 		/// </summary>
 		/// <param name="category">The category to set on the context being created.</param>
 		/// <param name="locale">The locale to set on the context being created.</param>
@@ -167,7 +167,7 @@ namespace Sage.Test
 		}
 
 		/// <summary>
-		/// Creates the white label context using the specified <paramref name="category"/>, <paramref name="locale"/> and <paramref name="query"/>.
+		/// Creates a Sage context using the specified <paramref name="category"/>, <paramref name="locale"/> and <paramref name="query"/>.
 		/// </summary>
 		/// <param name="category">The category to set on the context being created.</param>
 		/// <param name="locale">The locale to set on the context being created.</param>
@@ -181,7 +181,7 @@ namespace Sage.Test
 		}
 
 		/// <summary>
-		/// Creates the white label context using the specified <paramref name="category"/>, <paramref name="locale"/> and <paramref name="query"/>.
+		/// Creates a Sage context using the specified <paramref name="category"/>, <paramref name="locale"/> and <paramref name="query"/>.
 		/// </summary>
 		/// <param name="category">The category to set on the context being created.</param>
 		/// <param name="locale">The locale to set on the context being created.</param>

@@ -77,11 +77,18 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UrlResolver"/> class.
+        /// </summary>
 		public UrlResolver()
 		{
 			this.instances = new Dictionary<string, ISageXmlUrlResolver>();
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UrlResolver"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
 		public UrlResolver(SageContext context)
 			: this()
 		{
@@ -99,6 +106,11 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+        /// <summary>
+        /// Gets the scheme.
+        /// </summary>
+        /// <param name="uriString">The URI string.</param>
+        /// <returns>TODO: Add documentation for GetScheme.</returns>
 		public static string GetScheme(string uriString)
 		{
 			Uri uri;
@@ -111,6 +123,11 @@ namespace Sage.ResourceManagement
 			return "file";
 		}
 
+        /// <summary>
+        /// Registers the resolver.
+        /// </summary>
+        /// <param name="scheme">The scheme.</param>
+        /// <param name="resolver">The resolver.</param>
 		public void RegisterResolver(string scheme, ISageXmlUrlResolver resolver)
 		{
 			if (instanceResolvers.ContainsKey(scheme))

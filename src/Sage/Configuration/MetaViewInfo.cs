@@ -35,6 +35,10 @@ namespace Sage.Configuration
 	/// </summary>
 	public class MetaViewInfo
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MetaViewInfo"/> class.
+		/// </summary>
+		/// <param name="infoElement">The info element.</param>
 		public MetaViewInfo(XmlElement infoElement)
 		{
 			if (infoElement == null)
@@ -82,6 +86,7 @@ namespace Sage.Configuration
 		/// </summary>
 		public XsltTransform Processor { get; private set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1}) ({2}) ({3})", this.Name, this.ContentType, this.ViewPath, this.TypeName);

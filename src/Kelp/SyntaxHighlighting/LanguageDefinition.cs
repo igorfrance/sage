@@ -48,7 +48,10 @@ namespace Kelp.SyntaxHighlighting
 		/// </summary>
 		public const string ClassNameString = "string";
 
-		public LanguageDefinition(bool caseSensitive = true)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LanguageDefinition"/> class.
+		/// </summary>
+		public LanguageDefinition()
 		{
 			this.QuoteDelimiters = new List<string>();
 			this.LineCommentDelimiters = new List<string>();
@@ -56,9 +59,20 @@ namespace Kelp.SyntaxHighlighting
 			this.CommentDelimiters = new List<string[]>();
 		}
 
-		public string EscapeChar { get; set; }
+		/// <summary>
+		/// Gets or sets the escape character.
+		/// </summary>
+		public string EscapeChar { get; protected set; }
 
-		public string[] Regexp { get; protected set; }
+		/// <summary>
+		/// Gets or sets the character that indicates the start of a regular expression.
+		/// </summary>
+		public string RegexStart { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets the character that indicates the end of a regular expression.
+		/// </summary>
+		public string RegexEnd { get; protected set; }
 
 		/// <summary>
 		/// Gets or sets the name of the language. 
@@ -95,6 +109,7 @@ namespace Kelp.SyntaxHighlighting
 		/// <value>The groups of expressions to use with this language.</value>
 		public List<ExpressionGroup> Expressions { get; protected set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Name;

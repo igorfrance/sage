@@ -30,30 +30,37 @@ namespace Sage.ResourceManagement
 
 	using Mvp.Xml.XInclude;
 
-	public class SageIncludeReader : XIncludingReader
+	/// <summary>
+	/// Extends the <see cref="XIncludingReader"/> with additional functionality.
+	/// </summary>
+	internal class SageIncludeReader : XIncludingReader
 	{
 		private readonly XmlReader wrapped;
+		private bool processIncludes;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SageIncludeReader"/> class.
+		/// </summary>
+		/// <param name="wrapped">The reader that this reader wraps.</param>
 		public SageIncludeReader(XmlReader wrapped)
 			: base(wrapped)
 		{
 			this.wrapped = wrapped;
-			this.ProcessIncludes = true;
+			this.processIncludes = true;
 		}
 
-		public bool ProcessIncludes { get; set; }
-
+		/// <inheritdoc/>
 		public override bool Read()
 		{
 			if (this.NodeType == XmlNodeType.Element)
 			{
 				if (this.Name == "sage:literal")
 				{
-					this.ProcessIncludes = this.NodeType == XmlNodeType.EndElement;
+					this.processIncludes = this.NodeType == XmlNodeType.EndElement;
 				}
 			}
 
-			if (this.ProcessIncludes)
+			if (this.processIncludes)
 				return base.Read();
 
 			return wrapped.Read();

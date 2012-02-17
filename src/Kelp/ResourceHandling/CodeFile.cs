@@ -84,7 +84,7 @@ namespace Kelp.ResourceHandling
 			this.AbsolutePath = absolutePath;
 			this.relativePath = relativePath;
 			this.parent = null;
-			this.MapPath = delegate(string input) { return input; };
+			this.MapPath = input => input;
 			this.CachedConfigurationSettings = string.Empty;
 		}
 
@@ -185,8 +185,7 @@ namespace Kelp.ResourceHandling
 		/// <summary>
 		/// Gets or sets the delegate method that handles resolving (mapping) or relative paths.
 		/// </summary>
-		public Func<string, string> MapPath
-		 { get; set; }
+		public Func<string, string> MapPath { get; set; }
 
 		/// <summary>
 		/// Gets the recursive list of files this file includes either directly or through it's includes.
@@ -312,12 +311,11 @@ namespace Kelp.ResourceHandling
 		/// <summary>
 		/// Gets or sets the content-type of this code file.
 		/// </summary>
-		internal string ContentType
-		 { get; set; }
+		internal string ContentType { get; set; }
 
 		internal abstract string ConfigurationSettings { get; }
 
-		internal string CachedConfigurationSettings { get;  set; }
+		internal string CachedConfigurationSettings { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the cached <see cref="CodeFile"/> needs to be refreshed.
@@ -392,6 +390,10 @@ namespace Kelp.ResourceHandling
 		/// new <see cref="CssFile"/>. In all other cases the resulting value is a <see cref="ScriptFile"/>.</returns>
 		public static CodeFile Create(string absolutePath, string relativePath, Func<string, string> mapPath)
 		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(absolutePath));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(relativePath));
+			Contract.Requires<ArgumentNullException>(mapPath != null);
+
 			CodeFile result = Create(absolutePath, relativePath);
 			result.MapPath = mapPath;
 
@@ -409,6 +411,9 @@ namespace Kelp.ResourceHandling
 		/// new <see cref="CssFile"/>. In all other cases the resulting value is a <see cref="ScriptFile"/>.</returns>
 		public static CodeFile Create(string absolutePath, string relativePath, CodeFile parent)
 		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(absolutePath));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(relativePath));
+
 			CodeFile instance;
 			if (absolutePath.ToLower().EndsWith("css"))
 				instance = new CssFile(absolutePath, relativePath);
@@ -430,6 +435,8 @@ namespace Kelp.ResourceHandling
 		/// <returns>The E-Tag that matches the specified <paramref name="fileName"/> and <paramref name="lastModified"/> date.</returns>
 		public static string GetETag(string fileName, DateTime lastModified)
 		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(fileName));
+
 			Encoder stringEncoder = Encoding.UTF8.GetEncoder();
 			MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
 

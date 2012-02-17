@@ -28,24 +28,40 @@ namespace Sage.XsltExtensions
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
 	using System.Xml;
 	using System.Xml.XPath;
 
 	using Sage.Extensibility;
 
+	/// <summary>
+	/// Provides several set-related utility methods for use in XSLT.
+	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.Set)]
-	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter")]
+	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
+		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class Set
 	{
 		private static readonly XmlDocument document = new XmlDocument();
 		private static readonly XPathNavigator empty = document.CreateNavigator();
 
+		/// <summary>
+		/// Distincts the specified nodeset.
+		/// </summary>
+		/// <param name="nodeset">The nodeset.</param>
+		/// <param name="xpath">The xpath.</param>
+		/// <returns>TODO: Add documentation for distinct.</returns>
 		public XPathNodeIterator distinct(XPathNodeIterator nodeset, string xpath)
 		{
 			return distinct(nodeset, xpath, false);
 		}
 
+		/// <summary>
+		/// Distincts the specified nodeset.
+		/// </summary>
+		/// <param name="nodeset">The nodeset.</param>
+		/// <param name="xpath">The xpath.</param>
+		/// <param name="includeNullEntries">if set to <c>true</c> [include null entries].</param>
+		/// <returns></returns>
 		public XPathNodeIterator distinct(XPathNodeIterator nodeset, string xpath, bool includeNullEntries)
 		{
 			if (nodeset.Count < 2)

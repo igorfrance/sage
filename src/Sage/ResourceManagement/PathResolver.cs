@@ -126,6 +126,9 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+        /// <summary>
+        /// Gets the physical category configuration path.
+        /// </summary>
 		public string PhysicalCategoryConfigurationPath
 		{
 			get
@@ -179,6 +182,9 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+        /// <summary>
+        /// Gets the default stylesheet path.
+        /// </summary>
 		public string DefaultStylesheetPath
 		{
 			get
@@ -187,6 +193,9 @@ namespace Sage.ResourceManagement
 			}
 		}
 
+        /// <summary>
+        /// Gets the virtual directories.
+        /// </summary>
 		public Dictionary<string, string> VirtualDirectories
 		{
 			get
@@ -205,6 +214,11 @@ namespace Sage.ResourceManagement
 			return context.ProjectConfiguration.AssetPath.Replace("{category}", category);
 		}
 
+        /// <summary>
+        /// Gets the module path.
+        /// </summary>
+        /// <param name="moduleName">Name of the module.</param>
+        /// <returns>TODO: Add documentation for GetModulePath.</returns>
 		public string GetModulePath(string moduleName)
 		{
 			string templatePath = string.Concat(this.ModulePath.TrimEnd('/'), "/", moduleName);
@@ -259,6 +273,12 @@ namespace Sage.ResourceManagement
 			return this.Resolve(templatePath);
 		}
 
+        /// <summary>
+        /// Gets the dictionary path.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <param name="category">The category.</param>
+        /// <returns>TODO: Add documentation for GetDictionaryPath.</returns>
 		public string GetDictionaryPath(string locale = null, string category = null)
 		{
 			return this.Resolve(context.ProjectConfiguration.PathTemplates.Dictionary, category ?? context.Category, locale ?? context.Locale);
@@ -491,16 +511,34 @@ namespace Sage.ResourceManagement
 			return mapPath ? Resolve(path) : path;
 		}
 
+        /// <summary>
+        /// Resolves the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <returns>TODO: Add documentation for Resolve.</returns>
 		public string Resolve(string template)
 		{
 			return this.Resolve(template, this.context);
 		}
 
+        /// <summary>
+        /// Resolves the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="category">The category.</param>
+        /// <returns></returns>
 		public string Resolve(string template, string category)
 		{
 			return this.Resolve(template, category, context.Locale);
 		}
 
+        /// <summary>
+        /// Resolves the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="category">The category.</param>
+        /// <param name="locale">The locale.</param>
+        /// <returns>TODO: Add documentation for Resolve.</returns>
 		public string Resolve(string template, string category, string locale)
 		{
 			return this.Resolve(template, new QueryString { { "category", category }, { "locale", locale } });
@@ -520,17 +558,34 @@ namespace Sage.ResourceManagement
 			return this.Resolve(template, new QueryString { { "category", context.Category } });
 		}
 
+        /// <summary>
+        /// Resolves the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>TODO: Add documentation for Reslve.</returns>
 		public string Resolve(string template, QueryString values)
 		{
 			var substituted = this.Substitute(template, values);
 			return context.MapPath(substituted);
 		}
 
+        /// <summary>
+        /// Substitutes the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <returns>TODO: Add documentation for Substitute.</returns>
 		public string Substitute(string template)
 		{
 			return this.Substitute(template, this.context);
 		}
 
+        /// <summary>
+        /// Substitutes the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="context">The context.</param>
+        /// <returns>TODO: Add documentation for Substitute.</returns>
 		public string Substitute(string template, SageContext context)
 		{
 			return Substitute(template, new QueryString { { "category", context.Category } });
@@ -556,6 +611,12 @@ namespace Sage.ResourceManagement
 			return Substitute(template, values);
 		}
 
+        /// <summary>
+        /// Substitutes the specified template.
+        /// </summary>
+        /// <param name="template">The template.</param>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
 		public string Substitute(string template, QueryString values)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(template));

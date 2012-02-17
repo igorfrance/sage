@@ -96,18 +96,19 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the name of this category.
 		/// </summary>
-		public string Name { get;  set; }
+		public string Name { get; private set; }
 
 		/// <summary>
 		/// Gets the locales that are applicable to this category.
 		/// </summary>
-		public List<string> Locales { get;  set; }
+		public List<string> Locales { get; private set; }
 
 		/// <summary>
 		/// Gets the list of localized file name suffixes valid for this category.
 		/// </summary>
-		public List<string> Suffixes { get;  set; }
+		public List<string> Suffixes { get; private set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Name;

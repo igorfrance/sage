@@ -45,11 +45,20 @@ namespace Sage.ResourceManagement
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceHandler).FullName);
 
+        /// <summary>
+        /// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="T:System.Web.IHttpHandler"/> interface.
+        /// </summary>
+        /// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context)
 		{
 			ProcessRequest(new HttpContextWrapper(context), context.Server.MapPath);
 		}
 
+        /// <summary>
+        /// Processes the request.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="mapPath">The map path.</param>
 		public void ProcessRequest(HttpContextBase context, Func<string, string> mapPath)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);

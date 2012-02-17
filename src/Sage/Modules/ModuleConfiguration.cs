@@ -132,6 +132,9 @@ namespace Sage.Modules
 			this.AutoLocation = ModuleAutoLocation.None;
 		}
 
+        /// <summary>
+        /// Gets the resources.
+        /// </summary>
 		public List<ModuleResource> Resources
 		{
 			get
@@ -154,12 +157,27 @@ namespace Sage.Modules
 			}
 		}
 
-		public List<string> Libraries { get;  set; }
+        /// <summary>
+        /// Gets or sets the libraries.
+        /// </summary>
+        /// <value>
+        /// The libraries.
+        /// </value>
+		public List<string> Libraries { get; private set; }
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
 		public string Name { get; private set; }
 
+        /// <summary>
+        /// Gets the auto location.
+        /// </summary>
 		public ModuleAutoLocation AutoLocation { get; private set; }
 
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
 		public Type Type
 		{
 			get
@@ -176,14 +194,27 @@ namespace Sage.Modules
 			}
 		}
 
+        /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
 		public string TypeName { get; private set; }
 
+        /// <summary>
+        /// Gets the tag names.
+        /// </summary>
 		public IList<string> TagNames { get; private set; }
 
+        /// <summary>
+        /// Gets the stylesheets.
+        /// </summary>
 		public IList<string> Stylesheets { get; private set; }
 
+        /// <summary>
+        /// Gets the dependencies.
+        /// </summary>
 		public IList<string> Dependencies { get; private set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1}) ({2})", this.Name, string.Join(",", this.TagNames), this.Type);

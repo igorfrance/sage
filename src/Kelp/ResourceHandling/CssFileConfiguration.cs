@@ -59,7 +59,7 @@ namespace Kelp.ResourceHandling
 			this.Parse(configurationElement, typeof(CssSettings), this.Settings);
 		}
 
-		public CssSettings Settings { get;  set; }
+		public CssSettings Settings { get; private set; }
 
 		protected override List<string> BoolProps
 		{
@@ -76,6 +76,7 @@ namespace Kelp.ResourceHandling
 			get { return enumProps; }
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Serialize(typeof(CssSettings), this.Settings);

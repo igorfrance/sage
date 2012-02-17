@@ -38,6 +38,10 @@ namespace Sage.Modules
 	/// </summary>
 	public class ModuleResult
 	{
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModuleResult"/> class.
+        /// </summary>
+        /// <param name="status">The status.</param>
 		public ModuleResult(ModuleResultStatus status)
 		{
 			this.ModuleData = new Dictionary<string, object>();
@@ -59,8 +63,7 @@ namespace Sage.Modules
 		/// <summary>
 		/// Gets or sets the result status.
 		/// </summary>
-		public ModuleResultStatus Status
-		 { get; set; }
+		public ModuleResultStatus Status { get; set; }
 
 		/// <summary>
 		/// Gets or sets the result element that contains this module's data. 
@@ -69,14 +72,16 @@ namespace Sage.Modules
 		/// This value can be a <c>null</c> if no data is returned or
 		/// is not applicable for the module.
 		/// </remarks>
-		public XmlElement ResultElement
-		 { get; set; }
+		public XmlElement ResultElement { get; set; }
 
 		/// <summary>
 		/// Gets the dictionary of arbitrary module result data, specific to each module.
 		/// </summary>
-		public Dictionary<string, object> ModuleData { get;  set; }
+		public Dictionary<string, object> ModuleData { get; private set; }
 
+        /// <summary>
+        /// Gets the owner document.
+        /// </summary>
 		public XmlDocument OwnerDocument
 		{
 			get
@@ -88,11 +93,21 @@ namespace Sage.Modules
 			}
 		}
 
+        /// <summary>
+        /// Appends the data element.
+        /// </summary>
+        /// <param name="dataElement">The data element.</param>
+        /// <returns>TODO: Add documentation for AppendDataElement.</returns>
 		public XmlElement AppendDataElement(XmlNode dataElement = null)
 		{
 			return (XmlElement) AppendDataNode(dataElement);
 		}
 
+        /// <summary>
+        /// Appends the data node.
+        /// </summary>
+        /// <param name="dataNode">The data node.</param>
+        /// <returns></returns>
 		public XmlNode AppendDataNode(XmlNode dataNode = null)
 		{
 			Contract.Requires<InvalidOperationException>(this.ResultElement != null, "The ModuleResult.ResultElement property is null");

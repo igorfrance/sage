@@ -29,13 +29,11 @@ namespace Sage.Configuration
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using Sage.ResourceManagement;
 
 	/// <summary>
-	/// Implements the configuration container for configurable properties of a white label category.
+	/// Implements the configuration container for configurable properties of a Sage project category.
 	/// </summary>
 	public class CategoryConfiguration
 	{
@@ -57,6 +55,9 @@ namespace Sage.Configuration
 		/// <value>The name.</value>
 		public string Name { get; private set; }
 
+		/// <summary>
+		/// Gets the configuration element.
+		/// </summary>
 		public XmlElement ConfigurationElement { get; private set; }
 
 		/// <summary>
@@ -64,6 +65,11 @@ namespace Sage.Configuration
 		/// </summary>
 		public XmlElement VariablesElement { get; private set; }
 
+		/// <summary>
+		/// Creates a category configuration using the specified <paramref name="configurationPath"/>
+		/// </summary>
+		/// <param name="configurationPath">The configuration path.</param>
+		/// <returns>TODO: Add documentation for Create</returns>
 		public static CategoryConfiguration Create(string configurationPath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configurationPath));
@@ -72,6 +78,7 @@ namespace Sage.Configuration
 			return new CategoryConfiguration(schemaDocument);
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Name;

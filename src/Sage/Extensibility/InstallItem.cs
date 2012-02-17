@@ -37,6 +37,7 @@ namespace Sage.Extensibility
 
 		public string CrcCode;
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Path;

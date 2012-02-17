@@ -174,7 +174,7 @@ namespace Kelp.SyntaxHighlighting
 				{
 					string end = text.Substring(i, regexEnd.Length);
 					string prev = text.Substring(i - regexEnd.Length + 1, 1);
-					if (end == language.Regexp[1] && prev != language.EscapeChar)
+					if (end == language.RegexEnd && prev != language.EscapeChar)
 						mode = ParseMode.Code;
 
 					continue;
@@ -267,15 +267,15 @@ namespace Kelp.SyntaxHighlighting
 					}
 				}
 
-				if (mode == ParseMode.Code && language.Regexp != null)
+				if (mode == ParseMode.Code && language.RegexStart != null)
 				{
-					if (text.Length >= i + language.Regexp[0].Length)
+					if (text.Length >= i + language.RegexStart.Length)
 					{
-						string test = text.Substring(i, language.Regexp[0].Length);
-						if (test == language.Regexp[0])
+						string test = text.Substring(i, language.RegexStart.Length);
+						if (test == language.RegexStart)
 						{
-							regexEnd = language.Regexp[1];
-							i += language.Regexp[0].Length - 1;
+							regexEnd = language.RegexEnd;
+							i += language.RegexStart.Length - 1;
 							curr = test;
 							mode = ParseMode.RegularExpression;
 						}

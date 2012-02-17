@@ -31,10 +31,21 @@ namespace Sage.XsltExtensions
 
 	using Sage.Extensibility;
 
+	/// <summary>
+	/// Provides several regular expression utility methods for use in XSLT.
+	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.Regexp)]
-	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter")]
+	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
+		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class Regexp
 	{
+		/// <summary>
+		/// Replaces the specified input.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <param name="expression">The expression.</param>
+		/// <param name="replacement">The replacement.</param>
+		/// <returns>TODO: Add documentation for replace.</returns>
 		public string replace(string input, string expression, string replacement)
 		{
 			if (string.IsNullOrEmpty(input))

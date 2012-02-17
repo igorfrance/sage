@@ -25,6 +25,8 @@
  */
 namespace Sage.Controllers
 {
+	using System;
+
 	/// <summary>
 	/// Represents a single message that a controller is sending to the view.
 	/// </summary>
@@ -45,6 +47,7 @@ namespace Sage.Controllers
 		/// </summary>
 		public string Text { get; set; }
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Type);

@@ -83,11 +83,22 @@ namespace Sage.Controllers
 			return new ContentResult { Content = "File not found (A.K.A. Error 404)", ContentType = "text/html" };
 		}
 
-		public override DateTime? GetLastModificationDate(string actionName)
+        /// <summary>
+        /// Gets the last modification date for the specified <paramref name="viewName"/>.
+        /// </summary>
+        /// <param name="viewName">The name of the action for which to retrieve the last modification date.</param>
+        /// <returns>
+        /// The last modified date for the specified <paramref name="viewName"/>.
+        /// </returns>
+		public override DateTime? GetLastModificationDate(string viewName)
 		{
 			return genericViewInfo.LastModified;
 		}
 
+        /// <summary>
+        /// Initializes the controller.
+        /// </summary>
+        /// <param name="requestContext">The request context.</param>
 		protected override void Initialize(RequestContext requestContext)
 		{
 			base.Initialize(requestContext);

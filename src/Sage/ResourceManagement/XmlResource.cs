@@ -81,19 +81,23 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the <see cref="ResourceName"/> of this resource.
 		/// </summary>
-		public ResourceName Name { get;  set; }
+		public ResourceName Name { get; private set; }
 
 		/// <summary>
 		/// Gets the full file path of this resource.
 		/// </summary>
-		public string FilePath { get;  set; }
+		public string FilePath { get; private set; }
 
 		/// <summary>
 		/// The directory in which globalized files will be saved.
 		/// </summary>
-		public string TargetDirectory { get;  set; }
+		public string TargetDirectory { get; private set; }
 
-		public string SourceDirectory { get;  set; }
+		/// <summary>
+		/// Gets or sets the source directory.
+		/// </summary>
+	 
+		public string SourceDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the last modified date of this resource's main file.
@@ -166,12 +170,21 @@ namespace Sage.ResourceManagement
 			return minDate;
 		}
 
+		/// <summary>
+		/// Gets the source path.
+		/// </summary>
+		/// <param name="locale">The locale.</param>
+		/// <returns>TODO: Add documentation for GetSourcePath.</returns>
 		public string GetSourcePath(string locale)
 		{
 			string localizedPath = this.Name.ToLocalePath(locale);
 			return File.Exists(localizedPath) ? localizedPath : this.Name.NonLocalizedPath;
 		}
 
+		/// <summary>
+		/// Globalizes this instance.
+		/// </summary>
+		/// <returns>TODO: Add documentation for Globalize.</returns>
 		public GlobalizationSummary Globalize()
 		{
 			Globalizer globalizer = new Globalizer(context);
@@ -193,12 +206,7 @@ namespace Sage.ResourceManagement
 			return appendPath ? Path.Combine(this.TargetDirectory, globName) : globName;
 		}
 
-		/// <summary>
-		/// Returns a <see cref="String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="String"/> that represents this instance.
-		/// </returns>
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return this.Name.Signature;

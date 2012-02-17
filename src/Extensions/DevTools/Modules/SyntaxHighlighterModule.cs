@@ -51,7 +51,7 @@ namespace Sage.DevTools.Modules
 		private static bool initialized;
 		private static Dictionary<string, LanguageDefinition> languages;
 
-		public ModuleResult ProcessRequest(XmlElement moduleElement, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleElement, ViewConfiguration configuration)
 		{
 			SageContext context = configuration.Context;
 			Initialize(context);

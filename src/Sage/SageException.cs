@@ -33,36 +33,54 @@ namespace Sage
 
 	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
+	using log4net;
 	using Sage.Views;
 
-	using log4net;
-
+	/// <summary>
+	/// Implements an exception that can be XSLT transformed to HTML.
+	/// </summary>
 	public class SageException : Exception
 	{
-		private static readonly string stylesheetPath = "sageresx://sage/resources/xslt/error.xslt";
-		private static readonly ILog log = LogManager.GetLogger(typeof(SageException).FullName);
+		private const string DefaultStylesheet = "sageresx://sage/resources/xslt/error.xslt";
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SageException"/> class.
+		/// </summary>
 		public SageException()
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SageException"/> class, using the specified <paramref name="exception"/>
+		/// </summary>
+		/// <param name="exception">The actual exception that was trown.</param>
 		public SageException(Exception exception)
 			: base(exception.Message, exception)
 		{
 			this.Exception = exception;
 		}
 
+		/// <summary>
+		/// Gets the path of the XSLT stylesheet that renderw this exception.
+		/// </summary>
 		public virtual string StylesheetPath
 		{
 			get
 			{
-				return stylesheetPath;
+				return DefaultStylesheet;
 			}
 		}
 
-		public virtual Exception Exception { get;  set; }
+		/// <summary>
+		/// Gets the actual exception that occured.
+		/// </summary>
+		public virtual Exception Exception { get; private set; }
 
+		/// <summary>
+		/// Renders the exception to the specified <paramref name="writer"/>
+		/// </summary>
+		/// <param name="context">The context under which this code is executing.</param>
+		/// <param name="writer">The writer to render the exception to.</param>
 		public virtual void Render(SageContext context, TextWriter writer)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);

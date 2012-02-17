@@ -26,6 +26,7 @@
 namespace Kelp.Imaging.Filters
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Drawing;
 	using System.Drawing.Drawing2D;
 
@@ -148,8 +149,15 @@ namespace Kelp.Imaging.Filters
 		/// </summary>
 		public int Height
 		{
-			get { return height; }
-			set { height = Math.Max(0, Math.Min(5000, value)); }
+			get
+			{ 
+				return this.height; 
+			}
+			
+			set 
+			{ 
+				this.height = Math.Max(0, Math.Min(5000, value)); 
+			}
 		}
 
 		/// <summary>
@@ -160,20 +168,17 @@ namespace Kelp.Imaging.Filters
 		/// <summary>
 		/// Gets or sets a value indicating whether to preserve the ratio when resampling.
 		/// </summary>
-		public bool PreserveRatio
-		 { get; set; }
+		public bool PreserveRatio { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to disable enlargin of the image when resampling.
 		/// </summary>
-		public bool DontEnlarge
-		 { get; set; }
+		public bool DontEnlarge { get; set; }
 
 		/// <summary>
 		/// Gets or sets the fit type of the resample
 		/// </summary>
-		public ResampleFitType FitType
-		 { get; set; }
+		public ResampleFitType FitType { get; set; }
 
 		/// <summary>
 		/// Applies the filter to the specified input <paramref name="source"/> bitmap and returns the result
@@ -185,10 +190,7 @@ namespace Kelp.Imaging.Filters
 		/// </returns>
 		public Bitmap Apply(Bitmap source)
 		{
-			if (source == null)
-				throw new ArgumentNullException("source");
-
-			if (Width == 0 && Height == 0)
+			if (this.Width == 0 && this.Height == 0)
 				return source;
 
 			int w = this.Width;
@@ -209,7 +211,7 @@ namespace Kelp.Imaging.Filters
 			else if (w == 0)
 				w = CalculateOtherSide(h, source.Height, source.Width);
 
-			Bitmap newImage = null;
+			Bitmap newImage;
 
 			try
 			{
@@ -235,15 +237,15 @@ namespace Kelp.Imaging.Filters
 
 					if (this.FitType == ResampleFitType.ToMinimums)
 					{
-						if (h > Height && Height != 0)
+						if (h > this.Height && this.Height != 0)
 						{
-							h = Height;
+							h = this.Height;
 							w = CalculateOtherSide(h, source.Height, source.Width);
 						}
 
-						if (w > Width && Width != 0)
+						if (w > this.Width && this.Width != 0)
 						{
-							w = Width;
+							w = this.Width;
 							h = CalculateOtherSide(w, source.Width, source.Height);
 						}
 					}
@@ -270,10 +272,10 @@ namespace Kelp.Imaging.Filters
 			return newImage;
 		}
 
-		private int CalculateOtherSide(int side1, int inputSide1, int inputSide2)
+		private static int CalculateOtherSide(int side1, int inputSide1, int inputSide2)
 		{
-			float ratio = inputSide1 / (float) side1;
-			int side2 = (int) (inputSide2 / ratio);
+			float ratio = inputSide1 / (float)side1;
+			int side2 = (int)(inputSide2 / ratio);
 
 			return side2;
 		}

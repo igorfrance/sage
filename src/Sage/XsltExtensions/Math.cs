@@ -31,15 +31,38 @@ namespace Sage.XsltExtensions
 
 	using Sage.Extensibility;
 
+	/// <summary>
+	/// Provides several math or logic-related utility methods for use in XSLT.
+	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.Math)]
-	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter")]
+	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
+		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class Math
 	{
+		/// <summary>
+		/// Tests the specified <paramref name="condition"/> and returns <paramref name="result1"/> if 
+		/// <paramref name="condition"/> is <c>true</c>, or <paramref name="result2"/> if 
+		/// <paramref name="condition"/> is <c>false</c>
+		/// </summary>
+		/// <param name="condition">The condition to test</param>
+		/// <param name="result1">The value to return if <paramref name="condition"/> is <c>true</c>.</param>
+		/// <param name="result2">The value to return if <paramref name="condition"/> is <c>false</c>.</param>
+		/// <returns>
+		/// <paramref name="result1"/> if <paramref name="condition"/> is <c>true</c>, or 
+		/// <paramref name="result2"/> if <paramref name="condition"/> is <c>false</c></returns>
 		public object iif(bool condition, object result1, object result2)
 		{
 			return condition ? result1 : result2;
 		}
 
+		/// <summary>
+		/// Returns either of two specified values that is not <c>null</c>.
+		/// </summary>
+		/// <param name="result1">The first value to consider.</param>
+		/// <param name="result2">The value to return if <paramref name="result1"/> is <c>null</c>.</param>
+		/// <returns>
+		/// <paramref name="result2"/> if it is not <c>null</c>; otherwise <paramref name="result2"/>.
+		/// </returns>
 		public object isnull(object result1, object result2)
 		{
 			switch (result1.GetType().Name)

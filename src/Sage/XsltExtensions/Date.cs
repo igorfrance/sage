@@ -30,18 +30,13 @@ namespace Sage.XsltExtensions
 
 	using Sage.Extensibility;
 
+	/// <summary>
+	/// Provides several date-related utility methods for use in XSLT.
+	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.Date)]
-	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter")]
+	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
+		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class Date
 	{
-		public string date()
-		{
-			return "date1";
-		}
-
-		public string date(string p1)
-		{
-			return "date2";
-		}
 	}
 }

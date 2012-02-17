@@ -47,19 +47,19 @@ namespace Sage.Views
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 
+	/// <summary>
+	/// Provides a base class for different XSLT implementations.
+	/// </summary>
 	[ContractClass(typeof(XsltTransformContract))]
 	public abstract class XsltTransform
 	{
 		protected readonly List<string> dependencies = new List<string>();
-
+		
 		private const string CacheKeyFormat = "XSLT_{0}";
-
 		private static readonly ILog log = LogManager.GetLogger(typeof(XsltTransform).FullName);
-
 		private static readonly Dictionary<string, object> extensions;
 
 		private readonly Hashtable parameterArguments;
-
 		private readonly Hashtable extensionArguments;
 
 		static XsltTransform()
@@ -104,14 +104,23 @@ namespace Sage.Views
 			extensionArguments = (Hashtable)fi2.GetValue(this.Arguments);
 		}
 
+		/// <summary>
+		/// Gets the XSLT arguments (parameters) of this transform.
+		/// </summary>
 		public XsltArgumentList Arguments { get; private set; }
 
+		/// <summary>
+		/// Gets the last modification date of this transform.
+		/// </summary>
 		public DateTime? LastModified { get; private set; }
 
+		/// <summary>
+		/// Gets the list of files that this transform depends on (dependencies).
+		/// </summary>
 		public ReadOnlyCollection<string> Dependencies { get; private set; }
 
 		/// <summary>
-		/// Gets the XML output method of this XSLT transform.
+		/// Gets the XML output method associated with this XSLT transform.
 		/// </summary>
 		public XmlOutputMethod OutputMethod
 		{
@@ -122,10 +131,20 @@ namespace Sage.Views
 		}
 
 		/// <summary>
-		/// Gets the XML output settings of this XSLT transform.
+		/// Gets the XML output settings associated with this XSLT transform.
 		/// </summary>
 		public abstract XmlWriterSettings OutputSettings { get; }
 
+		/// <summary>
+		/// Creates an <see cref="XsltTransform"/> instance initialized with the document loaded from the 
+		/// specified <paramref name="stylesheetPath"/>.
+		/// </summary>
+		/// <param name="context">The current context.</param>
+		/// <param name="stylesheetPath">The path to the stylesheet.</param>
+		/// <returns>
+		/// An <see cref="XsltTransform"/> instance initialized with the document loaded from the 
+		/// specified <paramref name="stylesheetPath"/>.
+		/// </returns>
 		public static XsltTransform Create(SageContext context, string stylesheetPath)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
@@ -144,14 +163,19 @@ namespace Sage.Views
 			XsltTransform result = XsltTransform.Create(context, stylesheetDocument);
 			result.dependencies.AddRange(stylesheetDocument.Dependencies);
 
-			IEnumerable<string> fileDependencies = result.Dependencies.Where(d => new Uri(d).Scheme == "file");
+			IEnumerable<string> fileDependencies = result.Dependencies.Where(d => new Uri(d).Scheme == "file").ToList();
 			result.LastModified = Util.GetDateLastModified(fileDependencies);
-
 			context.Cache.Insert(key, result, new CacheDependency(fileDependencies.ToArray()));
 
 			return result;
 		}
 
+		/// <summary>
+		/// Creates the specified context.
+		/// </summary>
+		/// <param name="context">The context.</param>
+		/// <param name="stylesheetMarkup">The stylesheet markup.</param>
+		/// <returns>TODO: Add documentation for Create.</returns>
 		public static XsltTransform Create(SageContext context, IXPathNavigable stylesheetMarkup)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
@@ -166,9 +190,23 @@ namespace Sage.Views
 			return result;
 		}
 
+		/// <summary>
+		/// Transforms the specified <paramref name="inputXml"/> into the specified <paramref name="outputWriter"/>.
+		/// </summary>
+		/// <param name="inputXml">The input XML to transform.</param>
+		/// <param name="outputWriter">The output writer to transform to.</param>
+		/// <param name="context">The current context.</param>
+		/// <param name="arguments">Optional transform arguments.</param>
 		public abstract void Transform(
 			XmlNode inputXml, TextWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
 
+		/// <summary>
+		/// Transforms the specified <paramref name="inputXml"/> into the specified <paramref name="outputWriter"/>.
+		/// </summary>
+		/// <param name="inputXml">The input XML to transform.</param>
+		/// <param name="outputWriter">The output writer to transform to.</param>
+		/// <param name="context">The current context.</param>
+		/// <param name="arguments">Optional transform arguments.</param>
 		public abstract void Transform(
 			XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
 
@@ -221,10 +259,23 @@ namespace Sage.Views
 		}
 	}
 
+	/// <summary>
+	/// Provides code contracts for <see cref="XsltTransform"/>.
+	/// </summary>
 	[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed. Suppression is OK here.")]
 	[ContractClassFor(typeof(XsltTransform))]
 	public abstract class XsltTransformContract : XsltTransform
 	{
+		/// <inheritdoc/>
+		public override void Transform(
+			XmlNode inputXml, TextWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
+		{
+			Contract.Requires<ArgumentNullException>(inputXml != null);
+			Contract.Requires<ArgumentNullException>(inputXml != null);
+			Contract.Requires<ArgumentNullException>(context != null);
+		}
+
+		/// <inheritdoc/>
 		public override void Transform(
 			XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{

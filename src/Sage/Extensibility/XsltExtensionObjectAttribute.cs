@@ -27,14 +27,24 @@ namespace Sage.Extensibility
 {
 	using System;
 
+	/// <summary>
+	/// Indicates that the class this attribute decorates can be used as an XSLT extension object
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public class XsltExtensionObjectAttribute : Attribute
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XsltExtensionObjectAttribute"/> class.
+		/// </summary>
+		/// <param name="xmlNamespace">The namespace associated with the extension object class this attribute decorates.</param>
 		public XsltExtensionObjectAttribute(string xmlNamespace)
 		{
 			this.Namespace = xmlNamespace;
 		}
 
-		public string Namespace { get; set; }
+		/// <summary>
+		/// Gets the namespace associated with the extension object class this attribute decorates
+		/// </summary>
+		public string Namespace { get; private set; }
 	}
 }

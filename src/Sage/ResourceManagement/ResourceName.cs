@@ -71,7 +71,7 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the full directory name of this resource path ('g:\files' from 'g:\files\list-de.xml').
 		/// </summary>
-		public string FileDirectory { get;  set; }
+		public string FileDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the directory file name of this resource path.
@@ -93,7 +93,7 @@ namespace Sage.ResourceManagement
 		/// <value>
 		/// <c>list</c> for the resource name <c>g:\files\list-de.xml</c>.
 		/// </value>
-		public string FileName { get;  set; }
+		public string FileName { get; private set; }
 
 		/// <summary>
 		/// Gets the non-localized version of this resource name.
@@ -137,7 +137,7 @@ namespace Sage.ResourceManagement
 		/// <value>
 		/// For example, <c>g:\files\list-de.xml</c>
 		/// </value>
-		public string FilePath { get;  set; }
+		public string FilePath { get; private set; }
 
 		/// <summary>
 		/// Gets the file extension part of this resource name.
@@ -145,7 +145,7 @@ namespace Sage.ResourceManagement
 		/// <value>
 		/// <c>.xml</c> for the resource name <c>g:\files\list-de.xml</c>
 		/// </value>
-		public string Extension { get;  set; }
+		public string Extension { get; private set; }
 
 		/// <summary>
 		/// Gets the locale part of this resource name.
@@ -153,7 +153,7 @@ namespace Sage.ResourceManagement
 		/// <value>
 		/// <c>de</c> for the resource name <c>g:\files\list-de.xml</c>
 		/// </value>
-		public string Locale { get;  set; }
+		public string Locale { get; private set; }
 
 		/// <summary>
 		/// Gets the file name locale pattern of this resource name.

@@ -84,8 +84,13 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Gets the list of files that this document consists of / depends on.
 		/// </summary>
-		public ReadOnlyCollection<string> Dependencies { get;  set; }
+		public ReadOnlyCollection<string> Dependencies { get; private set; }
 
+        /// <summary>
+        /// Creates the xml reader settings using the specified <paramref name="resolver"/>.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>TODO: add documentation for CreateReaderSettings</returns>
 		public static XmlReaderSettings CreateReaderSettings(XmlUrlResolver resolver)
 		{
 			XmlReaderSettings settings = readerSettings.Clone();
@@ -95,6 +100,10 @@ namespace Sage.ResourceManagement
 			return settings;
 		}
 
+        /// <summary>
+        /// Adds the specified <paramref name="dependencies"/>.
+        /// </summary>
+        /// <param name="dependencies">The dependencies to add.</param>
 		public void AddDependencies(IEnumerable<string> dependencies)
 		{
 			Contract.Requires<ArgumentNullException>(dependencies != null);
@@ -102,6 +111,10 @@ namespace Sage.ResourceManagement
 			this.AddDependencies(dependencies.ToArray());
 		}
 
+        /// <summary>
+        /// Adds the specified <paramref name="dependencies"/>.
+        /// </summary>
+        /// <param name="dependencies">The dependencies to add.</param>
 		public void AddDependencies(params string[] dependencies)
 		{
 			this.dependencies.AddRange(dependencies.Where(d => !this.Dependencies.Contains(d)));

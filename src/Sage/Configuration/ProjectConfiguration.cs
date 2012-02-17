@@ -27,7 +27,6 @@ namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
@@ -42,7 +41,7 @@ namespace Sage.Configuration
 	using Sage.ResourceManagement;
 
 	/// <summary>
-	/// Implements the configuration container for configurable properties of this project.
+	/// Provides a configuration container for all configurable properties of this project.
 	/// </summary>
 	public class ProjectConfiguration
 	{
@@ -112,75 +111,92 @@ namespace Sage.Configuration
 			}
 		}
 
+		/// <summary>
+		/// Gets the XMLconfiguration element that was used for initialization of this instance.
+		/// </summary>
 		public XmlElement ConfigurationElement { get; private set; }
 
+		/// <summary>
+		/// Gets the name of this project.
+		/// </summary>
 		public string Name { get; private set; }
 
+		/// <summary>
+		/// Gets the type of project configuration.
+		/// </summary>
 		public ConfigurationType Type { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the resources have been pre-generated.
 		/// </summary>
-		/// <value>
-		/// <c>true</c> if the resources have been pre-generated; otherwise, <c>false</c>.
-		/// </value>
-		public bool AreResourcesPreGenerated { get;  set; }
+		/// <remarks>
+		/// If this value is <c>true</c>, resource manager will not attempt to globalize XML resources.
+		/// </remarks>
+		public bool AreResourcesPreGenerated { get; private set; }
 
 		/// <summary>
-		/// Gets the default category to fall back to if not specific category has been specified.
+		/// Gets the default category to fall back to if the URL doesn't specify a category.
 		/// </summary>
-		public string DefaultCategory { get;  set; }
+		/// <remarks>
+		/// This value is only applicable in project is <see cref="MultiCategory"/>.
+		/// </remarks>
+		public string DefaultCategory { get; private set; }
 
 		/// <summary>
-		/// Gets the default locale to fall back to if not specific locale has been specified.
+		/// Gets the default locale to fall back to if the URL doesn't specify a locale.
 		/// </summary>
-		public string DefaultLocale { get;  set; }
+		public string DefaultLocale { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the resources (script and styles) should be merged.
 		/// </summary>
-		/// <value>
-		/// <c>true</c> if the resources should be merged; otherwise, <c>false</c>.
-		/// </value>
-		public bool MergeResources { get;  set; }
+		public bool MergeResources { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the current project runs in multi-category mode.
 		/// </summary>
-		/// <value>
-		/// <c>true</c> if the current project runs in multi-category mode; otherwise, <c>false</c>.
-		/// </value>
-		public bool MultiCategory { get;  set; }
+		public bool MultiCategory { get; private set; }
 
 		/// <summary>
 		/// Gets the path templates for various system-required files.
 		/// </summary>
-		public PathTemplates PathTemplates { get;  set; }
+		public PathTemplates PathTemplates { get; private set; }
 
 		/// <summary>
 		/// Gets the routing configuration for the current project.
 		/// </summary>
-		public RoutingConfiguration Routing { get;  set; }
+		public RoutingConfiguration Routing { get; private set; }
 
 		/// <summary>
-		/// Gets the resource path configuration variable; this is the base path for all resources.
+		/// Gets the asset path configuration variable; this is the base path for all resources.
 		/// </summary>
-		public string AssetPath { get;  set; }
+		public string AssetPath { get; private set; }
 
 		/// <summary>
-		/// Gets the name of the shared category.
+		/// Gets the name of the category that is shared (common) with other categories.
 		/// </summary>
-		public string SharedCategory { get;  set; }
+		/// <remarks>
+		/// This value is only applicable in project is <see cref="MultiCategory"/>.
+		/// </remarks>
+		public string SharedCategory { get; private set; }
 
 		/// <summary>
-		/// Gets the base pattern for constructing URLs.
+		/// Gets the URL prefix to use if <see cref="UrlRewritingOn"/> is <c>true</c>.
 		/// </summary>
-		public string UrlRewritePrefix { get;  set; }
+		/// <remarks>
+		/// This value will typically contain placeholders for category and locale, for instance 
+		/// <c>{locale}/{category}/</c>
+		/// </remarks>
+		public string UrlRewritePrefix { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether URL rewriting is on.
 		/// </summary>
-		/// <value><c>true</c> if URL rewriting is on; otherwise, <c>false</c>.</value>
+		/// <remarks>
+		/// If this value is <c>true</c>, a rewriting prefix (as specified with <see cref="UrlRewritePrefix"/>)
+		/// will be prepended when generating links.
+		/// </remarks>
+		/// <seealso cref="UrlGenerator"/>
 		public bool UrlRewritingOn
 		{
 			get
@@ -195,50 +211,62 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets a value indicating whether the current project has been configured for debugging.
 		/// </summary>
-		/// <value><c>true</c> if debugging is on; otherwise, <c>false</c>.</value>
-		public bool IsDebugMode { get;  set; }
-
-		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries { get;  set; }
+		public bool IsDebugMode { get; private set; }
 
 		/// <summary>
-		/// Gets the list of locales available within categories.
+		/// Gets the resource library dictionary.
+		/// </summary>
+		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries { get; private set; }
+
+		/// <summary>
+		/// Gets the list of categories available within this project.
 		/// </summary>
 		/// <remarks>
-		/// The keys in this dictionaries are the keys of the categories ('running', 'football'...) and the values are 
-		/// comma-separated lists of locale identifiers.
+		/// This value is only applicable in project is <see cref="MultiCategory"/>.
 		/// </remarks>
-		/// <see cref="CategoryInfo"/>
-		public Dictionary<string, CategoryInfo> Categories { get;  set; }
-
-		public ExtensionPackageConfiguration Package { get; private set; }
+		public Dictionary<string, CategoryInfo> Categories { get; private set; }
 
 		/// <summary>
 		/// Gets the list of IP addresses or address ranges to be considered as developers.
 		/// </summary>
-		public List<IpAddress> DeveloperIps { get;  set; }
+		public List<IpAddress> DeveloperIps { get; private set; }
 
 		/// <summary>
-		/// Gets the <see cref="NameValueCollection"/> of name/pattern link values as parsed from the configuration node.
+		/// Gets the dictionary of links
 		/// </summary>
-		public Dictionary<string, LinkInfo> Links { get;  set; }
+		public Dictionary<string, LinkInfo> Links { get; private set; }
 
 		/// <summary>
 		/// Gets the dictionary of defined locales.
 		/// </summary>
-		/// <see cref="LocaleInfo"/>
-		public Dictionary<string, LocaleInfo> Locales { get;  set; }
+		public Dictionary<string, LocaleInfo> Locales { get; private set; }
 
 		/// <summary>
 		/// Gets the collection of global, shared meta views as defined in the configuration file.
 		/// </summary>
-		/// <see cref="MetaViewInfo"/>
-		public MetaViewDictionary MetaViews { get;  set; }
+		public MetaViewDictionary MetaViews { get; private set; }
 
 		/// <summary>
-		/// Gets the dictionary that defines how module names map to module classes that implement them.
+		/// Gets the dictionary of module confiurations
 		/// </summary>
-		public Dictionary<string, ModuleConfiguration> Modules { get;  set; }
+		public Dictionary<string, ModuleConfiguration> Modules { get; private set; }
 
+		/// <summary>
+		/// Gets the extension package configuration for packing this project as an extension.
+		/// </summary>
+		/// <remarks>
+		/// This value is only applicable for <see cref="ConfigurationType.Extension"/> type projects.
+		/// </remarks>
+		internal ExtensionPackageConfiguration Package { get; private set; }
+
+		/// <summary>
+		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified 
+		/// <paramref name="configPath"/>, optionally using the values from file located at 
+		/// <paramref name="parentConfigPath"/> to initialize values not present in <paramref name="configPath"/>.
+		/// </summary>
+		/// <param name="configPath">The path to the configuration file to use.</param>
+		/// <param name="parentConfigPath">Optional path to the parent configuration file to use.</param>
+		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
 		public static ProjectConfiguration Create(string configPath, string parentConfigPath = null)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
@@ -251,6 +279,14 @@ namespace Sage.Configuration
 			return Create(document, parentDoc);
 		}
 
+		/// <summary>
+		/// Creates a new <see cref="ProjectConfiguration"/> instance using the <paramref name="configDoc"/>, 
+		/// optionally using the values from <paramref name="parentConfigDoc"/> to initialize values not present in 
+		/// <paramref name="configDoc"/>.
+		/// </summary>
+		/// <param name="configDoc">The configuration file to use.</param>
+		/// <param name="parentConfigDoc">Optional parent configuration file to use.</param>
+		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
 		public static ProjectConfiguration Create(XmlDocument configDoc, XmlDocument parentConfigDoc = null)
 		{
 			Contract.Requires<ArgumentNullException>(configDoc != null);
@@ -264,11 +300,12 @@ namespace Sage.Configuration
 		}
 
 		/// <summary>
-		/// Determines whether the specified <paramref name="clientIpAddress"/> is configured as a developer IP address.
+		/// Determines whether the specified <paramref name="clientIpAddress"/> is configured to be treated as a developer.
 		/// </summary>
 		/// <param name="clientIpAddress">The client IP address to test.</param>
 		/// <returns>
-		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured as a developer IP address; otherwise, <c>false</c>.
+		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured to be treated as a developer; 
+		/// otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsDeveloperIp(string clientIpAddress)
 		{
@@ -282,13 +319,9 @@ namespace Sage.Configuration
 		/// <returns>
 		/// <c>true</c> if the specified locale uses a latin character subset, otherwise <c>false</c>.
 		/// </returns>
-		/// <exception cref="ArgumentNullException">
-		/// If the argument <paramref name="locale"/> is empty or a <c>null</c>.
-		/// </exception>
 		public bool IsLatinLocale(string locale)
 		{
-			if (locale == null)
-				throw new ArgumentNullException("locale");
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(locale));
 
 			bool result = false;
 
@@ -299,6 +332,7 @@ namespace Sage.Configuration
 			return result;
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Type);
@@ -341,10 +375,6 @@ namespace Sage.Configuration
 			Parse(document);
 		}
 
-		/// <summary>
-		/// Parses the specified configuration document.
-		/// </summary>
-		/// <param name="configDoc">The XML configuration document to parse.</param>
 		internal void Parse(XmlDocument configDoc)
 		{
 			Contract.Requires<ArgumentNullException>(configDoc != null);

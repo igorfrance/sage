@@ -26,11 +26,13 @@
 namespace Kelp.Imaging
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Drawing;
 
 	/// <summary>
 	/// Represents a bitmap filter.
 	/// </summary>
+	[ContractClass(typeof(FilterContract))]
 	public interface IFilter
 	{
 		/// <summary>
@@ -40,5 +42,15 @@ namespace Kelp.Imaging
 		/// <param name="source">The source bitmap to filter.</param>
 		/// <returns>The filtered bitmap.</returns>
 		Bitmap Apply(Bitmap source);
+	}
+
+	[ContractClassFor(typeof(IFilter))]
+	internal abstract class FilterContract : IFilter
+	{
+		public Bitmap Apply(Bitmap source)
+		{
+			Contract.Requires<ArgumentNullException>(source != null);
+			return default(Bitmap);
+		}
 	}
 }

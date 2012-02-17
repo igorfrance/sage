@@ -35,7 +35,7 @@ namespace Sage.Modules
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(NullModule).FullName);
 
-		public ModuleResult ProcessRequest(XmlElement moduleNode, ViewConfiguration configuration)
+		public ModuleResult ProcessElement(XmlElement moduleNode, ViewConfiguration configuration)
 		{
 			return new ModuleResult(moduleNode);
 		}

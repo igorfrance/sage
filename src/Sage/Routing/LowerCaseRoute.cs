@@ -25,6 +25,7 @@
  */
 namespace Sage.Routing
 {
+	using System;
 	using System.Web.Routing;
 
 	/// <summary>
@@ -101,6 +102,7 @@ namespace Sage.Routing
 			return path;
 		}
 
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Url);

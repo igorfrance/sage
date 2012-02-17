@@ -36,7 +36,10 @@
 			{
 				var pair = selection.InnerText.Trim().Split(' ');
 				if (pair.Length == 2)
-					this.Regexp = pair;
+				{
+					this.RegexStart = pair[0];
+					this.RegexEnd = pair[1];
+				}
 			}
 
 			foreach (XmlElement commentNode in configurationElement.SelectNodes("mod:comments/mod:linecomment", nm))

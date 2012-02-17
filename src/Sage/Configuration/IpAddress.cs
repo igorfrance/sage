@@ -82,12 +82,12 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the 32bit integer version of the lower bound IP address.
 		/// </summary>
-		public uint Address { get;  set; }
+		public uint Address { get; private set; }
 
 		/// <summary>
 		/// Gets the 32bit integer version of the higher bound IP address. For single IP addresses this value is zero (0).
 		/// </summary>
-		public uint To { get;  set; }
+		public uint To { get; private set; }
 
 		/// <summary>
 		/// Converts the specified <paramref name="address"/> from string to a 32bit integer.
@@ -140,12 +140,7 @@ namespace Sage.Configuration
 			return Address <= test && test <= To;
 		}
 
-		/// <summary>
-		/// Returns a <see cref="String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="String"/> that represents this instance.
-		/// </returns>
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			if (this.To != 0)
