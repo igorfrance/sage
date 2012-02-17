@@ -29,6 +29,8 @@ h1
 	{ color: #54596F; font-size: 32px; font-weight: normal; margin-bottom: 40px; text-shadow: 1px 1px 3px #666; }
 h1 + .breadcrumb
 	{ margin: -40px 0 40px 0; }
+h2
+	{ color: #82879f; font-size: 24px; font-weight: normal; margin-bottom: 10px; text-shadow: 1px 1px 3px #919191; }
 
 h2.section
 	{ clear: both; font-weight: normal; text-align: right; font-style: italic; color: #0080c0;
@@ -143,8 +145,8 @@ table.definition th
 	{ float: left; }
 
 #navigation
-	{ position: absolute; top: 0; left: 0; bottom: 0; width: 240px; padding: 10px; overflow: auto;
-	  background: #DCDCDC; z-index: 1; display: none; }
+	{ position: absolute; top: 0; left: -260px; bottom: 0; width: 240px; padding: 10px; overflow: auto;
+	  background: #DCDCDC; z-index: 1; }
 #navigation h1
 	{ background: url(../images/sage.png) no-repeat; width: 70px; height: 70px; margin-top: 0; }
 #navigation h1 span
@@ -211,9 +213,9 @@ html.dashboard .view-inspector
 html.dashboard .view-inspector .contentcontainer
 	{ z-index: 0; }
 html.dashboard .view-inspector .contenttoolbar
-	{ background: #555; border-bottom: 0; padding: 3px 4px 5px 4px; z-index: 1; }
+	{ background: #ddd; border-bottom: 0; padding: 3px 4px 5px 4px; z-index: 1; }
 html.dashboard .view-inspector .contenttoolbar .contenttitle
-	{ color: #eee; }
+	{ color: #666; }
 html.dashboard .view-inspector .viewtoolbar
 	{ background: #E5E5E5; height: 22px; border: 0; }
 html.dashboard .view-inspector .contenttitle

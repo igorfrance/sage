@@ -121,7 +121,7 @@ sage.dev.ViewInspector = function ViewInspector()
 		var currentState = $url.getHashParam(stateParamName);
 		var updatedState = escape(state);
 
-		if (currectState != updatedState)
+		if (currentState != updatedState)
 			$url.setHashParam(stateParamName, updatedState);
 	}
 

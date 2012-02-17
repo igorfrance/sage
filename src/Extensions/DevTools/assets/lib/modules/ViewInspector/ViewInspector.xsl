@@ -26,8 +26,8 @@
 			<xsl:apply-templates select="$config/mod:id" mode="attribute"/>
 			<div class="contentcontainer">
 				<xsl:attribute name="style">
-					<xsl:value-of select="string:format1('width: {0}%; ', $framewidth)"/>
-					<xsl:value-of select="string:format1('height: {0}%; ', $frameheight)"/>
+					<xsl:value-of select="string:format('width: {0}%; ', $framewidth)"/>
+					<xsl:value-of select="string:format('height: {0}%; ', $frameheight)"/>
 				</xsl:attribute>
 				<div class="contenttoolbar">
 					<div class="contenttitle"></div>
@@ -44,8 +44,8 @@
 			</div>
 			<div class="toolscontainer">
 				<xsl:attribute name="style">
-					<xsl:value-of select="string:format1('width: {0}%; ', 100 - $framewidth)"/>
-					<xsl:value-of select="string:format1('height: {0}%; ', 100 - $frameheight)"/>
+					<xsl:value-of select="string:format('width: {0}%; ', 100 - $framewidth)"/>
+					<xsl:value-of select="string:format('height: {0}%; ', 100 - $frameheight)"/>
 				</xsl:attribute>
 				<div class="viewtoolbar">
 					<div class="toolbar left">

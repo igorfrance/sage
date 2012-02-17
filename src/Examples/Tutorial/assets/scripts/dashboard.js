@@ -5,6 +5,7 @@ sage.tutorial.Dashboard = new function Dashboard()
 	var inspector;
 	var inspectorElement;
 	var welcomeElement;
+	var navigationElement;
 
 	function setup()
 	{
@@ -18,8 +19,15 @@ sage.tutorial.Dashboard = new function Dashboard()
 
 		inspectorElement = jQuery("#examples");
 		welcomeElement = jQuery("#welcome");
+		navigationElement = jQuery("#navigation");
 
 		jQuery("#navigation ul a").bind("click", onNavigationLinkClick);
+		jQuery("#welcome a.documentation").bind("click", onDocumentationLinkClick);
+
+		if ($url.getHashParam("sage:vi") != null)
+		{
+			navigationElement.css({ left: 0 });
+		}
 	}
 
 	function showInspector()
@@ -27,6 +35,7 @@ sage.tutorial.Dashboard = new function Dashboard()
 		if (inspectorElement.is(":visible"))
 			return;
 
+		sage.dev.Toolbar.hide();
 		inspectorElement.fadeIn();
 		welcomeElement.fadeOut();
 	}
@@ -36,8 +45,12 @@ sage.tutorial.Dashboard = new function Dashboard()
 		if (!inspectorElement.is(":visible"))
 			return;
 
+		navigationElement.animate({ left: -navigationElement.width() });
 		welcomeElement.fadeIn();
-		inspectorElement.fadeOut();
+		inspectorElement.fadeOut(function onFadeComplete()
+		{
+			sage.dev.Toolbar.show();
+		});
 	}
 
 	function onViewInspectorClose()
@@ -67,6 +80,21 @@ sage.tutorial.Dashboard = new function Dashboard()
 		{
 			$log.error(e);
 		}
+
+		return false;
+	}
+
+	function onDocumentationLinkClick(e)
+	{
+		var targetUrl = this.href;
+
+		welcomeElement.animate({ opacity: 0 });
+		navigationElement.animate({ left: 0 }, function ()
+		{
+			welcomeElement.hide();
+			showInspector();
+			inspector.inspect(targetUrl);
+		});
 
 		return false;
 	}

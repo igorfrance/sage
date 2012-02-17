@@ -8,6 +8,7 @@ sage.dev.Toolbar = new function Toolbar()
 	var status = { log: [], errors: 0, warnings: 0, clientTime: 0, serverTime: 0 };
 
 	var tooltip;
+	var self = this;
 	var logFrameLoaded = false;
 	var logUrl = "{basehref}dev/log/{thread}/?view={view}";
 	var inspectUrl = "{basehref}dev/inspect/?devtools=0#sage:vi=url%3D{url}%26inspector%3Dlog";
@@ -43,6 +44,8 @@ sage.dev.Toolbar = new function Toolbar()
 		$toolbar.find(".button.inspect").click(onInspectCommandClick);
 		$toolbar.hover(onToolbarMouseOver, onToolbarMouseOut);
 		$toolbar.show();
+
+		jQuery(document).bind("keydown", onDocumentKeyDown);
 
 		loadLogData();
 	}
@@ -187,7 +190,7 @@ sage.dev.Toolbar = new function Toolbar()
 	function loadLogData()
 	{
 		setStatusClass("loading");
-		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(document)
+		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(document) /**/
 		{
 			var rows = $xml.selectNodes(document, "//mod:log/mod:line", namespaces);
 			var entry = null;
@@ -317,6 +320,28 @@ sage.dev.Toolbar = new function Toolbar()
 		$frame.css({ visibility: "visible", height: Math.min(maxHeight, targetHeight) });
 	}
 
+	function onDocumentKeyDown(e)
+	{
+		if (e.ctrlKey && e.altKey && e.keyCode == 68) // CTRL+ALT+D
+		{
+			self.toggle();
+		}
+	}
+
+	this.show = function DeveloperToolbar$show()
+	{
+		$toolbar.show();
+	};
+
+	this.hide = function DeveloperToolbar$hide()
+	{
+		$toolbar.hide();
+	};
+
+	this.toggle = function DeveloperToolbar$toggle()
+	{
+		$toolbar.toggle();
+	};
 
 	$(window).load(setup);
 };
