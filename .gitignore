@@ -7,11 +7,9 @@ log/
 *.suo
 *.resharper
 *.Resharper
-_target/
 Sage.Local.sln
 
 /releases
 /sage.local.build
 /src/PrecompiledWeb
 /src/Examples/Tutorial/extensions
-/sage.prj
