@@ -77,18 +77,18 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UrlResolver"/> class.
-        /// </summary>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UrlResolver"/> class.
+		/// </summary>
 		public UrlResolver()
 		{
 			this.instances = new Dictionary<string, ISageXmlUrlResolver>();
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UrlResolver"/> class.
-        /// </summary>
-        /// <param name="context">The context.</param>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UrlResolver"/> class.
+		/// </summary>
+		/// <param name="context">The context.</param>
 		public UrlResolver(SageContext context)
 			: this()
 		{
@@ -96,7 +96,7 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Lists any file dependencies discovered by the resolvers associates with this instance.
+		/// Gets the file dependencies discovered by the resolvers associates with this instance.
 		/// </summary>
 		public List<string> Dependencies
 		{
@@ -106,11 +106,11 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-        /// <summary>
-        /// Gets the scheme.
-        /// </summary>
-        /// <param name="uriString">The URI string.</param>
-        /// <returns>TODO: Add documentation for GetScheme.</returns>
+		/// <summary>
+		/// Gets the scheme name for the specified <paramref name="uriString"/>.
+		/// </summary>
+		/// <param name="uriString">The uri for which to get the scheme.</param>
+		/// <returns>The scheme name for the specified <paramref name="uriString"/>.</returns>
 		public static string GetScheme(string uriString)
 		{
 			Uri uri;
@@ -123,11 +123,11 @@ namespace Sage.ResourceManagement
 			return "file";
 		}
 
-        /// <summary>
-        /// Registers the resolver.
-        /// </summary>
-        /// <param name="scheme">The scheme.</param>
-        /// <param name="resolver">The resolver.</param>
+		/// <summary>
+		/// Registers the resolver.
+		/// </summary>
+		/// <param name="scheme">The scheme.</param>
+		/// <param name="resolver">The resolver.</param>
 		public void RegisterResolver(string scheme, ISageXmlUrlResolver resolver)
 		{
 			if (instanceResolvers.ContainsKey(scheme))

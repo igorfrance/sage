@@ -36,8 +36,7 @@ namespace Kelp.ResourceHandling
 	using System.Text;
 	using System.Text.RegularExpressions;
 
-	using Kelp.Core;
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Kelp.Http;
 
 	using log4net;

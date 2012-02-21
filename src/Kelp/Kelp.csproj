@@ -129,11 +129,11 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
-    <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\StopwatchExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\XmlDocumentExtensions.cs" />
     <Compile Include="Extensions\XmlNodeExtensions.cs" />
+    <Compile Include="HttpMock\HttpBrowserCapabilitiesMock.cs" />
     <Compile Include="OrderedDictionary.cs" />
     <Compile Include="QueryString.cs" />
     <None Include="SortedSet.cs" />

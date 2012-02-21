@@ -8,16 +8,11 @@
 	<xs:import namespace="http://www.w3.org/2003/XInclude" schemaLocation="XInclude.xsd"/>
 	
 	<xs:element name="configuration">
-		<xs:annotation>
-			<xs:documentation>
-				Contain a single element, the project to which the configuration applies.
-			</xs:documentation>
-		</xs:annotation>
 		<xs:complexType>
 			<xs:choice minOccurs="1" maxOccurs="1">
 				<xs:element name="system" minOccurs="1" maxOccurs="1" type="config.instance"/>
 				<xs:element name="project" minOccurs="1" maxOccurs="1" type="config.instance"/>
-				<xs:element name="extension" minOccurs="1" maxOccurs="1" type="config.instance"/>
+				<xs:element name="extension" minOccurs="1" maxOccurs="1" type="config.extension"/>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
@@ -46,7 +41,6 @@
 					</xs:all>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="package" minOccurs="0" maxOccurs="1" type="config.package"/>
 			<xs:element name="libraries" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
@@ -184,6 +178,16 @@
 		<xs:attribute name="multiCategory" use="optional" type="xs:boolean"/>
 	</xs:complexType>
 	
+	<xs:complexType name="config.extension">
+		<xs:complexContent>
+			<xs:extension base="config.instance">
+				<xs:choice>
+					<xs:element name="package" minOccurs="0" maxOccurs="1" type="config.package"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
 	<xs:complexType name="config.package">
 		<xs:choice minOccurs="1" maxOccurs="7">
 			<xs:element name="binaries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
@@ -301,6 +305,7 @@
 		<xs:attribute name="type" type="p:resourceType" use="required"/>
 		<xs:attribute name="location" type="p:resourceLocation" use="required"/>
 		<xs:attribute name="path" type="xs:string" use="required"/>
+		<xs:attribute name="limitTo" type="xs:string" use="optional"/>
 	</xs:complexType>
 	
 	<xs:complexType name="config.route">
@@ -408,7 +413,7 @@
 			<xs:enumeration value="script"/>
 			<xs:enumeration value="style"/>
 			<xs:enumeration value="document"/>
-			<xs:enumeration value="stylesheet"/>
+			<xs:enumeration value="icon"/>
 		</xs:restriction>
 	</xs:simpleType>
 

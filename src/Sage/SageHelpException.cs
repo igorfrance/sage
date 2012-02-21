@@ -27,46 +27,101 @@ namespace Sage
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
+	using System.Xml;
 
-	public class SageHelpException : SageException
+	using Kelp.Extensions;
+
+	using Mvp.Xml.XInclude;
+	using Mvp.Xml.XPointer;
+
+	/// <summary>
+	/// Implements an exception that provides help about the error that occured.
+	/// </summary>
+	internal class SageHelpException : SageException
 	{
-		private static readonly string stylesheetPath = @"sageresx://sage/resources/xslt/AssistanceError.xslt";
+		private const string DefaultStylesheetPath = @"sageresx://sage/resources/xslt/AssistanceError.xslt";
 
-		public SageHelpException(ProblemType type)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
+		/// </summary>
+		/// <param name="problemType">The type of problem that occured.</param>
+		public SageHelpException(ProblemType problemType)
 		{
-			this.ProblemType = type;
+			this.Problem = new ProblemInfo(problemType);
 		}
 
-		public SageHelpException(ProblemType type, Exception actual)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
+		/// </summary>
+		/// <param name="problem">An object that descibes this error.</param>
+		public SageHelpException(ProblemInfo problem)
+		{
+			this.Problem = problem;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
+		/// </summary>
+		/// <param name="problem">An object that descibes this error.</param>
+		/// <param name="actual">The actual exception that occured.</param>
+		public SageHelpException(ProblemInfo problem, Exception actual)
 			: base(actual)
 		{
-			this.ProblemType = type;
+			this.Problem = problem;
 		}
 
-		public SageHelpException(ProblemType type, Exception actual, string path)
-			: this(type, actual)
-		{
-			this.Path = path;
-		}
+		/// <summary>
+		/// Gets problem info associated with this exception
+		/// </summary>
+		public ProblemInfo Problem { get; private set; }
 
-		public ProblemType ProblemType { get; private set; }
-
-		public string Path { get; private set; }
-
+		/// <inheritdoc/>
 		public override string StylesheetPath
 		{
 			get
 			{
-				return SageHelpException.stylesheetPath;
+				return DefaultStylesheetPath;
 			}
 		}
 
+		internal static SageHelpException Create(Exception ex, string path = null)
+		{
+			ProblemInfo problem = new ProblemInfo(ProblemType.Unknown);
+			if (ex is XmlException)
+			{
+				if (ex.Message.Contains("undeclared prefix"))
+					problem = new ProblemInfo(ProblemType.MissingNamespaceDeclaration, path);
+
+				else if (path != null && (path.EndsWith("html") || path.EndsWith("htm")))
+					problem = new ProblemInfo(ProblemType.InvalidHtmlMarkup, path);
+
+				else
+					problem = new ProblemInfo(ProblemType.InvalidMarkup, path);
+			}
+
+			if (ex is FatalResourceException)
+			{
+				if (ex.Root() is FileNotFoundException)
+					problem = new ProblemInfo(ProblemType.IncludeNotFound, path);
+
+				if (ex.Root() is NoSubresourcesIdentifiedException)
+					problem = new ProblemInfo(ProblemType.IncludeFragmentNotFound, path);
+
+				if (ex.Root() is XPointerSyntaxException)
+					problem = new ProblemInfo(ProblemType.IncludeSyntaxError, path);
+			}
+
+			return new SageHelpException(problem);
+		}
+
+		/// <inheritdoc/>
 		protected override Dictionary<string, object> GetTransformArguments(SageContext context)
 		{
 			Dictionary<string, object> arguments = base.GetTransformArguments(context);
-			arguments.Add("problemType", ProblemType.ToString());
-			if (this.Path != null)
-				arguments.Add("path", this.Path);
+			arguments.Add("problemType", this.Problem.Type.ToString());
+			if (this.Problem.FilePath != null)
+				arguments.Add("path", this.Problem.FilePath);
 
 			return arguments;
 		}

@@ -33,14 +33,12 @@ namespace Kelp.ResourceHandling
 
 	using log4net;
 
-	using Microsoft.Ajax.Utilities;
-
 	internal abstract class FileTypeConfiguration
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FileTypeConfiguration).FullName);
 		private const BindingFlags Flags = BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public;
 
-		public bool Enabled { get; protected set; }
+		public virtual bool Enabled { get; protected set; }
 
 		protected abstract List<string> ByteProps { get; }
 
@@ -52,6 +50,7 @@ namespace Kelp.ResourceHandling
 		{
 			if (configurationElement != null)
 			{
+				this.Enabled = configurationElement.GetAttribute("Enabled") == "true";
 				foreach (XmlAttribute attrib in configurationElement.Attributes)
 				{
 					string attribName = attrib.LocalName;
@@ -61,13 +60,13 @@ namespace Kelp.ResourceHandling
 						continue;
 
 					byte byteValue;
-					if (ByteProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && Byte.TryParse(attribValue, out byteValue))
+					if (ByteProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && byte.TryParse(attribValue, out byteValue))
 					{
 						property.SetValue(target, byteValue, null);
 					}
 
 					bool boolValue;
-					if (BoolProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && Boolean.TryParse(attribValue, out boolValue))
+					if (BoolProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && bool.TryParse(attribValue, out boolValue))
 					{
 						property.SetValue(target, boolValue, null);
 					}

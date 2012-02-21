@@ -106,7 +106,6 @@
     <Compile Include="Categories.cs" />
     <Compile Include="Core\QueryStringTest.cs" />
     <Compile Include="Extensions\DateTimeExtensionsTest.cs" />
-    <Compile Include="Extensions\IEnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\StringExtensionsTest.cs" />
     <Compile Include="HttpMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

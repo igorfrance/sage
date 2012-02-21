@@ -66,10 +66,11 @@ namespace Sage.Configuration
 		public XmlElement VariablesElement { get; private set; }
 
 		/// <summary>
-		/// Creates a category configuration using the specified <paramref name="configurationPath"/>
+		/// Creates a <see cref="CategoryConfiguration"/> using the specified <paramref name="configurationPath"/>.
 		/// </summary>
 		/// <param name="configurationPath">The configuration path.</param>
-		/// <returns>TODO: Add documentation for Create</returns>
+		/// <returns>A new instance of <see cref="CategoryConfiguration"/>, initialized from the file located at
+		/// the specified <paramref name="configurationPath"/>.</returns>
 		public static CategoryConfiguration Create(string configurationPath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configurationPath));

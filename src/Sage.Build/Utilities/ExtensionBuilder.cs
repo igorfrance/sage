@@ -35,9 +35,7 @@ namespace Sage.Build.Utilities
 	using ICSharpCode.SharpZipLib.Core;
 	using ICSharpCode.SharpZipLib.Zip;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using log4net;
 	using Sage.Configuration;
 

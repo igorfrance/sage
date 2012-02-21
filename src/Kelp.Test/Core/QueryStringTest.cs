@@ -31,8 +31,6 @@ namespace Kelp.Test.Core
 
 	using Machine.Specifications;
 
-	using Kelp.Core;
-
 	[Subject(typeof(QueryString)), Tags(Categories.Core)]
 	public class When_converting_a_querystring_to_xml
 	{

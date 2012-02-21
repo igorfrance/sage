@@ -32,8 +32,6 @@ namespace Sage.ResourceManagement
 	using System.Reflection;
 	using System.Xml;
 
-	using Mvp.Xml.XInclude;
-
 	using log4net;
 	using Sage.Extensibility;
 
@@ -55,11 +53,10 @@ namespace Sage.ResourceManagement
 		public const string Scheme = "sageres";
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageResourceResolver).FullName);
 		private static readonly Dictionary<string, GetResource> providers;
-		private readonly List<string> dependencies = new List<string>();
+		private const BindingFlags AttributeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
 		static SageResourceResolver()
 		{
-			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 			providers = new Dictionary<string, GetResource>();
 
 			foreach (Assembly a in Application.RelevantAssemblies)
@@ -67,12 +64,12 @@ namespace Sage.ResourceManagement
 				var types = from t in a.GetTypes()
 							where
 								t.IsClass &&
-								t.GetMethods(flags).Count(m => m.GetCustomAttributes(typeof(SageResourceProviderAttribute), false).Count() != 0) != 0
+								t.GetMethods(AttributeFlags).Count(m => m.GetCustomAttributes(typeof(SageResourceProviderAttribute), false).Count() != 0) != 0
 							select t;
 
 				foreach (Type type in types)
 				{
-					foreach (MethodInfo methodInfo in type.GetMethods(flags))
+					foreach (MethodInfo methodInfo in type.GetMethods(AttributeFlags))
 					{
 						foreach (SageResourceProviderAttribute attrib in methodInfo.GetCustomAttributes(typeof(SageResourceProviderAttribute), false))
 						{
@@ -80,9 +77,9 @@ namespace Sage.ResourceManagement
 							if (providers.ContainsKey(attrib.ResourceName))
 							{
 								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",
-									ResourceManager.GetDelegateSignature(providers[attrib.ResourceName]),
+									ResourceManager.GetDelegateSignature(providers[attrib.ResourceName].Method),
 									attrib.ResourceName,
-									ResourceManager.GetDelegateSignature(del));
+									ResourceManager.GetDelegateSignature(del.Method));
 							}
 
 							providers[attrib.ResourceName] = del;
@@ -103,12 +100,12 @@ namespace Sage.ResourceManagement
 			// first check if we have a registered provider for the specified resour name
 			if (providers.ContainsKey(resourceName))
 			{
-				log.DebugFormat("Found a specific resource provider for {0}: {1}.{2}",
+				GetResource provider = providers[resourceName];
+				log.DebugFormat("Found a specific resource provider for {0}: {1}",
 					resourceUri,
-					providers[resourceName].GetType().Name,
-					providers[resourceName].Method.Name);
+					ResourceManager.GetDelegateSignature(provider.Method));
 
-				resourceDoc = providers[resourceName](context, resourceUri);
+				resourceDoc = provider(context, resourceUri);
 			}
 			else
 			{

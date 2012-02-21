@@ -36,16 +36,18 @@ namespace Sage.XsltExtensions
 	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.Regexp)]
 	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
-		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
+		Justification = "This is an XSLT extension class, these methods are not intended for use from C#.")]
 	public class Regexp
 	{
 		/// <summary>
-		/// Replaces the specified input.
+		/// Searches the specified <paramref name="input"/> string for the specified regular <paramref name="expression"/>
+		/// and replaces any occurences found with the specified replacement.
 		/// </summary>
-		/// <param name="input">The input.</param>
-		/// <param name="expression">The expression.</param>
-		/// <param name="replacement">The replacement.</param>
-		/// <returns>TODO: Add documentation for replace.</returns>
+		/// <param name="input">The input string to search.</param>
+		/// <param name="expression">The regular expression string to look for.</param>
+		/// <param name="replacement">The replacement value.</param>
+		/// <returns>A version of the specified <paramref name="input"/> with any occurences of expression <paramref name="expression"/>
+		/// replaced with <paramref name="replacement"/>.</returns>
 		public string replace(string input, string expression, string replacement)
 		{
 			if (string.IsNullOrEmpty(input))

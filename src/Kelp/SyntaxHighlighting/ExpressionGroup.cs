@@ -30,7 +30,7 @@ namespace Kelp.SyntaxHighlighting
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	/// <summary>
 	/// Represents a group of language expressions.

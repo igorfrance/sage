@@ -23,7 +23,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-namespace Kelp.Core.Extensions
+namespace Kelp.Extensions
 {
 	using System;
 	using System.Text.RegularExpressions;
@@ -39,10 +39,9 @@ namespace Kelp.Core.Extensions
 		/// </summary>
 		/// <param name="instance">The <see cref="Exception"/> instance.</param>
 		/// <returns>The message of the <see cref="Exception"/> innermost to the current <see cref="Exception"/>.</returns>
-		public static string InnermostExceptionMessage(this Exception instance)
+		public static string RootMessage(this Exception instance)
 		{
-			Exception inner = GetInnermostException(instance);
-			return inner.Message;
+			return Root(instance).Message;
 		}
 
 		/// <summary>
@@ -50,10 +49,9 @@ namespace Kelp.Core.Extensions
 		/// </summary>
 		/// <param name="instance">The <see cref="Exception"/> instance.</param>
 		/// <returns>The type name of the <see cref="Exception"/> innermost to the current <see cref="Exception"/>.</returns>
-		public static string InnermostExceptionTypeName(this Exception instance)
+		public static string RootTypeName(this Exception instance)
 		{
-			Exception inner = GetInnermostException(instance);
-			return inner.GetType().Name;
+			return Root(instance).GetType().Name;
 		}
 
 		/// <summary>
@@ -61,10 +59,9 @@ namespace Kelp.Core.Extensions
 		/// </summary>
 		/// <param name="instance">The <see cref="Exception"/> instance.</param>
 		/// <returns>The stack trace of the <see cref="Exception"/> innermost to the current <see cref="Exception"/>.</returns>
-		public static string InnermostExceptionStackTrace(this Exception instance)
+		public static string RootStackTrace(this Exception instance)
 		{
-			Exception inner = GetInnermostException(instance);
-			return inner.StackTrace;
+			return Root(instance).StackTrace;
 		}
 
 		/// <summary>
@@ -116,7 +113,12 @@ namespace Kelp.Core.Extensions
 			return exceptionElement;
 		}
 
-		private static Exception GetInnermostException(Exception instance)
+		/// <summary>
+		/// Gets the exception innermost tp the specified <paramref name="instance"/>
+		/// </summary>
+		/// <param name="instance">The exception that occured.</param>
+		/// <returns>The innermost source of the exception</returns>
+		public static Exception Root(this Exception instance)
 		{
 			Exception result = instance;
 			while (result.InnerException != null)

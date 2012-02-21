@@ -34,7 +34,7 @@ namespace Sage.Build
 	using System.Web;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Kelp.HttpMock;
 
 	using Sage.Build.Utilities;
@@ -109,9 +109,9 @@ namespace Sage.Build
 					catch (Exception ex)
 					{
 						Console.WriteLine("An unhandled exception occured:");
-						Console.WriteLine(ex.InnermostExceptionTypeName());
-						Console.WriteLine(ex.InnermostExceptionMessage());
-						Console.WriteLine(ex.InnermostExceptionStackTrace());
+						Console.WriteLine(ex.RootTypeName());
+						Console.WriteLine(ex.RootMessage());
+						Console.WriteLine(ex.RootStackTrace());
 						return 1;
 					}
 				}

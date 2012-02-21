@@ -26,8 +26,12 @@
 namespace Sage.ResourceManagement
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Xml;
+
+	using Kelp.Extensions;
 
 	/// <summary>
 	/// Represents a file resource for use with Sage.
@@ -45,6 +49,13 @@ namespace Sage.ResourceManagement
 			this.Path = configElement.GetAttribute("path");
 			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), configElement.GetAttribute("type"), true);
 			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), configElement.GetAttribute("location"), true);
+			this.LimitTo = new List<string>();
+
+			string limitTo = configElement.GetAttribute("limitTo");
+			if (!string.IsNullOrWhiteSpace(limitTo))
+			{
+				this.LimitTo.AddRange(limitTo.Split(',').Select(s => s.Trim().ToLower()));
+			}
 		}
 
 		/// <summary>
@@ -61,6 +72,11 @@ namespace Sage.ResourceManagement
 		/// Gets or sets the path of this resource.
 		/// </summary>
 		public string Path { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets the list of user agent id's that this resource should be limited to.
+		/// </summary>
+		public List<string> LimitTo { get; protected set; }
 
 		/// <summary>
 		/// Implements the operator ==.
@@ -86,6 +102,24 @@ namespace Sage.ResourceManagement
 		public static bool operator !=(Resource left, Resource right)
 		{
 			return !Equals(left, right);
+		}
+
+		/// <summary>
+		/// Determines whether this resource is valid for the specified user agent ID.
+		/// </summary>
+		/// <param name="userAgentID">The user agent ID.</param>
+		/// <returns>
+		/// <c>true</c> if this resource is valid for the specified user agent ID; otherwise, <c>false</c>.
+		/// </returns>
+		public bool IsValidFor(string userAgentID)
+		{
+			if (string.IsNullOrWhiteSpace(userAgentID))
+				return true;
+
+			if (this.LimitTo.Count == 0)
+				return true;
+
+			return this.LimitTo.Count(userAgentID.StartsWith) != 0;
 		}
 
 		/// <summary>
@@ -141,6 +175,12 @@ namespace Sage.ResourceManagement
 				result.SetAttribute("type", "text/javascript");
 				result.SetAttribute("language", "javascript");
 				result.SetAttribute("src", webPath);
+			}
+			else if (this.Type == ResourceType.Icon)
+			{
+				result = ownerDocument.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
+				result.SetAttribute("rel", "icon");
+				result.SetAttribute("href", webPath);
 			}
 			else
 			{

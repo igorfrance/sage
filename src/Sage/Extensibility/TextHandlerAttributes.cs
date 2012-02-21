@@ -33,7 +33,7 @@ namespace Sage.Extensibility
 
 	/// <summary>
 	/// Indicates that the method this attribute decorates should be used as a text handler for 
-	/// <see cref="ResourceManager.CopyNode"/>.
+	/// <see cref="ResourceManager.CopyTree"/>.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class TextHandlerAttribute : Attribute

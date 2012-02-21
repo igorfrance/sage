@@ -31,7 +31,6 @@ namespace Sage.ResourceManagement
 	using System.IO;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 	using Kelp.ResourceHandling;
 	using log4net;

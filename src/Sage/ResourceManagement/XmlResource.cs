@@ -33,7 +33,7 @@ namespace Sage.ResourceManagement
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Sage.Configuration;
 
 	/// <summary>
@@ -65,17 +65,16 @@ namespace Sage.ResourceManagement
 
 			if (UrlResolver.GetScheme(path) == "file")
 			{
-				this.TargetDirectory = Path.Combine(SourceDirectory, context.ProjectConfiguration.PathTemplates.GlobalizedDirectory);
+				this.TargetDirectory = Path.Combine(this.SourceDirectory, context.ProjectConfiguration.PathTemplates.GlobalizedDirectory);
 			}
 			else
 			{
-				string converted = path.ReplaceAll(convertScheme, "$1/$2");
+				string converted = path.ReplaceAll(this.convertScheme, "$1/$2");
 				string expanded = Path.Combine(context.ProjectConfiguration.PathTemplates.GlobalizedDirectoryForNonFileResources, converted);
 
 				this.SourceDirectory =
 				this.TargetDirectory = context.Path.Resolve(Path.GetDirectoryName(expanded));
 			}
-
 		}
 
 		/// <summary>
@@ -89,14 +88,13 @@ namespace Sage.ResourceManagement
 		public string FilePath { get; private set; }
 
 		/// <summary>
-		/// The directory in which globalized files will be saved.
+		/// Gets the target directory of this resource.
 		/// </summary>
 		public string TargetDirectory { get; private set; }
 
 		/// <summary>
-		/// Gets or sets the source directory.
+		/// Gets the source directory of this resource.
 		/// </summary>
-	 
 		public string SourceDirectory { get; private set; }
 
 		/// <summary>
@@ -131,11 +129,12 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this instance is globalizable.
+		/// Gets a value indicating whether the specified <paramref name="document"/> is globalizable.
 		/// </summary>
-		/// <value>
-		/// <c>true</c> if this instance is globalizable; otherwise, <c>false</c>.
-		/// </value>
+		/// <param name="document">The document to check.</param>
+		/// <returns>
+		/// <c>true</c> if the specified document is globalizable; otherwise, <c>false</c>.
+		/// </returns>
 		/// <remarks>
 		/// In order for an xml resources to be considered globalizable, it needs to reference the
 		/// <see cref="XmlNamespaces.InternationalizationNamespace"/>.
@@ -148,8 +147,10 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Gets the earliest modified date of all versions generated from this resource file.
+		/// Gets the earliest modification date of all versions generated from this resource file.
 		/// </summary>
+		/// <param name="locales">The locales to check for.</param>
+		/// <returns>The earliest modification date of all versions generated from this resource file.</returns>
 		public DateTime? GetDateFirstGlobalized(List<string> locales)
 		{
 			if (!Directory.Exists(TargetDirectory))
@@ -171,10 +172,14 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Gets the source path.
+		/// Gets the path to the <paramref name="locale"/>-specific version of this resource if it exists, or the path to the 
+		/// non-specific version if it doesn't.
 		/// </summary>
-		/// <param name="locale">The locale.</param>
-		/// <returns>TODO: Add documentation for GetSourcePath.</returns>
+		/// <param name="locale">The locale for which to get the path.</param>
+		/// <returns>
+		/// The path to the <paramref name="locale"/>-specific version of this resource if it exists, or the path to the 
+		/// non-specific version if it doesn't.
+		/// </returns>
 		public string GetSourcePath(string locale)
 		{
 			string localizedPath = this.Name.ToLocalePath(locale);
@@ -184,7 +189,9 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Globalizes this instance.
 		/// </summary>
-		/// <returns>TODO: Add documentation for Globalize.</returns>
+		/// <returns>
+		/// An object that contains information about the globalization of this resource.
+		/// </returns>
 		public GlobalizationSummary Globalize()
 		{
 			Globalizer globalizer = new Globalizer(context);
@@ -312,15 +319,6 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
-		/// <summary>
-		/// Loads the original <see cref="XmlDocument"/> of this resource file.
-		/// </summary>
-		/// <returns>The loaded document.</returns>
-		/// <remarks>
-		/// When loading the source document, we need to consider that there may be a completely separate document
-		/// for a given locale, and in that case we need to use that one. This method will take that into account
-		/// and use the source document most closely matching the specified <paramref name="locale"/>.
-		/// </remarks>
 		internal CacheableXmlDocument LoadSourceDocument(string locale)
 		{
 			string fullPath = context.Path.Localize(this.FilePath, locale, true);
@@ -341,10 +339,6 @@ namespace Sage.ResourceManagement
 			return xmlDocument;
 		}
 
-		/// <summary>
-		/// Loads the <see cref="XmlDocument"/> of this resource file as globalized in the specified <paramref name="locale"/>
-		/// </summary>
-		/// <returns>The globalized <see cref="XmlDocument"/> of this resource file.</returns>
 		internal CacheableXmlDocument LoadGlobalizedDocument(string locale)
 		{
 			string fullPath = GetGlobalizedName(locale, true);

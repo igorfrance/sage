@@ -34,6 +34,7 @@ namespace Sage.Routing
 
 	using log4net;
 	using Sage.Configuration;
+	using Sage.ResourceManagement;
 
 	/// <summary>
 	/// Provides additional URL routing functionality.
@@ -126,16 +127,16 @@ namespace Sage.Routing
 							}
 
 							routeParams.Add(new MapRouteParams
-								{
-									RouteName = String.IsNullOrEmpty(routeAttrib.Name) ? null : routeAttrib.Name,
-									Path = routeAttrib.Path,
-									ControllerName = controllerName,
-									ActionName = methodInfo.Name,
-									Order = routeAttrib.Order,
-									Constraints = GetConstraints(methodInfo),
-									Defaults = GetDefaults(methodInfo),
-									ControllerNamespace = type.Namespace,
-								});
+							{
+								RouteName = string.IsNullOrEmpty(routeAttrib.Name) ? null : routeAttrib.Name,
+								Path = routeAttrib.Path,
+								ControllerName = controllerName,
+								ActionName = methodInfo.Name,
+								Order = routeAttrib.Order,
+								Constraints = GetConstraints(methodInfo),
+								Defaults = GetDefaults(methodInfo),
+								ControllerNamespace = type.Namespace,
+							});
 						}
 					}
 				}
@@ -174,16 +175,16 @@ namespace Sage.Routing
 
 			foreach (UrlRouteParameterConstraintAttribute attrib in mi.GetCustomAttributes(typeof(UrlRouteParameterConstraintAttribute), true))
 			{
-				if (String.IsNullOrEmpty(attrib.Name))
+				if (string.IsNullOrEmpty(attrib.Name))
 				{
-					throw new ApplicationException(String.Format("UrlRouteParameterContraint attribute on {0}.{1} is missing the Name property.",
-						mi.DeclaringType.Name, mi.Name));
+					throw new ApplicationException(string.Format("UrlRouteParameterContraint attribute on {0} is missing the Name property.",
+						ResourceManager.GetDelegateSignature(mi)));
 				}
 
-				if (String.IsNullOrEmpty(attrib.Expression))
+				if (string.IsNullOrEmpty(attrib.Expression))
 				{
-					throw new ApplicationException(String.Format("UrlRouteParameterContraint attribute on {0}.{1} is missing the RegEx property.",
-						mi.DeclaringType.Name, mi.Name));
+					throw new ApplicationException(string.Format("UrlRouteParameterContraint attribute on {0} is missing the RegEx property.",
+						ResourceManager.GetDelegateSignature(mi)));
 				}
 
 				constraints.Add(attrib.Name, attrib.Expression);
@@ -198,16 +199,16 @@ namespace Sage.Routing
 
 			foreach (UrlRouteParameterDefaultAttribute attrib in mi.GetCustomAttributes(typeof(UrlRouteParameterDefaultAttribute), true))
 			{
-				if (String.IsNullOrEmpty(attrib.Name))
+				if (string.IsNullOrEmpty(attrib.Name))
 				{
-					throw new ApplicationException(String.Format("UrlRouteParameterDefault attribute on {0}.{1} is missing the Name property.",
-						mi.DeclaringType.Name, mi.Name));
+					throw new ApplicationException(string.Format("UrlRouteParameterDefault attribute on {0} is missing the Name property.",
+						ResourceManager.GetDelegateSignature(mi)));
 				}
 
 				if (attrib.Value == null)
 				{
-					throw new ApplicationException(String.Format("UrlRouteParameterDefault attribute on {0}.{1} is missing the Value property.",
-						mi.DeclaringType.Name, mi.Name));
+					throw new ApplicationException(string.Format("UrlRouteParameterDefault attribute on {0} is missing the Value property.",
+						ResourceManager.GetDelegateSignature(mi)));
 				}
 
 				defaults.Add(attrib.Name, attrib.Value);

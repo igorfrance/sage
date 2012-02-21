@@ -126,9 +126,9 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-        /// <summary>
-        /// Gets the physical category configuration path.
-        /// </summary>
+		/// <summary>
+		/// Gets the physical category configuration path.
+		/// </summary>
 		public string PhysicalCategoryConfigurationPath
 		{
 			get
@@ -182,9 +182,9 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-        /// <summary>
-        /// Gets the default stylesheet path.
-        /// </summary>
+		/// <summary>
+		/// Gets the default stylesheet path.
+		/// </summary>
 		public string DefaultStylesheetPath
 		{
 			get
@@ -193,9 +193,9 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-        /// <summary>
-        /// Gets the virtual directories.
-        /// </summary>
+		/// <summary>
+		/// Gets the virtual directories.
+		/// </summary>
 		public Dictionary<string, string> VirtualDirectories
 		{
 			get
@@ -214,11 +214,13 @@ namespace Sage.ResourceManagement
 			return context.ProjectConfiguration.AssetPath.Replace("{category}", category);
 		}
 
-        /// <summary>
-        /// Gets the module path.
-        /// </summary>
-        /// <param name="moduleName">Name of the module.</param>
-        /// <returns>TODO: Add documentation for GetModulePath.</returns>
+		/// <summary>
+		/// Gets the expanded and resolved path to the module with the specified <paramref name="moduleName"/>.
+		/// </summary>
+		/// <param name="moduleName">Name of the module whose path to get.</param>
+		/// <returns>
+		/// The expanded and resolved path to the module with the specified <paramref name="moduleName"/>
+		/// </returns>
 		public string GetModulePath(string moduleName)
 		{
 			string templatePath = string.Concat(this.ModulePath.TrimEnd('/'), "/", moduleName);
@@ -273,12 +275,16 @@ namespace Sage.ResourceManagement
 			return this.Resolve(templatePath);
 		}
 
-        /// <summary>
-        /// Gets the dictionary path.
-        /// </summary>
-        /// <param name="locale">The locale.</param>
-        /// <param name="category">The category.</param>
-        /// <returns>TODO: Add documentation for GetDictionaryPath.</returns>
+		/// <summary>
+		/// Gets the path to the dictionary, either using the current context's locale and category, or if specified, using
+		/// the <paramref name="locale"/> and <paramref name="category"/> arguments.
+		/// </summary>
+		/// <param name="locale">Optional locale of the dictionary path to get.</param>
+		/// <param name="category">Optional category of the dictionary path to get.</param>
+		/// <returns>
+		/// The path to the dictionary, either using the current context's locale and category, or if specified, using
+		/// the <paramref name="locale"/> and <paramref name="category"/> arguments.
+		/// </returns>
 		public string GetDictionaryPath(string locale = null, string category = null)
 		{
 			return this.Resolve(context.ProjectConfiguration.PathTemplates.Dictionary, category ?? context.Category, locale ?? context.Locale);
@@ -336,12 +342,12 @@ namespace Sage.ResourceManagement
 				foreach (string key in VirtualDirectories.Keys)
 				{
 					string directoryPath = VirtualDirectories[key];
-				    if (path.Contains(directoryPath))
-				    {
-				        path = path.Replace(directoryPath, key).Replace("\\", "/");
+					if (path.Contains(directoryPath))
+					{
+						path = path.Replace(directoryPath, key).Replace("\\", "/");
 						replaced = true;
 						break;
-				    }
+					}
 				}
 
 				if (!replaced)
@@ -511,115 +517,132 @@ namespace Sage.ResourceManagement
 			return mapPath ? Resolve(path) : path;
 		}
 
-        /// <summary>
-        /// Resolves the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <returns>TODO: Add documentation for Resolve.</returns>
-		public string Resolve(string template)
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/> and the current <see cref="SageContext"/> and returns an absolute path.
+		/// </summary>
+		/// <param name="templatePath">The path to resolve.</param>
+		/// <returns>
+		/// The resolved version of the specified <paramref name="templatePath"/>.
+		/// </returns>
+		public string Resolve(string templatePath)
 		{
-			return this.Resolve(template, this.context);
-		}
-
-        /// <summary>
-        /// Resolves the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <param name="category">The category.</param>
-        /// <returns></returns>
-		public string Resolve(string template, string category)
-		{
-			return this.Resolve(template, category, context.Locale);
-		}
-
-        /// <summary>
-        /// Resolves the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <param name="category">The category.</param>
-        /// <param name="locale">The locale.</param>
-        /// <returns>TODO: Add documentation for Resolve.</returns>
-		public string Resolve(string template, string category, string locale)
-		{
-			return this.Resolve(template, new QueryString { { "category", category }, { "locale", locale } });
+			return this.Resolve(templatePath, this.context);
 		}
 
 		/// <summary>
-		/// Substitutes any placeholders in the specified template path with values from the specified
-		/// <paramref name="context"/> and returns an absolute path.
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/>, the current <see cref="SageContext"/> and the specified 
+		/// <paramref name="category"/>, and returns an absolute path.
 		/// </summary>
-		/// <param name="template">The template path to resolve.</param>
-		/// <param name="context">The context to use to get the category.</param>
-		/// <returns>
-		/// The absolute version of the specified template with placeholders substituted.
-		/// </returns>
-		public string Resolve(string template, SageContext context)
+		/// <param name="templatePath">The path to resolve.</param>
+		/// <param name="category">The category to use instead of the current context's category when resolving.</param>
+		/// <returns>The resolved version of the specified <paramref name="templatePath"/>.</returns>
+		public string Resolve(string templatePath, string category)
 		{
-			return this.Resolve(template, new QueryString { { "category", context.Category } });
+			return this.Resolve(templatePath, category, context.Locale);
 		}
 
-        /// <summary>
-        /// Resolves the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>TODO: Add documentation for Reslve.</returns>
-		public string Resolve(string template, QueryString values)
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/>, the current <see cref="SageContext"/> and the specified 
+		/// <paramref name="category"/> and <paramref name="locale"/>, and returns an absolute path.
+		/// </summary>
+		/// <param name="templatePath">The path to resolve.</param>
+		/// <param name="category">The category to use instead of the current context's category when resolving.</param>
+		/// <param name="locale">The locale to use instead of the current context's locale when resolving.</param>
+		/// <returns>The resolved version of the specified <paramref name="templatePath"/>.</returns>
+		public string Resolve(string templatePath, string category, string locale)
 		{
-			var substituted = this.Substitute(template, values);
+			return this.Resolve(templatePath, new QueryString { { "category", category }, { "locale", locale } });
+		}
+
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/> and the specified <paramref name="context"/> and returns an absolute path.
+		/// </summary>
+		/// <param name="templatePath">The template path to resolve.</param>
+		/// <param name="context">The context to use to get the category.</param>
+		/// <returns>
+		/// The resolved version of the specified template with placeholders substituted.
+		/// </returns>
+		public string Resolve(string templatePath, SageContext context)
+		{
+			return this.Resolve(templatePath, new QueryString { { "category", context.Category } });
+		}
+
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/> and the specified <paramref name="values"/> and returns an absolute path.
+		/// </summary>
+		/// <param name="templatePath">The template path to resolve.</param>
+		/// <param name="values">The name/value collection of values to use</param>
+		/// <returns>
+		/// The resolved version of the specified template with placeholders substituted.
+		/// </returns>
+		public string Resolve(string templatePath, QueryString values)
+		{
+			var substituted = this.Substitute(templatePath, values);
 			return context.MapPath(substituted);
 		}
 
-        /// <summary>
-        /// Substitutes the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <returns>TODO: Add documentation for Substitute.</returns>
-		public string Substitute(string template)
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/> and the current <see cref="SageContext"/>.
+		/// </summary>
+		/// <param name="templatePath">The path to resolve.</param>
+		/// <returns>The substituted version of the specified <paramref name="templatePath"/>.</returns>
+		public string Substitute(string templatePath)
 		{
-			return this.Substitute(template, this.context);
-		}
-
-        /// <summary>
-        /// Substitutes the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <param name="context">The context.</param>
-        /// <returns>TODO: Add documentation for Substitute.</returns>
-		public string Substitute(string template, SageContext context)
-		{
-			return Substitute(template, new QueryString { { "category", context.Category } });
+			return this.Substitute(templatePath, this.context);
 		}
 
 		/// <summary>
-		/// Substitutes the placeholders the specified template path using the specified <paramref name="category"/>.
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/> and the specified <paramref name="context"/>.
 		/// </summary>
-		/// <param name="template">The template path to resolve.</param>
-		/// <param name="category">The category substitution value.</param>
+		/// <param name="templatePath">The template path to resolve.</param>
+		/// <param name="context">The context to use to get the category.</param>
 		/// <returns>
-		/// The absolute version of the specified template with placeholders substituted.
+		/// The substituted version of the specified template with placeholders substituted.
 		/// </returns>
-		public string Substitute(string template, string category)
+		public string Substitute(string templatePath, SageContext context)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(template));
+			return Substitute(templatePath, new QueryString { { "category", context.Category } });
+		}
+
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/>, the current <see cref="SageContext"/> and the specified 
+		/// <paramref name="category"/>.
+		/// </summary>
+		/// <param name="templatePath">The path to resolve.</param>
+		/// <param name="category">The category to use instead of the current context's category when resolving.</param>
+		/// <returns>The substituted version of the specified <paramref name="templatePath"/>.</returns>
+		public string Substitute(string templatePath, string category)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(templatePath));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(category));
 
 			QueryString values = new QueryString();
 			values.Add("category", category);
 			values.Add("resourcepath", GetAssetPath(category));
 
-			return Substitute(template, values);
+			return Substitute(templatePath, values);
 		}
 
-        /// <summary>
-        /// Substitutes the specified template.
-        /// </summary>
-        /// <param name="template">The template.</param>
-        /// <param name="values">The values.</param>
-        /// <returns></returns>
-		public string Substitute(string template, QueryString values)
+		/// <summary>
+		/// Substitutes any placeholders in the specified <paramref name="templatePath"/> with values from the current 
+		/// <see cref="ProjectConfiguration"/> and the specified <paramref name="values"/>.
+		/// </summary>
+		/// <param name="templatePath">The template path to resolve.</param>
+		/// <param name="values">The name/value collection of values to use</param>
+		/// <returns>
+		/// The substituted version of the specified template with placeholders substituted.
+		/// </returns>
+		public string Substitute(string templatePath, QueryString values)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(template));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(templatePath));
 			Contract.Requires<ArgumentNullException>(values != null);
 
 			if (values["category"] == null)
@@ -629,7 +652,7 @@ namespace Sage.ResourceManagement
 			if (values["assetpath"] == null)
 				values.Add("assetpath", GetAssetPath(values["category"]));
 
-			string result = template;
+			string result = templatePath;
 			foreach (string key in values)
 				result = result.Replace(string.Format("{{{0}}}", key), values[key]);
 

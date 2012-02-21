@@ -35,7 +35,7 @@ namespace Sage.Extensibility
 
 	using ICSharpCode.SharpZipLib.Core;
 	using ICSharpCode.SharpZipLib.Zip;
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Kelp.IO;
 	using log4net;
 
@@ -181,7 +181,7 @@ namespace Sage.Extensibility
 
 		public void Update(bool forceUpdate = false)
 		{
-			Uninstall(forceUpdate);
+			Uninstall(true, forceUpdate);
 			Install();
 		}
 
@@ -262,7 +262,7 @@ namespace Sage.Extensibility
 			}
 		}
 
-		public void Uninstall(bool deleteChangedFiles = false)
+		public void Uninstall(bool isUpdateUninstall = false, bool deleteChangedFiles = false)
 		{
 			if (!this.IsInstalled)
 				return;
@@ -270,7 +270,7 @@ namespace Sage.Extensibility
 			log.DebugFormat("Uninstalling extension '{0}'", this.Name);
 
 			var installLog = orderedLogs.Last();
-			Rollback(installLog, deleteChangedFiles);
+			Rollback(installLog, isUpdateUninstall, deleteChangedFiles);
 			SaveLog(installLog);
 		}
 
@@ -321,7 +321,7 @@ namespace Sage.Extensibility
 			return new SageContext(context, this.Config);
 		}
 
-		private void Rollback(InstallLog installLog, bool deleteChangedFiles = false)
+		private void Rollback(InstallLog installLog, bool isUpdateRollback = false, bool deleteChangedFiles = false)
 		{
 			log.DebugFormat("Rolling back log extension '{0}'", this.Name);
 
@@ -334,10 +334,25 @@ namespace Sage.Extensibility
 					continue;
 				}
 
-				if (!deleteChangedFiles && Crc32.GetHash(file.Path) != file.CrcCode)
+				string currentCrc = Crc32.GetHash(file.Path);
+				string originalCrc = file.CrcCode;
+
+				if (!deleteChangedFiles && currentCrc != originalCrc)
 				{
-					log.WarnFormat("The file '{0}' has changed since it was installed, it will not be deleted", file.Path);
-					continue;
+					bool deleteFile = false;
+					if (isUpdateRollback)
+					{
+						string sourceFile = GetSourcePath(file.Path);
+						string updatedCrc = Crc32.GetHash(sourceFile);
+						if (updatedCrc == currentCrc)
+							deleteFile = true;
+					}
+
+					if (!deleteFile)
+					{
+						log.WarnFormat("The file '{0}' has changed since it was installed, it will not be deleted", file.Path);
+						continue;
+					}
 				}
 
 				try
@@ -423,10 +438,16 @@ namespace Sage.Extensibility
 				this.InstallHistory.Add(new InstallLog(element));
 		}
 
-		private string GetTargetPath(string assetPath)
+		private string GetTargetPath(string sourcePath)
 		{
-			string childPath = assetPath.ToLower().Replace(this.SourceDirectory.ToLower(), string.Empty);
+			string childPath = sourcePath.ToLower().Replace(this.SourceDirectory.ToLower(), string.Empty);
 			return context.Path.Resolve(childPath);
+		}
+
+		private string GetSourcePath(string targetPath)
+		{
+			string childPath = targetPath.ToLower().Replace(context.Path.Resolve("/"), string.Empty);
+			return childPath;
 		}
 	}
 }

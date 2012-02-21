@@ -30,6 +30,11 @@ namespace Sage.Views
 	using System.Linq;
 	using System.Xml;
 
+	using Kelp.Extensions;
+
+	using Mvp.Xml.XInclude;
+	using Mvp.Xml.XPointer;
+
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
 
@@ -267,17 +272,13 @@ namespace Sage.Views
 
 							configDoc.LoadXml(configDoc.InnerXml);
 						}
-						catch (XmlException ex)
+						catch (Exception ex)
 						{
-							//// TODO: Catch Mvp.Xml.XInclude.FatalResourceException (test with invalid xpointer spec)
-							//// Mvp.Xml.XInclude.FatalResourceException + NoSubresourcesIdentifiedException
-							//// Mvp.Xml.XInclude.FatalResourceException + ResourceException + FileNotFoundException
-
-							ProblemType problemType = DetectProblemType(ex, ConfigPath);
-							if (problemType == ProblemType.Unknown)
+							SageHelpException helpError = SageHelpException.Create(ex, this.ConfigPath);
+							if (helpError.Problem.Type == ProblemType.Unknown)
 								throw;
 
-							throw new SageHelpException(problemType, ex);
+							throw helpError;
 						}
 					}
 				}
@@ -308,7 +309,8 @@ namespace Sage.Views
 						}
 						catch (Exception ex)
 						{
-							throw new SageHelpException(ProblemType.XsltLoadError, ex, this.ViewPath);
+							ProblemInfo problem = new ProblemInfo(ProblemType.XsltLoadError, this.ViewPath);
+							throw new SageHelpException(problem, ex);
 						}
 					}
 					else
@@ -330,22 +332,6 @@ namespace Sage.Views
 		public override string ToString()
 		{
 			return string.Format("{0}/{1} ({2})", Controller, Action, ViewPath);
-		}
-
-		private ProblemType DetectProblemType(Exception ex, string path)
-		{
-			if (ex is XmlException)
-			{
-				if (ex.Message.Contains("undeclared prefix"))
-					return ProblemType.MissingNamespaceDeclaration;
-
-				if (path.EndsWith("html") || path.EndsWith("htm"))
-					return ProblemType.InvalidHtmlMarkup;
-
-				return ProblemType.InvalidMarkup;
-			}
-
-			return ProblemType.Unknown;
 		}
 	}
 }

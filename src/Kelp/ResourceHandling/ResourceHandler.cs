@@ -30,7 +30,6 @@ namespace Kelp.ResourceHandling
 	using System.IO;
 	using System.Web;
 
-	using Kelp.Core;
 	using Kelp.Http;
 
 	/// <summary>
@@ -46,7 +45,7 @@ namespace Kelp.ResourceHandling
 		public const string SkipProcessingKey = "noprocess";
 		
 		/// <summary>
-		/// The vallue of the query string property (defined with <see cref="SkipProcessingKey"/>) 
+		/// The value of the query string property (defined with <see cref="SkipProcessingKey"/>) 
 		/// that instructs <see cref="ResourceHandler"/> to return only the raw content, without 
 		/// processing the includes.
 		/// </summary>

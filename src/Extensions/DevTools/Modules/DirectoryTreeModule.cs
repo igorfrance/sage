@@ -26,17 +26,13 @@
 namespace Sage.DevTools.Modules
 {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using log4net;
-
 	using Sage.Modules;
 	using Sage.Views;
 

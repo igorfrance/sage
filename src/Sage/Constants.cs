@@ -27,46 +27,174 @@ namespace Sage
 {
 	using System.Xml;
 
+	/// <summary>
+	/// Defines the compare types.
+	/// </summary>
 	public enum CompareType
 	{
+		/// <summary>
+		/// Signifies a wildcard comparison type.
+		/// </summary>
 		Wildcard,
+
+		/// <summary>
+		/// Signifies a regular expression comparison type.
+		/// </summary>
 		Regexp,
+
+		/// <summary>
+		/// Signifies a literal comparison type
+		/// </summary>
 		Literal,
 	}
 
+	/// <summary>
+	/// Defines configuration types.
+	/// </summary>
 	public enum ConfigurationType
 	{
+		/// <summary>
+		/// System configuration
+		/// </summary>
 		System,
+
+		/// <summary>
+		/// Project configuration
+		/// </summary>
 		Project,
+
+		/// <summary>
+		/// Extension configuration
+		/// </summary>
 		Extension,
 	}
 
+	/// <summary>
+	/// Defines the problem types that Sage tries to recognize and assist the user with.
+	/// </summary>
 	public enum ProblemType
 	{
+		/// <summary>
+		/// Represents an unknown error
+		/// </summary>
 		Unknown = 0,
+
+		/// <summary>
+		/// Indicates invalid markup in XML
+		/// </summary>
 		InvalidMarkup,
+
+		/// <summary>
+		/// Indicates invalid markup in HTML
+		/// </summary>
 		InvalidHtmlMarkup,
+
+		/// <summary>
+		/// Occurs when a qualified name is used in XML without providing the corresponding namespace declaration.
+		/// </summary>
 		MissingNamespaceDeclaration,
+
+		/// <summary>
+		/// Occurs when the system fails to find any configuration files in a project.
+		/// </summary>
 		MissingConfigurationFile,
+
+		/// <summary>
+		/// Occurs if there are no locales defined in the configuration file.
+		/// </summary>
 		ConfigurationMissingLocales,
+
+		/// <summary>
+		/// Occurs if the project is defined as multi-category, but no categories have been defined.
+		/// </summary>
 		ConfigurationMissingCategories,
+
+		/// <summary>
+		/// Occurs if an exception is raised during the XSLT transform step.
+		/// </summary>
 		TransformError,
+
+		/// <summary>
+		/// Occurs if the XSLT transform fails to produce anything.
+		/// </summary>
 		TransformResultMissingRootElement,
+
+		/// <summary>
+		/// Occurs if an exception is raised during loading of an XSLT stylesheet.
+		/// </summary>
 		XsltLoadError,
+
+		/// <summary>
+		/// Occurs if the resource specified with an <c>xi:include</c> element can't be found.
+		/// </summary>
+		IncludeNotFound,
+
+		/// <summary>
+		/// Occurs if the expression specified with the <c>xpointer</c> attribute of an 
+		/// <c>xi:include</c> element fails to select something.
+		/// </summary>
+		IncludeFragmentNotFound,
+
+		/// <summary>
+		/// Occurs if the expression specified with the <c>xpointer</c> attribute generates a syntax error
+		/// </summary>
+		IncludeSyntaxError,
+
+		/// <summary>
+		/// Indicates an error that occured during initialization of the project configuration
+		/// </summary>
+		ConfigurationInitializationError,
+
+		/// <summary>
+		/// Indicates a schema validation error within the project configuration
+		/// </summary>
+		ConfigurationSchemaError,
 	}
 
+	/// <summary>
+	/// Specifies the possible sources of an XSLT view; where a view's stylesheet is loaded from.
+	/// </summary>
 	public enum ViewSource
 	{
+		/// <summary>
+		/// Indicates the default, built-in XSLT stylesheet.
+		/// </summary>
 		BuiltIn = 0,
+
+		/// <summary>
+		/// Indicates a specific stylesheet created specifically for the current view.
+		/// </summary>
 		Specific = 1,
+
+		/// <summary>
+		/// Indicates a stylesheet that is shared across the whole project category (in a multi-category setup).
+		/// </summary>
 		Category = 2,
+
+		/// <summary>
+		/// Indicates a stylesheet that is shared across the project.
+		/// </summary>
 		Project = 3,
 	}
 
+	/// <summary>
+	/// Specifies the location of a module that will be auto included.
+	/// </summary>
 	public enum ModuleAutoLocation
 	{
+		/// <summary>
+		/// Nowhere
+		/// </summary>
 		None = 0,
+
+		/// <summary>
+		/// Within the head of the HTML document
+		/// </summary>
 		Head = 1,
+
+		/// <summary>
+		/// Within the body of the HTML document
+		/// </summary>
 		Body = 2,
 	}
 
@@ -143,6 +271,9 @@ namespace Sage
 	/// </summary>
 	public enum ResourceType
 	{
+		/// <summary>
+		/// Indicates an unknown resource type.
+		/// </summary>
 		Undefined = 0,
 
 		/// <summary>
@@ -161,9 +292,9 @@ namespace Sage
 		Document = 3,
 
 		/// <summary>
-		/// Indicates an XSLT stylesheet resource.
+		/// Indicates an icon resource (usually the favicon.ico)
 		/// </summary>
-		Stylesheet = 4,
+		Icon = 4,
 	}
 
 	/// <summary>
@@ -333,18 +464,39 @@ namespace Sage
 			}
 		}
 
+		/// <summary>
+		/// Defines the namespaces for the XSLT
+		/// </summary>
 		public static class Extensions
 		{
+			/// <summary>
+			/// Defines the namespace for the IO extensions.
+			/// </summary>
 			public const string IO = "http://www.cycle99.com/projects/sage/xslt/extensions/io";
 
+			/// <summary>
+			/// Defines the namespace for the Regexp extensions.
+			/// </summary>
 			public const string Regexp = "http://www.cycle99.com/projects/sage/xslt/extensions/regexp";
 
+			/// <summary>
+			/// Defines the namespace for the Math extensions.
+			/// </summary>
 			public const string Math = "http://www.cycle99.com/projects/sage/xslt/extensions/math";
 
+			/// <summary>
+			/// Defines the namespace for the String extensions.
+			/// </summary>
 			public const string String = "http://www.cycle99.com/projects/sage/xslt/extensions/string";
 
+			/// <summary>
+			/// Defines the namespace for the Set extensions.
+			/// </summary>
 			public const string Set = "http://www.cycle99.com/projects/sage/xslt/extensions/set";
 
+			/// <summary>
+			/// Defines the namespace for the Date extensions.
+			/// </summary>
 			public const string Date = "http://www.cycle99.com/projects/sage/xslt/extensions/date";
 		}
 	}

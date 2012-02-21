@@ -38,30 +38,34 @@ namespace Sage.XsltExtensions
 	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.Set)]
 	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter",
-		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
+		Justification = "This is an XSLT extension class, these methods are not intended for use from C#.")]
 	public class Set
 	{
 		private static readonly XmlDocument document = new XmlDocument();
 		private static readonly XPathNavigator empty = document.CreateNavigator();
 
 		/// <summary>
-		/// Distincts the specified nodeset.
+		/// Selects nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
 		/// </summary>
-		/// <param name="nodeset">The nodeset.</param>
-		/// <param name="xpath">The xpath.</param>
-		/// <returns>TODO: Add documentation for distinct.</returns>
+		/// <param name="nodeset">The nodeset that contains the nodes to filter.</param>
+		/// <param name="xpath">The xpath to use to select the value that should be unique between nodes.</param>
+		/// <returns>
+		/// The nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
+		/// </returns>
 		public XPathNodeIterator distinct(XPathNodeIterator nodeset, string xpath)
 		{
 			return distinct(nodeset, xpath, false);
 		}
 
 		/// <summary>
-		/// Distincts the specified nodeset.
+		/// Selects nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
 		/// </summary>
-		/// <param name="nodeset">The nodeset.</param>
-		/// <param name="xpath">The xpath.</param>
-		/// <param name="includeNullEntries">if set to <c>true</c> [include null entries].</param>
-		/// <returns></returns>
+		/// <param name="nodeset">The nodeset that contains the nodes to filter.</param>
+		/// <param name="xpath">The xpath to use to select the value that should be unique between nodes.</param>
+		/// <param name="includeNullEntries">If set to <c>true</c>, nodes that fail to select the specified <paramref name="xpath"/> will be included too.</param>
+		/// <returns>
+		/// The nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
+		/// </returns>
 		public XPathNodeIterator distinct(XPathNodeIterator nodeset, string xpath, bool includeNullEntries)
 		{
 			if (nodeset.Count < 2)

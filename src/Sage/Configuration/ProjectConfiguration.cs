@@ -33,9 +33,7 @@ namespace Sage.Configuration
 	using System.Reflection;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using log4net;
 	using Sage.Modules;
 	using Sage.ResourceManagement;

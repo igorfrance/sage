@@ -28,13 +28,17 @@ namespace Sage.Modules
 	using System;
 	using System.Xml;
 
-	using log4net;
 	using Sage.Views;
 
+	/// <summary>
+	/// Defines the default module that doesn't do anything.
+	/// </summary>
+	/// <remarks>
+	/// This class is used with modules that don't have a back-end component.
+	/// </remarks>
 	public class NullModule : IModule
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(NullModule).FullName);
-
+		/// <inheritdoc/>
 		public ModuleResult ProcessElement(XmlElement moduleNode, ViewConfiguration configuration)
 		{
 			return new ModuleResult(moduleNode);

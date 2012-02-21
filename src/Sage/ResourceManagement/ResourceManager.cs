@@ -48,6 +48,8 @@ namespace Sage.ResourceManagement
 		private static readonly Dictionary<string, ProcessText> textHandlerRegistry = new Dictionary<string, ProcessText>();
 
 		private const string MissingPhrasePlaceholder = "{{{0}}}";
+		private const BindingFlags AttributeBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceManager).FullName);
 		private static readonly Regex escapeCleanupExpression = new Regex(@"\{({[^}]+})}", RegexOptions.Compiled);
 		private readonly SageContext context;
@@ -55,8 +57,6 @@ namespace Sage.ResourceManagement
 
 		static ResourceManager()
 		{
-			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
 			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
@@ -65,7 +65,7 @@ namespace Sage.ResourceManagement
 
 				foreach (Type type in types)
 				{
-					foreach (MethodInfo methodInfo in type.GetMethods(flags))
+					foreach (MethodInfo methodInfo in type.GetMethods(AttributeBindingFlags))
 					{
 						foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
 						{
@@ -95,9 +95,9 @@ namespace Sage.ResourceManagement
 			this.context = context;
 		}
 
-        /// <summary>
-        /// Gets the context.
-        /// </summary>
+		/// <summary>
+		/// Gets the context.
+		/// </summary>
 		public SageContext Context
 		{
 			get
@@ -123,9 +123,9 @@ namespace Sage.ResourceManagement
 			if (nodeHandlerRegistry.ContainsKey(qualifiedName))
 			{
 				log.WarnFormat("Replacing existing handler '{0}' for element '{1}' with new handler '{2}'",
-					GetDelegateSignature(nodeHandlerRegistry[qualifiedName]),
+					GetDelegateSignature(nodeHandlerRegistry[qualifiedName].Method),
 					qualifiedName,
-					GetDelegateSignature(handler));
+					GetDelegateSignature(handler.Method));
 
 				nodeHandlerRegistry[qualifiedName] = handler;
 			}
@@ -135,11 +135,11 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-        /// <summary>
-        /// Registers the text handler.
-        /// </summary>
-        /// <param name="variableName">Name of the variable.</param>
-        /// <param name="handler">The handler.</param>
+		/// <summary>
+		/// Registers the text handler.
+		/// </summary>
+		/// <param name="variableName">Name of the variable.</param>
+		/// <param name="handler">The handler.</param>
 		public static void RegisterTextHandler(string variableName, ProcessText handler)
 		{
 			if (string.IsNullOrEmpty(variableName))
@@ -151,9 +151,9 @@ namespace Sage.ResourceManagement
 			if (textHandlerRegistry.ContainsKey(variableName))
 			{
 				log.WarnFormat("Replacing existing handler '{0}' for variable '{1}' with new handler '{2}'",
-					GetDelegateSignature(textHandlerRegistry[variableName]),
+					GetDelegateSignature(textHandlerRegistry[variableName].Method),
 					variableName,
-					GetDelegateSignature(handler));
+					GetDelegateSignature(handler.Method));
 
 				textHandlerRegistry[variableName] = handler;
 			}
@@ -166,11 +166,11 @@ namespace Sage.ResourceManagement
 				RegexOptions.IgnoreCase);
 		}
 
-        /// <summary>
-        /// Gets the remote text file.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns>TODO: Add documentation for GetRemoteTextFile.</returns>
+		/// <summary>
+		/// Fethes the remote file from the specified <paramref name="url"/> and returns the response text.
+		/// </summary>
+		/// <param name="url">The URL of the file to fetch.</param>
+		/// <returns>The contents of the remote file from the specified <paramref name="url"/></returns>
 		public static string GetRemoteTextFile(string url)
 		{
 			WebResponse response = GetHttpResponse(url, null, null);
@@ -182,33 +182,24 @@ namespace Sage.ResourceManagement
 			return responseText;
 		}
 
-        /// <summary>
-        /// Gets the delegate signature.
-        /// </summary>
-        /// <param name="d">The d.</param>
-        /// <returns>TODO: Add documentation for GetDelegateSignature.</returns>
-		public static string GetDelegateSignature(Delegate d)
-		{
-			return string.Concat(d.Method.DeclaringType.FullName, ".", d.Method.Name);
-		}
-
-        /// <summary>
-        /// Gets the HTTP response.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns>TODO: Add documentation for GetHttpResponse.</returns>
+		/// <summary>
+		/// Returns the <see cref="WebResponse"/> resulting from issuing a request to <paramref name="url"/>.
+		/// </summary>
+		/// <param name="url">The URL to which to send the request.</param>
+		/// <returns>The <see cref="WebResponse"/> resulting from issuing a request to <paramref name="url"/>.</returns>
 		public static WebResponse GetHttpResponse(string url)
 		{
 			return GetHttpResponse(url, null, null);
 		}
 
-        /// <summary>
-        /// Gets the HTTP response.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <param name="username">The username.</param>
-        /// <param name="password">The password.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Returns the <see cref="WebResponse"/> resulting from issuing a request to <paramref name="url"/>, using the
+		/// specified <paramref name="username"/> and <paramref name="password"/>.
+		/// </summary>
+		/// <param name="url">The URL to which to send the request.</param>
+		/// <param name="username">The username to use.</param>
+		/// <param name="password">The password to use.</param>
+		/// <returns>The <see cref="WebResponse"/> resulting from issuing a request to <paramref name="url"/>.</returns>
 		public static WebResponse GetHttpResponse(string url, string username, string password)
 		{
 			WebRequest request = WebRequest.Create(url);
@@ -219,60 +210,25 @@ namespace Sage.ResourceManagement
 			return response;
 		}
 
-        /// <summary>
-        /// Loads the XML document.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>TODO: Add documentation for LoadXmlDocument.</returns>
+		/// <summary>
+		/// Creates and returns a new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.
+		/// </summary>
+		/// <param name="path">The path to the document to load.</param>
+		/// <returns>A new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.</returns>
 		public static CacheableXmlDocument LoadXmlDocument(string path)
 		{
-		    Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
 			return LoadXmlDocument(path, null);
 		}
 
-        /// <summary>
-        /// Loads the XML document.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="context">The context.</param>
-        /// <param name="schemaPath">The schema path.</param>
-        /// <returns>TODO: Add documentation for LoadXmlDocument.</returns>
-		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, string schemaPath)
-		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
-
-			CacheableXmlDocument result = LoadXmlDocument(path, context);
-			if (schemaPath != null)
-				ValidateDocument(result, schemaPath);
-
-			return result;
-		}
-
-        /// <summary>
-        /// Loads the XML document.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="context">The context.</param>
-        /// <param name="schemas">The schemas.</param>
-        /// <returns></returns>
-		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, XmlSchemaSet schemas)
-		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
-
-			CacheableXmlDocument result = LoadXmlDocument(path, context);
-			if (schemas != null)
-				ValidateDocument(result, schemas);
-
-			return result;
-		}
-
-        /// <summary>
-        /// Loads the XML document.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="context">The context.</param>
-        /// <returns>TODO: Add documentation for LoadXmlDocument.</returns>
+		/// <summary>
+		/// Creates and returns a new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>,
+		/// using the specified <paramref name="context"/>.
+		/// </summary>
+		/// <param name="path">The path to the document to load.</param>
+		/// <param name="context">The context to use to resolve the <paramref name="path"/> and load the document.</param>
+		/// <returns>A new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.</returns>
 		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -298,7 +254,7 @@ namespace Sage.ResourceManagement
 					result = LoadSourceDocument(path, context);
 				}
 
-				result.ReplaceChild(ResourceManager.CopyNode(result.DocumentElement, context), result.DocumentElement);
+				result.ReplaceChild(ResourceManager.CopyTree(result.DocumentElement, context), result.DocumentElement);
 			}
 			else
 			{
@@ -308,11 +264,50 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
-        /// <summary>
-        /// Validates the document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="schemaPath">The schema path.</param>
+		/// <summary>
+		/// Creates, validates and returns a new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>,
+		/// using the specified <paramref name="context"/> and <paramref name="schemaPath"/>.
+		/// </summary>
+		/// <param name="path">The path to the document to load.</param>
+		/// <param name="context">The context to use to resolve the <paramref name="path"/> and load the document.</param>
+		/// <param name="schemaPath">The path to the XML schema to use to validate the document against.</param>
+		/// <returns>A new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.</returns>
+		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, string schemaPath)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
+
+			CacheableXmlDocument result = LoadXmlDocument(path, context);
+			if (schemaPath != null)
+				ValidateDocument(result, schemaPath);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Creates, validates and returns a new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>,
+		/// using the specified <paramref name="context"/> and <paramref name="schemas"/>.
+		/// </summary>
+		/// <param name="path">The path to the document to load.</param>
+		/// <param name="context">The context to use to resolve the <paramref name="path"/> and load the document.</param>
+		/// <param name="schemas">The XML schema set to use to validate the document against.</param>
+		/// <returns>A new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.</returns>
+		public static CacheableXmlDocument LoadXmlDocument(string path, SageContext context, XmlSchemaSet schemas)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
+
+			CacheableXmlDocument result = LoadXmlDocument(path, context);
+			if (schemas != null)
+				ValidateDocument(result, schemas);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Validates the specified document <paramref name="document"/> against the XML schema loaded from the specified
+		/// <paramref name="schemaPath"/>.
+		/// </summary>
+		/// <param name="document">The document to validate.</param>
+		/// <param name="schemaPath">The path to the XML schema to use to validate the document against.</param>
 		public static void ValidateDocument(XmlDocument document, string schemaPath)
 		{
 			Contract.Requires<ArgumentNullException>(document != null);
@@ -339,29 +334,25 @@ namespace Sage.ResourceManagement
 			ValidateDocument(document, schemaSet);
 		}
 
-        /// <summary>
-        /// Validates the document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="schemaSet">The schema set.</param>
+		/// <summary>
+		/// Validates the specified document <paramref name="document"/> against the specified <paramref name="schemaSet"/>.
+		/// </summary>
+		/// <param name="document">The document to validate.</param>
+		/// <param name="schemaSet">The XML schema set to use to validate the document against.</param>
 		public static void ValidateDocument(XmlDocument document, XmlSchemaSet schemaSet)
 		{
 			Contract.Requires<ArgumentNullException>(document != null);
 			Contract.Requires<ArgumentNullException>(schemaSet != null);
 
 			document.Schemas = schemaSet;
-			document.Validate(delegate (object e, ValidationEventArgs args)
-			{
-				if (args.Severity == XmlSeverityType.Error)
-					throw args.Exception;
-			});
+			document.Validate(OnSchemaValidatationComplete);
 		}
 
-        /// <summary>
-        /// Loads the XML.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns>TODO: Add documentation for LoadXml.</returns>
+		/// <summary>
+		/// Creates and returns a new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.
+		/// </summary>
+		/// <param name="path">The path.</param>
+		/// <returns>A new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.</returns>
 		public CacheableXmlDocument LoadXml(string path)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
@@ -369,14 +360,14 @@ namespace Sage.ResourceManagement
 			return LoadXmlDocument(path, context);
 		}
 
-		internal static XmlNode CopyNode(XmlNode node, SageContext context)
+		internal static XmlNode CopyTree(XmlNode node, SageContext context)
 		{
 			XmlNode result;
 
 			switch (node.NodeType)
 			{
 				case XmlNodeType.Document:
-					result = CopyNode(((XmlDocument) node).DocumentElement, context);
+					result = CopyTree(((XmlDocument) node).DocumentElement, context);
 					break;
 
 				case XmlNodeType.Element:
@@ -437,7 +428,12 @@ namespace Sage.ResourceManagement
 			if (nodeHandlerRegistry.ContainsKey(key))
 				return nodeHandlerRegistry[key];
 
-			return ResourceManager.CopyNode;
+			return ResourceManager.CopyTree;
+		}
+
+		internal static string GetDelegateSignature(MethodInfo method)
+		{
+			return string.Concat(method.DeclaringType.FullName, ".", method.Name);
 		}
 
 		/// <summary>
@@ -519,6 +515,12 @@ namespace Sage.ResourceManagement
 			result.AddDependencies(resolver.Dependencies.ToArray());
 
 			return result;
+		}
+
+		private static void OnSchemaValidatationComplete(object sender, ValidationEventArgs args)
+		{
+			if (args.Severity == XmlSeverityType.Error)
+				throw args.Exception;
 		}
 	}
 }

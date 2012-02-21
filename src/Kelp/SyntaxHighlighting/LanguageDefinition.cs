@@ -27,11 +27,6 @@ namespace Kelp.SyntaxHighlighting
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
-	using System.Linq;
-	using System.Xml;
-
-	using Kelp.Core.Extensions;
 
 	/// <summary>
 	/// Defines the language elements for syntax highlighting.

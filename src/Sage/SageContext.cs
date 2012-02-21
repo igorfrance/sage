@@ -31,6 +31,7 @@ namespace Sage
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Reflection;
+	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Hosting;
 	using System.Web.Mvc;
@@ -38,12 +39,8 @@ namespace Sage
 	using System.Xml;
 
 	using Kelp;
-	using Kelp.Core;
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using log4net;
-
 	using Sage.Configuration;
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
@@ -234,6 +231,7 @@ namespace Sage
 
 				this.ApplicationPath = httpContext.Request.ApplicationPath;
 				this.PhysicalApplicationPath = httpContext.Request.PhysicalApplicationPath;
+				this.UserAgentID = httpContext.Request.Browser.Type.ToLower();
 			}
 
 			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
@@ -303,6 +301,11 @@ namespace Sage
 		/// Gets the last modification date cache.
 		/// </summary>
 		public LastModifiedCache LmCache { get; private set; }
+
+		/// <summary>
+		/// Gets the id of the current user agent.
+		/// </summary>
+		public string UserAgentID { get; private set; }
 
 		/// <summary>
 		/// Gets the current <see cref="Cache"/>.
@@ -634,7 +637,7 @@ namespace Sage
 				if (testValue == propValue)
 				{
 					foreach (XmlNode node in caseNode.SelectNodes("node()"))
-						result.AppendChild(ResourceManager.CopyNode(node, context));
+						result.AppendChild(ResourceManager.CopyTree(node, context));
 
 					caseFound = true;
 					break;
@@ -649,7 +652,7 @@ namespace Sage
 				if (defaultNode != null)
 				{
 					foreach (XmlNode node in defaultNode.SelectNodes("node()"))
-						result.AppendChild(ResourceManager.CopyNode(node, context));
+						result.AppendChild(ResourceManager.CopyTree(node, context));
 				}
 			}
 

@@ -26,12 +26,9 @@
 namespace Sage.DevTools.Modules
 {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using Sage.Configuration;
 	using Sage.Modules;
 	using Sage.Views;

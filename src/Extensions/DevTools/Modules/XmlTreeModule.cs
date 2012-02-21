@@ -31,7 +31,7 @@ namespace Sage.DevTools.Modules
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	using log4net;
 	using Sage.Modules;

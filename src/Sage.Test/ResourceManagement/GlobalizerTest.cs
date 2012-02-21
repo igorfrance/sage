@@ -33,7 +33,6 @@ namespace Sage.Test.ResourceManagement
 {
 	using System.IO;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 
 	using Machine.Specifications;

@@ -152,6 +152,15 @@
 			<xsl:when test="$problemType = 'XsltLoadError'">
 				XSLT load error
 			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeNotFound'">
+				The specified include file was not found
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeFragmentNotFound'">
+				The specified include subresource was not found
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeSyntaxError'">
+				Syntax error in xpointer expression
+			</xsl:when>
 			<xsl:otherwise>An error was caught</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -185,6 +194,15 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'XsltLoadError'">
 				An error happened during loading of the XSLT stylesheet.
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeNotFound'">
+				The include resource that was specified in the <code>href</code> attribute doesn't exist.
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeFragmentNotFound'">
+				The include subresource that was specified with the <code>xpointer</code> attribute doesn't exist.
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeSyntaxError'">
+				The expression specified with the <code>xpointer</code> attribute contains a syntax error.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -264,6 +282,18 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'TransformError' or $problemType = 'XsltLoadError'">
 				Read the message and try to resolve the problem.
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeNotFound'">
+				Check the value of the <code>xi:include</code> element's <code>href</code> attribute
+				and make sure if has been entered correctly, and that the resource it points to exists.
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeFragmentNotFound'">
+				Check the value of the <code>xi:include</code> element's <code>xpointer</code> attribute
+				and make sure it has been entered correctly, and that the subresource it points to exists.
+			</xsl:when>
+			<xsl:when test="$problemType = 'IncludeSyntaxError'">
+				Check the value of the <code>xi:include</code> element's <code>xpointer</code> attribute
+				and make sure it has been entered without errors.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>

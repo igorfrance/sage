@@ -61,34 +61,22 @@ namespace Kelp.HttpMock
 		public static string DefaultPhysicalApplicationPath = @"c:\inetpub\wwwroot\myapp";
 
 		internal string applicationPath;
-
 		internal HttpCookieCollection cookies;
-
 		internal NameValueCollection form;
-
 		internal NameValueCollection headers;
-
 		internal NameValueCollection queryString;
-
 		internal NameValueCollection serverVariables;
-
 		internal string httpMethod = "GET";
-
 		internal string physicalApplicationPath;
-
 		internal string requestType;
-
 		internal Uri url;
-
 		internal Uri urlReferrer;
-
 		internal string userAgent =
 			"Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 (.NET CLR 3.5.30729)";
 
 		internal string userHostAddress = "127.0.0.1";
 
 		private string urlRaw;
-
 		private string physicalPath;
 
 		/// <summary>
@@ -197,6 +185,15 @@ namespace Kelp.HttpMock
 			get
 			{
 				return this.queryString;
+			}
+		}
+
+		/// <inheritdoc/>
+		public override HttpBrowserCapabilitiesBase Browser
+		{
+			get
+			{
+				return new HttpBrowserCapabilitiesMock();
 			}
 		}
 

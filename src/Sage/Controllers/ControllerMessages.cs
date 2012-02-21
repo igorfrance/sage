@@ -30,7 +30,6 @@ namespace Sage.Controllers
 	using System.Xml;
 
 	using Kelp;
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 
 	using XmlNamespaces = Sage.XmlNamespaces;

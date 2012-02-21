@@ -31,8 +31,7 @@ namespace Kelp.ResourceHandling
 	using System.Drawing.Imaging;
 	using System.IO;
 
-	using Kelp.Core;
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Kelp.Http;
 	using Kelp.Imaging.Filters;
 	using log4net;

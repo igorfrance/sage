@@ -34,7 +34,7 @@ namespace Sage.Views
 	using System.Xml.XPath;
 	using System.Xml.Xsl;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using log4net;
 
 	using Sage.ResourceManagement;
@@ -105,20 +105,20 @@ namespace Sage.Views
 				}
 				catch (XmlException ex)
 				{
-					ProblemType problemType = DetectProblemType(ex);
-					throw new SageHelpException(problemType, ex);
+					ProblemInfo problem = DetectProblemType(ex);
+					throw new SageHelpException(problem, ex);
 				}
 			});
 
 			log.DebugFormat("Transform completed in {0}ms", milliseconds);
 		}
 
-		private ProblemType DetectProblemType(Exception ex)
+		private ProblemInfo DetectProblemType(Exception ex)
 		{
 			if (ex.Message.Contains("does not have a root element"))
-				return ProblemType.TransformResultMissingRootElement;
+				return new ProblemInfo(ProblemType.TransformResultMissingRootElement, this.Dependencies[0]);
 
-			return ProblemType.TransformError;
+			return new ProblemInfo(ProblemType.TransformError);
 		}
 	}
 }

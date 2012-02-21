@@ -41,10 +41,10 @@ namespace Sage.Views
 	{
 		private readonly XsltTransform processor;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XsltView"/> class.
-        /// </summary>
-        /// <param name="processor">The processor.</param>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XsltView"/> class.
+		/// </summary>
+		/// <param name="processor">The processor.</param>
 		public XsltView(XsltTransform processor)
 		{
 			Contract.Requires<ArgumentNullException>(processor != null);
@@ -63,11 +63,11 @@ namespace Sage.Views
 			Transform(viewContext, textWriter, this.processor);
 		}
 
-        /// <summary>
-        /// Transforms the specified view context.
-        /// </summary>
-        /// <param name="viewContext">The view context.</param>
-        /// <param name="textWriter">The text writer.</param>
+		/// <summary>
+		/// Transforms the specified view context.
+		/// </summary>
+		/// <param name="viewContext">The view context.</param>
+		/// <param name="textWriter">The text writer.</param>
 		public virtual void Transform(ViewContext viewContext, TextWriter textWriter)
 		{
 			Contract.Requires<ArgumentNullException>(viewContext != null);
@@ -77,12 +77,12 @@ namespace Sage.Views
 			Transform(viewContext, textWriter, this.processor);
 		}
 
-        /// <summary>
-        /// Transforms the specified view context.
-        /// </summary>
-        /// <param name="viewContext">The view context.</param>
-        /// <param name="textWriter">The text writer.</param>
-        /// <param name="template">The template.</param>
+		/// <summary>
+		/// Transforms the specified view context.
+		/// </summary>
+		/// <param name="viewContext">The view context.</param>
+		/// <param name="textWriter">The text writer.</param>
+		/// <param name="template">The template.</param>
 		public virtual void Transform(ViewContext viewContext, TextWriter textWriter, XsltTransform template)
 		{
 			Contract.Requires<ArgumentNullException>(viewContext != null);

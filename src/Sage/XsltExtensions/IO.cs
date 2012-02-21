@@ -41,7 +41,7 @@ namespace Sage.XsltExtensions
 	/// </summary>
 	[XsltExtensionObject(XmlNamespaces.Extensions.IO)]
 	[SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", 
-		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
+		Justification = "This is an XSLT extension class, these methods are not intended for use from C#.")]
 	public class IO
 	{
 		private static readonly XmlDocument document = new XmlDocument();
@@ -53,7 +53,7 @@ namespace Sage.XsltExtensions
 		/// <param name="filter">The filter (wildcards) to apply when getting files.</param>
 		/// <param name="recursive">If set to <c>true</c>, all subdirectories of <paramref name="path"/>
 		/// will be scanned too.</param>
-		/// <returns>TODO: Add documentation for readDir.</returns>
+		/// <returns>An XML tree with the names of files in the specified directory <paramref name="path"/>.</returns>
 		public static XPathNavigator readDir(string path, string filter, bool recursive = false)
 		{
 			Regex filterExpression = null;

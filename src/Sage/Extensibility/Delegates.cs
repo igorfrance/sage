@@ -45,7 +45,7 @@ namespace Sage.Extensibility
 	/// <param name="node">The node being processed.</param>
 	/// <param name="context">The context under which the method is being executed.</param>
 	/// <returns>The XML node that should be copied in the result document, or a <c>null</c> if the node should be skipped.</returns>
-	/// <seealso cref="ResourceManager.CopyNode"/>
+	/// <seealso cref="ResourceManager.CopyTree"/>
 	/// <seealso cref="ResourceManager.RegisterNodeHandler"/>
 	public delegate XmlNode ProcessNode(XmlNode node, SageContext context);
 
@@ -56,7 +56,7 @@ namespace Sage.Extensibility
 	/// <param name="variableName">The name of the variable that was matched.</param>
 	/// <param name="context">The context under which the method is being executed.</param>
 	/// <returns>The text that should be used instead of the original text, or a <c>null</c> if the node should be skipped.</returns>
-	/// <seealso cref="ResourceManager.CopyNode"/>
+	/// <seealso cref="ResourceManager.CopyTree"/>
 	/// <seealso cref="ResourceManager.RegisterTextHandler"/>
 	public delegate string ProcessText(string variableName, SageContext context);
 

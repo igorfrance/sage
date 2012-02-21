@@ -31,9 +31,7 @@ namespace Sage.Modules
 	using System.Linq;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 	using Sage.Views;
@@ -251,7 +249,7 @@ namespace Sage.Modules
 			IEnumerable<ModuleConfiguration> autoModules =
 				context.ProjectConfiguration.Modules.Values.Where(m => m.AutoLocation == location);
 
-			XmlNode resultNode = ResourceManager.CopyNode(htmlNode, context);
+			XmlNode resultNode = ResourceManager.CopyTree(htmlNode, context);
 			foreach (ModuleConfiguration module in autoModules)
 			{
 				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);

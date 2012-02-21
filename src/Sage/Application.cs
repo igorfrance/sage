@@ -38,7 +38,7 @@ namespace Sage
 	using System.Web.Mvc;
 	using System.Web.Routing;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 
 	using log4net;
 
@@ -101,11 +101,11 @@ namespace Sage
 			}
 		}
 
-        /// <summary>
-        /// Gets the type with the specified <paramref name="typeName"/>.
-        /// </summary>
-        /// <param name="typeName">The name of the type to get.</param>
-        /// <returns>TODO: Add documentation for GetType</returns>
+		/// <summary>
+		/// Gets the type with the specified <paramref name="typeName"/>, searching in all <see cref="RelevantAssemblies"/>.
+		/// </summary>
+		/// <param name="typeName">The name of the type to get.</param>
+		/// <returns>The type with the specified <paramref name="typeName"/></returns>
 		public static Type GetType(string typeName)
 		{
 			Contract.Requires<ArgumentNullException>(typeName != null);
@@ -114,7 +114,7 @@ namespace Sage
 			if (result != null)
 				return result;
 
-			foreach (Assembly asm in RelevantAssemblies)
+			foreach (Assembly asm in Sage.Application.RelevantAssemblies)
 			{
 				result = asm.GetType(typeName, false);
 				if (result != null)
@@ -242,7 +242,7 @@ namespace Sage
 			string shutDownStack = (string) runtime.GetType().InvokeMember(
 				"_shutDownStack", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
 
-			log.InfoFormat("Application has shut down.", shutDownMessage, shutDownStack);
+			log.InfoFormat("Application has shut down.");
 			log.DebugFormat("	Shutdown message:{0}", shutDownMessage);
 			log.DebugFormat("	Shutdown stack:\n{0}", shutDownStack);
 		}
@@ -292,7 +292,7 @@ namespace Sage
 		protected virtual void Application_Error(object sender, EventArgs e)
 		{
 			Exception exception = Server.GetLastError();
-			if (exception == null || this.Context.Request == null)
+			if (exception == null || !IsRequestAvailable())
 				return;
 
 			if (exception is ThreadAbortException)
@@ -317,6 +317,18 @@ namespace Sage
 			this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 			this.Response.Cache.SetNoStore();
 			this.Response.End();
+		}
+
+		private bool IsRequestAvailable()
+		{
+			try
+			{
+				return this.Context.Request != null;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private static Dictionary<string, string> GetVirtualDirectories(DirectoryEntry directory, string path)

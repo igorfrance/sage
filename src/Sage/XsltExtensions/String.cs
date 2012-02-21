@@ -45,7 +45,7 @@ namespace Sage.XsltExtensions
 		/// <param name="value">The string to format.</param>
 		/// <param name="param1">The first substitution value.</param>
 		/// <returns>
-		/// The formatted version of the specified <paramref name="value."/>
+		/// The formatted version of the specified <paramref name="value"/>
 		/// </returns>
 		public string format(string value, string param1)
 		{
@@ -59,7 +59,7 @@ namespace Sage.XsltExtensions
 		/// <param name="param1">The first substitution value.</param>
 		/// <param name="param2">The second substitution value.</param>
 		/// <returns>
-		/// The formatted version of the specified <paramref name="value."/>
+		/// The formatted version of the specified <paramref name="value"/>
 		/// </returns>
 		public string format(string value, string param1, string param2)
 		{
@@ -74,7 +74,7 @@ namespace Sage.XsltExtensions
 		/// <param name="param2">The second substitution value.</param>
 		/// <param name="param3">The third substitution value.</param>
 		/// <returns>
-		/// The formatted version of the specified <paramref name="value."/>
+		/// The formatted version of the specified <paramref name="value"/>
 		/// </returns>
 		public string format(string value, string param1, string param2, string param3)
 		{
@@ -90,7 +90,7 @@ namespace Sage.XsltExtensions
 		/// <param name="param3">The third substitution value.</param>
 		/// <param name="param4">The fourth substitution value.</param>
 		/// <returns>
-		/// The formatted version of the specified <paramref name="value."/>
+		/// The formatted version of the specified <paramref name="value"/>
 		/// </returns>
 		public string format(string value, string param1, string param2, string param3, string param4)
 		{
@@ -107,7 +107,7 @@ namespace Sage.XsltExtensions
 		/// <param name="param4">The fourth substitution value.</param>
 		/// <param name="param5">The fifth substitution value.</param>
 		/// <returns>
-		/// The formatted version of the specified <paramref name="value."/>
+		/// The formatted version of the specified <paramref name="value"/>
 		/// </returns>
 		public string format(string value, string param1, string param2, string param3, string param4, string param5)
 		{

@@ -26,7 +26,7 @@
  */
 namespace Kelp.Test.Extensions
 {
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Machine.Specifications;
 
 

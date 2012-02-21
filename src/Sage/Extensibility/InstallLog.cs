@@ -27,10 +27,8 @@ namespace Sage.Extensibility
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 
 	internal class InstallLog
@@ -108,9 +106,9 @@ namespace Sage.Extensibility
 			if (this.Error != null)
 			{
 				XmlElement errorElement = logElement.AppendElement("exception");
-				errorElement.SetAttribute("message", this.Error.InnermostExceptionMessage());
-				errorElement.SetAttribute("type", this.Error.InnermostExceptionTypeName());
-				errorElement.InnerText = this.Error.InnermostExceptionStackTrace();
+				errorElement.SetAttribute("message", this.Error.RootMessage());
+				errorElement.SetAttribute("type", this.Error.RootTypeName());
+				errorElement.InnerText = this.Error.RootStackTrace();
 			}
 
 			return logElement;

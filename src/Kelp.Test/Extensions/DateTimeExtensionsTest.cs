@@ -28,7 +28,7 @@ namespace Kelp.Test.Extensions
 {
 	using System;
 
-	using Kelp.Core.Extensions;
+	using Kelp.Extensions;
 	using Machine.Specifications;
 
 	[Subject(typeof(DateTimeExtensions)), Tags(Categories.Core)]

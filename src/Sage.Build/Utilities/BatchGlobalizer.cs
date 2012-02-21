@@ -34,12 +34,9 @@ namespace Sage.Build.Utilities
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 	using Kelp.HttpMock;
-
 	using log4net;
-
 	using Sage.Configuration;
 	using Sage.ResourceManagement;
 	using Sage.Views;
@@ -92,7 +89,7 @@ namespace Sage.Build.Utilities
 				LocaleInfo locale = context.ProjectConfiguration.Locales[name];
 				XmlElement categoryNode = localesElement.AppendElement(summaryDoc.CreateElement("locale"));
 				categoryNode.SetAttribute("name", name);
-				categoryNode.SetAttribute("dictionaries", locale.DictionaryNames.Join(", "));
+				categoryNode.SetAttribute("dictionaries", string.Join(", ", locale.DictionaryNames));
 			}
 
 			log.DebugFormat("Category {0} is configured for {1} locales: {2}",

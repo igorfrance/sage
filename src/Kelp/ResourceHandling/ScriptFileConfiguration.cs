@@ -71,11 +71,8 @@ namespace Kelp.ResourceHandling
 		public ScriptFileConfiguration(XmlElement configurationElement)
 			: this()
 		{
-			this.Enabled = configurationElement == null || configurationElement.GetAttribute("Enabled") == "true";
 			this.Parse(configurationElement, typeof(CodeSettings), this.Settings);
 		}
-
-		public new bool Enabled { get; private set; }
 
 		public CodeSettings Settings { get; private set; }
 

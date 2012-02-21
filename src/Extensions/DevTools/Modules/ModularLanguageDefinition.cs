@@ -1,14 +1,9 @@
 ﻿namespace Sage.DevTools.Modules
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
-	using System.Linq;
-	using System.Web;
 	using System.Xml;
 
-	using Kelp;
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 	using Kelp.SyntaxHighlighting;
 

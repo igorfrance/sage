@@ -31,9 +31,7 @@ namespace Sage
 	using System.IO;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
-	using log4net;
 	using Sage.Views;
 
 	/// <summary>
@@ -106,6 +104,11 @@ namespace Sage
 			processor.Transform(documentElement, xmlwr, context, GetTransformArguments(context));
 		}
 
+		/// <summary>
+		/// Gets the XSLT arguments to use with the transform.
+		/// </summary>
+		/// <param name="context">The current context.</param>
+		/// <returns>The XSLT arguments to use with this transform</returns>
 		protected virtual Dictionary<string, object> GetTransformArguments(SageContext context)
 		{
 			Dictionary<string, object> arguments = new Dictionary<string, object>();

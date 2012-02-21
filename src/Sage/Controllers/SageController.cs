@@ -186,7 +186,7 @@ namespace Sage.Controllers
 		public virtual ViewInput ProcessView(ViewInfo viewInfo)
 		{
 			ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
-			return config.ProcessRequest();
+			return config.ExpandModules();
 		}
 
 		/// <inheritdoc/>
@@ -229,7 +229,7 @@ namespace Sage.Controllers
 
 			if (input != null && input.ConfigNode != null)
 			{
-				var inputResources = input.Resources;
+				var inputResources = input.Resources.Where(r => r.IsValidFor(Context.UserAgentID)).ToList();
 				if (inputResources.Count != 0)
 				{
 					XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);

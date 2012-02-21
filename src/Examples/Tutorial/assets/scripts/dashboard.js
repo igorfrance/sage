@@ -45,10 +45,13 @@ sage.tutorial.Dashboard = new function Dashboard()
 		if (!inspectorElement.is(":visible"))
 			return;
 
-		navigationElement.animate({ left: -navigationElement.width() });
-		welcomeElement.fadeIn();
+		navigationElement.animate({ left: -navigationElement.innerWidth() });
+		$log.message("B");
+		welcomeElement.show();
+		$log.message("C");
 		inspectorElement.fadeOut(function onFadeComplete()
 		{
+			$log.message("D");
 			sage.dev.Toolbar.show();
 		});
 	}
@@ -88,7 +91,7 @@ sage.tutorial.Dashboard = new function Dashboard()
 	{
 		var targetUrl = this.href;
 
-		welcomeElement.animate({ opacity: 0 });
+		welcomeElement.hide();
 		navigationElement.animate({ left: 0 }, function ()
 		{
 			welcomeElement.hide();

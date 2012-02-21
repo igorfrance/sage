@@ -318,6 +318,7 @@ sage.dev.Toolbar = new function Toolbar()
 			targetHeight += children.eq(i).prop("scrollHeight");
 
 		$frame.css({ visibility: "visible", height: Math.min(maxHeight, targetHeight) });
+		logFrameLoaded = true;
 	}
 
 	function onDocumentKeyDown(e)

@@ -53,6 +53,9 @@ namespace Sage.Views
 	[ContractClass(typeof(XsltTransformContract))]
 	public abstract class XsltTransform
 	{
+		/// <summary>
+		/// Gets the list of files that this transform depends on (dependencies).
+		/// </summary>
 		protected readonly List<string> dependencies = new List<string>();
 		
 		private const string CacheKeyFormat = "XSLT_{0}";
@@ -139,7 +142,7 @@ namespace Sage.Views
 		/// Creates an <see cref="XsltTransform"/> instance initialized with the document loaded from the 
 		/// specified <paramref name="stylesheetPath"/>.
 		/// </summary>
-		/// <param name="context">The current context.</param>
+		/// <param name="context">The context under which this code is executing.</param>
 		/// <param name="stylesheetPath">The path to the stylesheet.</param>
 		/// <returns>
 		/// An <see cref="XsltTransform"/> instance initialized with the document loaded from the 
@@ -171,11 +174,13 @@ namespace Sage.Views
 		}
 
 		/// <summary>
-		/// Creates the specified context.
+		/// Creates a new <see cref="XsltTransform"/>, using the specified <paramref name="context"/> and <paramref name="stylesheetMarkup"/>.
 		/// </summary>
-		/// <param name="context">The context.</param>
-		/// <param name="stylesheetMarkup">The stylesheet markup.</param>
-		/// <returns>TODO: Add documentation for Create.</returns>
+		/// <param name="context">The context under which this code is executing.</param>
+		/// <param name="stylesheetMarkup">The XSLT markup for the transform to create.</param>
+		/// <returns>
+		/// A new <see cref="XsltTransform"/> initialized with the <paramref name="stylesheetMarkup"/>.
+		/// </returns>
 		public static XsltTransform Create(SageContext context, IXPathNavigable stylesheetMarkup)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
@@ -229,6 +234,11 @@ namespace Sage.Views
 			document.DocumentElement.SetAttribute("exclude-result-prefixes", string.Join(" ", prefixes.ToArray()));
 		}
 
+		/// <summary>
+		/// Converts the specified <paramref name="arguments"/> dictionary into an <see cref="XsltArgumentList"/>.
+		/// </summary>
+		/// <param name="arguments">The dictionary of arguments to use.</param>
+		/// <returns>The XSLT arguments to use with this transform</returns>
 		protected XsltArgumentList GetArguments(Dictionary<string, object> arguments)
 		{
 			if (arguments == null || arguments.Count == 0)

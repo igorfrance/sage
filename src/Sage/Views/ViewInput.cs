@@ -37,7 +37,7 @@ namespace Sage.Views
 	using Sage.ResourceManagement;
 
 	/// <summary>
-	/// Implements a class that handles per-request input XML handling.
+	/// Implements a class that holds the final result of processing a <see cref="ViewConfiguration"/>.
 	/// </summary>
 	public class ViewInput
 	{

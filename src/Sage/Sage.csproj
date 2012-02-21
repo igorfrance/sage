@@ -47,8 +47,7 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Debug\Sage.xml</DocumentationFile>
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
     <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
@@ -119,6 +118,7 @@
     <Compile Include="Configuration\RoutingConfiguration.cs" />
     <Compile Include="Configuration\PathTemplates.cs" />
     <Compile Include="Configuration\UnconfiguredLocaleException.cs" />
+    <Compile Include="ProblemInfo.cs" />
     <Compile Include="ResourceManagement\GlobalizationError.cs" />
     <Compile Include="ResourceManagement\Resource.cs" />
     <Compile Include="ResourceManagement\ResourceHandler.cs" />

@@ -30,7 +30,6 @@ namespace Sage.Views
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 
 	using log4net;
@@ -140,7 +139,7 @@ namespace Sage.Views
 								parts.Add(string.Format(".//mod:{0}", name));
 							}
 
-							moduleSelectXPath = parts.Join("|");
+							moduleSelectXPath = string.Join("|", parts);
 						}
 					}
 				}
@@ -152,21 +151,27 @@ namespace Sage.Views
 		internal Dictionary<string, IModule> Modules { get; private set; }
 
 		/// <summary>
-		/// Creates the specified controller.
+		/// Creates a new <see cref="ViewConfiguration"/> instance for the specified <paramref name="controller"/> and
+		/// <paramref name="viewInfo"/>.
 		/// </summary>
-		/// <param name="controller">The controller.</param>
-		/// <param name="viewInfo">The view info.</param>
-		/// <returns>TODO: Add documentation for Create.</returns>
+		/// <param name="controller">The controller for which to create the view configuration.</param>
+		/// <param name="viewInfo">The object that contains the information about the view.</param>
+		/// <returns>
+		/// A new <see cref="ViewConfiguration"/> instance for the specified <paramref name="controller"/> and
+		/// <paramref name="viewInfo"/>.
+		/// </returns>
 		public static ViewConfiguration Create(SageController controller, ViewInfo viewInfo)
 		{
 			return new ViewConfiguration(controller, viewInfo);
 		}
 
 		/// <summary>
-		/// Processes the request.
+		/// Discovers any module XML elements in the current configuration, and creates and processed their matching module instances.
 		/// </summary>
-		/// <returns>TODO: Add documentation for ProcessRequest.</returns>
-		public ViewInput ProcessRequest()
+		/// <returns>
+		/// An object that contains the result of processing this configuration.
+		/// </returns>
+		public ViewInput ExpandModules()
 		{
 			ViewInput input = new ViewInput(this, configElement);
 

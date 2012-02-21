@@ -30,7 +30,6 @@ namespace Sage.Modules
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
 	using Kelp.Extensions;
 
 	/// <summary>
@@ -38,10 +37,10 @@ namespace Sage.Modules
 	/// </summary>
 	public class ModuleResult
 	{
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleResult"/> class.
-        /// </summary>
-        /// <param name="status">The status.</param>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ModuleResult"/> class.
+		/// </summary>
+		/// <param name="status">The status.</param>
 		public ModuleResult(ModuleResultStatus status)
 		{
 			this.ModuleData = new Dictionary<string, object>();
@@ -79,9 +78,9 @@ namespace Sage.Modules
 		/// </summary>
 		public Dictionary<string, object> ModuleData { get; private set; }
 
-        /// <summary>
-        /// Gets the owner document.
-        /// </summary>
+		/// <summary>
+		/// Gets the owner document.
+		/// </summary>
 		public XmlDocument OwnerDocument
 		{
 			get
@@ -93,21 +92,37 @@ namespace Sage.Modules
 			}
 		}
 
-        /// <summary>
-        /// Appends the data element.
-        /// </summary>
-        /// <param name="dataElement">The data element.</param>
-        /// <returns>TODO: Add documentation for AppendDataElement.</returns>
+		/// <summary>
+		/// Creates a <c>mod:data</c> element in the current module.
+		/// </summary>
+		/// <param name="dataElement">Optional data element to add to the current module's element.</param>
+		/// <returns>The element that was appended.</returns>
+		/// <remarks>
+		/// If this method is invoked with no arguments, a <c>mod:data</c> element will be created (if it doesn't exist in
+		/// the current module) and the final <c>mod:data</c> element will be returned.
+		/// If an element whose name is <c>mod:data</c> is supplied, if will either be appended to the current module 
+		/// (if the module doesn't have a <c>mod:data</c> element already) or it will replace the existing <c>mod:data</c>
+		/// element if one exists already. The element that will be returned will be the appended copy of the specified 
+		/// <paramref name="dataElement"/>.
+		/// </remarks>
 		public XmlElement AppendDataElement(XmlNode dataElement = null)
 		{
 			return (XmlElement) AppendDataNode(dataElement);
 		}
 
-        /// <summary>
-        /// Appends the data node.
-        /// </summary>
-        /// <param name="dataNode">The data node.</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Creates a <c>mod:data</c> node in the current module.
+		/// </summary>
+		/// <param name="dataNode">Optional data node to add to the current module's element.</param>
+		/// <returns>The node that was appended.</returns>
+		/// <remarks>
+		/// If this method is invoked with no arguments, a <c>mod:data</c> element will be created (if it doesn't exist in
+		/// the current module) and the final <c>mod:data</c> element will be returned.
+		/// If an element whose name is <c>mod:data</c> is supplied, if will either be appended to the current module 
+		/// (if the module doesn't have a <c>mod:data</c> element already) or it will replace the existing <c>mod:data</c>
+		/// element if one exists already. The node that will be returned will be the appended copy of the specified 
+		/// <paramref name="dataNode"/>.
+		/// </remarks>
 		public XmlNode AppendDataNode(XmlNode dataNode = null)
 		{
 			Contract.Requires<InvalidOperationException>(this.ResultElement != null, "The ModuleResult.ResultElement property is null");
@@ -142,7 +157,7 @@ namespace Sage.Modules
 			}
 
 			if (dataElement == null)
-			     dataElement = this.ResultElement.AppendElement(ownerDocument.CreateElement("mod:data", XmlNamespaces.ModulesNamespace));
+				 dataElement = this.ResultElement.AppendElement(ownerDocument.CreateElement("mod:data", XmlNamespaces.ModulesNamespace));
 
 			if (prepend)
 			{

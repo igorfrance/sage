@@ -30,8 +30,6 @@ namespace Kelp.Extensions
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	using Kelp.Core.Extensions;
-
 	using Newtonsoft.Json;
 
 	using Formatting = Newtonsoft.Json.Formatting;
