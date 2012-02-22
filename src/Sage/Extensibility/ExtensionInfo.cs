@@ -258,7 +258,13 @@ namespace Sage.Extensibility
 			{
 				string targetPath = GetTargetPath(sourcePath);
 				if (!File.Exists(targetPath))
+				{
+					string directoryPath = Path.GetDirectoryName(targetPath);
+					if (!Directory.Exists(directoryPath))
+						Directory.CreateDirectory(directoryPath);
+
 					File.Copy(sourcePath, targetPath, true);
+				}
 			}
 		}
 
