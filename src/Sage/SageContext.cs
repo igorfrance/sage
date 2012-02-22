@@ -378,7 +378,7 @@ namespace Sage
 			get
 			{
 				return this.ProjectConfiguration.IsDeveloperIp(this.Request.UserHostAddress) ||
-					(this.Session["developer"] != null && (bool) this.Session["developer"]);
+					(this.Session != null && this.Session["developer"] != null && (bool) this.Session["developer"]);
 			}
 		}
 

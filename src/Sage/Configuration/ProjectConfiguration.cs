@@ -52,6 +52,7 @@ namespace Sage.Configuration
 
 		private static volatile ProjectConfiguration systemConfig;
 		private static volatile ProjectConfiguration projectConfig;
+		private bool considerAllRequestsAsDevelopers;
 
 		private ProjectConfiguration()
 		{
@@ -307,6 +308,9 @@ namespace Sage.Configuration
 		/// </returns>
 		public bool IsDeveloperIp(string clientIpAddress)
 		{
+			if (considerAllRequestsAsDevelopers)
+				return true;
+
 			return this.DeveloperIps.Count(a => a.Matches(clientIpAddress)) != 0;
 		}
 
@@ -502,6 +506,12 @@ namespace Sage.Configuration
 
 			foreach (XmlElement elem in configNode.SelectNodes("p:developers/p:ip", nm))
 			{
+				if (elem.GetAttribute("address") == "*")
+				{
+					this.considerAllRequestsAsDevelopers = true;
+					break;
+				}
+
 				IpAddress address = new IpAddress(elem);
 				this.DeveloperIps.Add(address);
 			}
