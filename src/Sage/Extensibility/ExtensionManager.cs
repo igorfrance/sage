@@ -59,47 +59,37 @@ namespace Sage.Extensibility
 				return;
 
 			string[] archives = Directory.GetFiles(pluginPath, "*.zip", SearchOption.TopDirectoryOnly);
-			foreach (string archive in archives)
-			{
-				var extension = new ExtensionInfo(archive, context);
-				this.Add(extension);
+			ExtensionInfo extension = null;
+			string action = null;
 
-				if (!extension.IsInstalled)
+			try
+			{
+				foreach (string archive in archives)
 				{
-					try
+					extension = new ExtensionInfo(archive, context);
+					this.Add(extension);
+
+					if (!extension.IsInstalled)
 					{
+						action = "installing";
 						extension.Install();
 					}
-					catch (Exception ex)
+					else if (extension.IsUpdateAvailable)
 					{
-						log.ErrorFormat("Error installing extension '{0}': {1}", extension.Name, ex.Message);
-						throw;
-					}
-				}
-				else if (extension.IsUpdateAvailable)
-				{
-					try
-					{
+						action = "updating";
 						extension.Update();
 					}
-					catch (Exception ex)
+					else if (extension.IsMissingResources)
 					{
-						log.ErrorFormat("Error updating extension '{0}': {1}", extension.Name, ex.Message);
-						throw;
-					}
-				}
-				else if (extension.IsMissingResources)
-				{
-					try
-					{
+						action = "refreshing";
 						extension.Refresh();
 					}
-					catch (Exception ex)
-					{
-						log.ErrorFormat("Error refreshing extension '{0}': {1}", extension.Name, ex.Message);
-						throw;
-					}
 				}
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Error {0} extension '{1}': {2}", action, extension.Name, ex.Message);
+				throw;
 			}
 		}
 	}

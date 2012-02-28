@@ -167,7 +167,8 @@ namespace Sage.Extensibility
 		{
 			get
 			{
-				return this.ArchiveDate > orderedLogs.Last().Date;
+				DateTime? lastInstallDate = orderedLogs.Last().Date;
+				return this.ArchiveDate > lastInstallDate;
 			}
 		}
 
@@ -452,8 +453,8 @@ namespace Sage.Extensibility
 
 		private string GetSourcePath(string targetPath)
 		{
-			string childPath = targetPath.ToLower().Replace(context.Path.Resolve("/"), string.Empty);
-			return childPath;
+			string childPath = targetPath.ToLower().Replace(context.Path.Resolve("/").ToLower(), string.Empty);
+			return Path.Combine(this.SourceDirectory, childPath);
 		}
 	}
 }

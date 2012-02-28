@@ -91,7 +91,7 @@ namespace Sage.Extensibility
 		public XmlElement ToXml(XmlDocument ownerDoc)
 		{
 			XmlElement logElement = ownerDoc.CreateElement("install");
-			logElement.SetAttribute("dateTime", DateTime.Now.ToString("yyyy-MM-ddThh:mm:ss.ffff"));
+			logElement.SetAttribute("dateTime", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffff"));
 			logElement.SetAttribute("result", this.Result.ToString());
 
 			XmlElement filesElement = logElement.AppendElement("files");
