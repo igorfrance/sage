@@ -1,18 +1,7 @@
-﻿@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700&subset=latin,latin-ext);
-/*
-@import url(http://fonts.googleapis.com/css?family=Antic);
-@import url(http://fonts.googleapis.com/css?family=Armata&subset=latin,latin-ext);
-@import url(http://fonts.googleapis.com/css?family=Cabin);
-@import url(http://fonts.googleapis.com/css?family=Comfortaa);
-@import url(http://fonts.googleapis.com/css?family=Droid Sans);
-@import url(http://fonts.googleapis.com/css?family=Duru Sans);
-@import url(http://fonts.googleapis.com/css?family=Dave Crossland);
-*/
-
-@import url(gradients.css);
+﻿@import url(gradients.css);
 
 body
-	{ background: #fff; color: #323232; font-size: 15px; font-family: Open Sans, Sans-Serif; }
+	{ background: #fff; color: #323232; font-size: 15px; font-family: Century Gothic, Verdana, Sans-Serif; }
 a,
 a:visited
 	{ color: #0066ff; text-decoration: none; text-shadow: 1px 1px 1px #bbb; }
@@ -62,7 +51,7 @@ li > h5
 div.container
 	{ overflow: hidden; }
 dfn
-	{ color: #93a74b; text-decoration: italic; }
+	{ color: #93a74b; font-style: italic; }
 code
 	{ white-space: nowrap; color: #000; font-size: 16px; }
 code.example
@@ -149,6 +138,8 @@ table.definition th
 	  background: #DCDCDC; z-index: 1; }
 #navigation h1
 	{ background: url(../images/sage.png) no-repeat; width: 70px; height: 70px; margin-top: 0; }
+#navigation h1 a
+	{ display: block; height: 100%; }
 #navigation h1 span
 	{ display: none; }
 
