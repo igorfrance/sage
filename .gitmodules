@@ -1,3 +1,3 @@
 [submodule "src/Examples/Tutorial/assets/lib/scripts/aeon"]
 	path = src/Examples/Tutorial/assets/lib/scripts/aeon
-	url = G:/cycle99/projects/web/aeon
+	url = git@github.com:igorfrance/Aeon.git
