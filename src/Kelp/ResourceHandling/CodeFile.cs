@@ -704,7 +704,7 @@ namespace Kelp.ResourceHandling
 		private void AddInclude(string absolutePath, CodeFile include)
 		{
 			string includeKey = absolutePath.ToLower().Replace("/", "\\").Replace("\\\\", "\\");
-			if (this.references.ContainsKey(includeKey))
+			if (this.includes.ContainsKey(includeKey))
 				return;
 
 			this.includes.Add(includeKey, include);
