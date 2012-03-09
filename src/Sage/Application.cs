@@ -157,9 +157,9 @@ namespace Sage
 					}
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				log.ErrorFormat("Could not retrieve virtual directories in the current application's web server: {0}", ex.Message);
+				// log.ErrorFormat("Could not retrieve virtual directories in the current application's web server: {0}", ex.Message);
 				virtualDirectories = new Dictionary<string, string>();
 			}
 
@@ -319,18 +319,6 @@ namespace Sage
 			this.Response.End();
 		}
 
-		private bool IsRequestAvailable()
-		{
-			try
-			{
-				return this.Context.Request != null;
-			}
-			catch
-			{
-				return false;
-			}
-		}
-
 		private static Dictionary<string, string> GetVirtualDirectories(DirectoryEntry directory, string path)
 		{
 			IEnumerable<DirectoryEntry> directories = directory.Children.Cast<DirectoryEntry>()
@@ -350,6 +338,18 @@ namespace Sage
 			}
 
 			return result;
+		}
+
+		private bool IsRequestAvailable()
+		{
+			try
+			{
+				return this.Context.Request != null;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 }

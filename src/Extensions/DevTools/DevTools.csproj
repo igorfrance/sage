@@ -127,7 +127,9 @@
     <Content Include="assets\lib\modules\XmlTree\XmlTree.js" />
     <Content Include="assets\lib\modules\XmlTree\XmlTree.xml" />
     <Content Include="assets\lib\modules\XmlTree\XmlTree.xsl" />
-    <Content Include="assets\lib\scripts\aeon.tooltip.js" />
+    <Content Include="assets\lib\scripts\aeon\aeon.js" />
+    <Content Include="assets\lib\scripts\aeon\controls\tooltip\tooltip.css" />
+    <Content Include="assets\lib\scripts\aeon\controls\tooltip\tooltip.js" />
     <Content Include="assets\views\dev\inspect.html" />
     <Content Include="assets\views\dev\log.html" />
     <Content Include="assets\views\shared\elements.html" />
@@ -138,7 +140,6 @@
     <Content Include="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\lib\scripts\aeon.js" />
     <Content Include="assets\views\home\index.html">
       <SubType>Designer</SubType>
     </Content>

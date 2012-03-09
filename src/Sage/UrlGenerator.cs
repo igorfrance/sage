@@ -62,9 +62,9 @@ namespace Sage
 			this.RewritingOn = !string.IsNullOrEmpty(context.ProjectConfiguration.UrlRewritePrefix);
 		}
 
-        /// <summary>
-        /// Gets the context.
-        /// </summary>
+		/// <summary>
+		/// Gets the context.
+		/// </summary>
 		public SageContext Context
 		{
 			get
@@ -87,10 +87,10 @@ namespace Sage
 		/// </summary>
 		/// <value>
 		/// The rewrite prefix pattern is configured in the sage project configuration file 
-		/// (see <see cref="ProjectConfiguration.UrlRewritePrefix"/>). This property returns this value, with the placeholders
-		/// '{category}' and '{locale}' substituted with the actual values from the current <see cref="SageContext"/>.
+		/// (see <see cref="ProjectConfiguration.UrlRewritePrefix"/>). This property returns that configuration value, with 
+		/// the placeholders '{category}' and '{locale}' substituted with the values from the current <see cref="SageContext"/>.
 		/// <para>
-		/// Typically, this will be the <c>training/com</c> part from the <c>http://www.adidas.com/training/com/athlete/nick-anthony</c>.
+		/// Typically, this will be the <c>gums-r-us/uk</c> part from the <c>http://www.chew.com/gums-r-us/uk/products/chewymango</c>.
 		/// </para>
 		/// </value>
 		public string RewritePrefix
@@ -109,7 +109,7 @@ namespace Sage
 		/// Gets the server prefix part of the url.
 		/// </summary>
 		/// <value>
-		/// This will be the <c>http://www.adidas.com/</c> part from the <c>http://www.adidas.com/training/com/athlete/nick-anthony</c>.
+		/// This will be the <c>https://chew.local:888/</c> part from the <c>https://chew.local:888/gums-r-us/uk/products/chewymango</c>.
 		/// </value>
 		public string ServerPrefix
 		{
@@ -127,8 +127,8 @@ namespace Sage
 		/// Gets the complete prefix of the url, combining <see cref="ServerPrefix"/> and <see cref="RewritePrefix"/>.
 		/// </summary>
 		/// <value>
-		/// This will be the <c>http://www.adidas.com/training/com/</c> part from the 
-		/// <c>http://www.adidas.com/training/com/athlete/nick-anthony</c>.
+		/// This will be the <c>http://www.chew.com/gums-r-us/uk/</c> part from the 
+		/// <c>http://www.chew.com/gums-r-us/uk/products/chewymango</c>.
 		/// </value>
 		public string UrlPrefix
 		{

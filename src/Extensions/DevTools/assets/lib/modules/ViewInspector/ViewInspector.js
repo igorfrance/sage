@@ -112,7 +112,13 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	function getHashInspectorState()
 	{
-		return $url.serializeParams(currentState);
+		var state = {};
+		if (currentState.url)
+			state.url = currentState.url;
+		if (currentState.inspector)
+			state.inspector = currentState.inspector;
+
+		return $url.serializeParams(state);
 	}
 
 	function setHashInspectorState()
@@ -150,8 +156,13 @@ sage.dev.ViewInspector = function ViewInspector()
 
 		if (currentLayout == layoutType.DOUBLE)
 		{
-			if (currentState.inspector != state.inspector)
+			if (state.inspector && currentState.inspector != state.inspector)
 			{
+				if (state.inspector == "log")
+					loadLogView();
+				else
+					loadMetaView(state.inspector);
+
 				currentState.inspector = state.inspector;
 				changed = true;
 			}
@@ -340,13 +351,16 @@ sage.dev.ViewInspector = function ViewInspector()
 		if (contentUrl == null || contentUrl == "about:blank")
 			return;
 
-		setViewInspectorState({ url: contentUrl, inspector: currentState.inspector });
+		if (currentLayout == layoutType.DOUBLE)
+		{
+			setViewInspectorState({ url: contentUrl, inspector: currentState.inspector });
 
-		if (currentState.inspector == "log")
-			loadLogView();
+			if (currentState.inspector == "log")
+				loadLogView();
 
-		else if (metaViews.indexOf(currentState.inspector) != -1)
-			loadMetaView(currentState.inspector);
+			else if (metaViews.indexOf(currentState.inspector) != -1)
+				loadMetaView(currentState.inspector);
+		}
 
 		updateControls();
 		updateTitle();
@@ -390,7 +404,7 @@ sage.dev.ViewInspector = function ViewInspector()
 			contentcontainer.height(f1h + "%");
 			toolscontainer.height(f2h + "%");
 
-			$cookie.set("dev.viewinspector.fh", f1h);
+			//$cookie.set("dev.viewinspector.fh", f1h);
 		}
 	}
 
@@ -409,7 +423,7 @@ sage.dev.ViewInspector = function ViewInspector()
 			contentcontainer.width(f1w + "%");
 			toolscontainer.width(f2w + "%");
 
-			$cookie.set("dev.viewinspector.fw", f1w);
+			//$cookie.set("dev.viewinspector.fw", f1w);
 		}
 	}
 
@@ -586,6 +600,9 @@ sage.dev.ViewInspector = function ViewInspector()
 		$cookie.set("dev.viewinspector.layout", "double", "/");
 		viewInspector.removeClass("single").addClass("double");
 		currentLayout = layoutType.DOUBLE;
+
+		if (currentState.inspector == null)
+			setViewInspectorState({ inspector: defaultInspector });
 	};
 
 	commands.doubleFrame.getState = function doubleFrame$getState()
@@ -638,7 +655,8 @@ sage.dev.ViewInspector = function ViewInspector()
 		if (currentLayout == layoutType.SINGLE)
 			executeCommand("doubleFrame");
 
-		currentState.inspector = viewName;
+		setViewInspectorState({ inspector: defaultInspector });
+
 		loadMetaView(viewName);
 	};
 
@@ -678,6 +696,7 @@ sage.dev.ViewInspector = function ViewInspector()
 		{
 			toolFrame.attr("src", "about:blank");
 			contentFrame.attr("src", "about:blank");
+			currentState.url = "about:blank";
 
 			clearViewInspectorState();
 		}

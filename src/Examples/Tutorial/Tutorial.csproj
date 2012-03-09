@@ -77,11 +77,34 @@
   <ItemGroup>
     <Content Include="assets\configuration\dictionary\en.xml" />
     <Content Include="assets\configuration\navigation.xml" />
+    <Content Include="assets\css\tutorial-ie.css" />
+    <Content Include="assets\images\arrow1.png" />
+    <Content Include="assets\images\arrow2.png" />
+    <Content Include="assets\images\beta.png" />
+    <Content Include="assets\images\bullet.png" />
+    <Content Include="assets\images\diagrams\process-xml-view.png" />
+    <Content Include="assets\images\diagrams\xml-transform-flow-copy-tree.jpg" />
+    <Content Include="assets\images\diagrams\xml-transform-flow-expand-modules.jpg" />
+    <Content Include="assets\images\diagrams\xml-transform-flow-localize.jpg" />
+    <Content Include="assets\images\diagrams\xml-transform-flow-return-result.jpg" />
+    <Content Include="assets\images\diagrams\xml-transform-flow-xslt-transform.jpg" />
+    <Content Include="assets\images\diagrams\xml-transform-flow.jpg" />
+    <Content Include="assets\images\diagrams\xml-transform-flow.png" />
+    <Content Include="assets\images\expand-a.png" />
+    <Content Include="assets\images\expand.png" />
+    <Content Include="assets\images\expanded-a.png" />
+    <Content Include="assets\images\expanded.png" />
+    <Content Include="assets\images\logo.png" />
+    <Content Include="assets\images\page-file.gif" />
+    <Content Include="assets\images\sage.png" />
     <Content Include="assets\lib\modules\breadcrumb\breadcrumb.css" />
     <Content Include="assets\lib\modules\breadcrumb\breadcrumb.js" />
     <Content Include="assets\lib\modules\breadcrumb\breadcrumb.xsl" />
     <Content Include="assets\lib\modules\breadcrumb\expand.png" />
     <Content Include="assets\lib\modules\breadcrumb\expanded.png" />
+    <Content Include="assets\lib\scripts\aeon\aeon.js" />
+    <Content Include="assets\lib\scripts\aeon\controls\tooltip\tooltip.css" />
+    <Content Include="assets\lib\scripts\aeon\controls\tooltip\tooltip.js" />
     <Content Include="assets\scripts\dashboard.js" />
     <Content Include="Project.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -91,13 +114,6 @@
   <ItemGroup>
     <Content Include="assets\css\gradients.css" />
     <Content Include="assets\css\tutorial.css" />
-    <Content Include="assets\lib\scripts\aeon.js" />
-    <Content Include="assets\views\examples\image-processing.html" />
-    <Content Include="assets\views\examples\resource-compression.html" />
-    <Content Include="assets\views\examples\resource-merging.html" />
-    <Content Include="assets\views\examples\xincludes.html" />
-    <Content Include="assets\views\examples\xml-in-sage.html" />
-    <Content Include="assets\views\examples\helloworld.html" />
     <Content Include="assets\views\home\index.html" />
     <Content Include="assets\xslt\default.xslt" />
     <Content Include="Global.asax" />

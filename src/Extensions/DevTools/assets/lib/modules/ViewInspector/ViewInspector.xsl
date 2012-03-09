@@ -50,11 +50,11 @@
 				<div class="viewtoolbar">
 					<div class="toolbar left">
 						<xsl:for-each select="mod:data/mod:meta/mod:view">
-							<div class="textbutton meta {@name}" title="{.}" data-command="viewMeta" data-arguments="{@name}">
+							<div class="textbutton meta tooltip {@name}" title="{.}" data-command="viewMeta" data-arguments="{@name}">
 								<span><xsl:value-of select="@name"/></span>
 							</div>
 						</xsl:for-each>
-						<div class="textbutton log" title="Show request log" data-command="viewLog">
+						<div class="textbutton tooltip log" title="Shows the server side request log for a Sage page that loads in the main frame (provided that logging is enabled)" data-command="viewLog">
 							<span>log</span>
 						</div>
 					</div>

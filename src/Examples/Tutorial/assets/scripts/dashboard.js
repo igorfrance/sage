@@ -21,12 +21,13 @@ sage.tutorial.Dashboard = new function Dashboard()
 		welcomeElement = jQuery("#welcome");
 		navigationElement = jQuery("#navigation");
 
-		jQuery("#navigation ul a").bind("click", onNavigationLinkClick);
+		jQuery("#navigation a").bind("click", onNavigationLinkClick);
 		jQuery("#welcome a.documentation").bind("click", onDocumentationLinkClick);
 
 		if ($url.getHashParam("sage:vi") != null)
 		{
 			navigationElement.css({ left: 0 });
+			welcomeElement.css({ left: navigationElement.innerWidth() });
 		}
 	}
 
@@ -46,6 +47,8 @@ sage.tutorial.Dashboard = new function Dashboard()
 			return;
 
 		navigationElement.animate({ left: -navigationElement.innerWidth() });
+		welcomeElement.animate({ left: 0 });
+
 		$log.message("B");
 		welcomeElement.show();
 		$log.message("C");
@@ -91,7 +94,7 @@ sage.tutorial.Dashboard = new function Dashboard()
 	{
 		var targetUrl = this.href;
 
-		welcomeElement.hide();
+		welcomeElement.animate({ left: navigationElement.innerWidth() });
 		navigationElement.animate({ left: 0 }, function ()
 		{
 			welcomeElement.hide();

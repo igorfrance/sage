@@ -240,11 +240,17 @@ html.dashboard .view-inspector .toolscontainer {
 	z-index: 1;
 }
 
-html.dashboard .view-inspector .viewtoolbar,
-html.dashboard .view-inspector .contenttoolbar {
+html.dashboard .view-inspector .viewtoolbar {
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 	-moz-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 	-webkit-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+html.dashboard .view-inspector .contenttoolbar {
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+	-moz-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+	-webkit-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
 	z-index: 1;
 }
 
