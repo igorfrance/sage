@@ -13,3 +13,5 @@ Sage.Local.sln
 /sage.local.build
 /src/PrecompiledWeb
 /src/Examples/Tutorial/extensions
+
+/src/Sage.Local.sln.DotSettings
