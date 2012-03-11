@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:sage="http://www.cycle99.com/projects/sage"
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<xsl:param name="path"/>
 	<xsl:param name="expandLevels" select="7"/>
 
 	<xsl:output indent="no"/>
-	
+
 	<xsl:template match="/">
 		<xsl:apply-templates select="." mode="xmltree"/>
 	</xsl:template>
@@ -83,7 +84,7 @@
 				{ display: inline-block; color: #FF0000; cursor: pointer; width: 8px; text-align: right; font-weight: bold; padding-right: 2px; }
 			.xmltree .switch_space
 				{ display: inline-block; width: 10px; }
-				
+
 			.xmltree.wrap .element span
 				{	float: left; }
 			.xmltree.wrap .element
@@ -142,7 +143,7 @@
 					var xmltree = findParentByClassName(this, "xmltree");
 					var toggler = findParentByClassName(this, "toggler");
 					var state = findChildrenByClassName(toggler, "state")[0];
-					
+
 					if (containsClass(xmltree, "namespaces"))
 					{
 						removeClass(xmltree, "namespaces");
@@ -160,7 +161,7 @@
 					var xmltree = findParentByClassName(this, "xmltree");
 					var toggler = findParentByClassName(this, "toggler");
 					var state = findChildrenByClassName(toggler, "state")[0];
-					
+
 					if (containsClass(xmltree, "wrap"))
 					{
 						removeClass(xmltree, "wrap");
@@ -200,7 +201,7 @@
 						if (!element.className.match(rxp))
 							return false;
 					}
-					
+
 					return true;
 				}
 
@@ -208,7 +209,7 @@
 				{
 					if (element == null || element.className == null || arguments.length < 2)
 						return;
-						
+
 					for (var i = 1; i < arguments.length; i++)
 					{
 						var className = arguments[i];
@@ -221,7 +222,7 @@
 				{
 					if (element == null || element.className == null || arguments.length < 2)
 						return;
-						
+
 					for (var i = 1; i < arguments.length; i++)
 					{
 						var className = arguments[i];
@@ -598,6 +599,9 @@
 	<xsl:template match="node()" mode="xswitch">
 		<xsl:param name="level"/>
 		<xsl:choose>
+			<xsl:when test="parent::sage:resources or parent::sage:model">
+				<span class="switch">+</span>
+			</xsl:when>
 			<xsl:when test="$expandLevels = '*' or $level &lt;= $expandLevels">
 				<span class="switch">-</span>
 			</xsl:when>
@@ -609,9 +613,14 @@
 
 	<xsl:template match="node()" mode="xdisplay">
 		<xsl:param name="level"/>
-		<xsl:if test="$expandLevels != '*' and $level &gt; $expandLevels">
-			<xsl:attribute name="style">display:none</xsl:attribute>
-		</xsl:if>
+		<xsl:choose>
+			<xsl:when test="$expandLevels != '*' and $level &gt; $expandLevels">
+				<xsl:attribute name="style">display:none</xsl:attribute>
+			</xsl:when>
+			<xsl:when test="parent::sage:resources or parent::sage:model">
+				<xsl:attribute name="style">display:none</xsl:attribute>
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 
 </xsl:stylesheet>
