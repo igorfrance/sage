@@ -55,6 +55,23 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
+		/// Gets the root virtual path of the current application. 
+		/// </summary>
+		public static string ApplicationPath
+		{
+			get
+			{
+				if (HttpContext.Current != null)
+				{
+					var ctx = HttpContext.Current;
+					return ctx.Request.ApplicationPath;
+				}
+
+				return HostingEnvironment.ApplicationVirtualPath;
+			}
+		}
+
+		/// <summary>
 		/// Gets the physical path to the root folder of the current application. 
 		/// </summary>
 		public static string ApplicationPhysicalPath
