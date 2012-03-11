@@ -164,6 +164,7 @@
   <ItemGroup>
     <Content Include="Project.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup />
