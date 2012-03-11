@@ -25,6 +25,7 @@
  */
 namespace Sage.Configuration
 {
+	using System.Web.Hosting;
 	using System.Xml;
 
 	/// <summary>
@@ -41,6 +42,9 @@ namespace Sage.Configuration
 		{
 			this.Name = configNode.GetAttribute("name");
 			this.Url = configNode.GetAttribute("url");
+
+			if (!this.Url.StartsWith("/") && !this.Url.Contains("://"))
+				this.Url = string.Concat(HostingEnvironment.ApplicationVirtualPath.TrimEnd('/'), "/", this.Url);
 		}
 
 		/// <summary>
