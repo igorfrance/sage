@@ -27,6 +27,7 @@ namespace Sage
 {
 	using System;
 	using System.Collections.Specialized;
+	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Xml;
@@ -44,8 +45,8 @@ namespace Sage
 	/// </summary>
 	public class UrlGenerator
 	{
-		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'\w[\w\.]*):(?'AttribValue'.*)$", RegexOptions.Compiled);
-		private static readonly Regex urlFunction = new Regex(@"^url\((.*)\)$", RegexOptions.Compiled);
+		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'\w[\w\.:]*):(?'AttribValue'.*)$", RegexOptions.Compiled);
+		private static readonly Regex urlFunction = new Regex(@"^url\((?'LinkName'[^,]+)(?:,(?'LinkValues'.*))?\)$", RegexOptions.Compiled);
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlGenerator).FullName);
 		private readonly SageContext context;
@@ -355,6 +356,10 @@ namespace Sage
 		[NodeHandler(XmlNodeType.Element, "link", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessSageLinkElement(XmlNode linkNode, SageContext context)
 		{
+			Contract.Requires<ArgumentNullException>(linkNode != null);
+			if (linkNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return linkNode;
+
 			XmlElement linkElem = (XmlElement) linkNode;
 			string linkHref = context.Url.GetUrl(linkElem);
 
@@ -369,6 +374,10 @@ namespace Sage
 		[NodeHandler(XmlNodeType.Element, "url", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessSageUrlElement(XmlNode linkNode, SageContext context)
 		{
+			Contract.Requires<ArgumentNullException>(linkNode != null);
+			if (linkNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return linkNode;
+
 			string linkHref = context.Url.GetUrl((XmlElement) linkNode);
 
 			if (!string.IsNullOrEmpty(linkHref))
@@ -383,6 +392,10 @@ namespace Sage
 		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessSageAttribute(XmlNode attribNode, SageContext context)
 		{
+			Contract.Requires<ArgumentNullException>(attribNode != null);
+			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return attribNode;
+
 			Match match;
 
 			if ((match = attribSpec.Match(attribNode.InnerText)).Success)
@@ -402,6 +415,10 @@ namespace Sage
 		[NodeHandler(XmlNodeType.Attribute, "href", "")]
 		internal static XmlNode ProcessHrefAttribute(XmlNode attribNode, SageContext context)
 		{
+			Contract.Requires<ArgumentNullException>(attribNode != null);
+			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return attribNode;
+
 			string attribValue = GetAttributeValue(attribNode.InnerText, context);
 			attribNode.InnerText = ResourceManager.ProcessString(attribValue, context);
 			return attribNode;
