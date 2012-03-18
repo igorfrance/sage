@@ -22,7 +22,7 @@ sage.tutorial.Dashboard = new function Dashboard()
 		navigationElement = jQuery("#navigation");
 
 		jQuery("#navigation a").bind("click", onNavigationLinkClick);
-		jQuery("#welcome a.documentation").bind("click", onDocumentationLinkClick);
+		//jQuery("#welcome a.documentation").bind("click", onDocumentationLinkClick);
 
 		if ($url.getHashParam("sage:vi") != null)
 		{

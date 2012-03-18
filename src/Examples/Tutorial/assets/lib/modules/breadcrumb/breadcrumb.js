@@ -4,6 +4,9 @@ sage.tutorial.BreadCrumb = new function BreadCrumb()
 {
 	var $bc = jQuery("div.breadcrumb");
 
+	var showTimer, hideTimer;
+	var delay = 100;
+
 	$bc.find(".separator")
 		.bind("mouseenter", onSeparatorMouseEnter)
 		.bind("mouseleave", onSeparatorMouseLeave);
@@ -13,15 +16,24 @@ sage.tutorial.BreadCrumb = new function BreadCrumb()
 
 	function onSeparatorMouseEnter(e)
 	{
-		var $children = jQuery(this).find(".children");
-		$children.show();
+		window.clearTimeout(hideTimer);
+
+		var subject = jQuery(this);
+		showTimer = Function.setTimeout(delay, function showChildren()
+		{
+			subject.find(".children").show();
+		});
 	}
 
 	function onSeparatorMouseLeave()
 	{
-		var $children = jQuery(this).find(".children");
-		$children.find("li").removeClass("expanded");
-		$children.hide();
+		window.clearTimeout(showTimer);
+
+		var subject = jQuery(this);
+		hideTimer = Function.setTimeout(delay, function hideChildren()
+		{
+			subject.find(".children").hide().find("li").removeClass("expanded");
+		});
 	}
 
 	function onExpanderMouseUp()

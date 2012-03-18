@@ -6,26 +6,28 @@
 	xmlns:sage="http://www.cycle99.com/projects/sage"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
 	xmlns:set="http://www.cycle99.com/projects/sage/xslt/extensions/set"
-	exclude-result-prefixes="set site mod sage">
+	xmlns:x="http://www.w3.org/1999/xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	exclude-result-prefixes="x set site mod sage">
 
 	<xsl:template match="mod:BreadCrumb">
 		<xsl:variable name="currentHref" select="normalize-space(mod:config/mod:current/text())"/>
 		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/site:navigation"/>
-		<xsl:variable name="currentLink" select="$navigation//a[@href=$currentHref]"/>
-		<xsl:variable name="levels" select="$currentLink/ancestor::li"/>
+		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>
+		<xsl:variable name="levels" select="$currentLink/ancestor::x:li"/>
 		<div class="breadcrumb">
 			<xsl:for-each select="$levels">
 				<span class="level">
 					<xsl:choose>
-						<xsl:when test="a/@href = $currentHref">
+						<xsl:when test="x:a/@href = $currentHref">
 							<xsl:attribute name="class">level current</xsl:attribute>
 							<span class="name">
-								<xsl:apply-templates select="a/text()"/>
+								<xsl:apply-templates select="x:a/text()" mode="breadcrumb-tree"/>
 							</span>
 						</xsl:when>
 						<xsl:otherwise>
 							<span class="name">
-								<xsl:apply-templates select="a"/>
+								<xsl:apply-templates select="x:a | x:span" mode="breadcrumb-tree"/>
 							</span>
 						</xsl:otherwise>
 					</xsl:choose>
@@ -35,7 +37,7 @@
 								<span class="text">::</span>
 							</span>
 							<span class="children">
-								<xsl:apply-templates select="ul" mode="breadcrumb-tree">
+								<xsl:apply-templates select="x:ul" mode="breadcrumb-tree">
 									<xsl:with-param name="current" select="$currentHref"/>
 								</xsl:apply-templates>
 							</span>
@@ -46,28 +48,28 @@
 		</div>
 	</xsl:template>
 
-	<xsl:template match="ul" mode="breadcrumb-tree">
+	<xsl:template match="x:ul" mode="breadcrumb-tree">
 		<xsl:param name="current"/>
 		<ul>
-			<xsl:apply-templates select="li" mode="breadcrumb-tree">
+			<xsl:apply-templates select="x:li" mode="breadcrumb-tree">
 				<xsl:with-param name="current" select="$current"/>
 			</xsl:apply-templates>
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="li" mode="breadcrumb-tree">
+	<xsl:template match="x:li" mode="breadcrumb-tree">
 		<xsl:param name="current"/>
 		<li>
-			<xsl:if test="a/@href = $current or @class">
+			<xsl:if test="x:a/@href = $current or @class">
 				<xsl:attribute name="class">
 					<xsl:value-of select="@class"/>
-					<xsl:if test="a/@href = $current">
+					<xsl:if test="x:a/@href = $current">
 						<xsl:text> current</xsl:text>
 					</xsl:if>
 				</xsl:attribute>
 			</xsl:if>
 			<xsl:apply-templates select="@*[name() != 'class']" mode="breadcrumb-tree"/>
-			<xsl:if test="count(ul) != 0">
+			<xsl:if test="count(x:ul) != 0">
 				<span class="expander"></span>
 			</xsl:if>
 			<xsl:apply-templates select="node()" mode="breadcrumb-tree">
@@ -76,7 +78,7 @@
 		</li>
 	</xsl:template>
 
-	<xsl:template match="a" mode="breadcrumb-tree">
+	<xsl:template match="x:a" mode="breadcrumb-tree">
 		<xsl:apply-templates select="."/>
 	</xsl:template>
 

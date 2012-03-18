@@ -1,40 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <site:navigation xmlns:site="http://sage.cycle99.com/" xmlns:sage="http://www.cycle99.com/projects/sage">
-	<ul>
+	<ul xmlns="http://www.w3.org/1999/xhtml">
 		<li>
 			<a href="url(documentation)">Sage</a>
-			<ul class="general">
+			<ul class="documentation">
 				<li>
-					<a href="url(sage-license)">License</a>
-				</li>
-				<li>
-					<a href="url(sage-obtaining)">Obtaining</a>
-				</li>
-				<li>
-					<a href="url(sage-building)">Building</a>
-				</li>
-				<li></li>
-				<li>
-					Installing
+					<span>Getting started</span>
 					<ul>
 						<li>
-							<a href="url(sage-installing-new)">New project</a>
+							<a href="url(sage-license)">License</a>
 						</li>
 						<li>
-							<a href="url(sage-installing-example)">Example project</a>
+							<a href="url(sage-obtaining)">Obtaining</a>
+						</li>
+						<li>
+							<a href="url(sage-building)">Building</a>
+						</li>
+						<li>
+							<a href="url(sage-libraries)">Libraries used</a>
+						</li>
+						<li>
+							<span class="title">Installing</span>
+							<ul>
+								<li>
+									<a href="url(sage-installing-new)">New project</a>
+								</li>
+								<li>
+									<a href="url(sage-installing-example)">Example project</a>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</li>
-			</ul>
-			<ul class="documentation">
-				<li>
+				<li>     some sample text
 					<a href="url(xml-as-a-language)">XML as a language</a>
 					<ul>
 						<li>
-							<a href="url(sage-namespaces)">Available namespaces</a>
+							<a href="url(xml-input-document)">Input document</a>
+						</li>
+						<li>
+							<a href="url(sage-modules)">Modules</a>
+							<ul>
+								<li>
+									<a href="url(sage-modules-example1)" data-shortTitle="Example1">Creating a module without a back-end component</a>
+								</li>
+								<li>
+									<a href="url(sage-modules-example2)" data-shortTitle="Example2">Creating a module with a back-end component</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<a href="url(linking)">Linking</a>
 						</li>
 						<li>
 							<a href="url(sage-uri-schemes)">Available URI schemes</a>
+						</li>
+						<li>
+							<a href="url(sage-namespaces)">Namespaces</a>
+							<ul>
+								<li>
+									<a href="url(sage-namespaces-xinclude)">X-Include</a>
+								</li>
+								<li>
+									<a href="url(sage-namespaces-sage)">Sage</a>
+								</li>
+								<li>
+									<a href="url(sage-namespaces-internationalization)">Internationalization</a>
+								</li>
+								<li>
+									<a href="url(sage-namespaces-contextualization)">Contextualization</a>
+								</li>
+								<li>
+									<a href="url(sage-namespaces-modules)">Modules</a>
+								</li>
+								<li>
+									<a href="url(sage-namespaces-logic)">Logic</a>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</li>
@@ -73,13 +115,16 @@
 					</ul>
 				</li>
 				<li>
-					<a href="url(resource-processing)">Resource processing</a>
+					<span>Resources</span>
 					<ul>
 						<li>
-							<a href="url(resource-processing-kelp)">Merging with Kelp</a>
+							<a href="url(resource-libraries)">Resource libraries</a>
 						</li>
 						<li>
-							<a href="url(resource-processing-compression)">Compression options</a>
+							<a href="url(resource-processing-kelp)">Merging scripts and styles</a>
+						</li>
+						<li>
+							<a href="url(resource-processing-compression)">Minifying scripts and styles</a>
 						</li>
 						<li>
 							<a href="url(resource-processing-imaging)">Image processing</a>
@@ -87,17 +132,8 @@
 					</ul>
 				</li>
 				<li>
-					<a href="url(linking)">Linking</a>
-				</li>
-				<li>
-					<a href="url(kelp)">Kelp</a>
-				</li>
-				<li>
 					<a href="url(extensibility)">Extensibility</a>
 					<ul>
-						<li>
-							<a href="url(extensibility-modules)">Modules</a>
-						</li>
 						<li>
 							<a href="url(extensibility-extensions)">Extensions</a>
 						</li>
@@ -115,6 +151,20 @@
 						</li>
 						<li>
 							<a href="url(extensibility-xslt-extensions)">XSLT extension objects</a>
+							<ul>
+								<li>
+									<a href="url(xslt-extensions-basic)">Basic</a>
+								</li>
+								<li>
+									<a href="url(xslt-extensions-io)">IO</a>
+								</li>
+								<li>
+									<a href="url(xslt-extensions-set)">Set</a>
+								</li>
+								<li>
+									<a href="url(xslt-extensions-string)">String</a>
+								</li>
+							</ul>
 						</li>
 					</ul>
 				</li>
@@ -122,13 +172,7 @@
 					<a href="url(configuration)">Configuration</a>
 					<ul>
 						<li>
-							<h5>Project.config</h5>
-						</li>
-						<li>
 							<a href="url(configuration-project)">Project</a>
-						</li>
-						<li>
-							<h5>Web.config</h5>
 						</li>
 						<li>
 							<a href="url(configuration-rewriters)">Rewriters</a>
@@ -141,9 +185,13 @@
 						</li>
 					</ul>
 				</li>
-				<li class="separator"></li>
 				<li>
-					<a href="url(sage-libraries)">Libraries used</a>
+					<span>Extensions</span>
+					<ul>
+						<li>
+							<a href="url(extension-devtools)">Developer tools</a>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</li>

@@ -19,6 +19,31 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<dl>
+			<dt><a href="url(resource-processing-kelp)">JavaScript and CSS merging</a></dt>
+			<dd>
+				<p>
+					A larger number of reasonably small, reusable and well-organized files is often more maintable then single large files.
+					Developers frequently organize their scripts and styles in many separate documents, organized in
+					various ways. A moderately complex web page can easily end up with 20+ individual scripts or stylesheets that
+					all need to be loaded for the page to be fully functional.
+				</p>
+				<p>
+					The downside of using this approach is that for each of these files, there will be an additional latency
+					added to each of these files' request. That is, for each file the browser has to make a separate request,
+					and wait for the reponse from the server. This results in slower loading times than in scenarios where all
+					scripts and styles arrive in one or two larger responses. The more separate files are used, the bigger the
+					hit will be; and conversely, the bigger will the speed gain be if the files are served together with fewer
+					requests.
+				</p>
+				<p>
+					Sage solves this problem using fluid resource inclusion to merge separate scripts and styles into single files,
+					and conditionally outputting them back as separate requests during development.
+					<a href="url(resource-processing-kelp)">Find out more</a>.
+				</p>
+			</dd>
+		</dl>
+
 		<p>
 			Dividing the code in small, reusable and well-organized files help keep our development maintanable, much in the
 			spirit of "Divide and Conquer".
