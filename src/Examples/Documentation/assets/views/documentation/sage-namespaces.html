@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Sage namespaces</title>
+	</head>
+	<body>
+
+		<h1>Sage namespaces</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-namespaces"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<h3 class="section">
+			Common namespaces
+		</h3>
+
+		<p>
+			The following namespaces will be automatically processed by Sage if used within xml views.
+		</p>
+
+		<ul class="casual separate">
+			<li>
+				<h5 class="casual"><a href="url(sage-namespaces-xinclude)">XInclude namespace</a></h5>
+				<code>http://www.w3.org/2003/XInclude</code>
+				<p>XML Inclusions.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(sage-namespaces-sage)">Sage namespace</a></h5>
+				<code>http://www.cycle99.com/projects/sage</code>
+				<p>Core utilities.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(sage-namespaces-internationalization)">Internationalization namespace</a></h5>
+				<code>http://www.cycle99.com/projects/sage/internationalization</code>
+				<p>Globalization.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(sage-namespaces-contextualization)">Contextualization namespace</a></h5>
+				<code>http://www.cycle99.com/projects/sage/contextualization</code>
+				<p>Document preprocessing.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(sage-modules)">Modules namespace</a></h5>
+				<code>http://www.cycle99.com/projects/sage/modules</code>
+				<p>Base namespace for all modules.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(sage-namespaces-logic)">Custom logic namespace</a></h5>
+				<code>http://www.cycle99.com/projects/sage/logic</code>
+				<p>Custom transform logic.</p>
+			</li>
+		</ul>
+
+		<h3 class="section">
+			XSLT extension object namespaces
+		</h3>
+
+		<p>
+			The following namespaces are used with custom objects added as XSLT extension objects to the XSLT stylesheets
+			intent on consuming them. To use the methods from these namespaces, simply reference them in your document.
+		</p>
+
+		<ul class="casual separate">
+			<li>
+				<h5 class="casual"><a href="url(xslt-extensions-io)">IO</a></h5>
+				<code>http://www.cycle99.com/projects/sage/xslt/extensions/io</code>
+				<p>Basic filesystem IO operations.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(xslt-extensions-basic)">Basic</a></h5>
+				<code>http://www.cycle99.com/projects/sage/xslt/extensions/basic</code>
+				<p>A few useful shorthand conditional utilities from Basic.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(xslt-extensions-string)">String</a></h5>
+				<code>http://www.cycle99.com/projects/sage/xslt/extensions/string</code>
+				<p>String formatting and regular expression matching and replacement.</p>
+			</li>
+			<li>
+				<h5 class="casual"><a href="url(xslt-extensions-set)">Set</a></h5>
+				<code>http://www.cycle99.com/projects/sage/xslt/extensions/set</code>
+				<p>Filtering nodesets.</p>
+			</li>
+		</ul>
+
+		<h3 class="section">
+			Configuration namespaces
+		</h3>
+
+		<ul class="casual separate">
+			<li>
+				<h5 class="casual">Project configuration</h5>
+				<code>http://www.cycle99.com/projects/sage/configuration/project</code>
+			</li>
+			<li>
+				<h5 class="casual">Category configuration</h5>
+				<code>http://www.cycle99.com/projects/sage/configuration/category</code>
+			</li>
+		</ul>
+
+		<h3 class="section">
+			Other namespaces
+		</h3>
+
+		<ul class="casual separate">
+			<li>
+				<h5 class="casual">Developer tools</h5>
+				<code>http://www.cycle99.com/projects/sage/configuration/devtools</code>
+			</li>
+		</ul>
+
+
+	</body>
+</html>

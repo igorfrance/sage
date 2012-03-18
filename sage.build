@@ -7,7 +7,7 @@
 	<property name="kelpBuildPath" value="src/kelp/bin/${buildConfiguration}"/>
 	<property name="sageBuildPath" value="src/sage/bin/${buildConfiguration}"/>
 	<property name="extensionBuilder" value="src/sage.build/bin/${buildConfiguration}/sage.build.exe"/>
-	<property name="exampleSitePath" value="src/examples/tutorial"/>
+	<property name="exampleSitePath" value="src/examples/documentation"/>
 	
 	<target name="default">
 		<call target="clean"/>
@@ -40,7 +40,7 @@
 			</fileset>
 		</copy>
 		
-		<copy todir="${outputPath}/examples/tutorial">
+		<copy todir="${outputPath}/examples/documentation">
 			<fileset basedir="${exampleSitePath}">
 				<include name="*/**"/>
 				<exclude name="tmp/**"/>
@@ -58,7 +58,7 @@
 		</exec>
 		<copy 
 			file="releases/latest/extensions/sage.devtools.zip" 
-			todir="releases/latest/examples/tutorial/extensions"/>
+			todir="releases/latest/examples/documentation/extensions"/>
 	</target>
 	
 </project>

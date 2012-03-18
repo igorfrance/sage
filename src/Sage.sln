@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{AE580666
 		..\sage.build = ..\sage.build
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial", "Examples\Tutorial\Tutorial.csproj", "{2782F26D-1BB1-4C2F-AEFD-22ABC3C44586}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documentation", "Examples\Documentation\Documentation.csproj", "{2782F26D-1BB1-4C2F-AEFD-22ABC3C44586}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

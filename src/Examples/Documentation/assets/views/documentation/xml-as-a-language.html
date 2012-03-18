@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>XML as a language</title>
+		<link type="text/css" rel="stylesheet" href="{assetpath}/css/documentation.css" />
+	</head>
+	<body>
+
+		<h1>XML as a language</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="xml-as-a-language"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<sage:noindent>
+			<p>
+				XML, by it's very nature lends itself perfectly to extensibility. When XHTML specification was initially developed,
+				the motivation was to make HTML more extensible and to increase interoperability with other data formats.
+				With it's advent, many developers imagined a future where HTML could be extended with new XML tags that provide
+				additional functionality, and a web where pages would parse as valid XML and their content could be programmatically
+				accessed using XML DOM and other APIs.
+			</p>
+			<p>
+				Neither of these came to be, not de-facto anyway. Browsers are very forgiving in their markup parsing and nothing
+				has been done to enable extending HTML with additional tags across all browsers in a standards-compatible way.
+			</p>
+			<p>
+				Sage guarantees HTML markup that parses as valid XML, and it provides a fair number of additional XML tags that can
+				be used in XHTML. It's also very easy to create new custom sets of tags with even more functionality.
+			</p>
+			<p>
+				The following section lists all namespaces in use or available for use in Sage.
+			</p>
+		</sage:noindent>
+
+		<mod:RelatedArticles>
+			<mod:config>
+				<mod:display>children</mod:display>
+				<mod:current>
+					<sage:url ref="xml-as-a-language"/>
+				</mod:current>
+			</mod:config>
+		</mod:RelatedArticles>
+
+	</body>
+</html>

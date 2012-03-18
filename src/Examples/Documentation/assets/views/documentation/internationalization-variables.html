@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Variable substitution - Internationalization</title>
+	</head>
+	<body>
+
+		<h1>Variable substitution</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="internationalization-variables"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			Anywhere you need to have different values for different locales, you can use <code>intl:variable</code> element
+			or if you need to substitute attributes values you can use <code>intl:variable(id)</code> syntax to have it
+			substituted by the variable value matching the current locale. This technique enables us to elegantly use different
+			values for different locales, while keeping our markup simple and easy to read.
+		</p>
+		<p>
+			Similar as with <a sage:attrib="href:url(internationalization-phrases)">phrases</a>, variables are defined once and then
+			referred to elsewhere where it's value should be substituted. A variable can be defined in the same file that uses
+			it (which is strogly advised in case the variable is local to that document), or it can be added to the
+			<a sage:attrib="href:url(configuration-category)">category configuration</a> in which case it becomes available
+			to any document in that category (and by extension, if the project has only one category, to any document in that
+			project).
+		</p>
+
+		<h2 class="section">Define a variable</h2>
+
+		<p>
+			First we need to define the variable, and it's locale-specific values. The way the variable values are resolved
+			based on the current locale is explained in more detail in the discussion on
+			<a sage:attrib="href:url(internationalization-fallback)">locale resolution</a>. Depending on where the variable
+			should be available, you choose weather you will define it in just the one document that is using it, or in
+			the <a sage:attrib="href:url(configuration-category)">Category.config</a> so that it becomes available to the
+			whole project/category.
+		</p>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<intl:variables>
+						<intl:variable id="chewyMangoUrl">
+							<intl:value locale="default">http://shop.chew.com/pages/products/chewymango</intl:value>
+							<intl:value locale="uk">http://shop.chew.co.uk/pages/products/chewymango</intl:value>
+							<intl:value locale="de">http://shop.chew.de/pages/products/chewymango</intl:value>
+							<intl:value locale="nl">http://shop.chew.nl/pages/products/chewymango</intl:value>
+							<intl:value locale="fr">http://shop.chew.fr/pages/products/chewymango</intl:value>
+							<intl:value locale="ca">http://www.showchewing.ca/pages/products/chewymango</intl:value>
+							<intl:value locale="ru">http://shop.chew.ru/on/imaginationware.store/chewymango</intl:value>
+							<intl:value locale="kr">http://shop.chew.co.kr/chewymango</intl:value>
+							<intl:value locale="us">http://www.showchewing.com/chewymango</intl:value>
+							<intl:value locale="jp">http://shop.chew.jp/pc/item/chewymango</intl:value>
+						</intl:variable>
+					</intl:variables>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p>
+			{TODO: add element reference }
+		</p>
+
+		<h2 class="section">Using the variable in text</h2>
+
+		<p>
+			To output the variable value as text in markup, use the <code>intl:variable[@ref]</code> element:
+		</p>
+
+		<mod:XmlTree>
+			<mod:config>
+				<mod:highlight>
+					<mod:element>intl:variable</mod:element>
+				</mod:highlight>
+			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<mod:product>
+						<mod:url>
+							<intl:variable ref="chewyMangoUrl"/>
+						</mod:url>
+					</mod:product>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p>
+			{TODO: add element reference }
+		</p>
+
+
+		<h2 class="section">Using the variable in attribute value</h2>
+
+		<mod:XmlTree>
+			<mod:config>
+				<mod:highlight>
+					<mod:attribute>href</mod:attribute>
+				</mod:highlight>
+			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<mod:ctas>
+						<mod:cta>
+							<mod:link href="intl:variable(chewyMangoUrl)">
+								<intl:phrase ref="masthead.chewyMango.ctaText"/>
+							</mod:link>
+						</mod:cta>
+					</mod:ctas>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p>
+			{TODO: add syntax reference }
+		</p>
+
+	</body>
+</html>

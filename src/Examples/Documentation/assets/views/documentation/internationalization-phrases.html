@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Internationalization: Phrases</title>
+	</head>
+	<body>
+
+		<h1>Phrase substitution</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="internationalization-phrases"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			We can use language specific text in our markup without having to embed it directly. We organize and save our
+			text as phrases in separate language dictionaries, and refer to these phrases by using special XHTML elements
+			and attributes. These elements are defined by the internationalization namespace.
+		</p>
+		<p>
+			In debug mode, Sage will automatically detect internationalization namespace usage and generate fresh localized
+			versions of these files each time they change.
+		</p>
+		<p>
+			In production, all XML resources are prelocalized, and no checking for source changes happens automatically.
+		</p>
+
+		<h2 id="phrase_elements" class="section">Substituting element text</h2>
+
+		<p>
+			Consider the classic "Hello, world!" added to the page by using <code>intl:phrase</code> elements.
+			First we need to add the "Hello, world!" to language dictionaries of each of the languages in which we want to
+			show this text, by creating <code>intl:phrase</code> elements and setting their <code>id</code> attribute to
+			the same value. Note that while the language text differs from language to language, the id of the phrase
+			('hello.world') is the same for all.
+		</p>
+
+		<h5 class="caption tooltip" title="Hello world!">The same phrase in three dictionaries</h5>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<intl:dictionary lang="en">
+						<intl:phrase id="hello.world">Hello, world!</intl:phrase>
+					</intl:dictionary>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<intl:dictionary lang="es">
+						<intl:phrase id="hello.world">¡Hola, mundo!</intl:phrase>
+					</intl:dictionary>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<intl:dictionary lang="cn">
+						<intl:phrase id="hello.world">你好，世界！</intl:phrase>
+					</intl:dictionary>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p class="section">
+			After we have added our phrase to the dictionaries, we can add them to our templates by using the same
+			<code>intl:phrase</code> elements, but instead of <code>id</code> attribute that we used to define the phrase
+			in dictionaries, we use the <code>ref</code> attribute to refer to it.
+		</p>
+
+		<h5 class="caption">XHTML document using the dictionary phrase</h5>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<html>
+						<head>
+							<title><intl:phrase ref="hello.world"/></title>
+						</head>
+						<body>
+							<h1><intl:phrase ref="hello.world"/></h1>
+						</body>
+					</html>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p class="section">
+			And when our XHTML template then gets processed we end up with a different separate file for each language, with
+			text phrases being referred to already resolved:
+		</p>
+
+		<h5 class="caption">Three different translated versions of XHTML</h5>
+
+		<div class="container">
+			<div class="left" style="min-width: 290px">
+				<mod:XmlTree>
+					<mod:data>
+						<html lang="en">
+							<head>
+								<title>Hello, world!</title>
+							</head>
+							<body>
+								<h1>Hello, world!</h1>
+							</body>
+						</html>
+					</mod:data>
+				</mod:XmlTree>
+			</div>
+
+			<div class="left" style="min-width: 290px">
+				<mod:XmlTree>
+					<mod:data>
+						<html lang="es">
+							<head>
+								<title>¡Hola, mundo!</title>
+							</head>
+							<body>
+								<h1>¡Hola, mundo!</h1>
+							</body>
+						</html>
+					</mod:data>
+				</mod:XmlTree>
+			</div>
+
+			<div class="left" style="min-width: 290px">
+				<mod:XmlTree>
+					<mod:data>
+						<html lang="cn">
+							<head>
+								<title>你好，世界！</title>
+							</head>
+							<body>
+								<h1>你好，世界！</h1>
+							</body>
+						</html>
+					</mod:data>
+				</mod:XmlTree>
+			</div>
+		</div>
+
+		<h2 id="phrase_attributes" class="section">Substituting phrases in attribute values</h2>
+
+		<p>
+			Occasionally, attribute values (such as <code>title</code>) need to be translated too. In Sage, that can be done
+			by using special syntax within the attribute.
+		</p>
+
+		<h5 class="caption">Embedding intl:phrase within attribute value</h5>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<html lang="cn">
+						<head>
+							<title>你好，世界！</title>
+						</head>
+						<body>
+							<h1 title="intl:phrase(hello.world)">你好，世界！</h1>
+						</body>
+					</html>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p>
+			When this snipppet gets localized, the attribute value gets substituted by the value of the phrase 'hello world'
+			in each language:
+		</p>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<html lang="cn">
+						<head>
+							<title>你好，世界！</title>
+						</head>
+						<body>
+							<h1 title="你好，世界！">你好，世界！</h1>
+						</body>
+					</html>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+	</body>
+</html>

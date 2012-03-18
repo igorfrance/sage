@@ -12,8 +12,9 @@
 				<xs:element name="phrase" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType mixed="true">
 						<xs:choice minOccurs="0" maxOccurs="unbounded">
-							<xs:element name="phrase" type="intl:phrase-reference"/>
-							<xs:element name="variable" type="intl:variable-reference"/>
+							<xs:element ref="intl:phrase"/>
+							<xs:element ref="intl:variable"/>
+							<xs:any namespace="##other" minOccurs="0"/>
 						</xs:choice>
 						<xs:attribute name="id" type="xs:string" use="required" />
 					</xs:complexType>
@@ -46,29 +47,30 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="phrase" type="intl:phrase-reference"/>
+	<xs:element name="phrase">
+		<xs:annotation>
+			<xs:documentation>References a phrase from the dictionary</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="ref" use="required">
+				<xs:annotation>
+					<xs:documentation>Specifies the id of the phrase from the dictionary that this element represents</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
 
-	<xs:element name="variable" type="intl:variable-reference"/>
+	<xs:element name="variable">
+		<xs:complexType>
+			<xs:attribute name="ref" use="required"/>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:complexType name="value" mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:any processContents="lax"/>
 		</xs:choice>
 		<xs:attribute name="locale" type="xs:string" use="required" />
-	</xs:complexType>
-
-	<xs:complexType name="phrase-reference">
-		<xs:attribute name="ref" type="xs:string" use="required" />
-	</xs:complexType>
-
-	<xs:complexType name="variable-reference">
-		<xs:attribute name="ref" type="xs:string" use="required" />
-	</xs:complexType>
-
-	<xs:complexType mixed="true" name="phrase-container">
-		<xs:sequence>
-			<xs:element ref="intl:phrase" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
 	</xs:complexType>
 
 	<xs:attribute name="locale">

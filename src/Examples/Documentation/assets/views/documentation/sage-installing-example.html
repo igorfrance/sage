@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Installing the example Sage project</title>
+	</head>
+	<body>
+
+		<h1>Installing the example Sage project</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="esage-installing-example"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			This Sage project is included as an example project within the archive that can be download from the
+			<a sage:attrib="href:url(sage-obtaining)">sage build server</a>. Downloaded and installed, this example should
+			look just like this website (there may be minor differences if the version is different).
+		</p>
+		<p>
+			Prior to installing a Sage project on your server, make sure you have the following installed:
+		</p>
+		<ul>
+			<li>IIS 7 or higher</li>
+			<li>.NET framework 4.0 or higher</li>
+			<li>ASP.NET MVC 2 or higher</li>
+			<li>Microsoft Code Contracts (this might not be necessary, testing needed)</li>
+		</ul>
+		<p>
+			Then proceed with the following steps:
+		</p>
+		<ol class="separate">
+			<li>
+				Extract the contents of <a sage:attrib="href:url(sage-obtaining)">sage.documentation.zip</a> to a directory on your
+				server.
+			</li>
+			<li>
+				Create a new website and set it's directory to the directory where you extracted the archive in the previous
+				step. Alternatively, a Sage project can also be configured as a virtual directory if required, but typically
+				a project will be configured as a website.
+			</li>
+			<li>
+				Navigate to your website, the homepage should appear.
+			</li>
+		</ol>
+	</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Linking</title>
+	</head>
+	<body>
+
+		<h1>Linking</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="linking"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			To promote reuse and facilitate discoverability, Sage enables you to define project-global
+			URLs within the <a href="url(configuration-project)">project configuration file</a>, and then refer to them
+			using their name anywhere in your project where you may need them.
+		</p>
+
+		<h3 class="section">Configuration</h3>
+
+		<p>
+			A link is declared in the project configuration using two attributes, <code>name</code> and <code>url</code>.
+		</p>
+
+		<mod:XmlTree>
+			<mod:config>
+				<mod:namespaces>true</mod:namespaces>
+			</mod:config>
+			<mod:data>
+				<links xmlns="http://www.cycle99.com/projects/sage/configuration/project">
+					<link name="documentation" url="documentation/index.html"/>
+					<link name="extensibility" url="documentation/extensibility.html"/>
+					<link name="configuration" url="documentation/configuration.html"/>
+					<link name="xml-as-a-language" url="documentation/xml-as-a-language.html"/>
+					<link name="linking" url="documentation/linking.html"/>
+					<link name="registration-action" url="members/registration/finalize"/>
+					<link name="product-category" url="catalog/{{category}}/products/"/>
+					<!-- The links can be external too: -->
+					<link name="partners" url="http://www.somedomain.com/partners.html"/>
+				</links>
+			</mod:data>
+		</mod:XmlTree>
+
+		<h3 class="section">Usage</h3>
+
+		<p>
+			There are several ways the link can then be used throughout your project, depending on how you need it.
+		</p>
+
+		<ul class="root reference">
+			<li>
+				Directly within any <code>href</code> attribute, using <code>url(...)</code> syntax.
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<a href="url(xml-as-a-language)">XML as a language</a>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<div>
+					The resolved url becomes the value of the <code>href</code> attribute:
+				</div>
+				<mod:XmlTree>
+					<mod:data>
+						<a href="url(xml-as-a-language)">XML as a language</a>
+					</mod:data>
+				</mod:XmlTree>
+			</li>
+			<li>
+				<div>
+					Within <a href="url(sage-namespaces-sage)">@sage:attrib</a> attribute, using <code>url(...)</code> syntax.
+				</div>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<form method="post" sage:attrib="action:url(registration-action)">...</form>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<div>
+					The value of the generated attribute will be the resolved URL of the link it points to:
+				</div>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<form method="post" action="/members/registration/finalize">...</form>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+			</li>
+			<li>
+				<div>
+					Within <a href="url(sage-namespaces-sage)">sage:url</a> element.
+				</div>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<sage:url ref="product-category" values="category=chewing-gum"/>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<div>
+					This element is substituted with the resolved URL of the link it points to:
+				</div>
+				<code>/catalog/chewing-gum/products/</code>
+			</li>
+			<li>
+				<div>
+					Within <a href="url(sage-namespaces-sage)">sage:link</a> element.
+				</div>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<sage:link ref="product-category" values="category=wrappings"/>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<div>
+					This element will receive a <code>href</code> attribute with the resolved URL of the link it points to as
+					its value:
+				</div>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<sage:link ref="product-category" values="category=wrappings" href="/catalog/chewing-gum/products/"/>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+			</li>
+		</ul>
+
+		<h3 class="section">Substitution of link placeholders</h3>
+
+		<h5 class="tiny">Single value</h5>
+		<blockquote>
+			<div>
+				Link URL may contain substitution placeholders. For instance, for the link with name <code>"product-category"</code>,
+				we have used the <code>{{category}}</code> placeholder:
+			</div>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<link name="product-category" url="catalog/{{category}}/products/"/>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<div>
+				When using the link, we substitute the placeholders by using the <code>values</code> attribute:
+			</div>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<sage:url ref="product-category" values="category=chewing-gum"/>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<div>
+				This placeholder is substituted with the specified value:
+			</div>
+			<code>/catalog/chewing-gum/products/</code>
+		</blockquote>
+
+		<h5 class="tiny">Multiple values</h5>
+		<blockquote>
+			<div>
+				The link URL can also have multiple placeholders:
+			</div>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<link name="product-item" url="catalog/{{category}}/{id}/"/>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<div>
+				We can specify multiple substitution <code>values</code> using a querystring-like syntax; <code>=</code> to
+				join names and values, <code>&amp;</code> to join name/value pairs:
+			</div>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<sage:url ref="product-item" values="category=chewing-gum&amp;amp;id=PT1625"/>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<div>
+				The URL with placeholders substituted:
+			</div>
+			<code>/catalog/chewing-gum/PT1625/</code>
+		</blockquote>
+
+		<h5 class="tiny">Additional values</h5>
+		<blockquote>
+			<p>
+				If there are substitution values specified within <code>values</code> that don't have the corresponding placeholder
+				in the link URL, they are appended to the end of the URL as a querystring.
+			</p>
+			<div>
+				Consider the following usage of the same <code>product-category</code> link we saw in an earlier example:
+			</div>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<sage:url ref="product-category" values="category=chewing-gum&amp;amp;page=4&amp;amp;filter=off"/>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<div>
+				Additional substitution values are added as a querystring:
+			</div>
+			<code>/catalog/chewing-gum/?page=4&amp;filter=off</code>
+		</blockquote>
+
+		<h5 class="tiny">Within the url() function</h5>
+		<blockquote>
+			<p>
+				It is also possible to specify substitution values when using the <code>url()</code> syntax. The text within
+				parantheses is split on the first comma in two parts, where the first part is the <code>id</code> of the link
+				to use, and the second is the querystring-like packed list of substitution values.
+				<code class="principal">url(&lt;id&gt;[,&lt;values&gt;])</code>
+			</p>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<a href="url(product-category,category=chewing-gum&amp;amp;page=4)">See our extensive chewing gum inventory</a>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<div>
+				The URL with placeholders substituted:
+			</div>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<a href="/catalog/chewing-gum/?page=4">See our extensive chewing gum inventory</a>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+		</blockquote>
+
+		<h3 class="section">Notes</h3>
+
+		<ul>
+			<li>
+				Unless rooted in some way (<code>http://</code> or <code>/</code> or <code>~/</code>), the url will be
+				automatically rooted with <code>~/</code> by Sage before outputting the final value of <code>href</code>, meaning
+				that a defined link's <code>url</code> attribute value will be considered relative to the current web application.
+			</li>
+			<li>
+				If the link can't be resolved (an incorrect or outdated <code>linkID</code> may have been used), the value returned will
+				instead be:
+				<code class="principal">javascript:alert('Unresolved link: [linkID]')</code>
+			</li>
+		</ul>
+
+		<br class="spacer"/>
+
+	</body>
+</html>
