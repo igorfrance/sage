@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>The XInclude namespace</title>
+	</head>
+	<body>
+
+		<h1>The XInclude namespace</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-namespaces-xinclude"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<code class="principal">http://www.w3.org/2003/XInclude</code>
+
+		<p>
+			The XInclude module, provided by <a href="url(sage-libraries)">Mvp.Xml</a> library. Read more about XML Inclusions
+			on <a href="http://www.w3.org/TR/xinclude/">w3.org</a>.
+		</p>
+
+		<h5 class="tiny">Elements</h5>
+
+		<ul class="casual separate reference">
+			<li>
+				<h5 class="casual">xi:include</h5>
+				<span>Includes another document within the current document, replacing the <code>xi:include</code> element.</span>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@href</h6>
+						<span>Specifies the path to the document to include.</span>
+					</li>
+					<li>
+						<h6 class="casual">@parse</h6>
+						<span>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</span>
+					</li>
+					<li>
+						<h6 class="casual">@xpointer</h6>
+						<span>
+							When <code>parse="xml"</code>, the XPointer contained in the xpointer attribute is evaluated to identify
+							a portion of the resource to include. This attribute is optional; when omitted, the entire resource is
+							included. The xpointer attribute must not be present when <code>parse="text"</code>
+						</span>
+						<code class="example">xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class])"</code>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">xi:fallback</h5>
+				<span>Optional alternative content to display in it's place if loading of the resource specified by the
+				parent element's <code>href</code> attribute fails. If loading fails, and no fallback has been specified,
+				a runtime error occurs.</span>
+			</li>
+		</ul>
+
+		<h5 class="tiny">Examples</h5>
+
+		<ul class="casual examples">
+			<li>
+				<a href="examples/xinclude/include-document.html">Including a document</a>
+			</li>
+			<li>
+				<a href="examples/xinclude/include-fragment.html">Including a document fragment</a>
+			</li>
+		</ul>
+
+	</body>
+</html>

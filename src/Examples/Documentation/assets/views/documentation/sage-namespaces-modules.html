@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>The modules namespace</title>
+	</head>
+	<body>
+
+		<h1>The modules namespace</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-namespaces-modules"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<code class="principal">http://www.cycle99.com/projects/sage/modules</code>
+
+		<p>
+			This namespace is used by <a href="url(sage-modules)">Sage modules</a>. Since modules may have almost any
+			structure, only the elements common to all of them are described here.
+		</p>
+
+		<h5 class="tiny">Elements</h5>
+		<ul class="casual separate reference">
+			<li>
+				<h5 class="casual">mod:config</h5>
+				<p>
+					This element defines any configuration for the module it applies to.
+				</p>
+			</li>
+			<li>
+				<h5 class="casual">mod:data</h5>
+				<p>
+					This element provides the data of the module it applies to.
+				</p>
+			</li>
+		</ul>
+
+		<h5 class="tiny">Examples</h5>
+
+		<ul class="casual separate reference examples">
+			<li>
+				<p>
+					Here the mod:config element is used to set options of the <code>BreadCrumb</code> module.
+				</p>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:BreadCrumb>
+								<mod:config>
+									<mod:current><sage:url ref="sage-namespaces-modules"/></mod:current>
+								</mod:config>
+							</mod:BreadCrumb>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+			</li>
+			<li>
+				<p>
+					Here too, the mod:config element is used to set options of the <code>SyntaxHighlighter</code> module.
+				</p>
+
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>xml</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											XmlNode|SageContext
+										</mod:group>
+									</mod:keywords>
+									<mod:code>
+
+										delegate XmlNode ProcessNode(XmlNode node, SageContext context);
+
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+			</li>
+			<li>
+				<p>
+					Here we provide both the mod:data (the markup that the <code>XmlTree</code> should render), as well as some
+					options about how it should render it, set in its <code>mod:config</code>.
+				</p>
+
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:XmlTree>
+								<mod:config>
+									<mod:toolbar>true</mod:toolbar>
+									<mod:wrap>false</mod:wrap>
+								</mod:config>
+								<mod:data>
+									<intl:dictionary lang="es">
+										<intl:phrase id="hello.world">¡Hola, mundo!</intl:phrase>
+									</intl:dictionary>
+								</mod:data>
+							</mod:XmlTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+			</li>
+		</ul>
+
+	</body>
+</html>

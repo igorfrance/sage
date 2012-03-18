@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>The Contextualization namespace</title>
+	</head>
+	<body>
+
+		<h1>The Contextualization namespace</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-namespaces-contextualization"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<code class="principal">http://www.cycle99.com/projects/sage/contextualization</code>
+
+		<p>
+			Provides elements that enable conditional rendering based on values in the current context.
+		</p>
+
+		<h5 class="tiny">Elements</h5>
+
+		<ul class="casual separate reference">
+			<li>
+				<h5 class="casual">context:value</h5>
+				<p>
+					Inserts a value of a property of the current <code>SageContext</code>.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@property</h6>
+						<p>
+							The name of a property in the current instance of <code>SageContext</code>. Possible values are:
+						</p>
+						<blockquote>
+							<ul>
+								<li>Application</li>
+								<li>ApplicationPath</li>
+								<li>BaseHref</li>
+								<li>Category</li>
+								<li>IsDeveloperRequest</li>
+								<li>Locale</li>
+								<li>PhysicalApplicationPath</li>
+								<li>Query</li>
+								<li>ReferrerUrl</li>
+								<li>RouteValues</li>
+								<li>Session</li>
+								<li>UserAgentID</li>
+								<li>UserAgentType</li>
+							</ul>
+						</blockquote>
+					</li>
+					<li>
+						<h6 class="casual">@key</h6>
+						<p>
+							If the property specified with the <code>property</code> attribute is a collection (Application, Session,
+							Query, RouteValues), this attribute specifies the key within this dictionary of the value that should
+							be displayed.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">context:switch</h5>
+				<p>
+					Creates a switch block (similar to <code>xsl:choose</code> element), where the same property is evaluated
+					for each child <code>context:case</code> element, and the contents of the first <code>context:case</code>
+					element that evaluates to true is rendered, excluding all other siblings.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@property</h6>
+						<p>
+							The name of a property in the current instance of <code>SageContext</code>. For the list of possible values,
+							see <code>context:value</code> element.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@key</h6>
+						<p>
+							If the property specified with the <code>property</code> attribute is a collection (Application, Session,
+							Query, RouteValues), this attribute specifies the key within this dictionary to which the switch applies.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">context:case</h5>
+				<p>
+					Defines a single possible match case within the switch it belongs to.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@test</h6>
+						<p>
+							The property value to test for. If the property value matches the value of this attribute, the block
+							content will be rendered, replacing the whole <code>context:switch</code> element.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">context:default</h5>
+				<p>
+					Defines the content to render when none of the sibling <code>context:case</code> elements evaluate to true.
+				</p>
+			</li>
+		</ul>
+
+	</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Creating a module without a back-end component</title>
+	</head>
+	<body>
+
+		<h1>Creating a module without a back-end component</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-modules-example1"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			A module needs to be registered in <a href="url(configuration-project)">project configuration file</a> before it
+			can be used. Let's look at configuration options, and build a new module from scratch. The module will fetch an
+			RSS feed from a URL we give it, and render nicely formatted results. The first step is to create the XSLT
+			stylesheet for it, and register the module in <code>Project.config</code>. We'll call our module
+			<code>RssReader</code>.
+		</p>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<configuration>
+						<!-- .... -->
+						<modules>
+							<module name="RssReader"/>
+						</modules>
+					</configuration>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+	</body>
+</html>

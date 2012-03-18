@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Input document</title>
+	</head>
+	<body>
+
+		<h1>Input document</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="xml-input-document"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p>
+			Even though views are typically written simply as plain XHTML, they are processed and wrapped with additional
+			XML by Sage before they are sent off for the final XSLT transform.
+		</p>
+
+		<h3 class="section">Plain XHTML document</h3>
+
+		<p class="sectionblock">
+			Consider this view, copied from one of the views in this documentation project:
+		</p>
+
+		<mod:XmlTree>
+			<mod:data>
+				<sage:literal>
+					<html
+						xmlns:sage="http://www.cycle99.com/projects/sage"
+						xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+						xmlns:xi="http://www.w3.org/2003/XInclude"
+						xmlns="http://www.w3.org/1999/xhtml">
+						<head>
+							<sage:basehref/>
+							<title>Sage license</title>
+						</head>
+						<body>
+							<h1>License</h1>
+							<mod:BreadCrumb>
+								<mod:config>
+									<mod:current><sage:url ref="sage-license"/></mod:current>
+								</mod:config>
+							</mod:BreadCrumb>
+							<pre>
+								<xi:include href="../../../license.txt" parse="text"/>
+							</pre>
+						</body>
+					</html>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<h3 class="section">Sage view wrapper</h3>
+
+		<p class="sectionblock">
+			The XHTML document from the previous example is then wrapped within a <i>context envelope</i>, and the actual XML
+			document that will be transformed by XSLT will look like this (use pluses to expand the tree):
+		</p>
+
+		<mod:XmlTree>
+			<mod:config>
+				<mod:expandLevels>3</mod:expandLevels>
+				<mod:wrap>false</mod:wrap>
+			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<sage:view controller="documentation" action="sage-license" xmlns:sage="http://www.cycle99.com/projects/sage">
+						<sage:request apppath="/" basehref="http://sage.local/" method="GET" localip="127.0.0.1" remoteip="127.0.0.1" category="default" locale="en" charset="latin" thread="634674332049710993" developer="1" debug="0">
+							<sage:path assetPath="/assets" sharedAssetPath="/assets" modulePath="/assets/lib/modules/"/>
+							<sage:address url="http://sage.local/documentation/sage-license?view=xml" servername="sage.local" servernamefull="http://sage.local" scriptname="/documentation/sage-license" scriptnamefull="/documentation/sage-license?view=xml" querystring="?view=xml"/>
+							<sage:useragent value="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2" name="Firefox" version="10.0" version.major="10" version.minor="0"/>
+							<sage:assembly version="1.0.4456.27058"/>
+							<sage:querystring view="xml"/>
+							<sage:cookies/>
+							<sage:dateTime date="15-03-2012" time="18:33:25" day="15" month="03" year="2012" hour="18" minute="33" second="25"/>
+						</sage:request>
+						<sage:response>
+							<sage:resources>
+								<site:navigation xmlns:site="http://sage.cycle99.com/">
+									<ul>
+										<li>
+											<a href="/documentation/index.html">Sage</a>
+											<ul class="documentation">
+												<li>
+													<span>Getting started</span>
+													<ul>
+														<li>
+															<a href="/documentation/sage-license.html">License</a>
+														</li>
+														<li>
+															<a href="/documentation/sage-obtaining.html">Obtaining</a>
+
+														</li>
+														<li>
+															<a href="/documentation/sage-building.html">Building</a>
+														</li>
+														<li>
+															<a href="/documentation/sage-libraries.html">Libraries used</a>
+														</li>
+														<li>
+															<span class="title">Installing</span>
+															<ul>
+																<li>
+																	<a href="/documentation/sage-installing-new.html">New project</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-installing-example.html">Example project</a>
+
+																</li>
+															</ul>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<a href="/documentation/xml-as-a-language.html">XML as a language</a>
+													<ul>
+														<li>
+															<a href="/documentation/xml-input-document.html">Input document</a>
+														</li>
+														<li>
+															<a href="/documentation/sage-modules.html">Modules</a>
+															<ul>
+																<li>
+																	<a href="/documentation/sage-modules-example1.html" data-shortTitle="Example1">Creating a module without a back-end component</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-modules-example2.html" data-shortTitle="Example2">Creating a module with a back-end component</a>
+																</li>
+															</ul>
+														</li>
+														<li>
+															<a href="/documentation/linking.html">Linking</a>
+														</li>
+														<li>
+															<a href="/documentation/sage-uri-schemes.html">Available URI schemes</a>
+														</li>
+														<li>
+															<a href="/documentation/sage-namespaces.html">Namespaces</a>
+															<ul>
+																<li>
+																	<a href="/documentation/sage-namespaces-xinclude.html">X-Include</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-namespaces-sage.html">Sage</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-namespaces-internationalization.html">Internationalization</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-namespaces-contextualization.html">Contextualization</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-namespaces-modules.html">Modules</a>
+																</li>
+																<li>
+																	<a href="/documentation/sage-namespaces-logic.html">Logic</a>
+																</li>
+															</ul>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<a href="/documentation/internationalization.html">Internationalization</a>
+													<ul>
+														<li>
+															<a href="/documentation/internationalization-phrases.html">Phrase substitution</a>
+														</li>
+														<li>
+															<a href="/documentation/internationalization-variables.html">Variable substitution</a>
+														</li>
+														<li>
+															<a href="/documentation/internationalization-conditionals.html">Conditional rendering</a>
+														</li>
+														<li>
+															<a href="/documentation/internationalization-fallback.html">Locale resolution</a>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<a href="/documentation/xml-flow.html">Document transform flow</a>
+													<ul>
+														<li>
+															<a href="/documentation/xml-flow-localize.html">1: Localize</a>
+														</li>
+														<li>
+															<a href="/documentation/xml-flow-copy-tree.html">2: Copy XML tree</a>
+														</li>
+														<li>
+															<a href="/documentation/xml-flow-expand-modules.html">3: Expand modules</a>
+														</li>
+														<li>
+															<a href="/documentation/xml-flow-xslt-transform.html">4: XSLT transform</a>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<span>Resources</span>
+													<ul>
+														<li>
+															<a href="/documentation/resource-libraries.html">Resource libraries</a>
+														</li>
+														<li>
+															<a href="/documentation/resource-processing-kelp.html">Merging scripts and styles</a>
+														</li>
+														<li>
+															<a href="/documentation/resource-processing-compression.html">Minifying scripts and styles</a>
+														</li>
+														<li>
+															<a href="/documentation/resource-processing-imaging.html">Image processing</a>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<a href="/documentation/extensibility.html">Extensibility</a>
+													<ul>
+														<li>
+															<a href="/documentation/extensibility-extensions.html">Extensions</a>
+														</li>
+														<li>
+															<a href="/documentation/extensibility-handlers.html">Node and text handlers</a>
+														</li>
+														<li>
+															<a href="/documentation/extensibility-xml-filters.html">View XML filters</a>
+														</li>
+														<li>
+															<a href="/documentation/extensibility-resource-providers.html">Resource providers</a>
+														</li>
+														<li>
+															<a href="/documentation/extensibility-url-resolvers.html">URL resolvers</a>
+														</li>
+														<li>
+															<a href="/documentation/extensibility-xslt-extensions.html">XSLT extension objects</a>
+															<ul>
+																<li>
+																	<a href="/documentation/xslt-extensions-basic.html">Basic</a>
+																</li>
+																<li>
+																	<a href="/documentation/xslt-extensions-io.html">IO</a>
+																</li>
+																<li>
+																	<a href="/documentation/xslt-extensions-set.html">Set</a>
+																</li>
+																<li>
+																	<a href="/documentation/xslt-extensions-string.html">String</a>
+																</li>
+															</ul>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<a href="/documentation/configuration.html">Configuration</a>
+													<ul>
+														<li>
+															<a href="/documentation/configuration-project.html">Project</a>
+														</li>
+														<li>
+															<a href="/documentation/configuration-rewriters.html">Rewriters</a>
+														</li>
+														<li>
+															<a href="/documentation/configuration-handlers.html">Handlers</a>
+														</li>
+														<li>
+															<a href="/documentation/configuration-compression.html">Compression</a>
+														</li>
+													</ul>
+												</li>
+												<li>
+													<span>Extensions</span>
+													<ul>
+														<li>
+															<a href="/documentation/extension-devtools.html">Developer tools</a>
+														</li>
+													</ul>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</site:navigation>
+								<sage:head>
+									<xhtml:link rel="icon" href="/favicon.ico" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/css/documentation.css" />
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon.js"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/breadcrumb/breadcrumb.css" />
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/developertoolbar/developertoolbar.css" />
+								</sage:head>
+								<sage:body>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/breadcrumb/breadcrumb.js"/>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.js"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.css" />
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/developertoolbar/developertoolbar.js"/>
+								</sage:body>
+							</sage:resources>
+							<sage:model>
+								<html>
+									<head>
+										<sage:basehref/>
+										<title>Sage license</title>
+									</head>
+									<body>
+										<h1>License</h1>
+										<mod:BreadCrumb id="module0" xmlns:mod="http://www.cycle99.com/projects/sage/modules">
+											<mod:config>
+												<mod:current>/documentation/sage-license.html</mod:current>
+											</mod:config>
+										</mod:BreadCrumb>
+										<pre>
+											Copyright 2012 Igor France
+
+											Licensed under the Apache License, Version 2.0 (the "License");
+											you may not use this file except in compliance with the License.
+											You may obtain a copy of the License at
+
+											http://www.apache.org/licenses/LICENSE-2.0
+
+											Unless required by applicable law or agreed to in writing, software
+											distributed under the License is distributed on an "AS IS" BASIS,
+											WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+											See the License for the specific language governing permissions and
+											limitations under the License.
+										</pre>
+										<mod:DeveloperToolbar>
+											<mod:data>
+												<mod:meta>
+													<mod:view name="xml">Serves the fully prepared, but not yet transformed, raw XML used for the controller view.</mod:view>
+													<mod:view name="xmlx">Provides a pretty-printed, collapsible view of the fully prepared, but not yet transformed, raw XML used for the controller view.</mod:view>
+													<mod:view name="htmlx">Provides a pretty-printed, collapsible view of the fully transformed, final HTML of the controller view.</mod:view>
+													<mod:view name="json">Provides a JSON view of the fully prepared, but not yet transformed XML used for the controller view. Experimental.</mod:view>
+												</mod:meta>
+											</mod:data>
+										</mod:DeveloperToolbar>
+									</body>
+								</html>
+							</sage:model>
+						</sage:response>
+					</sage:view>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<p>
+			The structure of each view will be the same, but the content will be different with each request. This dynamically
+			generated view document contains information about the current request; date and time, address, querystring and form date,
+			cookies, client information and more, as well as data specific to this view; the XHTML view that was used (within
+			<code>sage:model</code> element) and referenced view resources (for breadcrumb and developer toolbar modules in this
+			case).
+		</p>
+
+		<br class="spacer"/>
+
+	</body>
+</html>

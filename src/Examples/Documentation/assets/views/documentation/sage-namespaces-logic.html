@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>The Logic namespace</title>
+	</head>
+	<body>
+
+		<h1>The Logic namespace</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-namespaces-logic"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<code class="principal">http://www.cycle99.com/projects/sage/logic</code>
+
+		<p>
+			Referencing this module enables you to define and use your own custom conditions for rendering markup blocks.
+			The implementation is strictly XSLT-based, and the extensions you write must also be written in XSLT.
+		</p>
+
+		<p>
+			The way it works is similar to conditional rendering described in
+			<a href="url(sage-namespaces-contextualization)">contextualization</a>, but whereas with contextualization you can
+			only work with properties of the current <code>SageContext</code>, here you work with data in the current input
+			XML document, and the logic you can create is extendable and can be much more complex.
+		</p>
+
+		<h3 class="section">Elements</h3>
+		<ul class="casual separate reference">
+			<li>
+				<h5 class="casual">logic:conditions</h5>
+				<p>
+					Provides a condition definition block. It can be placed anywhere in your document, the only direct child
+					allowed are <code>logic:condition</code> elements.
+				</p>
+			</li>
+			<li>
+				<h5 class="casual">logic:condition</h5>
+				<p>
+					Defines a single condition. There are a number of predefined conditions
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual separate">
+					<li>
+						<h6 class="casual">@object</h6>
+						<p>
+							Specifies the object to look in. The 'object' is actually an XML element. There is a number of predefined
+							objects supported out of the box:
+						</p>
+						<blockquote>
+							<ul>
+								<li><code>useragent</code>, selects <code>/sage:view/sage:request/sage:useragent</code></li>
+								<li><code>querystring</code>, selects <code>/sage:view/sage:request/sage:querystring</code></li>
+								<li><code>cookie</code>, selects <code>/sage:view/sage:request/sage:cookie</code></li>
+								<li><code>address</code>, selects <code>/sage:view/sage:request/sage:address</code></li>
+								<li><code>dateTime</code>, selects <code>/sage:view/sage:request/sage:dateTime</code></li>
+							</ul>
+						</blockquote>
+					</li>
+					<li>
+						<h6 class="casual">@property</h6>
+						<p>
+							Specifies the property of <code>@object</code> to select. The 'property' is actually an attribute of the
+							XML element selected with <code>@object</code>.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@equals</h6>
+						<p>
+							Indicates that the selected value should equal the value of this condition.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@not</h6>
+						<p>
+							Indicates that the selected value should not equal the value of this condition.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@count</h6>
+						<p>
+							Indicates that the count of elements selected by this condition should be equal to the value of this condition.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@greaterThan</h6>
+						<p>
+							Indicates that the selected value should be greater than the value of this condition.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@greaterThenOrEqual</h6>
+						<p>
+							Indicates that the selected value should be greater than or equal to the value of this condition.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@lessThan</h6>
+						<p>
+							Indicates that the selected value should be less than the value of this condition.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@lessThanOrEqual</h6>
+						<p>
+							Indicates that the selected value should be less than or equal to the value of this condition.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">logic:and</h5>
+				<p>
+					Groups one or more conditions into a logical AND switch.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual separate">
+					<li>
+						<h6 class="casual">@id</h6>
+						<p>
+							Specifies the id of the switch.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@ref</h6>
+						<p>
+							Specifies id of another switch.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">logic:or</h5>
+				<p>
+					Groups one or more conditions into a logical OR switch.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual separate">
+					<li>
+						<h6 class="casual">@id</h6>
+						<p>
+							Specifies the id of the switch.
+						</p>
+					</li>
+					<li>
+						<h6 class="casual">@ref</h6>
+						<p>
+							Specifies id of another switch.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">logic:switch</h5>
+				<p>
+					Provides a logical branch, similar to <code>xsl:choose</code>.
+				</p>
+			</li>
+			<li>
+				<h5 class="casual">logic:case</h5>
+				<p>
+					Defines a single possible match case within the switch it belongs to.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual separate">
+					<li>
+						<h6 class="casual">@when</h6>
+						<p>
+							Specifies the <code>id</code> of the <code>logic:and</code> or <code>logic:or</code> element this
+							case refers to. If that element's conditions evaluate to <code>true</code>, the content of this element
+							will be rendered.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">logic:default</h5>
+				<p>
+					Defines the content to render when none of the sibling <code>logic:case</code> elements evaluate to true.
+				</p>
+			</li>
+		</ul>
+
+
+	</body>
+</html>

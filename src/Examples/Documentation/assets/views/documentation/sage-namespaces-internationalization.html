@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>The Internationalization namespace</title>
+	</head>
+	<body>
+
+		<h1>The Internationalization namespace</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="sage-namespaces-internationalization"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<code class="principal">http://www.cycle99.com/projects/sage/internationalization</code>
+
+		<p>
+			Provides internationalization-related elements and attributes. Read more about
+			<a href="url(internationalization)">internationalization</a>.
+		</p>
+
+		<h5 class="tiny">Elements</h5>
+
+		<ul class="casual separate reference">
+			<li>
+				<h5 class="casual">intl:dictionary</h5>
+				This element is the root element of a language dictionary, which is also the only place where this element is
+				and can be used. It can only contain <code>intl:phrase[@id]</code> elements as first-level children.
+			</li>
+			<li>
+				<h5 class="casual">intl:phrase[@id]</h5>
+				This element defines a phrase. It's content can be any text and/or markup, as well as references
+				to other phrases (<code>intl:phrase[@ref]</code> elements). Typically however, the content will mainly be
+				plain text.
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@id</h6>
+						<span>
+							Specifies the <code>id</code> of the phrase. This attribute is required, and it must be unique (no other
+							<code>intl:phrase</code> element in the same document can have the same id).
+						</span>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">intl:variables</h5>
+				<p>
+					This element is the container for variable definitions. It can be placed in any document where different
+					values are needed for different locales. It can only contain <code>intl:variable[@id]</code> elements as
+					first-level children.
+				</p>
+			</li>
+			<li>
+				<h5 class="casual">intl:variable[@id]</h5>
+				<p>
+					This element defines a variable. It can only contain <code>intl:value</code> elements as
+					first-level children.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@id</h6>
+						<span>
+							Specifies the <code>id</code> of the variable. This attribute is required, and it must be unique (no other
+							<code>intl:variable</code> element in the same document can have the same id).
+						</span>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">intl:value</h5>
+				<p>
+					This element is used within <code>intl:variable[@id]</code> elements to defines a locale-specific variable value.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@for</h6>
+						<span>
+							Specifies the locale for this value. This can be either one of the locales defined in Project.config, or
+							a string <code>'default'</code>, which indicates that the value if for other locale not more specifically
+							defined in the same variable.
+						</span>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">intl:phrase[@ref]</h5>
+				<p>
+					This element reference a phrase. The value of the <code>ref</code> attribute is the id of the phrase defined in
+					the language dictionary. It causes the content of that phrase to be rendered in it's place, replacing the element.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@ref</h6>
+						<p>
+							Specifies the id of the phrase to render in place of this element.
+						</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">intl:variable[@ref]</h5>
+				<p>
+					This element reference a variable. The value of the <code>ref</code> attribute is the id of the variable defined
+					earlier. It causes the content of that variable to be rendered in it's place, replacing the element.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@ref</h6>
+						<p>
+							Specifies the id of the variable to render in place of this element.
+						</p>
+					</li>
+				</ul>
+			</li>
+		</ul>
+
+		<h5 class="tiny">Attributes</h5>
+
+		<ul class="casual separate reference attributes">
+			<li>
+				<h5 class="casual">@intl:locale</h5>
+				<p>
+					Can be attached to any element (with the exception if <a href="url(sage-namespaces-xinclude)">xi:include element</a>)
+					to signify that if should appear only in the comma-separated list of locales that the attribute specifies, or
+					if <code>not()</code> is used, in any locale BUT the comma-separated list specified by it.
+				</p>
+				<p>
+					For example:
+					<code class="example">
+						&lt;p intl:locale="de,es,fr"&gt;....&lt;/p&gt;
+					</code>
+					or:
+					<code class="example">
+						&lt;p intl:locale="not(jp,kr)"&gt;....&lt;/p&gt;
+					</code>
+				</p>
+			</li>
+		</ul>
+
+	</body>
+</html>
