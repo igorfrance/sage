@@ -29,6 +29,7 @@ namespace Sage.XsltExtensions
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
 
+	using log4net;
 	using Sage.Extensibility;
 
 	/// <summary>
@@ -39,6 +40,8 @@ namespace Sage.XsltExtensions
 		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class String
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(Sage.XsltExtensions.String).FullName);
+
 		/// <summary>
 		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
 		/// </summary>
@@ -126,7 +129,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string replace(string value, string expression, string replacement)
 		{
-			if (string.IsNullOrEmpty(value))
+			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(expression))
 				return value;
 
 			try
@@ -138,6 +141,48 @@ namespace Sage.XsltExtensions
 			{
 				return ex.Message;
 			}
+		}
+
+		/// <summary>
+		/// Returns a value indicating whether the specified <paramref name="value"/> matches the specified regular
+		/// <paramref name="expression"/> string.
+		/// </summary>
+		/// <param name="value">The value to check.</param>
+		/// <param name="expression">The expression to look for.</param>
+		/// <returns><c>true</c> if the specified <paramref name="value"/> matches the specified <paramref name="expression"/>; otherwise <c>false</c>.</returns>
+		public bool matches(string value, string expression)
+		{
+			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(expression))
+				return false;
+
+			try
+			{
+				Regex expr = new Regex(expression);
+				return expr.Match(value).Success;
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Error evaluating '{0}' as regular expression on '{1}': {2}", expression, value, ex.Message);
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Returns a value indicating whether the specified <paramref name="value"/> exists in the specified
+		/// <paramref name="subject"/>.
+		/// </summary>
+		/// <param name="subject">The string to search.</param>
+		/// <param name="value">The value to look for.</param>
+		/// <returns>
+		/// <c>true</c> if the specified <paramref name="value"/> exists in the specified <paramref name="subject"/>; 
+		/// otherwise, <c>false</c>.
+		/// </returns>
+		public bool contains(string subject, string value)
+		{
+			if (string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(value))
+				return false;
+
+			return subject.Contains(value);
 		}
 	}
 }
