@@ -8,6 +8,7 @@ log/
 *.resharper
 *.Resharper
 Sage.Local.sln
+_target
 
 /releases
 /sage.local.build
@@ -15,3 +16,8 @@ Sage.Local.sln
 /src/Examples/Documentation/extensions
 
 /src/Sage.Local.sln.DotSettings
+/src/Examples/Documentation/assets/lib/modules/xmltree
+/src/Examples/Documentation/assets/lib/modules/developertoolbar
+/src/Examples/Documentation/assets/lib/modules/logviewer
+/src/Examples/Documentation/assets/lib/modules/syntaxhighlighter
+/src/Examples/Documentation/assets/lib/modules/viewinspector

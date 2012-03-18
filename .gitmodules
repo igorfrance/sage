@@ -1,3 +1,6 @@
+[submodule "src/Examples/Documentation/assets/lib/scripts/aeon"]
+	path = src/Examples/Documentation/assets/lib/scripts/aeon
+	url = git@github.com:igorfrance/Aeon.git
 [submodule "src/Extensions/DevTools/assets/lib/scripts/aeon"]
 	path = src/Extensions/DevTools/assets/lib/scripts/aeon
 	url = git@github.com:igorfrance/Aeon.git
