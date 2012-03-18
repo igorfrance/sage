@@ -30,6 +30,8 @@ namespace Sage.Controllers
 	using System.Web;
 	using System.Web.Mvc;
 
+	using log4net;
+
 	/// <summary>
 	/// Indicates that an action can be cached for a certain duration.
 	/// </summary>
@@ -49,6 +51,8 @@ namespace Sage.Controllers
 		/// </summary>
 		public const int MaxDifferenceCachedDate = 2;
 
+		private static readonly ILog log = LogManager.GetLogger(typeof(CacheableAttribute).FullName);
+
 		private TimeSpan? duration;
 
 		/// <summary>
@@ -58,6 +62,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalSeconds;
 			}
 
@@ -74,6 +81,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalMinutes;
 			}
 
@@ -90,6 +100,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalHours;
 			}
 
@@ -106,6 +119,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalDays;
 			}
 
@@ -122,6 +138,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalDays / 7;
 			}
 
@@ -138,6 +157,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalDays / 30;
 			}
 
@@ -154,6 +176,9 @@ namespace Sage.Controllers
 		{
 			get
 			{
+				if (duration == null)
+					return 0;
+
 				return duration.Value.TotalDays / 365;
 			}
 
@@ -178,21 +203,25 @@ namespace Sage.Controllers
 			if (isCachedRequest)
 			{
 				DateTime cachedDate = DateTime.Parse(context.Request.Headers["If-Modified-Since"]);
-				bool fileChanged = true;
+				bool changed;
 
 				if (this.duration != null)
 				{
 					TimeSpan elapsed = DateTime.Now - cachedDate;
-					fileChanged = elapsed > duration.Value;
+					changed = elapsed > duration.Value;
 				}
 				else
 				{
 					TimeSpan elapsed = lastModified.Value - cachedDate;
-					fileChanged = elapsed.TotalSeconds > MaxDifferenceCachedDate;
+					changed = elapsed.TotalSeconds > MaxDifferenceCachedDate;
 				}
 
-				if (!fileChanged)
+				if (!changed)
 				{
+					log.DebugFormat("Cache date {0} is not older than {1}d {2}h {3}m {4}s, status: not-modified. Action method will not execute",
+						cachedDate.ToString("dd-MMM-yyyy hh:mm:ss"),
+						Days, Hours, Minutes, Seconds);
+
 					var response = context.Response;
 					response.StatusCode = (int) HttpStatusCode.NotModified;
 					response.StatusDescription = "Not Modified";
