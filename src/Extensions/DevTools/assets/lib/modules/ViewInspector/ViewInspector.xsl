@@ -3,12 +3,11 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
 	xmlns:sage="http://www.cycle99.com/projects/sage"
-	xmlns:regexp="http://www.cycle99.com/projects/sage/xslt/extensions/regexp"
 	xmlns:string="http://www.cycle99.com/projects/sage/xslt/extensions/string"
-	xmlns:math="http://www.cycle99.com/projects/sage/xslt/extensions/math"
+	xmlns:basic="http://www.cycle99.com/projects/sage/xslt/extensions/basic"
 	xmlns="http://www.w3.org/1999/xhtml"
 
-	exclude-result-prefixes="mod sage regexp string math">
+	exclude-result-prefixes="mod sage string basic">
 
 	<xsl:template match="mod:ViewInspector">
 		<xsl:param name="config" select="mod:config"/>
@@ -17,10 +16,10 @@
 		</xsl:variable>
 
 		<xsl:variable name="cookies" select="/sage:view/sage:request/sage:cookies"/>
-		<xsl:variable name="orientation" select="math:isnull($cookies/@dev.viewinspector.orientation, 'horizontal')"/>
-		<xsl:variable name="layout" select="math:isnull($cookies/@dev.viewinspector.layout, 'single')"/>
-		<xsl:variable name="framewidth" select="math:isnull($cookies/@dev.viewinspector.fw, 70)"/>
-		<xsl:variable name="frameheight" select="math:isnull($cookies/@dev.viewinspector.fw, 70)"/>
+		<xsl:variable name="orientation" select="basic:isnull($cookies/@dev.viewinspector.orientation, 'horizontal')"/>
+		<xsl:variable name="layout" select="basic:isnull($cookies/@dev.viewinspector.layout, 'single')"/>
+		<xsl:variable name="framewidth" select="basic:isnull($cookies/@dev.viewinspector.fw, 70)"/>
+		<xsl:variable name="frameheight" select="basic:isnull($cookies/@dev.viewinspector.fw, 70)"/>
 
 		<div class="view-inspector {$orientation} {$layout}" data-view="{$path}" data-basehref="{/sage:view/sage:request/@basehref}">
 			<xsl:apply-templates select="$config/mod:id" mode="attribute"/>
@@ -59,7 +58,7 @@
 						</div>
 					</div>
 					<div class="toolbar right">
-						<div class="button toggle {math:iif($layout='double', 'active', '')}"
+						<div class="button toggle {basic:iif($layout='double', 'active', '')}"
 							title="Toggle the tool frame" data-command="toggleFrame"></div>
 					</div>
 				</div>
