@@ -2,10 +2,10 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:sage="http://www.cycle99.com/projects/sage"
-	xmlns:math="http://www.cycle99.com/projects/sage/xslt/extensions/math"
+	xmlns:basic="http://www.cycle99.com/projects/sage/xslt/extensions/basic"
 	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
 	xmlns="http://www.w3.org/1999/xhtml"
-	exclude-result-prefixes="sage mod math">
+	exclude-result-prefixes="sage mod basic">
 
 	<xsl:template match="mod:XmlTree">
 		<xsl:param name="config" select="mod:config"/>
@@ -167,7 +167,7 @@
 
 	<xsl:template match="*[text() and not (comment() or processing-instruction())]" mode="xmltree">
 		<xsl:param name="level" select="1"/>
-		<xsl:variable name="wrapIndex" select="math:isnull(ancestor::mod:XmlTree/mod:config/mod:wrapChars, 90)"/>
+		<xsl:variable name="wrapIndex" select="basic:isnull(ancestor::mod:XmlTree/mod:config/mod:wrapChars, 90)"/>
 		<xsl:variable name="collapsible" select="string-length(text()) > 110"/>
 		<div>
 			<xsl:apply-templates select="." mode="xhighlightclass"/>

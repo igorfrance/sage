@@ -1,10 +1,10 @@
 ﻿.xmltree,
 .xmltree pre
-	{ font: 11pt Consolas; }
+	{ font: 10pt Consolas; }
 .xmltree *
 	{ text-align: left; }
 .xmltree .xmlroot
-	{ white-space: nowrap; padding: 10px 0; }
+	{ white-space: nowrap; }
 .xmltree .toolbar
 	{ font-size: 10px; padding: 4px 7px; overflow: hidden; background: #F5F5F5; border-radius: 4px; }
 .xmltree .toolbar a
@@ -107,7 +107,7 @@
 .xmltree.highlight .switch,
 .xmltree.highlight .nodeName,
 .xmltree.highlight .attrName
-	{ color: #ff8484; }
+	{ color: #ffb0b0; }
 
 
 .xmltree.highlight .highlighted > .switch,
@@ -115,7 +115,7 @@
 .xmltree.highlight .highlighted > .attribute .attrName,
 .xmltree.highlight .highlighted > .children > .close .nodeName,
 .xmltree.highlight .highlighted > .attrName
-	{ color: #CC0000 !important; }
+	{ color: #CC0000 !important; font-weight: bold; }
 .xmltree.highlight .highlighted > .markup,
 .xmltree.highlight .highlighted > .children > .close .markup,
 .xmltree.highlight .highlighted > .attribute .markup,
