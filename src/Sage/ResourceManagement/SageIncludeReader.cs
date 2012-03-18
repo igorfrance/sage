@@ -52,18 +52,10 @@ namespace Sage.ResourceManagement
 		/// <inheritdoc/>
 		public override bool Read()
 		{
-			if (this.NodeType == XmlNodeType.Element)
-			{
-				if (this.Name == "sage:literal")
-				{
-					this.processIncludes = this.NodeType == XmlNodeType.EndElement;
-				}
-			}
+			if (this.Name == "sage:literal")
+				this.processIncludes = this.NodeType == XmlNodeType.EndElement;
 
-			if (this.processIncludes)
-				return base.Read();
-
-			return wrapped.Read();
+			return this.processIncludes ? base.Read() : this.wrapped.Read();
 		}
 	}
 }
