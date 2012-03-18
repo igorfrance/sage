@@ -112,7 +112,10 @@ namespace Sage
 					problem = new ProblemInfo(ProblemType.IncludeSyntaxError, path);
 			}
 
-			return new SageHelpException(problem);
+			var result = new SageHelpException(problem);
+			result.Exception = ex;
+
+			return result;
 		}
 
 		/// <inheritdoc/>

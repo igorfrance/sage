@@ -72,7 +72,7 @@ namespace Sage
 		/// <summary>
 		/// Gets the actual exception that occured.
 		/// </summary>
-		public virtual Exception Exception { get; private set; }
+		public virtual Exception Exception { get; protected set; }
 
 		/// <summary>
 		/// Renders the exception to the specified <paramref name="writer"/>
