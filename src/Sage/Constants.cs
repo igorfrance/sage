@@ -28,6 +28,27 @@ namespace Sage
 	using System.Xml;
 
 	/// <summary>
+	/// Defines the user agent types.
+	/// </summary>
+	public enum UserAgentType
+	{
+		/// <summary>
+		/// Represents no user agent.
+		/// </summary>
+		None = 0,
+
+		/// <summary>
+		/// Signifies a web browser, such as Mozilla Firefox.
+		/// </summary>
+		Browser,
+
+		/// <summary>
+		/// Signifies a crawler, such as Googlebot.
+		/// </summary>
+		Crawler,
+	}
+
+	/// <summary>
 	/// Defines the compare types.
 	/// </summary>
 	public enum CompareType
@@ -454,6 +475,7 @@ namespace Sage
 							tempManager.AddNamespace(XHtmlPrefix, XHtmlNamespace);
 							tempManager.AddNamespace(XIncludePrefix, XIncludeNamespace);
 							tempManager.AddNamespace(XslPrefix, XslNamespace);
+							tempManager.AddNamespace("msxsl", "urn:schemas-microsoft-com:xslt");
 
 							nsman = tempManager;
 						}
@@ -477,12 +499,12 @@ namespace Sage
 			/// <summary>
 			/// Defines the namespace for the Regexp extensions.
 			/// </summary>
-			public const string Regexp = "http://www.cycle99.com/projects/sage/xslt/extensions/regexp";
+			public const string Regex = "http://www.cycle99.com/projects/sage/xslt/extensions/regex";
 
 			/// <summary>
-			/// Defines the namespace for the Math extensions.
+			/// Defines the namespace for the Basic extensions.
 			/// </summary>
-			public const string Math = "http://www.cycle99.com/projects/sage/xslt/extensions/math";
+			public const string Basic = "http://www.cycle99.com/projects/sage/xslt/extensions/basic";
 
 			/// <summary>
 			/// Defines the namespace for the String extensions.

@@ -31,7 +31,6 @@ namespace Sage
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Reflection;
-	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Hosting;
 	using System.Web.Mvc;
@@ -71,7 +70,6 @@ namespace Sage
 			new Dictionary<string, CategoryConfiguration>();
 
 		private readonly Func<string, string> pathMapper;
-		private readonly Dictionary<string, object> customData = new Dictionary<string, object>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
@@ -232,6 +230,9 @@ namespace Sage
 				this.ApplicationPath = httpContext.Request.ApplicationPath;
 				this.PhysicalApplicationPath = httpContext.Request.PhysicalApplicationPath;
 				this.UserAgentID = httpContext.Request.Browser.Type.ToLower();
+				this.UserAgentType = httpContext.Request.Browser.Crawler
+					? UserAgentType.Crawler
+					: UserAgentType.Browser;
 			}
 
 			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
@@ -260,17 +261,6 @@ namespace Sage
 			get
 			{
 				return this.HttpContext.Application;
-			}
-		}
-
-		/// <summary>
-		/// Gets the custom data.
-		/// </summary>
-		public Dictionary<string, object> CustomData
-		{
-			get
-			{
-				return this.customData;
 			}
 		}
 
@@ -308,18 +298,23 @@ namespace Sage
 		public string UserAgentID { get; private set; }
 
 		/// <summary>
+		/// Gets the type of the current user agent.
+		/// </summary>
+		public UserAgentType UserAgentType { get; private set; }
+
+		/// <summary>
 		/// Gets the current <see cref="Cache"/>.
 		/// </summary>
 		/// <value>The cache.</value>
 		public CacheWrapper Cache { get; private set; }
 
 		/// <summary>
-		/// Gets the route.
+		/// Gets the current route.
 		/// </summary>
 		public RouteBase Route { get; private set; }
 
 		/// <summary>
-		/// Gets the route values.
+		/// Gets the collection of current route's route values.
 		/// </summary>
 		public NameValueCollection RouteValues { get; private set; }
 
@@ -530,7 +525,7 @@ namespace Sage
 
 			resultElement.SetAttribute("category", this.Category);
 			resultElement.SetAttribute("locale", this.Locale);
-			resultElement.SetAttribute("latin", ProjectConfiguration.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
+			resultElement.SetAttribute("charset", ProjectConfiguration.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
 			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
 			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugMode ? "1" : "0");
