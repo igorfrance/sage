@@ -30,8 +30,6 @@ namespace Sage.Views
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
-	using Kelp.Extensions;
-
 	using log4net;
 	using Sage.Configuration;
 	using Sage.Controllers;
@@ -42,10 +40,9 @@ namespace Sage.Views
 	/// </summary>
 	public class ViewConfiguration
 	{
-		/// <summary>
-		/// Formatter string for creating the module Id
-		/// </summary>
 		internal const string ModuleIdPattern = "module{0}";
+		internal const string ModuleSelectPattern = ".//mod:{0}[not(ancestor::sage:literal)]";
+
 		private readonly XmlElement configElement;
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewConfiguration).FullName);
 		private static string moduleSelectXPath;
@@ -87,22 +84,23 @@ namespace Sage.Views
 		}
 
 		/// <summary>
-		/// Gets the name.
+		/// Gets the name name of the action associated with this view configuration.
 		/// </summary>
 		public string Name { get; private set; }
 
 		/// <summary>
-		/// Gets the info.
+		/// Gets the object that provides file system information and access to the source document and XSLT template of this
+		/// view configuration.
 		/// </summary>
 		public ViewInfo Info { get; private set; }
 
 		/// <summary>
-		/// Gets the controller.
+		/// Gets the controller that this view configuration is being used by.
 		/// </summary>
 		public SageController Controller { get; private set; }
 
 		/// <summary>
-		/// Gets the context.
+		/// Gets the current context.
 		/// </summary>
 		public SageContext Context
 		{
@@ -113,7 +111,7 @@ namespace Sage.Views
 		}
 
 		/// <summary>
-		/// Gets the configuration element.
+		/// Gets the root element of this view configuration.
 		/// </summary>
 		public XmlElement ConfigurationElement
 		{
@@ -136,7 +134,7 @@ namespace Sage.Views
 							List<string> parts = new List<string>();
 							foreach (string name in SageModuleFactory.Modules.Keys)
 							{
-								parts.Add(string.Format(".//mod:{0}", name));
+								parts.Add(string.Format(ModuleSelectPattern, name));
 							}
 
 							moduleSelectXPath = string.Join("|", parts);
