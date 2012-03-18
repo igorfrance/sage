@@ -17,7 +17,7 @@
 			<xsl:element name="{name()}" namespace="{namespace-uri()}">
 				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/projects/sage/logic']"/>
 				<xsl:apply-templates select="node()"/>
-			</xsl:element>			
+			</xsl:element>
 		</xsl:if>
 	</xsl:template>
 
@@ -29,21 +29,21 @@
 			<xsl:element name="{name()}" namespace="{namespace-uri()}">
 				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/projects/sage/logic']"/>
 				<xsl:apply-templates select="node()"/>
-			</xsl:element>			
+			</xsl:element>
 		</xsl:if>
 	</xsl:template>
-	
+
 	<xsl:template match="logic:switch">
 		<xsl:variable name="index">
-			<xsl:call-template name="choose">
+			<xsl:apply-templates select="logic:switch" mode="choose">
 				<xsl:with-param name="selection" select="*"/>
 				<xsl:with-param name="position" select="1"/>
-			</xsl:call-template>
+			</xsl:apply-templates>
 		</xsl:variable>
 		<xsl:apply-templates select="*[number($index)]/node()"/>
 	</xsl:template>
 
-	<xsl:template name="choose">
+	<xsl:template match="logic:switch" mode="choose">
 		<xsl:param name="selection"/>
 		<xsl:param name="position"/>
 
@@ -60,16 +60,146 @@
 						<xsl:value-of select="$position"/>
 					</xsl:when>
 					<xsl:when test="$position &lt; count($selection)">
-						<xsl:call-template name="choose">
+						<xsl:apply-templates select="." mode="choose">
 							<xsl:with-param name="selection" select="*"/>
 							<xsl:with-param name="position" select="$position + 1"/>
-						</xsl:call-template>
+						</xsl:apply-templates>
 					</xsl:when>
 					<xsl:otherwise>-1</xsl:otherwise>
 				</xsl:choose>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+
+	<xsl:template match="logic:and" mode="isTrue">
+		<xsl:variable name="result">
+			<xsl:apply-templates select="logic:condition" mode="isTrue"/>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="contains($result, '0')">0</xsl:when>
+			<xsl:otherwise>1</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="logic:or" mode="isTrue">
+		<xsl:variable name="result">
+			<xsl:apply-templates select="*" mode="isTrue"/>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="contains($result, '1')">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="logic:or[@ref] | logic:and[@ref]" mode="isTrue">
+		<xsl:apply-templates select="@ref" mode="isTrue"/>
+	</xsl:template>
+
+	<xsl:template match="logic:condition[@object='useragent']" mode="isTrue">
+		<xsl:apply-templates select="@*" mode="evaluate">
+			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:useragent/@*[name() = current()/@property]"/>
+		</xsl:apply-templates>
+	</xsl:template>
+
+	<xsl:template match="logic:condition[@object='querystring']" mode="isTrue">
+		<xsl:apply-templates select="@*" mode="evaluate">
+			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:querystring/@*[name() = current()/@property]"/>
+		</xsl:apply-templates>
+	</xsl:template>
+
+	<xsl:template match="logic:condition[@object='cookie']" mode="isTrue">
+		<xsl:apply-templates select="@*" mode="evaluate">
+			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:cookie/@*[name() = current()/@property]"/>
+		</xsl:apply-templates>
+	</xsl:template>
+
+	<xsl:template match="logic:condition[@object='address']" mode="isTrue">
+		<xsl:apply-templates select="@*" mode="evaluate">
+			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:address/@*[name() = current()/@property]"/>
+		</xsl:apply-templates>
+	</xsl:template>
+
+	<xsl:template match="logic:condition[@object='dateTime']" mode="isTrue">
+		<xsl:apply-templates select="@*" mode="evaluate">
+			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:dateTime/@*[name() = current()/@property]"/>
+		</xsl:apply-templates>
+	</xsl:template>
+
+	<xsl:template match="logic:condition" mode="isTrue">
+		<xsl:param name="selection"/>
+		<xsl:apply-templates select="@*" mode="evaluate">
+			<xsl:with-param name="selection" select="$selection"/>
+		</xsl:apply-templates>
+	</xsl:template>
+
+	<xsl:template match="@equals" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="$selection = .">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@not" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="$selection != .">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@count" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="starts-with(., 'not(')">
+				<xsl:variable name="value" select="substring(., 5, string-length(.) - 5)"/>
+				<xsl:choose>
+					<xsl:when test="count($selection) != $value">1</xsl:when>
+					<xsl:otherwise>0</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:choose>
+					<xsl:when test="count($selection) = .">1</xsl:when>
+					<xsl:otherwise>0</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@greaterThan" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="$selection > .">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@greaterThanOrEqual" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="$selection >= .">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@lessThan" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="$selection &lt; .">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@lessThanOrEqual" mode="evaluate">
+		<xsl:param name="selection"/>
+		<xsl:choose>
+			<xsl:when test="$selection &lt;= .">1</xsl:when>
+			<xsl:otherwise>0</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="@*" mode="evaluate"/>
 
 	<xsl:template match="@when | @ref | @logic:if | @logic:ifnot" mode="isTrue">
 		<xsl:variable name="conditions" select="//logic:conditions/logic:and | //logic:conditions/logic:or"/>
@@ -111,136 +241,4 @@ Current document contains these logical definition elements:
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="logic:and" mode="isTrue">
-		<xsl:variable name="result">
-			<xsl:apply-templates select="logic:condition" mode="isTrue"/>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="contains($result, '0')">0</xsl:when>
-			<xsl:otherwise>1</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="logic:or" mode="isTrue">
-		<xsl:variable name="result">
-			<xsl:apply-templates select="*" mode="isTrue"/>
-		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="contains($result, '1')">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="logic:or[@ref] | logic:and[@ref]" mode="isTrue">
-		<xsl:apply-templates select="@ref" mode="isTrue"/>
-	</xsl:template>
-
-	<xsl:template match="logic:condition[@object='useragent']" mode="isTrue">
-		<xsl:apply-templates select="@*" mode="evaluate">
-			<xsl:with-param name="selection" select="//sage:useragent/@*[name() = current()/@property]"/>
-		</xsl:apply-templates>
-	</xsl:template>
-
-	<xsl:template match="logic:condition[@object='querystring']" mode="isTrue">
-		<xsl:apply-templates select="@*" mode="evaluate">
-			<xsl:with-param name="selection" select="//sage:querystring/@*[name() = current()/@property]"/>
-		</xsl:apply-templates>
-	</xsl:template>
-
-	<xsl:template match="logic:condition[@object='cookie']" mode="isTrue">
-		<xsl:apply-templates select="@*" mode="evaluate">
-			<xsl:with-param name="selection" select="//sage:cookie/@*[name() = current()/@property]"/>
-		</xsl:apply-templates>
-	</xsl:template>
-
-	<xsl:template match="logic:condition[@object='address']" mode="isTrue">
-		<xsl:apply-templates select="@*" mode="evaluate">
-			<xsl:with-param name="selection" select="//sage:address/@*[name() = current()/@property]"/>
-		</xsl:apply-templates>
-	</xsl:template>
-
-	<xsl:template match="logic:condition[@object='dateTime']" mode="isTrue">
-		<xsl:apply-templates select="@*" mode="evaluate">
-			<xsl:with-param name="selection" select="//sage:dateTime/@*[name() = current()/@property]"/>
-		</xsl:apply-templates>
-	</xsl:template>
-
-	<xsl:template match="logic:condition" mode="isTrue">
-		<xsl:param name="selection"/>
-		<xsl:apply-templates select="@*" mode="evaluate">
-			<xsl:with-param name="selection" select="$selection"/>
-		</xsl:apply-templates>
-	</xsl:template>
-
-	<xsl:template match="@*" mode="evaluate"/>
-	
-	<xsl:template match="@equals" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="$selection = .">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="@not" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="$selection != .">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-	
-	<xsl:template match="@count" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="starts-with(., 'not(')">
-				<xsl:variable name="value" select="substring(., 5, string-length(.) - 5)"/>
-				<xsl:choose>
-					<xsl:when test="count($selection) != $value">1</xsl:when>
-					<xsl:otherwise>0</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:choose>
-					<xsl:when test="count($selection) = .">1</xsl:when>
-					<xsl:otherwise>0</xsl:otherwise>
-				</xsl:choose>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="@greaterThan" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="$selection > .">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="@greaterThenOrEqual" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="$selection >= .">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="@lessThan" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="$selection &lt; .">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="@lessThanOrEqual" mode="evaluate">
-		<xsl:param name="selection"/>
-		<xsl:choose>
-			<xsl:when test="$selection &lt;= .">1</xsl:when>
-			<xsl:otherwise>0</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="@*" mode="evaluate"/>
-	
 </xsl:stylesheet>
