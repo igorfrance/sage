@@ -133,7 +133,6 @@
     <Compile Include="Controllers\ControllerMessages.cs" />
     <Compile Include="Controllers\CacheableAttribute.cs" />
     <Compile Include="Controllers\GenericController.cs" />
-    <Compile Include="Controllers\FileLastModifiedFilterAttribute.cs" />
     <Compile Include="Controllers\SageController.cs" />
     <Compile Include="Controllers\SageControllerFactory.cs" />
     <Compile Include="Controllers\SharedControllerAttribute.cs" />
@@ -191,8 +190,7 @@
     <Compile Include="Views\XsltViewEngine.cs" />
     <Compile Include="Views\XsltTransform.cs" />
     <Compile Include="XsltExtensions\Set.cs" />
-    <Compile Include="XsltExtensions\Math.cs" />
-    <Compile Include="XsltExtensions\Regexp.cs" />
+    <Compile Include="XsltExtensions\Basic.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Schemas\ProjectConfiguration.xsd">
