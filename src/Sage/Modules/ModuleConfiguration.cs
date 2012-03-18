@@ -28,6 +28,7 @@ namespace Sage.Modules
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.IO;
 	using System.Linq;
 	using System.Xml;
 
@@ -130,9 +131,9 @@ namespace Sage.Modules
 			this.AutoLocation = ModuleAutoLocation.None;
 		}
 
-        /// <summary>
-        /// Gets the resources.
-        /// </summary>
+		/// <summary>
+		/// Gets the list of resources this module uses / depends on.
+		/// </summary>
 		public List<ModuleResource> Resources
 		{
 			get
@@ -155,27 +156,24 @@ namespace Sage.Modules
 			}
 		}
 
-        /// <summary>
-        /// Gets or sets the libraries.
-        /// </summary>
-        /// <value>
-        /// The libraries.
-        /// </value>
+		/// <summary>
+		/// Gets the list of shared libaries this module uses / depends on.
+		/// </summary>
 		public List<string> Libraries { get; private set; }
 
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
+		/// <summary>
+		/// Gets the nameof this module.
+		/// </summary>
 		public string Name { get; private set; }
 
-        /// <summary>
-        /// Gets the auto location.
-        /// </summary>
+		/// <summary>
+		/// Gets the location where this module should be automatically inserted in, if any.
+		/// </summary>
 		public ModuleAutoLocation AutoLocation { get; private set; }
 
-        /// <summary>
-        /// Gets the type.
-        /// </summary>
+		/// <summary>
+		/// Gets the type that implements this module.
+		/// </summary>
 		public Type Type
 		{
 			get
@@ -192,24 +190,24 @@ namespace Sage.Modules
 			}
 		}
 
-        /// <summary>
-        /// Gets the name of the type.
-        /// </summary>
+		/// <summary>
+		/// Gets the name of the type that implements this module.
+		/// </summary>
 		public string TypeName { get; private set; }
 
-        /// <summary>
-        /// Gets the tag names.
-        /// </summary>
+		/// <summary>
+		/// Gets the tag names associated with this module.
+		/// </summary>
 		public IList<string> TagNames { get; private set; }
 
-        /// <summary>
-        /// Gets the stylesheets.
-        /// </summary>
+		/// <summary>
+		/// Gets the XSLT stylesheets this module uses.
+		/// </summary>
 		public IList<string> Stylesheets { get; private set; }
 
-        /// <summary>
-        /// Gets the dependencies.
-        /// </summary>
+		/// <summary>
+		/// Gets this module's dependencies (list of other module's names) 
+		/// </summary>
 		public IList<string> Dependencies { get; private set; }
 
 		/// <inheritdoc/>
@@ -229,10 +227,7 @@ namespace Sage.Modules
 				foreach (string path in config.Stylesheets)
 				{
 					string stylesheetPath = context.Path.GetModulePath(config.Name, path);
-					CacheableXmlDocument stylesheet = context.Resources.LoadXml(stylesheetPath);
-
-					CopyXslElements(context, stylesheet, resultDoc);
-					resultDoc.AddDependencies(stylesheet.Dependencies);
+					CopyXslElements(context, stylesheetPath, resultDoc);
 				}
 			}
 
@@ -244,6 +239,11 @@ namespace Sage.Modules
 		[NodeHandler(XmlNodeType.Element, "body", XmlNamespaces.XHtmlNamespace)]
 		internal static XmlNode ProcessHtmlElement(XmlNode htmlNode, SageContext context)
 		{
+			Contract.Requires<ArgumentNullException>(htmlNode != null);
+
+			if (htmlNode.SelectSingleNode("ancestor::xhtml:body", XmlNamespaces.Manager) != null)
+				return htmlNode;
+
 			ModuleAutoLocation location = htmlNode.LocalName == "head" ? ModuleAutoLocation.Head : ModuleAutoLocation.Body;
 
 			IEnumerable<ModuleConfiguration> autoModules =
@@ -251,9 +251,7 @@ namespace Sage.Modules
 
 			XmlNode resultNode = ResourceManager.CopyTree(htmlNode, context);
 			foreach (ModuleConfiguration module in autoModules)
-			{
 				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
-			}
 
 			return resultNode;
 		}
@@ -275,38 +273,56 @@ namespace Sage.Modules
 			return result;
 		}
 
-		private static void CopyXslElements(SageContext context, XmlDocument fromDocument, XmlDocument toDocument)
+		private static void CopyXslElements(SageContext context, string stylesheetPath, CacheableXmlDocument targetDocument)
 		{
+			CacheableXmlDocument fromDocument = context.Resources.LoadXml(stylesheetPath);
+			targetDocument.AddDependencies(fromDocument.Dependencies);
+
 			XmlNodeList paramNodes = fromDocument.SelectNodes("/*/xsl:param", XmlNamespaces.Manager);
 			XmlNodeList variableNodes = fromDocument.SelectNodes("/*/xsl:variable", XmlNamespaces.Manager);
 			XmlNodeList templateNodes = fromDocument.SelectNodes("/*/xsl:template", XmlNamespaces.Manager);
 			XmlNodeList includeNodes = fromDocument.SelectNodes("/*/xsl:include", XmlNamespaces.Manager);
+			XmlNodeList scriptNodes = fromDocument.SelectNodes("/*/msxsl:script", XmlNamespaces.Manager);
+			XmlNodeList otherNodes = fromDocument.SelectNodes(string.Join(" | ", new[] 
+			{
+				"/*/xsl:preserve-space", 
+				"/*/xsl:strip-space",
+				"/*/xsl:namespace-alias",
+				"/*/xsl:attribute-set",
+			}), XmlNamespaces.Manager);
+
+			string stylesheetDirectory = Path.GetDirectoryName(stylesheetPath);
 
 			// recursively add any includes
 			foreach (XmlElement includeElem in includeNodes)
 			{
-				CacheableXmlDocument includedDoc = context.Resources.LoadXml(includeElem.GetAttribute("href"));
-				CopyXslElements(context, includedDoc, toDocument);
+				string includeHref = includeElem.GetAttribute("href");
+				string includePath = Path.Combine(stylesheetDirectory, includeHref);
+
+				CopyXslElements(context, includePath, targetDocument);
+				targetDocument.AddDependencies(includePath);
 			}
 
 			// templates
 			foreach (XmlNode xslNode in templateNodes)
-				toDocument.DocumentElement.AppendChild(toDocument.ImportNode(xslNode, true));
+				targetDocument.DocumentElement.AppendChild(targetDocument.ImportNode(xslNode, true));
 
-			// variables before templates
-			XmlNode templateNode = toDocument.DocumentElement.SelectSingleNode("/*/xsl:template[1]", XmlNamespaces.Manager);
+			foreach (XmlNode xslNode in scriptNodes)
+				targetDocument.DocumentElement.AppendChild(targetDocument.ImportNode(xslNode, true));
+
+			XmlNode firstNode = targetDocument.SelectSingleNode("/*/xsl:template[1]", XmlNamespaces.Manager);
 			foreach (XmlNode xslNode in variableNodes)
-				toDocument.DocumentElement.InsertBefore(toDocument.ImportNode(xslNode, true), templateNode);
+				firstNode = targetDocument.DocumentElement.InsertBefore(targetDocument.ImportNode(xslNode, true), firstNode);
 
-			// params before variables or templates
-			XmlNode variableNode = toDocument.DocumentElement.SelectSingleNode("/*/xsl:variable[1]", XmlNamespaces.Manager);
+			// other nodes before variables or templates, params before other nodes
+			foreach (XmlNode xslNode in otherNodes)
+				firstNode = targetDocument.DocumentElement.InsertBefore(targetDocument.ImportNode(xslNode, true), firstNode);
+
 			foreach (XmlNode xslNode in paramNodes)
-				toDocument.DocumentElement.InsertBefore(toDocument.ImportNode(xslNode, true), variableNode ?? templateNode);
+				targetDocument.DocumentElement.InsertBefore(targetDocument.ImportNode(xslNode, true), targetDocument.DocumentElement.SelectSingleNode("*"));
 
 			foreach (XmlAttribute attrNode in fromDocument.DocumentElement.Attributes)
-			{
-				toDocument.DocumentElement.SetAttribute(attrNode.Name, attrNode.InnerText);
-			}
+				targetDocument.DocumentElement.SetAttribute(attrNode.Name, attrNode.InnerText);
 		}
 	}
 }
