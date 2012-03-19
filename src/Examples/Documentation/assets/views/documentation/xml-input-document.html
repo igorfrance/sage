@@ -60,7 +60,7 @@
 			</mod:data>
 		</mod:XmlTree>
 
-		<h3 class="section">Sage view wrapper</h3>
+		<h3 class="section">Input document example</h3>
 
 		<p class="sectionblock">
 			The XHTML document from the previous example is then wrapped within a <i>context envelope</i>, and the actual XML
@@ -70,7 +70,7 @@
 		<mod:XmlTree>
 			<mod:config>
 				<mod:expandLevels>3</mod:expandLevels>
-				<mod:wrap>false</mod:wrap>
+				<mod:wrap>true</mod:wrap>
 			</mod:config>
 			<mod:data>
 				<sage:literal>
@@ -347,13 +347,41 @@
 			</mod:data>
 		</mod:XmlTree>
 
-		<p>
-			The structure of each view will be the same, but the content will be different with each request. This dynamically
-			generated view document contains information about the current request; date and time, address, querystring and form date,
-			cookies, client information and more, as well as data specific to this view; the XHTML view that was used (within
-			<code>sage:model</code> element) and referenced view resources (for breadcrumb and developer toolbar modules in this
-			case).
-		</p>
+		<h3 class="section">Input document elements</h3>
+
+		<ul class="root reference">
+			<li>
+				<h5 class="casual">sage:view</h5>
+				<p>
+					The root element of the view.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@controller</h6>
+						<span>The name of the current controller</span>
+					</li>
+					<li>
+						<h6 class="casual">@action</h6>
+						<p>The name of the current controller action</p>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<h5 class="casual">sage:request</h5>
+				<p>
+					Contain information about the  current request.
+				</p>
+				<h6 class="tiny">Attributes</h6>
+				<ul class="casual">
+					<li>
+						<h6 class="casual">@apppath</h6>
+						<span>The name of the current controller</span>
+					</li>
+				</ul>
+			</li>
+		</ul>
+
 
 		<br class="spacer"/>
 

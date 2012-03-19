@@ -141,6 +141,16 @@
     <Folder Include="assets\views\examples\internationalization\" />
     <Folder Include="extensions\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Kelp\Kelp.csproj">
+      <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
+      <Name>Kelp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Sage\Sage.csproj">
+      <Project>{E647EBD1-64CF-48EB-B20D-0133C24899F6}</Project>
+      <Name>Sage</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
