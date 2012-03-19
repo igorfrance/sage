@@ -644,26 +644,48 @@ namespace Sage
 			return result;
 		}
 
+		/// <summary>
+		/// Inserts a <paramref name="context"/> property value specified with <paramref name="valueElement"/>.
+		/// </summary>
+		/// <param name="valueElement">The element that represents the property</param>
+		/// <param name="context">The current context with which the method is being invoked.</param>
+		/// <returns>The <paramref name="context"/> property value specified with <paramref name="valueElement"/></returns>
+		/// <example>
+		/// &lt;context:value property="QueryString" key="page"/&gt;
+		/// </example>
 		[NodeHandler(XmlNodeType.Element, "value", XmlNamespaces.ContextualizationNamespace)]
-		internal static XmlNode ProcessContextValueNode(XmlNode valueNode, SageContext context)
+		internal static XmlNode ProcessContextValueNode(XmlNode valueElement, SageContext context)
 		{
-			XmlElement valueElem = (XmlElement) valueNode;
+			XmlElement valueElem = (XmlElement) valueElement;
 
 			string propName = valueElem.GetAttribute("property");
 			string propKey = valueElem.GetAttribute("key");
 			string propValue = GetContextProperty(context, propName, propKey);
 
 			if (propValue != null)
-				return valueNode.OwnerDocument.CreateTextNode(propValue);
+				return valueElement.OwnerDocument.CreateTextNode(propValue);
 
-			return valueNode;
+			return valueElement;
 		}
 
-		[TextHandler("assetpath", "sharedassetpath", "modulepath", "locale", "category", "basehref")]
+		/// <summary>
+		/// Insers a <paramref name="context"/> property value specified with <paramref name="variable"/>. 
+		/// </summary>
+		/// <param name="variable">The name of the property to emit; supported values are apppath, assetpath, 
+		/// sharedassetpath, modulepath, locale, category, basehref.</param>
+		/// <param name="context">The current context with which the method is being invoked.</param>
+		/// <returns>The <paramref name="context"/> property value specified with <paramref name="variable"/></returns>
+		/// <example>
+		/// {basehref}
+		/// </example>
+		[TextHandler("apppath", "assetpath", "sharedassetpath", "modulepath", "locale", "category", "basehref")]
 		internal static string ResolvePathVariable(string variable, SageContext context)
 		{
-			switch (variable)
+			switch (variable.ToLower())
 			{
+				case "apppath":
+					return context.ApplicationPath.TrimEnd('/') + "/";
+
 				case "locale":
 					return context.Locale;
 
