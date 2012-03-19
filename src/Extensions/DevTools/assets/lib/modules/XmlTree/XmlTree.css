@@ -1,4 +1,6 @@
-﻿.xmltree,
+﻿.xmltree
+	{ margin-top: -17px; }
+.xmltree,
 .xmltree pre
 	{ font: 10pt Consolas; }
 .xmltree *

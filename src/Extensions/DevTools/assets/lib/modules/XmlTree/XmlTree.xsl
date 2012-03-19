@@ -24,6 +24,11 @@
 				<xsl:apply-templates select="." mode="xmltree-toolbar"/>
 			</xsl:if>
 			<div class="xmlroot">
+				<!--
+					some kind of character that won't be stripped by the xmlwriter;
+					this is needed to in order to force
+					browsers to ignore whitespace in the following blocks
+				-->&#160;
 				<xsl:apply-templates select="mod:data/node()" mode="xmltree">
 					<xsl:with-param name="level" select="1" />
 				</xsl:apply-templates>
@@ -225,19 +230,6 @@
 			</span>
 			<span class="markup">"</span>
 		</span>
-	</xsl:template>
-
-	<xsl:template match="@*[contains(name(), ':')]" mode="xmltree">
-		<span class="markup">&#160;</span>
-		<span>
-			<xsl:apply-templates select="." mode="xmltree-class"/>
-			<xsl:value-of select="name()"/>
-		</span>
-		<span class="markup">="</span>
-		<span class="attrValue">
-			<xsl:value-of select="."/>
-		</span>
-		<span class="markup">"</span>
 	</xsl:template>
 
 	<xsl:template match="text()" mode="xmltree">
