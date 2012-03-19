@@ -342,7 +342,7 @@ namespace Sage
 		/// <summary>
 		/// Defines the main Sage namespace.
 		/// </summary>
-		public const string SageNamespace = "http://www.cycle99.com/projects/sage";
+		public const string SageNamespace = "http://www.cycle99.com/schemas/sage/sage.xsd";
 
 		/// <summary>
 		/// Defines the contextualization namespace prefix.
@@ -352,7 +352,7 @@ namespace Sage
 		/// <summary>
 		/// Defines the contextualization namespace.
 		/// </summary>
-		public const string ContextualizationNamespace = "http://www.cycle99.com/projects/sage/contextualization";
+		public const string ContextualizationNamespace = "http://www.cycle99.com/schemas/sage/contextualization.xsd";
 
 		/// <summary>
 		/// Specifies the prefix for the project configuration namespace.
@@ -362,7 +362,7 @@ namespace Sage
 		/// <summary>
 		/// Specifies the project configuration namespace.
 		/// </summary>
-		public const string ProjectConfigurationNamespace = "http://www.cycle99.com/projects/sage/configuration/project";
+		public const string ProjectConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/project.xsd";
 
 		/// <summary>
 		/// Specifies the prefix for the category configuration namespace.
@@ -372,7 +372,7 @@ namespace Sage
 		/// <summary>
 		/// Specifies the category configuration namespace.
 		/// </summary>
-		public const string CategoryConfigurationNamespace = "http://www.cycle99.com/projects/sage/configuration/category";
+		public const string CategoryConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/category.xsd";
 
 		/// <summary>
 		/// Specifies the prefix for the developer (dev tools) configuration namespace.
@@ -382,7 +382,7 @@ namespace Sage
 		/// <summary>
 		/// Specifies the developer (dev tools) configuration namespace.
 		/// </summary>
-		public const string DeveloperConfigurationNamespace = "http://www.cycle99.com/projects/sage/configuration/devtools";
+		public const string DeveloperConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/devtools.xsd";
 
 		/// <summary>
 		/// Defines the prefix for the modules namespace.
@@ -392,7 +392,7 @@ namespace Sage
 		/// <summary>
 		/// Defines the modules namespace.
 		/// </summary>
-		public const string ModulesNamespace = "http://www.cycle99.com/projects/sage/modules";
+		public const string ModulesNamespace = "http://www.cycle99.com/schemas/sage/modules.xsd";
 
 		/// <summary>
 		/// Defines the prefix for the intenationalization namespace.
@@ -402,7 +402,7 @@ namespace Sage
 		/// <summary>
 		/// Defines the intenationalization namespace.
 		/// </summary>
-		public const string InternationalizationNamespace = "http://www.cycle99.com/projects/sage/internationalization";
+		public const string InternationalizationNamespace = "http://www.cycle99.com/schemas/sage/internationalization.xsd";
 
 		/// <summary>
 		/// Defines the prefix for the standard XHTML namespace.
@@ -484,32 +484,32 @@ namespace Sage
 			/// <summary>
 			/// Defines the namespace for the IO extensions.
 			/// </summary>
-			public const string IO = "http://www.cycle99.com/projects/sage/xslt/extensions/io";
+			public const string IO = "http://www.cycle99.com/schemas/sage/xslt/extensions/io.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the Regexp extensions.
 			/// </summary>
-			public const string Regex = "http://www.cycle99.com/projects/sage/xslt/extensions/regex";
+			public const string Regex = "http://www.cycle99.com/schemas/sage/xslt/extensions/regex.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the Basic extensions.
 			/// </summary>
-			public const string Basic = "http://www.cycle99.com/projects/sage/xslt/extensions/basic";
+			public const string Basic = "http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the String extensions.
 			/// </summary>
-			public const string String = "http://www.cycle99.com/projects/sage/xslt/extensions/string";
+			public const string String = "http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the Set extensions.
 			/// </summary>
-			public const string Set = "http://www.cycle99.com/projects/sage/xslt/extensions/set";
+			public const string Set = "http://www.cycle99.com/schemas/sage/xslt/extensions/set.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the Date extensions.
 			/// </summary>
-			public const string Date = "http://www.cycle99.com/projects/sage/xslt/extensions/date";
+			public const string Date = "http://www.cycle99.com/schemas/sage/xslt/extensions/date.xsd";
 		}
 	}
 }

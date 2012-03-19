@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<mod:SyntaxHighlighter xmlns:mod="http://www.cycle99.com/projects/sage/modules">
+<?xml version="1.0" encoding="utf-8" ?>
+<mod:SyntaxHighlighter xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
 	<mod:defaults>
 		<mod:definitions>
 			<mod:language name="javascript">

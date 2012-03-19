@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="ProjectConfiguration" elementFormDefault="qualified"
-		targetNamespace="http://www.cycle99.com/projects/sage/configuration/category"
+		targetNamespace="http://www.cycle99.com/schemas/sage/configuration/category.xsd"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		xmlns:c="http://www.cycle99.com/projects/sage/configuration/category"
-		xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
-		xmlns="http://www.cycle99.com/projects/sage/configuration/category">
+		xmlns:c="http://www.cycle99.com/schemas/sage/configuration/category.xsd"
+		xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
+		xmlns="http://www.cycle99.com/schemas/sage/configuration/category.xsd">
 
 	<xs:import namespace="http://www.w3.org/2003/XInclude" schemaLocation="XInclude.xsd"/>
-	<xs:import namespace="http://www.cycle99.com/projects/sage/internationalization" schemaLocation="Internationalization.xsd"/>
+	<xs:import namespace="http://www.cycle99.com/schemas/sage/internationalization.xsd" schemaLocation="Internationalization.xsd"/>
 
 	<xs:element name="configuration">
 		<xs:complexType>

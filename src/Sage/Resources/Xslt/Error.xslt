@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0"
-	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 	<xsl:param name="developer" select="0"/>

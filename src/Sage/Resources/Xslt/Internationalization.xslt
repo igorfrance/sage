@@ -2,9 +2,9 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:msxsl="urn:schemas-microsoft-com:xslt"
-	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:kelp="http://www.cycle99.com/projects/kelp"
-	xmlns:intl="http://www.cycle99.com/projects/sage/internationalization"
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
 	xmlns="http://www.w3.org/1999/xhtml"
 
 	exclude-result-prefixes="sage intl msxsl">

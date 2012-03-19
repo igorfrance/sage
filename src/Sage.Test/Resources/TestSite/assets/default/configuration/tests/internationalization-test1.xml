@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<testcase xmlns:intl="http://www.cycle99.com/projects/sage/internationalization">
+<testcase xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd">
 
 	<intl:variables>
 		<intl:variable id="button12.width">

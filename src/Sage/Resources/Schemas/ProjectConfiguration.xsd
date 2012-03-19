@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="ProjectConfiguration" elementFormDefault="qualified"
-		targetNamespace="http://www.cycle99.com/projects/sage/configuration/project"
+		targetNamespace="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		xmlns:p="http://www.cycle99.com/projects/sage/configuration/project"
-		xmlns="http://www.cycle99.com/projects/sage/configuration/project">
+		xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+		xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
 
 	<xs:import namespace="http://www.w3.org/2003/XInclude" schemaLocation="XInclude.xsd"/>
 	

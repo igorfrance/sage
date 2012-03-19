@@ -3,7 +3,7 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	xmlns:site="http://sage.cycle99.com/"
-	xmlns:mod="http://www.cycle99.com/projects/sage/modules">
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
 
 	<xsl:template match="mod:Navigation">
 		<xsl:variable name="currentHref" select="normalize-space(mod:config/mod:current/text())"/>

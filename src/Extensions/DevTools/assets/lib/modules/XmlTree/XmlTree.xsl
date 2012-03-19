@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:sage="http://www.cycle99.com/projects/sage"
-	xmlns:basic="http://www.cycle99.com/projects/sage/xslt/extensions/basic"
-	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:basic="http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns="http://www.w3.org/1999/xhtml"
 	exclude-result-prefixes="sage mod basic">
 

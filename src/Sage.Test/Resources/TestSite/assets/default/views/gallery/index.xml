@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<document xmlns:intl="http://www.cycle99.com/projects/sage/internationalization">
+<?xml version="1.0" encoding="utf-8"?>
+<document xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd">
 	<intl:phrase ref="test.gallery.TestPhrase"/>
 </document>
 

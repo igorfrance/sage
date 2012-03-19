@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="Sage"
 		elementFormDefault="qualified"
-		targetNamespace="http://www.cycle99.com/projects/sage"
-		xmlns:sage="http://www.cycle99.com/projects/sage"
+		targetNamespace="http://www.cycle99.com/schemas/sage/sage.xsd"
+		xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		xmlns="http://www.cycle99.com/projects/sage">
+		xmlns="http://www.cycle99.com/schemas/sage/sage.xsd">
 	
 	<xs:element name="basehref"/>
 	
@@ -17,14 +17,14 @@
 	<xs:complexType name="generic" mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:any namespace="http://www.w3.org/1999/xhtml"/>
-			<xs:any namespace="http://www.cycle99.com/projects/sage"/>
-			<xs:any namespace="http://www.cycle99.com/projects/sage/internationalization"/>
+			<xs:any namespace="http://www.cycle99.com/schemas/sage/sage.xsd"/>
+			<xs:any namespace="http://www.cycle99.com/schemas/sage/internationalization.xsd"/>
 			<xs:any namespace="http://www.w3.org/2003/XInclude"/>
 		</xs:choice>
 		<xs:anyAttribute namespace="
 										 http://www.w3.org/1999/xhtml
 										 http://www.cycle99.com/projects/sage 
-										 http://www.cycle99.com/projects/sage/internationalization"/>
+										 http://www.cycle99.com/schemas/sage/internationalization.xsd"/>
 	</xs:complexType>
 	
 	<xs:complexType name="link">

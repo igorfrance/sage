@@ -13,7 +13,7 @@ sage.dev.Toolbar = new function Toolbar()
 	var logUrl = "{basehref}dev/log/{thread}/?view={view}";
 	var inspectUrl = "{basehref}dev/inspect/?devtools=0#sage:vi=url%3D{url}%26inspector%3Dlog";
 
-	var namespaces = { mod: "http://www.cycle99.com/projects/sage/modules" };
+	var namespaces = { mod: "http://www.cycle99.com/schemas/sage/modules.xsd" };
 
 	function setup()
 	{

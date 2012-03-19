@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="ViewInspectorModule"
 		elementFormDefault="qualified"
-		targetNamespace="http://www.cycle99.com/projects/sage/modules"
-		xmlns="http://www.cycle99.com/projects/sage/modules"
-		xmlns:mod="http://www.cycle99.com/projects/sage/modules"
-		xmlns:sage="http://www.cycle99.com/projects/sage"
+		targetNamespace="http://www.cycle99.com/schemas/sage/modules.xsd"
+		xmlns="http://www.cycle99.com/schemas/sage/modules.xsd"
+		xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+		xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	
-	<xs:import schemaLocation="../../../../../../Sage/Resources/Schemas/Sage.xsd" namespace="http://www.cycle99.com/projects/sage"/>
+	<xs:import schemaLocation="../../../../../../Sage/Resources/Schemas/Sage.xsd" namespace="http://www.cycle99.com/schemas/sage/sage.xsd"/>
 	
 	<xs:element name="SyntaxHighlighter">
 		<xs:complexType>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<variables xmlns="http://www.cycle99.com/projects/sage/configuration/category">
-	<intl:variable id="aditvlocale" xmlns:intl="http://www.cycle99.com/projects/sage/internationalization">
+<variables xmlns="http://www.cycle99.com/schemas/sage/configuration/category.xsd">
+	<intl:variable id="aditvlocale" xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd">
 		<intl:value locale="default">FteCeO63vrn_Ch1DGYMh0_LC_o3_VNs1</intl:value>
 		<intl:value locale="de">Td__asklhA_iPMPRBHp18Aw3pXWmiqCu</intl:value>
 		<intl:value locale="es">l5KkYrq6RslOnGPN71MK1xlvkwQTiZiV</intl:value>

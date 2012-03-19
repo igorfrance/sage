@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:logic="http://www.cycle99.com/projects/sage/logic"
-	xmlns:sage="http://www.cycle99.com/projects/sage"
+	xmlns:logic="http://www.cycle99.com/schemas/sage/logic.xsd"
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	xmlns="http://www.w3.org/1999/xhtml"
 	exclude-result-prefixes="logic xhtml">
@@ -15,7 +15,7 @@
 		</xsl:variable>
 		<xsl:if test="$valid = 1">
 			<xsl:element name="{name()}" namespace="{namespace-uri()}">
-				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/projects/sage/logic']"/>
+				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/schemas/sage/logic.xsd']"/>
 				<xsl:apply-templates select="node()"/>
 			</xsl:element>
 		</xsl:if>
@@ -27,7 +27,7 @@
 		</xsl:variable>
 		<xsl:if test="$valid = 0">
 			<xsl:element name="{name()}" namespace="{namespace-uri()}">
-				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/projects/sage/logic']"/>
+				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/schemas/sage/logic.xsd']"/>
 				<xsl:apply-templates select="node()"/>
 			</xsl:element>
 		</xsl:if>

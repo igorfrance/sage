@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<intl:dictionary xmlns:intl="http://www.cycle99.com/projects/sage/internationalization">
+<intl:dictionary xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd">
 
 	<intl:phrase id="test.homepage.label1">This node <intl:phrase ref="test.homepage.nested"/> in all locales</intl:phrase>
 	<intl:phrase id="test.homepage.nested">appears</intl:phrase>

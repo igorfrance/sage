@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:mod="http://www.cycle99.com/projects/sage/modules"
-	xmlns:sage="http://www.cycle99.com/projects/sage"
-	xmlns:string="http://www.cycle99.com/projects/sage/xslt/extensions/string"
-	xmlns:basic="http://www.cycle99.com/projects/sage/xslt/extensions/basic"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:string="http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd"
+	xmlns:basic="http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd"
 	xmlns="http://www.w3.org/1999/xhtml"
 
 	exclude-result-prefixes="mod sage string basic">
