@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sitemap xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+	<page name="homepage" url="~/">
+		<title>Sage</title>
+	</page>
+	<page name="documentation" url="~/documentation">
+		<title>Documentation</title>
+		<pages>
+			<page name="gettingstarted">
+				<title>Getting started</title>
+				<pages>
+					<page name="sage-license" url="~/documentation/sage-license.html">
+						<title>License</title>
+					</page>
+					<page name="sage-obtaining" url="~/documentation/sage-obtaining.html">
+						<title>Obtaining</title>
+					</page>
+					<page name="sage-building" url="~/documentation/sage-building.html">
+						<title>Building</title>
+					</page>
+					<page name="sage-installing">
+						<title>Installing</title>
+						<pages>
+							<page name="sage-installing-new" url="~/documentation/sage-installing-new.html">
+								<title>New project</title>
+							</page>
+							<page name="sage-installing-example" url="~/documentation/sage-installing-example.html">
+								<title>Example project</title>
+							</page>
+						</pages>
+					</page>
+				</pages>
+			</page>
+			<page name="xml-as-a-language" url="~/documentation/xml-as-a-language.html">
+				<title>XML as a language</title>
+				<pages>
+					<page name="xml-input-document" url="~/documentation/xml-input-document.html">
+						<title>Input document</title>
+					</page>
+					<page name="sage-modules" url="~/documentation/sage-modules.html">
+						<title>Modules</title>
+					</page>
+					<page name="linking" url="~/documentation/linking.html">
+						<title>Linking</title>
+					</page>
+					<page name="sage-uri-schemes" url="~/documentation/sage-uri-schemes.html">
+						<title>Available URI schemes</title>
+					</page>
+					<page name="sage-namespaces" url="~/documentation/sage-namespaces.html">
+						<title>Namespaces</title>
+						<pages>
+							<page name="sage-namespaces-xinclude" url="~/documentation/sage-namespaces-xinclude.html">
+								<title>X-Include</title>
+							</page>
+							<page name="sage-namespaces-sage" url="~/documentation/sage-namespaces-sage.html">
+								<title>Sage</title>
+							</page>
+							<page name="sage-namespaces-internationalization" url="~/documentation/sage-namespaces-internationalization.html">
+								<title>Internationalization</title>
+							</page>
+							<page name="sage-namespaces-contextualization" url="~/documentation/sage-namespaces-contextualization.html">
+								<title>Contextualization</title>
+							</page>
+							<page name="sage-namespaces-modules" url="~/documentation/sage-namespaces-modules.html">
+								<title>Modules</title>
+							</page>
+							<page name="sage-namespaces-logic" url="~/documentation/sage-namespaces-logic.html">
+								<title>Logic</title>
+							</page>
+						</pages>
+					</page>
+				</pages>
+			</page>
+			<page name="internationalization" url="~/documentation/internationalization.html">
+				<title>Internationalization</title>
+				<pages>
+					<page name="internationalization-phrases" url="~/documentation/internationalization-phrases.html">
+						<title>Phrase substitution</title>
+					</page>
+					<page name="internationalization-variables" url="~/documentation/internationalization-variables.html">
+						<title>Variable substitution</title>
+					</page>
+					<page name="internationalization-conditionals" url="~/documentation/internationalization-conditionals.html">
+						<title>Conditional rendering</title>
+					</page>
+					<page name="internationalization-fallback" url="~/documentation/internationalization-fallback.html">
+						<title>Locale resolution</title>
+					</page>
+				</pages>
+			</page>
+			<page name="xml-flow" url="~/documentation/xml-flow.html">
+				<title>Document transform flow</title>
+				<pages>
+					<page name="xml-flow-localize" url="~/documentation/xml-flow-localize.html">
+						<title>1: Localize</title>
+					</page>
+					<page name="xml-flow-copy-tree" url="~/documentation/xml-flow-copy-tree.html">
+						<title>2: Copy XML tree</title>
+					</page>
+					<page name="xml-flow-expand-modules" url="~/documentation/xml-flow-expand-modules.html">
+						<title>3: Expand modules</title>
+					</page>
+					<page name="xml-flow-xslt-transform" url="~/documentation/xml-flow-xslt-transform.html">
+						<title>4: XSLT transform</title>
+					</page>
+				</pages>
+			</page>
+			<page name="resources">
+				<title>Resources</title>
+				<pages>
+					<page name="resource-libraries" url="~/documentation/resource-libraries.html">
+						<title>Resource libraries</title>
+					</page>
+					<page name="resource-processing-kelp" url="~/documentation/resource-processing-kelp.html">
+						<title>Merging scripts and styles</title>
+					</page>
+					<page name="resource-processing-compression" url="~/documentation/resource-processing-compression.html">
+						<title>Minifying scripts and styles</title>
+					</page>
+					<page name="resource-processing-imaging" url="~/documentation/resource-processing-imaging.html">
+						<title>Image processing</title>
+					</page>
+				</pages>
+			</page>
+			<page name="extensibility" url="~/documentation/extensibility.html">
+				<title>Extensibility</title>
+				<pages>
+					<page name="extensibility-extensions" url="~/documentation/extensibility-extensions.html">
+						<title>Extensions</title>
+					</page>
+					<page name="extensibility-handlers" url="~/documentation/extensibility-handlers.html">
+						<title>Node and text handlers</title>
+					</page>
+					<page name="extensibility-xml-filters" url="~/documentation/extensibility-xml-filters.html">
+						<title>View XML filters</title>
+					</page>
+					<page name="extensibility-resource-providers" url="~/documentation/extensibility-resource-providers.html">
+						<title>Resource providers</title>
+					</page>
+					<page name="extensibility-url-resolvers" url="~/documentation/extensibility-url-resolvers.html">
+						<title>URL resolvers</title>
+					</page>
+					<page name="extensibility-xslt-extensions" url="~/documentation/extensibility-xslt-extensions.html">
+						<title>XSLT extension objects</title>
+						<pages>
+							<page name="xslt-extensions-basic" url="~/documentation/xslt-extensions-basic.html">
+								<title>Basic</title>
+							</page>
+							<page name="xslt-extensions-io" url="~/documentation/xslt-extensions-io.html">
+								<title>IO</title>
+							</page>
+							<page name="xslt-extensions-set" url="~/documentation/xslt-extensions-set.html">
+								<title>Set</title>
+							</page>
+							<page name="xslt-extensions-string" url="~/documentation/xslt-extensions-string.html">
+								<title>String</title>
+							</page>
+						</pages>
+					</page>
+				</pages>
+			</page>
+			<page name="configuration" url="~/documentation/configuration.html">
+				<title>Configuration</title>
+				<pages>
+					<page name="configuration-project" url="~/documentation/configuration-project.html">
+						<title>Project</title>
+					</page>
+					<page name="configuration-rewriters" url="~/documentation/configuration-rewriters.html">
+						<title>Rewriters</title>
+					</page>
+					<page name="configuration-handlers" url="~/documentation/configuration-handlers.html">
+						<title>Handlers</title>
+					</page>
+					<page name="configuration-compression" url="~/documentation/configuration-compression.html">
+						<title>Compression</title>
+					</page>
+				</pages>
+			</page>
+			<page name="extensions">
+				<title>Extensions</title>
+				<pages>
+					<page name="configuration-project" url="~/documentation/configuration-project.html">
+						<title>Developer tools</title>
+					</page>
+				</pages>
+			</page>
+		</pages>
+	</page>
+</sitemap>
