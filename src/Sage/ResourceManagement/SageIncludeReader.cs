@@ -18,7 +18,7 @@ namespace Sage.ResourceManagement
 	using System;
 	using System.Xml;
 
-	using Mvp.Xml.XInclude;
+	using Kelp.XInclude;
 
 	/// <summary>
 	/// Extends the <see cref="XIncludingReader"/> with additional functionality.
