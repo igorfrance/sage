@@ -2,6 +2,7 @@
 <project name="Sage" xmlns="http://nant.sf.net/release/0.91-alpha2/nant.xsd" default="default">
 	
 	<property name="outputPath" value="releases/latest"/>
+	<property name="targetSite" value="${outputPath}/examples/documentation"/>
 	<property name="solutionFile" value="src/Sage.sln"/>
 	<property name="buildConfiguration" value="Debug"/>
 	<property name="kelpBuildPath" value="src/kelp/bin/${buildConfiguration}"/>
@@ -48,6 +49,22 @@
 				<exclude name="extensions/**"/>
 			</fileset>
 		</copy>
+		<xmlpoke file="${targetSite}/bin/Project.config" 
+						 xpath="/p:configuration/p:project/@mergeResources" 
+						 value="true">
+			<namespaces>
+				<namespace prefix="p" uri="http://www.cycle99.com/schemas/sage/configuration/project.xsd"/>
+			</namespaces>
+		</xmlpoke>
+		<xmlpoke file="${targetSite}/web.config"
+						 xpath="/configuration/resourceHandling/script/@Enabled"
+						 value="true"/>
+		<xmlpoke file="${targetSite}/web.config"
+						 xpath="/configuration/resourceHandling/css/@Enabled"
+						 value="true"/>
+		<xmlpoke file="${targetSite}/web.config"
+						 xpath="/configuration/system.web/compilation/@debug"
+						 value="false"/>
 	</target>
 
 	<target name="build-extensions">
