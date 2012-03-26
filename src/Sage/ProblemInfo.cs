@@ -27,6 +27,6 @@ namespace Sage
 
 		public string FilePath { get; private set; }
 
-		public ProblemType Type { get; private set; }
+		public ProblemType Type { get; set; }
 	}
 }
