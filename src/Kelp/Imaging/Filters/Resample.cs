@@ -262,6 +262,48 @@ namespace Kelp.Imaging.Filters
 			return newImage;
 		}
 
+		[QueryFilterFactory("rs", 1)]
+		internal static IFilter GetResampleFilter(string[] param)
+		{
+			int width, height = 0;
+			bool preserveRatio = true;
+			bool dontEnlarge = true;
+			InterpolationMode interpolation = InterpolationMode.HighQualityBicubic;
+			ResampleFitType fitType = ResampleFitType.ToMaximums;
+
+			int.TryParse(param[0], out width);
+
+			if (param.Length > 1)
+				int.TryParse(param[1], out height);
+
+			if (param.Length > 2)
+				preserveRatio = param[2] != "0";
+
+			if (param.Length > 3)
+				dontEnlarge = param[3] != "0";
+
+			if (param.Length > 4)
+			{
+				interpolation = (InterpolationMode)
+					Enum.Parse(typeof(InterpolationMode), param[4]);
+			}
+
+			if (param.Length > 5 && param[5] == "min")
+			{
+				fitType = ResampleFitType.ToMinimums;
+			}
+
+			if (width != 0 || height != 0)
+			{
+				Resample filter = new Resample(width, height, interpolation, preserveRatio, dontEnlarge);
+				filter.FitType = fitType;
+
+				return filter;
+			}
+
+			return null;
+		}
+
 		private static int CalculateOtherSide(int side1, int inputSide1, int inputSide2)
 		{
 			float ratio = inputSide1 / (float)side1;

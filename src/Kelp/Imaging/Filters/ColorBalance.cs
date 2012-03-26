@@ -128,5 +128,22 @@ namespace Kelp.Imaging.Filters
 			copy.UnlockBits(data);
 			return copy;
 		}
+
+		[QueryFilterFactory("rgb", 3)]
+		internal static IFilter GetColorFilter(string[] param)
+		{
+			int r;
+			int g;
+			int b;
+
+			int.TryParse(param[0], out r);
+			int.TryParse(param[1], out g);
+			int.TryParse(param[2], out b);
+
+			if (r != 0 || g != 0 || b != 0)
+				return new ColorBalance(r, g, b);
+
+			return null;
+		}
 	}
 }

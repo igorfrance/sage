@@ -36,6 +36,12 @@ namespace Kelp.Imaging.Filters
 			source.RotateFlip(RotateFlipType.Rotate180FlipY);
 			return source;
 		}
+
+		[QueryFilterFactory("mh", 1)]
+		internal static IFilter GetMirrorHFilter(string[] param)
+		{
+			return param[0] == "1" ? new MirrorH() : null;
+		}
 	}
 
 	/// <summary>
@@ -55,6 +61,12 @@ namespace Kelp.Imaging.Filters
 		{
 			source.RotateFlip(RotateFlipType.Rotate180FlipX);
 			return source;
+		}
+
+		[QueryFilterFactory("mv", 1)]
+		internal static IFilter GetMirrorVFilter(string[] param)
+		{
+			return param[0] == "1" ? new MirrorV() : null;
 		}
 	}
 }

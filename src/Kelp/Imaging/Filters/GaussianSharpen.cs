@@ -67,5 +67,23 @@ namespace Kelp.Imaging.Filters
 		{
 			return sharpen.Apply(source);
 		}
+
+		[QueryFilterFactory("sp", 1)]
+		internal static IFilter GetSharpenFilter(string[] param)
+		{
+			return param[0] == "1" ? new GaussianSharpen(0.9, 1) : null;
+		}
+
+		[QueryFilterFactory("sx", 1)]
+		internal static IFilter GetSharpenExFilter(string[] param)
+		{
+			int amount;
+			int.TryParse(param[0], out amount);
+
+			if (amount > 0 && amount < 100)
+				return new GaussianSharpen(amount * 0.025, 3);
+
+			return GetSharpenFilter(param);
+		}
 	}
 }

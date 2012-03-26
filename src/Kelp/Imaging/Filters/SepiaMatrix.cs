@@ -40,5 +40,11 @@ namespace Kelp.Imaging.Filters
 
 			this.Matrix = sepia;
 		}
+
+		[QueryFilterFactory("se", 1)]
+		internal static IFilter GetSepiaFilter(string[] param)
+		{
+			return param[0] == "1" ? new SepiaMatrix() : null;
+		}
 	}
 }

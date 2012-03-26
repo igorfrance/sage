@@ -57,5 +57,12 @@ namespace Kelp.Imaging.Filters
 
 			this.Matrix = matrix;
 		}
+
+		[QueryFilterFactory("bt", 1)]
+		internal static IFilter GetBrigthnessFilter(string[] param)
+		{
+			int amount;
+			return int.TryParse(param[0], out amount) ? new BrightnessMatrix(amount) : null;
+		}
 	}
 }

@@ -57,5 +57,12 @@ namespace Kelp.Imaging.Filters
 
 			this.Matrix = matrix;
 		}
+
+		[QueryFilterFactory("gm", 1)]
+		internal static IFilter GetGammaFilter(string[] param)
+		{
+			int amount;
+			return int.TryParse(param[0], out amount) ? new GammaMatrix(amount) : null;
+		}
 	}
 }

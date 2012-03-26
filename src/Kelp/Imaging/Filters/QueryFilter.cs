@@ -19,8 +19,10 @@ namespace Kelp.Imaging.Filters
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Drawing;
-	using System.Drawing.Drawing2D;
 	using System.Linq;
+	using System.Reflection;
+
+	using log4net;
 
 	/// <summary>
 	/// Provides a predefined sequence of filters that can be applied to an image.
@@ -47,6 +49,8 @@ namespace Kelp.Imaging.Filters
 	/// </remarks>
 	public class QueryFilter : BaseFilter
 	{
+		private static ILog log = LogManager.GetLogger(typeof(QueryFilter).FullName);
+
 		/// <summary>
 		/// Collection of bitmap filters that this controller can use
 		/// </summary>
@@ -56,20 +60,34 @@ namespace Kelp.Imaging.Filters
 
 		static QueryFilter()
 		{
+			const BindingFlags BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
 			filters = new Dictionary<string, FilterDefinition>();
-			filters.Add("cp", new FilterDefinition(GetCropFilter, 4));
-			filters.Add("rs", new FilterDefinition(GetResampleFilter, 1));
-			filters.Add("bt", new FilterDefinition(GetBrigthnessFilter, 1));
-			filters.Add("ct", new FilterDefinition(GetContrastFilter, 1));
-			filters.Add("gm", new FilterDefinition(GetGammaFilter, 1));
-			filters.Add("hsl", new FilterDefinition(GetHslFilter, 3));
-			filters.Add("rgb", new FilterDefinition(GetColorFilter, 3));
-			filters.Add("se", new FilterDefinition(GetSepiaFilter, 1));
-			filters.Add("sp", new FilterDefinition(GetSharpenFilter, 1));
-			filters.Add("gs", new FilterDefinition(GetGrayscaleFilter, 1));
-			filters.Add("sx", new FilterDefinition(GetSharpenExFilter, 1));
-			filters.Add("mh", new FilterDefinition(GetMirrorHFilter, 1));
-			filters.Add("mv", new FilterDefinition(GetMirrorVFilter, 1));
+			List<Assembly> assemblies = Util.GetAssociatedAssemblies(typeof(QueryFilter).Assembly);
+			foreach (Assembly a in assemblies)
+			{
+				var types = from t in a.GetTypes()
+							where t.IsClass && !t.IsAbstract
+							select t;
+
+				foreach (Type type in types)
+				{
+					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
+					{
+						foreach (QueryFilterFactoryAttribute attrib in methodInfo.GetCustomAttributes(typeof(QueryFilterFactoryAttribute), false))
+						{
+							Func<string[], IFilter> del = (Func<string[], IFilter>) Delegate.CreateDelegate(typeof(Func<string[], IFilter>), methodInfo);
+							if (filters.ContainsKey(attrib.ID))
+								log.WarnFormat("A filter factory method {0} registered with the id '{1}' will be overwritten by delegate {2} registered for the same id.",
+									Util.GetMethodSignature(filters[attrib.ID].FactoryMethod.Method),
+									attrib.ID,
+									Util.GetMethodSignature(del.Method));
+
+							filters[attrib.ID] = new FilterDefinition(del, attrib.ParameterCount);
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -89,10 +107,8 @@ namespace Kelp.Imaging.Filters
 		/// <param name="query">The query that specifies the filters to use.</param>
 		public QueryFilter(QueryString query)
 		{
-			ParseQuery(query);
+			this.ParseQuery(query);
 		}
-
-		private delegate IFilter GetFilter(string[] param, QueryString query);
 
 		/// <summary>
 		/// Gets the <see cref="QueryString"/> associated with this <see cref="QueryFilter"/>.
@@ -135,143 +151,6 @@ namespace Kelp.Imaging.Filters
 			return inputImage;
 		}
 
-		private static IFilter GetCropFilter(string[] param, QueryString query)
-		{
-			int x, y, w, h;
-
-			int.TryParse(param[0], out x);
-			int.TryParse(param[1], out y);
-			int.TryParse(param[2], out w);
-			int.TryParse(param[3], out h);
-
-			if (w != 0 && h != 0)
-				return new Crop(new Rectangle(x, y, w, h));
-
-			return null;
-		}
-
-		private static IFilter GetResampleFilter(string[] param, QueryString query)
-		{
-			int width, height = 0;
-			bool preserveRatio = true;
-			bool dontEnlarge = true;
-			InterpolationMode interpolation = InterpolationMode.HighQualityBicubic;
-
-			int.TryParse(param[0], out width);
-
-			if (param.Length > 1)
-				int.TryParse(param[1], out height);
-
-			if (param.Length > 2)
-				preserveRatio = param[2] != "0";
-
-			if (param.Length > 3)
-				dontEnlarge = param[3] != "0";
-
-			if (param.Length > 4)
-			{
-				interpolation = (InterpolationMode) 
-					Enum.Parse(typeof(InterpolationMode), param[4]);
-			}
-
-			if (width != 0 || height != 0)
-			{
-				Resample filter = new Resample(width, height, interpolation, preserveRatio, dontEnlarge);
-				if (query["ft"] == "min")
-					filter.FitType = ResampleFitType.ToMinimums;
-
-				return filter;
-			}
-
-			return null;
-		}
-
-		private static IFilter GetBrigthnessFilter(string[] param, QueryString query)
-		{
-			int amount;
-			return int.TryParse(param[0], out amount) ? new BrightnessMatrix(amount) : null;
-		}
-
-		private static IFilter GetContrastFilter(string[] param, QueryString query)
-		{
-			int amount;
-			return int.TryParse(param[0], out amount) ? new ContrastMatrix(amount) : null;
-		}
-
-		private static IFilter GetGammaFilter(string[] param, QueryString query)
-		{
-			int amount;
-			return int.TryParse(param[0], out amount) ? new GammaMatrix(amount) : null;
-		}
-
-		private static IFilter GetMirrorHFilter(string[] param, QueryString query)
-		{
-			return param[0] == "1" ? new MirrorH() : null;
-		}
-
-		private static IFilter GetMirrorVFilter(string[] param, QueryString query)
-		{
-			return param[0] == "1" ? new MirrorV() : null;
-		}
-
-		private static IFilter GetGrayscaleFilter(string[] param, QueryString query)
-		{
-			return param[0] == "1" ? new GrayscaleMatrix() : null;
-		}
-
-		private static IFilter GetHslFilter(string[] param, QueryString query)
-		{
-			int h;
-			int s;
-			int l;
-
-			int.TryParse(param[0], out h);
-			int.TryParse(param[1], out s);
-			int.TryParse(param[2], out l);
-
-			if (h != 0 || s != 0 || l != 0)
-				return new HSLFilter(h, s, l);
-
-			return null;
-		}
-
-		private static IFilter GetColorFilter(string[] param, QueryString query)
-		{
-			int r;
-			int g;
-			int b;
-
-			int.TryParse(param[0], out r);
-			int.TryParse(param[1], out g);
-			int.TryParse(param[2], out b);
-
-			if (r != 0 || g != 0 || b != 0)
-				return new ColorBalance(r, g, b);
-
-			return null;
-		}
-
-		private static IFilter GetSepiaFilter(string[] param, QueryString query)
-		{
-			return param[0] == "1" ? new SepiaMatrix() : null;
-		}
-
-		private static IFilter GetSharpenFilter(string[] param, QueryString query)
-		{
-			return param[0] == "1" ? new GaussianSharpen(0.9, 1) : null;
-		}
-
-		private static IFilter GetSharpenExFilter(string[] param, QueryString query)
-		{
-			int amount;
-			int.TryParse(param[0], out amount);
-
-			if (amount > 0 && amount < 100)
-				return new GaussianSharpen(amount * 0.025, 3);
-
-			return GetSharpenFilter(param, query);
-		}
-
 		private Dictionary<string, string[]> GetQueryParam(NameValueCollection param)
 		{
 			Dictionary<string, string[]> query = new Dictionary<string, string[]>();
@@ -302,7 +181,7 @@ namespace Kelp.Imaging.Filters
 				if (param[key].Length < filterDef.Arguments)
 					continue;
 
-				IFilter filter = filterDef.GetFilter(param[key], query);
+				IFilter filter = filterDef.FactoryMethod(param[key]);
 				if (filter != null)
 				{
 					this.activeFilters.Add(filter);
@@ -313,13 +192,13 @@ namespace Kelp.Imaging.Filters
 
 		private struct FilterDefinition
 		{
-			public readonly GetFilter GetFilter;
+			public readonly Func<string[], IFilter> FactoryMethod;
 
 			public readonly byte Arguments;
 
-			public FilterDefinition(GetFilter getter, byte argCount)
+			public FilterDefinition(Func<string[], IFilter> getter, byte argCount)
 			{
-				this.GetFilter = getter;
+				this.FactoryMethod = getter;
 				this.Arguments = argCount;
 			}
 		}

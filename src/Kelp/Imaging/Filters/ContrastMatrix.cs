@@ -59,5 +59,12 @@ namespace Kelp.Imaging.Filters
 
 			this.Matrix = matrix;
 		}
+
+		[QueryFilterFactory("ct", 1)]
+		internal static IFilter GetContrastFilter(string[] param)
+		{
+			int amount;
+			return int.TryParse(param[0], out amount) ? new ContrastMatrix(amount) : null;
+		}
 	}
 }

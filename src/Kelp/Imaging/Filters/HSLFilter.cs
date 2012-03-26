@@ -144,5 +144,22 @@ namespace Kelp.Imaging.Filters
 			Bitmap result = ColorSpace.HSL(source, this.convH, this.convS, this.convL);
 			return result;
 		}
+
+		[QueryFilterFactory("hsl", 3)]
+		internal static IFilter GetHslFilter(string[] param)
+		{
+			int h;
+			int s;
+			int l;
+
+			int.TryParse(param[0], out h);
+			int.TryParse(param[1], out s);
+			int.TryParse(param[2], out l);
+
+			if (h != 0 || s != 0 || l != 0)
+				return new HSLFilter(h, s, l);
+
+			return null;
+		}
 	}
 }

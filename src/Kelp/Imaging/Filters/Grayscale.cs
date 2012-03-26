@@ -29,5 +29,11 @@ namespace Kelp.Imaging.Filters
 		{
 			this.Matrix = ImageHelper.GrayscaleMatrix;
 		}
+
+		[QueryFilterFactory("gs", 1)]
+		internal static IFilter GetGrayscaleFilter(string[] param)
+		{
+			return param[0] == "1" ? new GrayscaleMatrix() : null;
+		}
 	}
 }

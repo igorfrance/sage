@@ -49,5 +49,21 @@ namespace Kelp.Imaging.Filters
 		{
 			return crop.Apply(source);
 		}
+
+		[QueryFilterFactory("cp", 4)]
+		internal static IFilter GetCropFilter(string[] param)
+		{
+			int x, y, w, h;
+
+			int.TryParse(param[0], out x);
+			int.TryParse(param[1], out y);
+			int.TryParse(param[2], out w);
+			int.TryParse(param[3], out h);
+
+			if (w != 0 && h != 0)
+				return new Crop(new Rectangle(x, y, w, h));
+
+			return null;
+		}
 	}
 }
