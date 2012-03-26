@@ -7,7 +7,7 @@
 
 	<xsl:template match="mod:Navigation">
 		<xsl:variable name="currentHref" select="normalize-space(mod:config/mod:current/text())"/>
-		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/site:navigation"/>
+		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/sage:data/site:navigation"/>
 
 		<div class="navigation">
 			<xsl:apply-templates select="$navigation/ul/li/*[position() > 1]" mode="navigation-tree">
