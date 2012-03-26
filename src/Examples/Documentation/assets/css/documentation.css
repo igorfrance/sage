@@ -23,11 +23,14 @@ hr.separator
 
 blockquote
 	{ margin-left: 30px; padding-left: 5px; border-left: 4px solid #b6b6b6; }
-blockquote ul,
-blockquote ol
+blockquote ul
 	{ padding-left: 0; }
 blockquote ul li
 	{ padding-left: 0; background: none; }
+blockquote.casual
+	{ border-left: 1px solid #b6b6b6; }
+blockquote.invisible
+	{ border-left: 0; }
 
 h1
 	{ color: #54596F; font-size: 200%; font-weight: normal; margin-bottom: 40px; text-shadow: 1px 1px 3px #666; }
@@ -93,7 +96,7 @@ code
 code.example
 	{ display: block; margin: 10px 0 10px  40px; }
 code.principal
-	{ display: block; margin: 10px 0; padding: 5px; background: #efefef; border: 1px solid #ccc; }
+	{ display: inline-block; margin: 10px 0; padding: 5px; background: #efefef; border: 1px solid #ccc; }
 dl
 	{}
 dt
@@ -121,13 +124,19 @@ ul, ol
 ul, ol
 	{ overflow: hidden; padding-left: 20px; }
 
-ul li
+ul > li
 	{	list-style-type: none; margin: 0; background: url(../images/bullet.png) no-repeat 0 7px; padding-left: 12px; }
 ul.clear li
 	{ background-image: none; padding-left: 0; }
 ul.separate > li,
 ol.separate > li
-	{ margin-bottom: 20px; }
+	{ margin-bottom: 20px; padding-bottom: 10px; }
+ul.underlined > li,
+ol.underlined > li
+	{ border-bottom: 1px solid #ccc; }
+ul.separatesmall > li,
+ol.separatesmall > li
+	{ margin-bottom: 10px; }
 
 ul.root
 	{ padding-left: 0; }
@@ -144,6 +153,10 @@ ul.examples li
 ul.reference > li,
 ol.reference > li
 	{ padding-top: 20px; padding: 20px; background: #dcdfe2; border-radius: 5px; margin-bottom: 20px; }
+
+ul.reference .others,
+ol.reference .others
+	{ font-size: 85%; font-weight: bold; font-style: italic; }
 
 ul.reference.examples > li,
 ol.reference.examples > li
@@ -187,13 +200,18 @@ table.definition th
 	{ width: 100%; height: 100%; display: table-cell; vertical-align: middle; }
 
 .imageframe
-	{ position: relative; }
+	{ position: relative; float: left; margin: 0 40px 15px 0; }
 .imageframe .caption
-	{ position: absolute; top: -20px; left: 0; right: 0; text-align: center; }
+	{ clear: left; padding: 3px 10px; text-align: left; background: #4d5266; color: #fff; font-size: 80%;
+	  border-bottom: 1px solid #000; margin: 3px 0; font-family: Consolas; }
+.imageframe img
+	{ float: left; }
 .imageframe.right
 	{ float: right; margin: 0 0 15px 40px; }
-.imageframe.left
-	{ float: left; margin: 0 40px 15px 0; }
+.imageframe .copyright
+	{ clear: left; position: relative; font-size: 70%; padding: 1px 3px 3px 3px; }
+.imageframe .copyright label
+	{ font-weight: bold; }
 
 .process-flow
 	{ position: relative; min-height: 90px; margin-bottom: 40px; white-space: nowrap; display: table; }
