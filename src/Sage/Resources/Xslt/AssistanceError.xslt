@@ -161,6 +161,21 @@
 			<xsl:when test="$problemType = 'IncludeSyntaxError'">
 				Syntax error in xpointer expression
 			</xsl:when>
+			<xsl:when test="$problemType = 'ContextualizeError'">
+				Contextualization error
+			</xsl:when>
+			<xsl:when test="$problemType = 'ModuleProcessingError'">
+				Module processing error
+			</xsl:when>
+			<xsl:when test="$problemType = 'ResourceProcessingError'">
+				Resource processing error
+			</xsl:when>
+			<xsl:when test="$problemType = 'ViewXmlFilteringError'">
+				View XML filtering error
+			</xsl:when>
+			<xsl:when test="$problemType = 'ViewDocumentInitError'">
+				View document initialization error.
+			</xsl:when>
 			<xsl:otherwise>An error was caught</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -203,6 +218,21 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'IncludeSyntaxError'">
 				The expression specified with the <code>xpointer</code> attribute contains a syntax error.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ContextualizeError'">
+				A problem happend during the contextualization of an XML document.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ModuleProcessingError'">
+				A problem happend during the processing of modules used on a view.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ResourceProcessingError'">
+				A problem occured during inclusion of resources referenced by modules and/or libraries in use on a view.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ViewXmlFilteringError'">
+				A problem occured during applying view filters (postprocessing step, extensibility).
+			</xsl:when>
+			<xsl:when test="$problemType = 'ViewDocumentInitError'">
+				A problem occured during initialization of the view document.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -272,7 +302,7 @@
 <code class="pre"><![CDATA[<categories>
 	<category
 		name="running"
-		locales="ae,ar,at,au,be,br,ca,cf,ch,cn,com,de,dk,es,fi,fr,gr,hk,hu,id,in,it,jp,kr,la,my,nl,no,nz,ph,pl,pt,ru,se,sg,th,tw,uk,us,vn,za"
+		locales="en,de"
 		/>
 </categories>]]></code>
 			</xsl:when>
@@ -294,6 +324,30 @@
 			<xsl:when test="$problemType = 'IncludeSyntaxError'">
 				Check the value of the <code>xi:include</code> element's <code>xpointer</code> attribute
 				and make sure it has been entered without errors.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ContextualizeError'">
+				<p>Look into the XML document(s) you are working with and try to look for the cause indicated by the exception text.</p>
+			</xsl:when>
+			<xsl:when test="$problemType = 'ModuleProcessingError'">
+				<p>Look into the module(s) you are working with and try to look for the cause indicated by the exception text.</p>
+			</xsl:when>
+			<xsl:when test="$problemType = 'ResourceProcessingError'">
+				<p>
+					Check that all referenced resources exist and that the path to them has been specified correctly.
+					Module resource paths are relative to the directory in which module and it's resources are.
+				</p>
+				<p>
+					If you are referencing XML files, make sure they are well formed. If they include other documents,
+					make sure they exist too, and that the path to them is correct.
+				</p>
+			</xsl:when>
+			<xsl:when test="$problemType = 'ViewXmlFilteringError'">
+				<p>
+					Look at the description and stack track of the error to determine the cause and location of the error.
+				</p>
+			</xsl:when>
+			<xsl:when test="$problemType = 'ViewDocumentInitError'">
+				Look for the problem in the X(HT)ML document used for the current view.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
