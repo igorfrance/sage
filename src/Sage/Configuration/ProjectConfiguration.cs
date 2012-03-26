@@ -304,26 +304,6 @@ namespace Sage.Configuration
 			return this.DeveloperIps.Count(a => a.Matches(clientIpAddress)) != 0;
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether the specified <paramref name="locale"/> uses a latin character subset.
-		/// </summary>
-		/// <param name="locale">The name of the locale to verify</param>
-		/// <returns>
-		/// <c>true</c> if the specified locale uses a latin character subset, otherwise <c>false</c>.
-		/// </returns>
-		public bool IsLatinLocale(string locale)
-		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(locale));
-
-			bool result = false;
-
-			LocaleInfo info;
-			if (this.Locales.TryGetValue(locale, out info))
-				result = info.IsLatinCharset;
-
-			return result;
-		}
-
 		/// <inheritdoc/>
 		public override string ToString()
 		{
@@ -364,7 +344,7 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
 
 			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
-			Parse(document);
+			this.Parse(document);
 		}
 
 		internal void Parse(XmlDocument configDoc)
@@ -425,7 +405,7 @@ namespace Sage.Configuration
 				{
 					nodeValue = node.InnerText;
 					if (!string.IsNullOrEmpty(nodeValue))
-						this.AssetPath = nodeValue;
+						this.AssetPath = nodeValue.TrimEnd('/') + "/";
 				}
 			}
 

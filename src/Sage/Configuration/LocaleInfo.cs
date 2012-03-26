@@ -28,7 +28,6 @@ namespace Sage.Configuration
 	/// </summary>
 	public struct LocaleInfo
 	{
-		internal const string NonLatinResourceName = "non-latin";
 		internal const string DefaultLocale = "en-us";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(LocaleInfo).FullName);
@@ -88,17 +87,6 @@ namespace Sage.Configuration
 			get
 			{
 				return culture;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this locale uses a latin character subset.
-		/// </summary>
-		public bool IsLatinCharset
-		{
-			get
-			{
-				return !this.ResourceNames.Contains(NonLatinResourceName);
 			}
 		}
 
