@@ -20,11 +20,6 @@ namespace Sage.Views
 	using System.Linq;
 	using System.Xml;
 
-	using Kelp.Extensions;
-
-	using Mvp.Xml.XInclude;
-	using Mvp.Xml.XPointer;
-
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
 
@@ -74,6 +69,7 @@ namespace Sage.Views
 					continue;
 
 				this.ConfigPath = path;
+				this.ConfigName = string.Concat(controller.ControllerName, "/", Path.GetFileName(this.ConfigPath));
 				this.ConfigExists = true;
 				break;
 			}
@@ -121,6 +117,11 @@ namespace Sage.Views
 		/// Gets the path to the view configuration file associated with the view this object represents.
 		/// </summary>
 		public string ConfigPath { get; private set; }
+
+		/// <summary>
+		/// Gets the name that identifies the cofig document for the view that this object represents.
+		/// </summary>
+		public string ConfigName { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this view's configuration file exists.
@@ -264,7 +265,7 @@ namespace Sage.Views
 						}
 						catch (Exception ex)
 						{
-							SageHelpException helpError = SageHelpException.Create(ex, this.ConfigPath);
+							SageHelpException helpError = SageHelpException.Create(ex, this.ConfigPath, ProblemType.ViewDocumentInitError);
 							if (helpError.Problem.Type == ProblemType.Unknown)
 								throw;
 
