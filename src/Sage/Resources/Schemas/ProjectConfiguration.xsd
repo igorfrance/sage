@@ -29,6 +29,7 @@
 						<xs:element name="ViewTemplate" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="ViewConfiguration" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="Dictionary" type="config.textelement" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SiteMap" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultStylesheet" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultCategoryStylesheet" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="CategoryConfiguration" type="config.textelement" minOccurs="0" maxOccurs="1"/>
@@ -68,12 +69,16 @@
 									<xs:element name="include" minOccurs="0" maxOccurs="1">
 										<xs:complexType>
 											<xs:choice>
-												<xs:element name="always" minOccurs="0" maxOccurs="1"/>
-												<xs:element name="path" minOccurs="0" maxOccurs="unbounded">
-													<xs:complexType mixed="true">
-														<xs:attribute name="compare" type="compareType" use="optional" default="wildcard"/>
-													</xs:complexType>
-												</xs:element>
+												<xs:sequence minOccurs="0" maxOccurs="1">
+													<xs:element name="always" minOccurs="0" maxOccurs="1"/>
+												</xs:sequence>
+												<xs:sequence minOccurs="0" maxOccurs="1">
+													<xs:element name="path" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType mixed="true">
+															<xs:attribute name="compare" type="compareType" use="optional" default="wildcard"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
 											</xs:choice>
 										</xs:complexType>
 									</xs:element>
