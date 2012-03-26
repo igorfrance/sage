@@ -59,6 +59,7 @@ namespace Sage.Extensibility
 
 			if (!Directory.Exists(this.SourceDirectory))
 			{
+				Directory.CreateDirectory(this.SourceDirectory);
 				this.ExtractArchive();
 			}
 			else if (this.ArchiveDate > Directory.GetLastWriteTime(this.SourceDirectory))
