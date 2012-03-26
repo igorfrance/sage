@@ -120,7 +120,7 @@ namespace Kelp
 				}
 				else
 				{
-					this.Add(t, string.Empty);
+					this.Add(t, null);
 				}
 			}
 
@@ -541,23 +541,34 @@ namespace Kelp
 		/// <param name="prependQuestionMark">If set to <c>true</c>, and if collection is not empty, the resulting string will be 
 		/// prepended a '?' symbol.</param>
 		/// <returns>A <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.</returns>
-		/// <example>
-		/// var coll = new <see cref="NameValueCollection"/> {{ "color", "red" }, { "size", "large" }};
-		/// // The following line returns "color=red&amp;size=large":
-		/// var queryString1 = coll.ToQueryString(<c>false</c>);
-		/// // The following line returns "?color=red&amp;size=large":
-		/// var queryString2 = coll.ToQueryString(<see langword="true"/>);
-		/// </example>
 		public string ToString(bool prependQuestionMark)
+		{
+			return this.ToString("?");
+		}
+
+		/// <summary>
+		/// Returns a <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string and prepended 
+		/// with the specified <paramref name="symbolToPrepend"/>.
+		/// </summary>
+		/// <param name="symbolToPrepend">The symbol (typically '?' or '#' to prepend the querystring wuth</param>
+		/// <returns>A <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.</returns>
+		public string ToString(string symbolToPrepend)
 		{
 			string[] pairs = new string[this.Count];
 
 			for (int i = 0; i < this.Count; i++)
-				pairs[i] = string.Concat(this.GetKey(i), "=", this[i] ?? string.Empty);
+			{
+				string key = this.GetKey(i);
+				string value = this[i];
+				if (value == null)
+					pairs[i] = key;
+				else
+					pairs[i] = string.Concat(key, "=", value);
+			}
 
 			string result = string.Join("&", pairs);
-			if (prependQuestionMark && result.Length != 0)
-				return "?" + result;
+			if (result.Length != 0)
+				return symbolToPrepend + result;
 
 			return result;
 		}
