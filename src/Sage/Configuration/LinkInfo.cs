@@ -33,6 +33,9 @@ namespace Sage.Configuration
 			this.Name = configNode.GetAttribute("name");
 			this.Url = configNode.GetAttribute("url");
 
+			if (this.Url.StartsWith("~/"))
+				this.Url = this.Url.Replace("~/", HostingEnvironment.ApplicationVirtualPath.TrimEnd('/') + "/");
+
 			if (!this.Url.StartsWith("/") && !this.Url.Contains("://"))
 				this.Url = string.Concat(HostingEnvironment.ApplicationVirtualPath.TrimEnd('/'), "/", this.Url);
 		}
