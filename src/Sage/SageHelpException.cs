@@ -22,8 +22,8 @@ namespace Sage
 
 	using Kelp.Extensions;
 
-	using Mvp.Xml.XInclude;
-	using Mvp.Xml.XPointer;
+	using Kelp.XInclude;
+	using Kelp.XInclude.XPointer;
 
 	/// <summary>
 	/// Implements an exception that provides help about the error that occured.
@@ -75,7 +75,7 @@ namespace Sage
 			}
 		}
 
-		internal static SageHelpException Create(Exception ex, string path = null)
+		internal static SageHelpException Create(Exception ex, string path = null, ProblemType suggestedProblem = ProblemType.Unknown)
 		{
 			ProblemInfo problem = new ProblemInfo(ProblemType.Unknown);
 			if (ex is XmlException)
@@ -102,9 +102,10 @@ namespace Sage
 					problem = new ProblemInfo(ProblemType.IncludeSyntaxError, path);
 			}
 
-			var result = new SageHelpException(problem);
-			result.Exception = ex;
+			if (problem.Type == ProblemType.Unknown && suggestedProblem != ProblemType.Unknown)
+				problem.Type = suggestedProblem;
 
+			var result = new SageHelpException(problem) { Exception = ex };
 			return result;
 		}
 
