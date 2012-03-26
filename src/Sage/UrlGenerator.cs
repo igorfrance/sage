@@ -35,13 +35,11 @@ namespace Sage
 	/// </summary>
 	public class UrlGenerator
 	{
-		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'\w[\w\.:]*):(?'AttribValue'.*)$", RegexOptions.Compiled);
-		private static readonly Regex urlFunction = new Regex(@"^url\((?'LinkName'[^,]+)(?:,(?'LinkValues'.*))?\)$", RegexOptions.Compiled);
+		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'[\w\.:$\-]*)=(?'AttribValue'.*)$", RegexOptions.Compiled);
+		private static readonly Regex linkPlaceholder = new Regex(@"(?!>^|[^{])\{([^{}]+)\}(?!\})");
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlGenerator).FullName);
 		private readonly SageContext context;
-
-		private static readonly Regex linkPlaceholder = new Regex(@"(?!>^|[^{])\{([^{}]+)\}(?!\})");
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UrlGenerator"/> class, using the specified <paramref name="context"/>.
@@ -133,11 +131,11 @@ namespace Sage
 		/// Gets the full url of the current request (taking any rewriting into account).
 		/// </summary>
 		/// <returns></returns>
-		public string VisibleUrl
+		public string RawUrl
 		{
 			get
 			{
-				string pathAndQuery = context.Request.ServerVariables["HTTP_X_REWRITE_URL"] ?? context.Request.Url.PathAndQuery;
+				string pathAndQuery = context.Request.ServerVariables["HTTP_X_REWRITE_URL"] ?? context.Request.RawUrl;
 				return string.Concat(ServerPrefix, pathAndQuery);
 			}
 		}
@@ -394,7 +392,7 @@ namespace Sage
 				string attribValue = match.Groups["AttribValue"].Value;
 
 				XmlAttribute result = attribNode.OwnerDocument.CreateAttribute(attribName);
-				result.InnerText = GetAttributeValue(attribValue, context);
+				result.InnerText = context.ProcessFunctions(attribValue);
 
 				return result;
 			}
@@ -409,9 +407,75 @@ namespace Sage
 			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
 				return attribNode;
 
-			string attribValue = GetAttributeValue(attribNode.InnerText, context);
+			string attribValue = context.ProcessFunctions(attribNode.InnerText);
 			attribNode.InnerText = ResourceManager.ProcessString(attribValue, context);
 			return attribNode;
+		}
+
+		[TextFunction(Name = "url:link")]
+		internal static string GetLinkFunction(string argumentString, SageContext context)
+		{
+			string[] parameters = argumentString.Split(',');
+
+			string linkName = parameters[0].Trim();
+			QueryString paramQuery = new QueryString();
+			QueryString hashQuery = new QueryString();
+
+			for (int i = 1; i < parameters.Length; i++)
+			{
+				string parameter = parameters[i].Trim();
+
+				QueryString tempQuery;
+
+				if (parameter.IndexOf("#") == 0)
+				{
+					tempQuery = new QueryString(parameter.Substring(1));
+					hashQuery.Merge(tempQuery);
+				}
+				else 
+				{
+					tempQuery = new QueryString(parameter.Substring(1));
+					paramQuery.Merge(tempQuery);
+				}
+			}
+
+			string linkHref = context.Url.GetUrl(linkName, paramQuery);
+			return string.Concat(linkHref, paramQuery.ToString("?"), hashQuery.ToString("#"));
+		}
+
+		[TextFunction(Name = "url:self")]
+		internal static string GetSelfFunction(string argumentString, SageContext context)
+		{
+			string currentUrl = context.Url.RawUrl;
+			QueryString paramQuery = new QueryString();
+			QueryString hashQuery = new QueryString();
+
+			if (currentUrl.Contains("?"))
+			{
+				paramQuery.Parse(currentUrl.Substring(currentUrl.IndexOf("?") + 1));
+				currentUrl = currentUrl.Substring(0, currentUrl.IndexOf("?"));
+			}
+
+			string[] arguments = argumentString.Split(',');
+			for (int i = 1; i < arguments.Length; i++)
+			{
+				string argument = arguments[i].Trim();
+
+				QueryString tempQuery;
+				if (argument.IndexOf("?") == 0)
+				{
+					tempQuery = new QueryString(argument.Substring(1));
+					paramQuery.Merge(tempQuery);
+				}
+
+				if (argument.IndexOf("#") == 0)
+				{
+					tempQuery = new QueryString(argument.Substring(1));
+					hashQuery.Merge(tempQuery);
+				}
+			}
+
+			return string.Concat(currentUrl, paramQuery.ToString("?"), hashQuery.ToString("#"));
 		}
 
 		/// <summary>
@@ -474,26 +538,6 @@ namespace Sage
 				return string.Concat(ServerPrefix, resultUrl);
 
 			return resultUrl;
-		}
-
-		private static string GetAttributeValue(string attribValue, SageContext context)
-		{
-			Match match;
-			string result = attribValue;
-			if ((match = urlFunction.Match(attribValue)).Success)
-			{
-				string[] parameters = match.Groups[1].Value.Split(',');
-
-				string linkId = parameters[0].Trim();
-				string linkValues = parameters.Length > 1 ? parameters[1].Trim() : null;
-				bool encode = parameters.Length > 2 && parameters[2].Trim().EqualsAnyOf("true", "yes", "1");
-
-				string linkHref = context.Url.GetUrl(linkId, linkValues);
-				if (!string.IsNullOrEmpty(linkHref))
-					return encode ? HttpUtility.UrlEncode(linkHref) : linkHref;
-			}
-
-			return result;
 		}
 	}
 }
