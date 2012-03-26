@@ -50,11 +50,11 @@
 			<xsl:apply-templates select="@*"/>
 			<xsl:attribute name="class">
 				<xsl:value-of select="$view/@controller"/>
-				<xsl:text>&#32;&#160;</xsl:text>
+				<xsl:text> </xsl:text>
 				<xsl:value-of select="$view/@action"/>
 				<xsl:if test="string-length(@class)">
-					<xsl:text>&#32;&#160;</xsl:text>
-					<xsl:value-of select="$view/@class"/>
+					<xsl:text> </xsl:text>
+					<xsl:value-of select="@class"/>
 				</xsl:if>
 			</xsl:attribute>
 			<xsl:attribute name="data-thread">
