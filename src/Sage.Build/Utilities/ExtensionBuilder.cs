@@ -35,7 +35,7 @@ namespace Sage.Build.Utilities
 
 		private readonly ZipEntryFactory zipEntryFactory = new ZipEntryFactory();
 		private NameValueCollection arguments;
-		private string applicationPath;
+		private string sourcePath;
 		private string extensionName;
 
 		public string CommandName
@@ -77,46 +77,48 @@ namespace Sage.Build.Utilities
 
 		public void Run()
 		{
-			applicationPath = arguments["source"];
-			if (!Path.IsPathRooted(applicationPath))
-				applicationPath = Path.Combine(Directory.GetCurrentDirectory(), applicationPath);
+			this.sourcePath = arguments["source"];
+			if (!Path.IsPathRooted(this.sourcePath))
+				this.sourcePath = Path.Combine(Directory.GetCurrentDirectory(), this.sourcePath);
 
-			extensionName = Path.ChangeExtension(Path.GetFileName(applicationPath), "zip");
-			string configPath = Path.Combine(applicationPath, "Project.config");
+			extensionName = Path.GetFileNameWithoutExtension(this.sourcePath);
+			string configSourcePath = Path.Combine(this.sourcePath, "Project.config");
 			string systemConfigPath = Path.Combine(Program.ApplicationPath, "System.config");
-			string extensionConfigPath = Path.Combine(Program.ApplicationPath, "Extension.config");
+			string configTargetPath = Path.Combine(Program.ApplicationPath, "Extension.config");
 
-			string targetPath = arguments["target"] ?? Path.Combine(Path.GetDirectoryName(applicationPath), extensionName);
+			string targetPath = arguments["target"] ??
+				Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(extensionName, "zip"));
+
 			if (!Path.IsPathRooted(targetPath))
 				targetPath = Path.Combine(Directory.GetCurrentDirectory(), targetPath);
 
-			if (!Directory.Exists(applicationPath))
+			if (!Directory.Exists(this.sourcePath))
 			{
 				throw new FileNotFoundException(
-					string.Format("The specified extension source path '{0}' doesn't exist", applicationPath));
+					string.Format("The specified extension source path '{0}' doesn't exist", this.sourcePath));
 			}
 
-			if (!File.Exists(configPath))
+			if (!File.Exists(configSourcePath))
 			{
 				throw new FileNotFoundException(
-					string.Format("The specified project configuration path '{0}' doesn't exist", configPath));
+					string.Format("The specified project configuration path '{0}' doesn't exist", configSourcePath));
 			}
 
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = extensionConfig.SelectSingleElement("p:configuration/p:extension", nm);
 
-			ProjectConfiguration config = ProjectConfiguration.Create(configPath, systemConfigPath);
+			ProjectConfiguration config = ProjectConfiguration.Create(configSourcePath, systemConfigPath);
 			XmlElement configRoot = config.ConfigurationElement;
 
 			if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))
 			{
-				extensionName = Path.ChangeExtension(config.Name, "zip");
-				targetPath = Path.Combine(Path.GetDirectoryName(applicationPath), extensionName);
+				extensionName = config.Name;
+				targetPath = Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(config.Name, "zip"));
 			}
 
 			log.InfoFormat("Building extension '{0}'.", extensionName);
-			log.DebugFormat("     (source: {0})", applicationPath);
+			log.DebugFormat("     (source: {0})", this.sourcePath);
 			log.DebugFormat("     (target: {0})", targetPath);
 
 			if (File.Exists(targetPath))
@@ -156,9 +158,9 @@ namespace Sage.Build.Utilities
 				CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
 				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
-				extensionConfig.Save(extensionConfigPath);
+				extensionConfig.Save(configTargetPath);
 
-				PackFile(zipfile, extensionConfigPath, "Extension.config");
+				PackFile(zipfile, configTargetPath, "Extension.config");
 
 				zipfile.IsStreamOwner = true;
 				zipfile.Finish();
@@ -214,7 +216,7 @@ namespace Sage.Build.Utilities
 				path = "~/";
 
 			string result = path.Replace(
-				"~", applicationPath).Replace(
+				"~", this.sourcePath).Replace(
 				"//", "/").Replace(
 				"/", "\\");
 
