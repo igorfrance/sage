@@ -20,7 +20,7 @@ namespace Kelp.Extensions
 	using System.IO;
 	using System.Xml;
 
-	using Mvp.Xml.XInclude;
+	using Kelp.XInclude;
 
 	/// <summary>
 	/// Provides extensions for <see cref="System.Xml.XmlDocument"/>.
