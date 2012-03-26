@@ -22,6 +22,8 @@ namespace Sage.Routing
 	using System.Web.Mvc;
 	using System.Web.Routing;
 
+	using Kelp;
+
 	using log4net;
 	using Sage.Configuration;
 	using Sage.ResourceManagement;
@@ -168,13 +170,13 @@ namespace Sage.Routing
 				if (string.IsNullOrEmpty(attrib.Name))
 				{
 					throw new ApplicationException(string.Format("UrlRouteParameterContraint attribute on {0} is missing the Name property.",
-						ResourceManager.GetDelegateSignature(mi)));
+						Util.GetMethodSignature(mi)));
 				}
 
 				if (string.IsNullOrEmpty(attrib.Expression))
 				{
 					throw new ApplicationException(string.Format("UrlRouteParameterContraint attribute on {0} is missing the RegEx property.",
-						ResourceManager.GetDelegateSignature(mi)));
+						Util.GetMethodSignature(mi)));
 				}
 
 				constraints.Add(attrib.Name, attrib.Expression);
@@ -192,13 +194,13 @@ namespace Sage.Routing
 				if (string.IsNullOrEmpty(attrib.Name))
 				{
 					throw new ApplicationException(string.Format("UrlRouteParameterDefault attribute on {0} is missing the Name property.",
-						ResourceManager.GetDelegateSignature(mi)));
+						Util.GetMethodSignature(mi)));
 				}
 
 				if (attrib.Value == null)
 				{
 					throw new ApplicationException(string.Format("UrlRouteParameterDefault attribute on {0} is missing the Value property.",
-						ResourceManager.GetDelegateSignature(mi)));
+						Util.GetMethodSignature(mi)));
 				}
 
 				defaults.Add(attrib.Name, attrib.Value);
