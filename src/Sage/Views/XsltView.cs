@@ -18,7 +18,6 @@ namespace Sage.Views
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.IO;
-	using System.Text;
 	using System.Web.Mvc;
 	using System.Xml;
 
@@ -50,7 +49,7 @@ namespace Sage.Views
 		/// <param name="textWriter">The destination <see cref="TextWriter"/> that receives the rendered result.</param>
 		public virtual void Render(ViewContext viewContext, TextWriter textWriter)
 		{
-			Transform(viewContext, textWriter, this.processor);
+			this.Transform(viewContext, textWriter, this.processor);
 		}
 
 		/// <summary>
@@ -64,7 +63,7 @@ namespace Sage.Views
 			Contract.Requires<ArgumentException>(viewContext.Controller is SageController);
 			Contract.Requires<ArgumentNullException>(textWriter != null);
 
-			Transform(viewContext, textWriter, this.processor);
+			this.Transform(viewContext, textWriter, this.processor);
 		}
 
 		/// <summary>
@@ -81,7 +80,19 @@ namespace Sage.Views
 			Contract.Requires<ArgumentNullException>(template != null);
 			
 			SageController controller = (SageController) viewContext.Controller;
-			XmlDocument requestXml = controller.PrepareViewXml(viewContext);
+
+			XmlDocument requestXml;
+			try
+			{
+				requestXml = controller.PrepareViewXml(viewContext);
+			}
+			catch (Exception ex)
+			{
+				if (ex is SageHelpException)
+					throw;
+
+				throw new SageHelpException(new ProblemInfo(ProblemType.ModuleProcessingError), ex);
+			}
 
 			template.Transform(requestXml, textWriter, controller.Context);
 		}
