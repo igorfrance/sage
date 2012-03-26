@@ -51,11 +51,13 @@ namespace Sage.Extensibility
 			string[] archives = Directory.GetFiles(pluginPath, "*.zip", SearchOption.TopDirectoryOnly);
 			ExtensionInfo extension = null;
 			string action = null;
+			string extensionPath = null;
 
 			try
 			{
 				foreach (string archive in archives)
 				{
+					extensionPath = archive;
 					extension = new ExtensionInfo(archive, context);
 					this.Add(extension);
 
@@ -78,7 +80,15 @@ namespace Sage.Extensibility
 			}
 			catch (Exception ex)
 			{
-				log.ErrorFormat("Error {0} extension '{1}': {2}", action, extension.Name, ex.Message);
+				if (extension != null)
+				{
+					log.ErrorFormat("Error {0} extension '{1}': {2}", action, extension.Name, ex.Message);
+				}
+				else
+				{
+					log.ErrorFormat("Error initializing extension '{0}': {1}", Path.GetFileNameWithoutExtension(extensionPath), ex.Message);
+				}
+
 				throw;
 			}
 		}
