@@ -32,5 +32,14 @@ namespace Kelp.HttpMock
 				return "Firefox10";
 			}
 		}
+
+		/// <inheritdoc/>
+		public override bool Crawler
+		{
+			get
+			{
+				return false;
+			}
+		}
 	}
 }
