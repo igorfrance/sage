@@ -17,6 +17,7 @@ namespace Kelp.Extensions
 {
 	using System;
 	using System.Diagnostics.Contracts;
+	using System.Text;
 	using System.Text.RegularExpressions;
 
 	/// <summary>
@@ -217,6 +218,27 @@ namespace Kelp.Extensions
 			Contract.Requires<ArgumentNullException>(replacement != null);
 
 			return expression.Replace(subject, replacement);
+		}
+
+		/// <summary>
+		/// Repeats the specified <paramref name="subject"/> the specified <paramref name="count"/> of times.
+		/// </summary>
+		/// <param name="subject">The subject to repeat.</param>
+		/// <param name="count">The number of times to repeat the subject.</param>
+		/// <returns>the specified <paramref name="subject"/> repeated the specified <paramref name="count"/> of times.</returns>
+		public static string Repeat(this string subject, int count)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(subject));
+			Contract.Requires<ArgumentNullException>(count > 0);
+
+			if (count == 1)
+				return subject;
+
+			StringBuilder result = new StringBuilder(subject);
+			for (int i = 1; i < count; i++)
+				result.Append(subject);
+
+			return result.ToString();
 		}
 
 		/// <summary>
