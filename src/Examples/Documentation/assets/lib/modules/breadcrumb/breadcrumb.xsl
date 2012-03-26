@@ -12,7 +12,7 @@
 
 	<xsl:template match="mod:BreadCrumb">
 		<xsl:variable name="currentHref" select="normalize-space(mod:config/mod:current/text())"/>
-		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/site:navigation"/>
+		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/sage:data/site:navigation"/>
 		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>
 		<xsl:variable name="levels" select="$currentLink/ancestor::x:li"/>
 		<div class="breadcrumb">
