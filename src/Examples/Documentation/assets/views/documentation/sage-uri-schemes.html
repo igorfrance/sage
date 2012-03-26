@@ -35,8 +35,8 @@
 				Used with script and style resources to point to a merged file, this scheme allows Sage to un-merge the resources
 				and include them separately on development, and merged on production setups. Whether the script or style will
 				be served merged or separate is controlled by configuration attribute <code>project/@mergeResources</code>
-				in <a sage:attrib="href:url(configuration-project)">project configuration</a>. For more info see
-				<a sage:attrib="href:url(resource-processing-kelp)">resource merging with Kelp</a>.
+				in <a href="url:link(configuration-project)">project configuration</a>. For more info see
+				<a href="url:link(resource-processing-kelp)">resource merging with Kelp</a>.
 			</dd>
 
 			<dt>sageres://</dt>
@@ -55,7 +55,7 @@
 					<li>
 						If there is a <code>GetResource</code> delegate registered for that name, the resource returned will be
 						the result of invoking this delegate. For more info, read
-						<a sage:attrib="href:url(extensibility-resource-providers)">resource providers</a> page.
+						<a href="url:link(extensibility-resource-providers)">resource providers</a> page.
 					</li>
 					<li>
 						In all other cases, the path is <i>expanded</i> to a path within the current <code>{{assetpath}}</code>. So if the
@@ -63,7 +63,7 @@
 						expanded to <code>~/assets/configuration/navigation.xml</code> and the resource will be opened from that
 						location. Additionally, if a localized resource exists (file with locale suffix added to the name), it will
 						be opened instead of the requested name. This enable automatic usage of locale-specific document
-						overrides, if they exist. For more info, see <a sage:attrib="href:url(internationalization-fallback)">fallback paths</a>.
+						overrides, if they exist. For more info, see <a href="url:link(internationalization-fallback)">fallback paths</a>.
 					</li>
 				</ol>
 			</dd>

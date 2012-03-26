@@ -21,7 +21,7 @@
 
 		<p>
 			To promote reuse and facilitate discoverability, Sage enables you to define project-global
-			URLs within the <a href="url(configuration-project)">project configuration file</a>, and then refer to them
+			URLs within the <a href="url:link(configuration-project)">project configuration file</a>, and then refer to them
 			using their name anywhere in your project where you may need them.
 		</p>
 
@@ -58,11 +58,11 @@
 
 		<ul class="root reference">
 			<li>
-				Directly within any <code>href</code> attribute, using <code>url(...)</code> syntax.
+				Directly within any <code>href</code> attribute, using <code>url:link(...)</code> syntax.
 				<mod:XmlTree>
 					<mod:data>
 						<sage:literal>
-							<a href="url(xml-as-a-language)">XML as a language</a>
+							<a href="url:link(xml-as-a-language)">XML as a language</a>
 						</sage:literal>
 					</mod:data>
 				</mod:XmlTree>
@@ -71,18 +71,18 @@
 				</div>
 				<mod:XmlTree>
 					<mod:data>
-						<a href="url(xml-as-a-language)">XML as a language</a>
+						<a href="url:link(xml-as-a-language)">XML as a language</a>
 					</mod:data>
 				</mod:XmlTree>
 			</li>
 			<li>
 				<div>
-					Within <a href="url(sage-namespaces-sage)">@sage:attrib</a> attribute, using <code>url(...)</code> syntax.
+					Within <a href="url:link(sage-namespaces-sage)">@sage:attrib</a> attribute, using <code>url:link(...)</code> syntax.
 				</div>
 				<mod:XmlTree>
 					<mod:data>
 						<sage:literal>
-							<form method="post" sage:attrib="action:url(registration-action)">...</form>
+							<form method="post" sage:attrib="action:url:link(registration-action)">...</form>
 						</sage:literal>
 					</mod:data>
 				</mod:XmlTree>
@@ -99,7 +99,7 @@
 			</li>
 			<li>
 				<div>
-					Within <a href="url(sage-namespaces-sage)">sage:url</a> element.
+					Within <a href="url:link(sage-namespaces-sage)">sage:url</a> element.
 				</div>
 				<mod:XmlTree>
 					<mod:data>
@@ -115,7 +115,7 @@
 			</li>
 			<li>
 				<div>
-					Within <a href="url(sage-namespaces-sage)">sage:link</a> element.
+					Within <a href="url:link(sage-namespaces-sage)">sage:link</a> element.
 				</div>
 				<mod:XmlTree>
 					<mod:data>
@@ -226,12 +226,12 @@
 				It is also possible to specify substitution values when using the <code>url()</code> syntax. The text within
 				parantheses is split on the first comma in two parts, where the first part is the <code>id</code> of the link
 				to use, and the second is the querystring-like packed list of substitution values.
-				<code class="principal">url(&lt;id&gt;[,&lt;values&gt;])</code>
+				<code class="principal">url:link(&lt;id&gt;[,&lt;values&gt;])</code>
 			</p>
 			<mod:XmlTree>
 				<mod:data>
 					<sage:literal>
-						<a href="url(product-category,category=chewing-gum&amp;amp;page=4)">See our extensive chewing gum inventory</a>
+						<a href="url:link(product-category,category=chewing-gum&amp;amp;page=4)">See our extensive chewing gum inventory</a>
 					</sage:literal>
 				</mod:data>
 			</mod:XmlTree>

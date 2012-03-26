@@ -29,7 +29,7 @@
 			to have one locale that is the base locale for all others.
 		</p>
 		<p>
-			The fallback paths are defined in <a sage:attrib="href:url(configuration-project)">project configuration</a>
+			The fallback paths are defined in <a href="url:link(configuration-project)">project configuration</a>
 			for each locale separately through attributes <code>dictionaryNames</code> and <code>resourceNames</code>.
 		</p>
 
@@ -72,8 +72,8 @@
 		<h2 class="section">Dictionary names</h2>
 
 		<p>
-			When Sage <a sage:attrib="href:url(internationalization-phrases)">substitutes phrases</a> during the
-			<a sage:attrib="href:url(xml-flow-localize)">localization step</a>, it replaces the phrase reference nodes with
+			When Sage <a href="url:link(internationalization-phrases)">substitutes phrases</a> during the
+			<a href="url:link(xml-flow-localize)">localization step</a>, it replaces the phrase reference nodes with
 			the actual values of referenced phrases. The phrases are defined in language dictionaries, and dictionaries can
 			be combined to facilitate reuse.
 		</p>
@@ -106,7 +106,7 @@
 
 		<h5 class="section">When opening files</h5>
 		<p>
-			When opening XML resources during the <a sage:attrib="href:url(xml-flow-localize)">localization step</a>, Sage
+			When opening XML resources during the <a href="url:link(xml-flow-localize)">localization step</a>, Sage
 			will attempt to add each of locale names specified with the <code>resourceNames</code> attribute as a suffix of
 			the base name, and if it finds a file with that suffix it will be used instead of the requested base name.
 		</p>
@@ -123,19 +123,19 @@
 		</ul>
 		<p>
 			The same selection mechanism can be used on all resources in the project by configuring the project to use the
-			<a sage:attrib="href:url(configuration-rewriters)">LocalizePathRewriter</a>.
+			<a href="url:link(configuration-rewriters)">LocalizePathRewriter</a>.
 		</p>
 
 		<h5 class="section">When localizing documents</h5>
 		<p>
-			When Sage is <a sage:attrib="href:url(internationalization-variables)">resolving variable values</a> during the
-			<a sage:attrib="href:url(xml-flow-localize)">localization step</a>, it
+			When Sage is <a href="url:link(internationalization-variables)">resolving variable values</a> during the
+			<a href="url:link(xml-flow-localize)">localization step</a>, it
 			will attempt to resolve the value by going through the same list of locale names specified with the
 			<code>resourceNames</code> attribute, and return the value of the first matching locale.
 		</p>
 		<p>
-			When Sage is <a sage:attrib="href:url(internationalization-conditionals)">resolving which elements to render</a> during the
-			<a sage:attrib="href:url(xml-flow-localize)">localization step</a>, it goes through the list of locales specified
+			When Sage is <a href="url:link(internationalization-conditionals)">resolving which elements to render</a> during the
+			<a href="url:link(xml-flow-localize)">localization step</a>, it goes through the list of locales specified
 			by the conditional block, and if any one of the locales if found in the list of specified with the <code>resourceNames</code>
 			attribute for the current locale, the block will be rendered.
 		</p>

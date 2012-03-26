@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Gamma filter</title>
+	</head>
+	<body>
+
+		<h1>Gamma filter</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="imaging-gamma"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<ul class="root separate">
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="resample">Gamma</h5>
+					<p>
+						Adds or reduces the gamma of the image.
+					</p>
+				</div>
+				<blockquote class="invisible">
+					<code class="principal">gm=VALUE</code>
+					<h6 class="tiny">Parameters</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">The VALUE is a percent integer between -100 and 100.</h6>
+						</li>
+					</ul>
+					<div class="container section">
+						<div class="imageframe">
+							<div class="caption">underwater-05.jpg</div>
+							<img src="assets/images/dogs/underwater-05.jpg" width="270"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+						<div class="imageframe">
+							<div class="caption">underwater-03.jpg?gm=80</div>
+							<img src="assets/images/dogs/underwater-05.jpg?gm=80" width="270"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+						<div class="imageframe">
+							<div class="caption">underwater-03.jpg?gm=-40</div>
+							<img src="assets/images/dogs/underwater-05.jpg?gm=-40" width="270"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+					</div>
+				</blockquote>
+			</li>
+		</ul>
+
+		<br class="spacer"/>
+	</body>
+</html>

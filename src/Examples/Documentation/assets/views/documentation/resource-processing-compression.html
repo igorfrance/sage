@@ -7,11 +7,12 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Compression</title>
+		<title>Minification</title>
+		<script src="assets/scripts/temp.js"></script>
 	</head>
 	<body>
 
-		<h1>Compression</h1>
+		<h1>Minification</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -19,25 +20,86 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
-		<dl>
-			<dt><a href="url(resource-processing-compression)">JavaScript and CSS minification</a></dt>
-			<dd>
-				<p>
-					Another way to optimize the total size of web pages, and by extension also the speed of the page itself, is to minify the files
-					we serve; that is, to strip them of any unnecessary comments and white-space that we use to make them more readable for
-					humans, and send back to the browser just the raw code that it needs. Advanced minifiers can also optionally rename variable
-					and functions to shorter names, reducing the file sizes even further.
-				</p>
-				<p>
-					Similar to the situation with merging, we want our resources to be formatted and human readable during development,
-					and fully compressed and optimized on production for delivery to general public.
-				</p>
-				<p>
-					Sage uses the <a href="url(sage-libraries)">AjaxMin library</a> for minification, and provides configuration
-					through <code>Web.config</code>. <a href="url(resource-processing-compression)">Find out more</a>.
-				</p>
-			</dd>
-		</dl>
+		<p>
+			A common way of optimizing the total size and loading speed of web pages is to minify the files that are served;
+			that is, to strip them of any unnecessary comments and white-space that developers use to make them more readable for
+			humans, and send back to the browser just the raw code that it needs.
+			Advanced minifiers optionally also rename variables and functions to shorter names, reducing the file sizes even further.
+		</p>
+		<p>
+			Sage uses the <a href="url:link(sage-libraries)">AjaxMin library</a> for JavaScript and CSS minification, and
+			<a href="url:link(configuration-compression)">provides its configuration</a> through <code>Web.config</code>.
+		</p>
+
+		<h3 class="section">Development</h3>
+
+		<p>
+			During development, a normal version of the file is returned.
+		</p>
+
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>javascript</mod:language>
+				<mod:code>
+					Type.registerNamespace("sage.documentation");
+
+					/**
+					 * Implements the functionality of the breadcrumb control.
+					 */
+					sage.documentation.BreadCrumb = new function BreadCrumb()
+					{
+						var $bc = jQuery("div.breadcrumb");
+						var showTimer, hideTimer;
+						var delay = 100;
+
+						$bc.find(".separator")
+							.bind("mouseenter", onSeparatorMouseEnter)
+							.bind("mouseleave", onSeparatorMouseLeave);
+						$bc.find(".children .expander")
+							.bind("mouseup", onExpanderMouseUp);
+
+						function onSeparatorMouseEnter(e) {
+							window.clearTimeout(hideTimer);
+							var subject = jQuery(this);
+							showTimer = Function.setTimeout(delay, function showChildren() {
+								subject.find(".children").show();
+							});
+						}
+
+						function onSeparatorMouseLeave() {
+							window.clearTimeout(showTimer);
+							var subject = jQuery(this);
+							hideTimer = Function.setTimeout(delay, function hideChildren() {
+								subject.find(".children").hide().find("li").removeClass("expanded");
+							});
+						}
+
+						function onExpanderMouseUp() {
+							var $parent = jQuery(this).closest("li");
+							$parent.toggleClass("expanded");
+						}
+					};
+				</mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
+		<h3 class="section">Production</h3>
+
+		<p>
+			In production, the minified version of the file is returned. This code is barely readable, but it loads much
+			faster.
+		</p>
+
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>javascript</mod:language>
+				<mod:code>
+					Type.registerNamespace("sage.documentation"),sage.documentation.BreadCrumb=new function(){function e(){window.clearTimeout(n);var u=jQuery(this);r=Function.setTimeout(t,function(){u.find(".children").show()})}function f(){window.clearTimeout(r);var i=jQuery(this);n=Function.setTimeout(t,function(){i.find(".children").hide().find("li").removeClass("expanded")})}function u(){var n=jQuery(this).closest("li");n.toggleClass("expanded")}var i=jQuery("div.breadcrumb"),r,n,t=100;i.find(".separator").bind("mouseenter",e).bind("mouseleave",f),i.find(".children .expander").bind("mouseup",u)}
+				</mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
+		<br class="spacer"/>
 
 	</body>
 </html>

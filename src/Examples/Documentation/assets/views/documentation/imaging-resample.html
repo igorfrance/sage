@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Resample filter</title>
+	</head>
+	<body>
+
+		<h1>Resample filter</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="imaging-resample"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<ul class="root separate">
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="resample">Resample</h5>
+					<p>
+						Resamples the image according to the specified parameters.
+					</p>
+				</div>
+				<blockquote class="invisible">
+					<code class="principal">rs=W[,H,R,E,I]</code>
+					<h6 class="tiny">Parameters</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">[W]idth</h6>
+							<span>Specifies the width of the desired image. This parameter is required</span>
+						</li>
+						<li>
+							<h6 class="casual">[H]eight</h6>
+							<span>Specifies the height of the desired image. </span>
+						</li>
+						<li>
+							<h6 class="casual">Preserve [R]atio</h6>
+							<span>Set to 0 to ignore ratio. Default is 1.</span>
+						</li>
+						<li>
+							<h6 class="casual">Don't [E]nlarge</h6>
+							<span>Set to 0 to allow enlarging file. Default is 1.</span>
+						</li>
+						<li>
+							<h6 class="casual">[I]nterpolation method</h6>
+							<p>Specifies the interpolation to use. Default is 7 (HighQualityBicubic)</p>
+							<ul>
+								<li>1 (Low)</li>
+								<li>2 (High)</li>
+								<li>3 (Bilinear)</li>
+								<li>4 (Bicubic)</li>
+								<li>5 (NearestNeighbor)</li>
+								<li>6 (HighQualityBilinear)</li>
+								<li>7 (HighQualityBicubic)</li>
+							</ul>
+						</li>
+					</ul>
+					<div class="container section">
+						<div class="imageframe">
+							<div class="caption">underwater-01.jpg</div>
+							<img src="assets/images/dogs/underwater-01.jpg"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+						<div class="imageframe">
+							<div class="caption">underwater-01.jpg?rs=300,224</div>
+							<img src="assets/images/dogs/underwater-01.jpg?rs=300,224"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+					</div>
+				</blockquote>
+			</li>
+		</ul>
+
+		<br class="spacer"/>
+	</body>
+</html>

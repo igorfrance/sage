@@ -3,16 +3,16 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
-		<title>Step 2: Copy Xml Tree - Document transform flow</title>
+		<title>Contextualize - Document transform flow, step 2</title>
 	</head>
 	<body>
 
-		<h1>Step 2: Copy Xml Tree</h1>
+		<h1>Contextualize Xml</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -22,7 +22,7 @@
 
 
 		<div class="imageframe right">
-			<img src="{assetpath}/images/diagrams/xml-transform-flow-copy-tree.jpg" alt="Step 2: Copy XML Tree"/>
+			<img src="{assetpath}/images/diagrams/xml-transform-flow-copy-tree.jpg" alt="Contextualize - Document transform flow, step 2"/>
 		</div>
 
 		<p>
@@ -47,21 +47,21 @@
 				<th><code>&lt;sage:link/&gt;</code></th>
 				<td>
 					This element gets its <code>href</code> attribute set, as resolved from reading the it's other attributes.
-					Read more about it in <a sage:attrib="href:url(linking)">linking</a>.
+					Read more about it in <a href="url:link(linking)">linking</a>.
 				</td>
 			</tr>
 			<tr valign="top">
 				<th><code>&lt;sage:url/&gt;</code></th>
 				<td>
 					This element gets substituted with URL text as resolved from it's attributes.
-					Read more about it in <a sage:attrib="href:url(linking)">linking</a>.
+					Read more about it in <a href="url:link(linking)">linking</a>.
 				</td>
 			</tr>
 			<tr valign="top">
 				<th><code>@sage:attrib</code></th>
 				<td>
 				This universal attribute is used to instruct Sage to generate the value of another attribute.
-				Read more about it in <a sage:attrib="href:url(linking)">linking</a>.
+				Read more about it in <a href="url:link(linking)">linking</a>.
 				</td>
 			</tr>
 		</table>
@@ -71,21 +71,21 @@
 				<th><code>{{assetpath}}</code></th>
 				<td>
 					Inserts the web-relative resolved value of the asset path configuration property. Read more about it in
-					<a sage:attrib="href:url(configuration-project)">project configuration</a>.
+					<a href="url:link(configuration-project)">project configuration</a>.
 				</td>
 			</tr>
 			<tr valign="top">
 				<th><code>{{sharedassetpath}}</code></th>
 				<td>
 					Inserts the web-relative resolved value of the shared asset path configuration property. Read more about it in
-					<a sage:attrib="href:url(configuration-project)">project configuration</a>.
+					<a href="url:link(configuration-project)">project configuration</a>.
 				</td>
 			</tr>
 			<tr valign="top">
 				<th><code>{{modulepath}}</code></th>
 				<td>
 					Inserts the web-relative resolved value of the module path configuration property. Read more about it in
-					<a sage:attrib="href:url(configuration-project)">project configuration</a>.
+					<a href="url:link(configuration-project)">project configuration</a>.
 				</td>
 			</tr>
 			<tr valign="top">
@@ -110,7 +110,7 @@
 
 		<p>
 			To learn how to integrate your own custom node and text handlers, visit the
-			<a sage:attrib="href:url(extensibility-handlers)">handlers configuration</a> page.
+			<a href="url:link(extensibility-handlers)">handlers configuration</a> page.
 		</p>
 
 	</body>

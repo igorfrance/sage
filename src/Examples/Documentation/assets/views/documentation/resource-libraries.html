@@ -3,6 +3,7 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
  	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
@@ -19,6 +20,334 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<p>
+			Resource libraries provide an easy way to combine groups of resources into reusable components that can be used
+			throughout the project as required.
+		</p>
+		<p>
+			Resource libraries are defined within <a href="url:link(configuration-project)">project configuration</a>. If they
+			are referenced by a module, included on a page, or are directly or indirectly configured to be automatically included
+			on a page, Sage will insert their resources in the specified location (<code>head</code>, <code>body</code> or <code>data</code>) of the pages that reference
+			the library.
+		</p>
+
+		<h3 class="section">Example library</h3>
+
+		<p>
+			The following example shows a global library. Within the <code>include</code> element there is only the
+			<code>always</code> element, indicating that the library should be included on every view.
+		</p>
+
+		<mod:XmlTree>
+			<mod:config>
+				<mod:namespaces>true</mod:namespaces>
+			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<p:libraries xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+						<p:library name="global">
+							<p:resources>
+								<p:resource type="icon" location="head" path="/favicon.ico"/>
+								<p:resource type="style" location="head" path="{{assetpath}}/css/documentation.css"/>
+								<p:resource type="style" location="head" path="{{assetpath}}/css/documentation-ie.css" limitTo="ie"/>
+								<p:resource type="script" location="head" path="{{assetpath}}/lib/scripts/aeon/aeon.js"/>
+								<p:resource type="document" location="data" path="{{assetpath}}/configuration/navigation.xml"/>
+							</p:resources>
+							<p:include>
+								<p:always/>
+							</p:include>
+						</p:library>
+					</p:libraries>
+				</sage:literal>
+			</mod:data>
+		</mod:XmlTree>
+
+		<h3 class="section">Reference</h3>
+
+		<ul class="root separate">
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:library">p:library</h5>
+					<p>
+						Defines a resource library.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<p:library name="global">
+								<p:resources/>
+								<p:include/>
+								<p:dependencies/>
+							</p:library>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@name</h6>
+							<span>The unique name of the library</span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">None</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#p:resources)">p:resources</a>,
+							<a href="url:self(#p:include)">p:include</a>,
+							<a href="url:self(#p:dependencies)">p:dependencies</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:library">p:resources</h5>
+					<p>
+						Specifies the library resources.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#p:library)">p:library</a></li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#p:resource)">p:resource</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:library">p:resource</h5>
+					<p>
+						Defines a single library resources.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<p:resource type="style" location="head" path="{{assetpath}}/css/documentation-ie.css" limitTo="ie"/>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@type</h6>
+							<p>Specifies the type of the resource. Possible values are:</p>
+							<blockquote>
+								<ul>
+									<li>script</li>
+									<li>style</li>
+									<li>icon</li>
+									<li>document</li>
+								</ul>
+							</blockquote>
+						</li>
+						<li>
+							<h6 class="casual">@location</h6>
+							<p>Specifies the location of the resource. Possible values are:</p>
+							<blockquote>
+								<ul>
+									<li>head</li>
+									<li>body</li>
+									<li>data</li>
+								</ul>
+							</blockquote>
+						</li>
+						<li>
+							<h6 class="casual">@path</h6>
+							<p>Specifies the path of the resource.</p>
+						</li>
+						<li>
+							<h6 class="casual">@limitTo</h6>
+							<p>
+								Specifies the <a href="url:link(xml-input-document, #sage:useragent)">user agent id</a> to which this
+								resource applies (i.e. <code>'ie6'</code>). If this value has been specified, the resource will be include
+								only if the user agent id contains this value. This makes it possible to specify just a substring of the
+								browser id.
+							</p>
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:include">p:include</h5>
+					<p>
+						Contains child elements that specify how this library will be included automatically.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<include>
+								<always/>
+							</include>
+						</mod:data>
+					</mod:XmlTree>
+					<p>or</p>
+					<mod:XmlTree>
+						<mod:data>
+							<include>
+								<path compare="regex">products/(?:chewing|gums_r_us)/\d+/?</path>
+								<path compare="regex">catalog/(?:chewing|gums_r_us)/\d+/?</path>
+							</include>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#p:library)">p:library</a></li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#p:path)">p:path</a>,
+							<a href="url:self(#p:always)">p:always</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:path">p:path</h5>
+					<p>
+						Defines an expression that specifies how a page URL should be look like in order for the library to
+						be automatically included.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<include>
+								<path compare="regex">products/(?:chewing|gums_r_us)/\d+/?</path>
+								<path compare="regex">catalog/(?:chewing|gums_r_us)/\d+/?</path>
+							</include>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@compare</h6>
+							<p>Specifies the type of the expression. Possible values are:</p>
+							<blockquote>
+								<ul>
+									<li>regex</li>
+									<li>wildcard</li>
+									<li>literal</li>
+								</ul>
+							</blockquote>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#p:include)">p:include</a></li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:always">p:always</h5>
+					<p>
+						Secifies that the library should be included on all pages of the project. This element has no content or
+						attributes.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<include>
+								<always/>
+							</include>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#p:include)">p:include</a></li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:dependencies">p:dependencies</h5>
+					<p>
+						Contains elements that specify other libraries that this library depends on. If there are library dependencies,
+						they will always be automatically included preceding the library that references them.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#p:library)">p:library</a></li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#p:library_ref)">p:library[@ref]</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="p:library_ref">p:library[@ref]</h5>
+					<p>
+						Specifies a library that the current library depends on.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<library name="listcontrol">
+								<resources>
+									<resource type="style" location="head" path="{assetpath}/lib/scripts/aeon/aeon/controls/list.css"/>
+									<resource type="style" location="head" path="{assetpath}/lib/scripts/aeon/aeon/controls/list-ie.css" limitTo="ie"/>
+									<resource type="script" location="head" path="{assetpath}/lib/scripts/aeon/aeon/controls/list.js"/>
+								</resources>
+								<dependencies>
+									<library ref="aeon"/>
+								</dependencies>
+							</library>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@ref</h6>
+							<p>Specifies the name of the referenced library.</p>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#p:dependencies)">p:dependencies</a></li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+		</ul>
 
 	</body>
 </html>

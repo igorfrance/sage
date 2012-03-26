@@ -31,16 +31,16 @@
 
 		<ol>
 			<li>
-				<h5><a sage:attrib="href:url(xml-flow-localize)">Localize Xml *</a></h5>
+				<h5><a href="url:link(xml-flow-localize)">Localize Xml *</a></h5>
 				<p>
 					The localized version of the source document is opened. Depending on the settings, this step is done either
 					inline or as a part of the batch process for the whole project. The localization is done and a localized
 					version opened only if the document uses entities from the Sage's
-					<a href="href:url(internationalization.html">internationalization</a> namespace.
+					<a href="href:url:link(internationalization.html">internationalization</a> namespace.
 				</p>
 			</li>
 			<li>
-				<h5><a sage:attrib="href:url(xml-flow-copy-tree)">Copy Xml Tree</a></h5>
+				<h5><a href="url:link(xml-flow-copy-tree)">Copy Xml Tree</a></h5>
 				<p>
 					Every xml document opened through Sage will be processed node by node as a tree, starting at
 					the root and drilling down recursively through child nodes. Registered node and text handlers have full control
@@ -48,7 +48,7 @@
 				</p>
 			</li>
 			<li>
-				<h5><a sage:attrib="href:url(xml-flow-expand-modules)">Expand Modules **</a></h5>
+				<h5><a href="url:link(xml-flow-expand-modules)">Expand Modules **</a></h5>
 				<p>
 					Each module in the view template is executed as a backend <code>IModule</code> instance. The module may or may not
 					have a specific backend component. In case the module doesn't have one, the default <code>NullModule</code> is
@@ -57,7 +57,7 @@
 				</p>
 			</li>
 			<li>
-				<h5><a sage:attrib="href:url(xml-flow-xslt-transform)">XSLT transform **</a></h5>
+				<h5><a href="url:link(xml-flow-xslt-transform)">XSLT transform **</a></h5>
 				<p>
 					The prepared and processed view template is finally transformed using the XSLT template associated with the
 					view. Modules may provide their own XSLT which will then be used to render the HTML associated with the modules

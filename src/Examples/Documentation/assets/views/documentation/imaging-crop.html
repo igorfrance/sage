@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Crop filter</title>
+	</head>
+	<body>
+
+		<h1>Crop filter</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="imaging-crop"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<ul class="root separate">
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="resample">Crop</h5>
+					<p>
+						Crops the image according to the specified parameters.
+					</p>
+				</div>
+				<blockquote class="invisible">
+					<code class="principal">cp=X,Y,W,H</code>
+					<h6 class="tiny">Parameters</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">[X] coordinate of the crop square</h6>
+						</li>
+						<li>
+							<h6 class="casual">[Y] coordinate of the crop square</h6>
+						</li>
+						<li>
+							<h6 class="casual">The [W]idth of the crop square</h6>
+						</li>
+						<li>
+							<h6 class="casual">The [H]eight of the crop square</h6>
+						</li>
+					</ul>
+					<div class="container section">
+						<div class="imageframe">
+							<div class="caption">underwater-02.jpg</div>
+							<img src="assets/images/dogs/underwater-02.jpg"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+						<div class="imageframe">
+							<div class="caption">underwater-02.jpg?cp=140,70,200,180</div>
+							<img src="assets/images/dogs/underwater-02.jpg?cp=140,70,200,180"/>
+							<div class="copyright">
+								<div><label>Author:</label> <span>Edecio Martinez</span></div>
+								<div><label>Credit:</label> <span>Seth Casteel/LittleFriendsPhoto.com</span></div>
+							</div>
+						</div>
+					</div>
+				</blockquote>
+			</li>
+		</ul>
+
+		<br class="spacer"/>
+	</body>
+</html>

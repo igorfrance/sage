@@ -63,7 +63,7 @@
 				Finally, if there is neither a controller/view-specific XSLT stylesheet, nor a project-default stylesheet,
 				Sage will open the system-default XSLT stylesheet that it provides. The system-default stylesheet is
 				compiled into Sage as an embedded resource, and as such it will be opened using a
-				<a sage:attrib="href:url(sage-uri-schemes)">special URI scheme</a> designated for resolving embedded resources:
+				<a href="url:link(sage-uri-schemes)">special URI scheme</a> designated for resolving embedded resources:
 				<code>sageresx://sage/resources/xslt/global.xslt</code>.
 			</dd>
 		</dl>
@@ -82,14 +82,14 @@
 		<h3 class="section">Modules</h3>
 
 		<p>
-			Any XSLT stylesheets that are <a href="url(configuration-module)">configured for use with modules</a> are included automatically in the base stylesheet,
+			Any XSLT stylesheets that are <a href="url:link(configuration-module)">configured for use with modules</a> are included automatically in the base stylesheet,
 			so that any associated module templates can process the module element occurrences wherever they occur in controller views.
 		</p>
 
 		<p xml:space="preserve">
 			The XSLT markup from all module is combined in a single resource, provided by a
-			<a href="url(extensibility-resource-providers)">custom resource provider</a> that
-			generates it's content. Since that resource provider <a href="url(sage-uri-schemes)">registers for path</a>
+			<a href="url:link(extensibility-resource-providers)">custom resource provider</a> that
+			generates it's content. Since that resource provider <a href="url:link(sage-uri-schemes)">registers for path</a>
 			<code>modules.xslt</code>, we can include the module XSLT simply by specifying:
 		</p>
 

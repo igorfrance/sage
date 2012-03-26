@@ -7,11 +7,11 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Merging with Kelp</title>
+		<title>Merging scripts and styles</title>
 	</head>
 	<body>
 
-		<h1>Merging with Kelp</h1>
+		<h1>Merging scripts and styles</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -19,66 +19,171 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
-		<dl>
-			<dt><a href="url(resource-processing-kelp)">JavaScript and CSS merging</a></dt>
-			<dd>
-				<p>
-					A larger number of reasonably small, reusable and well-organized files is often more maintable then single large files.
-					Developers frequently organize their scripts and styles in many separate documents, organized in
-					various ways. A moderately complex web page can easily end up with 20+ individual scripts or stylesheets that
-					all need to be loaded for the page to be fully functional.
-				</p>
-				<p>
-					The downside of using this approach is that for each of these files, there will be an additional latency
-					added to each of these files' request. That is, for each file the browser has to make a separate request,
-					and wait for the reponse from the server. This results in slower loading times than in scenarios where all
-					scripts and styles arrive in one or two larger responses. The more separate files are used, the bigger the
-					hit will be; and conversely, the bigger will the speed gain be if the files are served together with fewer
-					requests.
-				</p>
-				<p>
-					Sage solves this problem using fluid resource inclusion to merge separate scripts and styles into single files,
-					and conditionally outputting them back as separate requests during development.
-					<a href="url(resource-processing-kelp)">Find out more</a>.
-				</p>
-			</dd>
-		</dl>
-
 		<p>
-			Dividing the code in small, reusable and well-organized files help keep our development maintanable, much in the
-			spirit of "Divide and Conquer".
-		</p>
-		<p>
-			The downside of this approach is that since each of these resources needs to be accessed individually, there is
-			some latency added to each request and the overall experience of the site will be slower than if all of those
-			resources were to be in the same file, where possible. And the more resources there are, the more noticable this
-			difference will be.
-		</p>
-		<p>
-			The approach Sage uses is to use <a href="url(kelp)" class="tooltip" title="This is some great text">Kelp</a> to open files that may be merged, and depending on
-			whether the <a href="url(configuration-project)">project is configured</a> to merge resources or not to output
-			a single script element with everything merged, or to output individual script elements for all resources that
-			have been merged in the source file.
-		</p>
-		<p>
-			This makes it possible to have all scripts and stylesheets served as individual resources during development,
-			and have them all merged when the project gets deployed to production, simply by changing a configuration property.
+			Sage supports inclusion of JavaScript and CSS files, using a special comment syntax that instructs the file handler
+			on which file to include in place of the comment that has been used. This makes it possible to have single files
+			that include whole libraries of separate files together as one file to the browser.
 		</p>
 
-		<h2 class="section">Merging</h2>
 		<p>
-			Kelp supports including JavaScript and CSS files by using a special comment syntax.
+			Serving as few files as possible is a common performance optimization strategy, and in that light it is convenient
+			that the source code we like to keep in separate, organized files gets served to the cliet as a single file
+			automatically.
+		</p>
+
+		<h3 class="section">Production</h3>
+
+		<p>
+			In production, all included resources are served back as one file. The file might also be automatically minified upon fist
+			request, depending on how the web application <a href="url:link(configuration-compression)">has been configured</a>.
+			After processing (merging and compressing), the file is cached indefinitely on disk from where subsequent requests
+			are being served. The cached file gets regenerated only if one of its constituents is updated, or on explicit demand.
+		</p>
+
+		<blockquote class="invisible">
+			<h4>In production, a tree of included files gets served as only the outermost resource.</h4>
+			<p class="imageframe">
+				<img src="assets/images/inclusion.png"/>
+			</p>
+			<mod:XmlTree>
+				<mod:data>
+					<script type="text/javascript" src="assets/lib/aeon/aeon.js"></script>
+				</mod:data>
+			</mod:XmlTree>
+		</blockquote>
+
+		<h3 class="section">Development</h3>
+
+		<p>
+			During development, Sage can be made aware of merged scripts and will deliver all of the constituent files as separate
+			resources to aid in development and enable debugging and stepping through code.
+		</p>
+
+		<blockquote class="invisible">
+			<h4>During development, all included files ae served separately.</h4>
+			<p class="imageframe">
+				<img src="assets/images/inclusion.png"/>
+			</p>
+			<mod:XmlTree>
+				<mod:data>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/external/jquery.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/external/linq.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/type.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/array.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/number.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/date.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/function.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/object.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/core/string.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/assert.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/cookie.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/event.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/log.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/xml.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/url.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/dom.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/utils/css.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/event.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/constants.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/dispatcher.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/initializer.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/querystring.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/settings.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/controltypeinfo.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/controlregistry.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/htmlcontrol.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon.js?noprocess=1"></script>
+					<script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon.js"></script>
+				</mod:data>
+			</mod:XmlTree>
+		</blockquote>
+
+		<h3 class="section">Usage</h3>
+
+		<p>
+			By <a href="link:url(configuration-handlers)">configuring a <code>Kelp</code> handler,</a> for JavaScript and CSS files,
+			other Javascript or CSS files to be included can then be referenced simply by using a special
+			comment syntax to specify their location relaitive to the including file.
 		</p>
 
 		<mod:SyntaxHighlighter>
 			<mod:config>
 				<mod:language>javascript</mod:language>
+				<mod:code>
+					/*# Include: relative/path.js */
+					var x = 10;
+				</mod:code>
 			</mod:config>
-			<mod:code>
-				var x = 10;
-				/*# Include: relative/path.js */
-			</mod:code>
 		</mod:SyntaxHighlighter>
+
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>css</mod:language>
+				<mod:code>
+					/*# Include: relative/path.css */
+					body
+						{ background-color: #444; color: #ccc; font-size: 100%; }
+				</mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
+		<p>
+			The handler will process these files and automatically insert the reference content.
+		</p>
+
+		<h3 class="section">Example</h3>
+
+		<p>
+			This is a real exampe for aeon client-side library:
+		</p>
+
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>javascript</mod:language>
+				<mod:code>
+					window.__time = Number(new Date());
+
+					/*# Include: external/jquery.js */
+					/*# Include: external/linq.js */
+
+					/*!
+					 * Aeon JavaScript Library v1.0
+					 * http://cycle99.com/projects/aeon
+					 *
+					 * Copyright 2011, Igor France
+					 */
+					/*# Include: core/Type.js */
+					/*# Include: core/Array.js */
+					/*# Include: core/Number.js */
+					/*# Include: core/Date.js */
+					/*# Include: core/Function.js */
+					/*# Include: core/Object.js */
+					/*# Include: core/String.js */
+
+					/*# Include: aeon/utils/Assert.js */
+					/*# Include: aeon/utils/Cookie.js */
+					/*# Include: aeon/utils/Event.js */
+					/*# Include: aeon/utils/Log.js */
+					/*# Include: aeon/utils/Xml.js */
+					/*# Include: aeon/utils/Url.js */
+					/*# Include: aeon/utils/Dom.js */
+					/*# Include: aeon/utils/Css.js */
+
+					/*# Include: aeon/Event.js */
+					/*# Include: aeon/Constants.js */
+					/*# Include: aeon/Dispatcher.js */
+					/*# Include: aeon/Initializer.js */
+					/*# Include: aeon/QueryString.js */
+					/*# Include: aeon/Settings.js */
+
+					/*# Include: aeon/controls/ControlTypeInfo.js */
+					/*# Include: aeon/controls/ControlRegistry.js */
+					/*# Include: aeon/controls/HtmlControl.js */
+				</mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
+		<br class="spacer"/>
 
 	</body>
 </html>

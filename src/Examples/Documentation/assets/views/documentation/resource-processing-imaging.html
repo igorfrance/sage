@@ -7,11 +7,11 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Imaging</title>
+		<title>Inline image manipulation</title>
 	</head>
 	<body>
 
-		<h1>Imaging</h1>
+		<h1>Inline image manipulation</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -19,16 +19,34 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
-		<dl>
-			<dt><a href="url(resource-processing-imaging)">Inline image manipulation</a></dt>
-			<dd>
-				<p>
-					Images can be manipulated inline, simply by appending a few query string parameters to the end on an image
-					request. These parameters specify the filters to apply as well as any of their associated configuration values.
-					<a href="url(resource-processing-compression)">Find out more</a>.
-				</p>
-			</dd>
-		</dl>
+		<p>
+			Sage references the <a href="url:link(sage-libraries)">AForge.Imaging</a> library, which, in addition to the imaging
+			facilities already built-in in .NET framework, enables advanced image processing capabilities.
+		</p>
+		<p>
+			Using several file handlers, Sage enables inline manipulation of any image in a project if accessed through HTTP,
+			simply by using additional query string parameters for the image request. Multiple filters can be specified in
+			the same query string, and they all get applied, in the order of parameter appearance within the query.
+		</p>
+		<p>
+			The filters get applied before the processed image is returned back to the client. The generated file is then
+			cached indefinitely for that query string combination, and will not be generated again unless the source file is
+			updated.
+		</p>
+		<p>
+			With URL rewriting, the parameters can be hidden, and restriction be placed on which parameters are used and
+			within which ranges.
+		</p>
+
+		<mod:RelatedArticles>
+			<mod:config>
+				<mod:title>The filters that can be used through the query string</mod:title>
+				<mod:display>children</mod:display>
+				<mod:current><sage:url ref="resource-processing-imaging"/></mod:current>
+			</mod:config>
+		</mod:RelatedArticles>
+
+		<br class="spacer"/>
 
 	</body>
 </html>

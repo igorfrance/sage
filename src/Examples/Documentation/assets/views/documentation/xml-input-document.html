@@ -26,318 +26,72 @@
 			XML by Sage before they are sent off for the final XSLT transform.
 		</p>
 
-		<h3 class="section">Plain XHTML document</h3>
+		<p>
+			For a real-world example of the actual input document XML for this page,
+			<a href="url:self(?view=xmlx)" target="_blank">click here</a>. Once you're on that page, you can use the plus
+			('+') icons to expand any collapsed nodes and drill deeper into the document structure.
+		</p>
 
-		<p class="sectionblock">
-			Consider this view, copied from one of the views in this documentation project:
+		<p>
+			The following sections describe the individual components of the input document XML.
+		</p>
+
+		<h3 class="section">The view context envelope</h3>
+
+		<p>
+			Consider this very rudimentary view:
 		</p>
 
 		<mod:XmlTree>
 			<mod:data>
 				<sage:literal>
-					<html
-						xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
-						xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
-						xmlns:xi="http://www.w3.org/2003/XInclude"
-						xmlns="http://www.w3.org/1999/xhtml">
+					<html>
 						<head>
-							<sage:basehref/>
-							<title>Sage license</title>
+							<title>Hello</title>
 						</head>
 						<body>
-							<h1>License</h1>
-							<mod:BreadCrumb>
-								<mod:config>
-									<mod:current><sage:url ref="sage-license"/></mod:current>
-								</mod:config>
-							</mod:BreadCrumb>
-							<pre>
-								<xi:include href="../../../license.txt" parse="text"/>
-							</pre>
+							<h1>Hello, world!</h1>
 						</body>
 					</html>
 				</sage:literal>
 			</mod:data>
 		</mod:XmlTree>
 
-		<h3 class="section">Input document example</h3>
-
-		<p class="sectionblock">
-			The XHTML document from the previous example is then wrapped within a <i>context envelope</i>, and the actual XML
-			document that will be transformed by XSLT will look like this (use pluses to expand the tree):
+		<p>
+			Before being sent of to XSLT for the final transform to HTML, the XHTML document from the previous example is
+			wrapped within a <i>context envelope</i>, which structuraly looks like the example below. For brevity,
+			all generated values except for the example above are stripped out. All view context envelope attributes
+			are described in detail in the reference further down on the page.
 		</p>
 
 		<mod:XmlTree>
 			<mod:config>
-				<mod:expandLevels>3</mod:expandLevels>
-				<mod:wrap>true</mod:wrap>
+				<mod:namespaces>yes</mod:namespaces>
 			</mod:config>
 			<mod:data>
 				<sage:literal>
-					<sage:view controller="documentation" action="sage-license" xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
-						<sage:request apppath="/" basehref="http://sage.local/" method="GET" localip="127.0.0.1" remoteip="127.0.0.1" category="default" locale="en" charset="latin" thread="634674332049710993" developer="1" debug="0">
-							<sage:path assetPath="/assets" sharedAssetPath="/assets" modulePath="/assets/lib/modules/"/>
-							<sage:address url="http://sage.local/documentation/sage-license?view=xml" servername="sage.local" servernamefull="http://sage.local" scriptname="/documentation/sage-license" scriptnamefull="/documentation/sage-license?view=xml" querystring="?view=xml"/>
-							<sage:useragent value="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2" name="Firefox" version="10.0" version.major="10" version.minor="0"/>
-							<sage:assembly version="1.0.4456.27058"/>
-							<sage:querystring view="xml"/>
+					<sage:view xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
+						<sage:request>
+							<sage:path/>
+							<sage:address/>
+							<sage:useragent/>
+							<sage:assembly/>
+							<sage:querystring/>
 							<sage:cookies/>
-							<sage:dateTime date="15-03-2012" time="18:33:25" day="15" month="03" year="2012" hour="18" minute="33" second="25"/>
+							<sage:dateTime/>
 						</sage:request>
 						<sage:response>
 							<sage:resources>
-								<site:navigation xmlns:site="http://sage.cycle99.com/">
-									<ul>
-										<li>
-											<a href="/documentation/index.html">Sage</a>
-											<ul class="documentation">
-												<li>
-													<span>Getting started</span>
-													<ul>
-														<li>
-															<a href="/documentation/sage-license.html">License</a>
-														</li>
-														<li>
-															<a href="/documentation/sage-obtaining.html">Obtaining</a>
-
-														</li>
-														<li>
-															<a href="/documentation/sage-building.html">Building</a>
-														</li>
-														<li>
-															<a href="/documentation/sage-libraries.html">Libraries used</a>
-														</li>
-														<li>
-															<span class="title">Installing</span>
-															<ul>
-																<li>
-																	<a href="/documentation/sage-installing-new.html">New project</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-installing-example.html">Example project</a>
-
-																</li>
-															</ul>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a href="/documentation/xml-as-a-language.html">XML as a language</a>
-													<ul>
-														<li>
-															<a href="/documentation/xml-input-document.html">Input document</a>
-														</li>
-														<li>
-															<a href="/documentation/sage-modules.html">Modules</a>
-															<ul>
-																<li>
-																	<a href="/documentation/sage-modules-example1.html" data-shortTitle="Example1">Creating a module without a back-end component</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-modules-example2.html" data-shortTitle="Example2">Creating a module with a back-end component</a>
-																</li>
-															</ul>
-														</li>
-														<li>
-															<a href="/documentation/linking.html">Linking</a>
-														</li>
-														<li>
-															<a href="/documentation/sage-uri-schemes.html">Available URI schemes</a>
-														</li>
-														<li>
-															<a href="/documentation/sage-namespaces.html">Namespaces</a>
-															<ul>
-																<li>
-																	<a href="/documentation/sage-namespaces-xinclude.html">X-Include</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-namespaces-sage.html">Sage</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-namespaces-internationalization.html">Internationalization</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-namespaces-contextualization.html">Contextualization</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-namespaces-modules.html">Modules</a>
-																</li>
-																<li>
-																	<a href="/documentation/sage-namespaces-logic.html">Logic</a>
-																</li>
-															</ul>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a href="/documentation/internationalization.html">Internationalization</a>
-													<ul>
-														<li>
-															<a href="/documentation/internationalization-phrases.html">Phrase substitution</a>
-														</li>
-														<li>
-															<a href="/documentation/internationalization-variables.html">Variable substitution</a>
-														</li>
-														<li>
-															<a href="/documentation/internationalization-conditionals.html">Conditional rendering</a>
-														</li>
-														<li>
-															<a href="/documentation/internationalization-fallback.html">Locale resolution</a>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a href="/documentation/xml-flow.html">Document transform flow</a>
-													<ul>
-														<li>
-															<a href="/documentation/xml-flow-localize.html">1: Localize</a>
-														</li>
-														<li>
-															<a href="/documentation/xml-flow-copy-tree.html">2: Copy XML tree</a>
-														</li>
-														<li>
-															<a href="/documentation/xml-flow-expand-modules.html">3: Expand modules</a>
-														</li>
-														<li>
-															<a href="/documentation/xml-flow-xslt-transform.html">4: XSLT transform</a>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<span>Resources</span>
-													<ul>
-														<li>
-															<a href="/documentation/resource-libraries.html">Resource libraries</a>
-														</li>
-														<li>
-															<a href="/documentation/resource-processing-kelp.html">Merging scripts and styles</a>
-														</li>
-														<li>
-															<a href="/documentation/resource-processing-compression.html">Minifying scripts and styles</a>
-														</li>
-														<li>
-															<a href="/documentation/resource-processing-imaging.html">Image processing</a>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a href="/documentation/extensibility.html">Extensibility</a>
-													<ul>
-														<li>
-															<a href="/documentation/extensibility-extensions.html">Extensions</a>
-														</li>
-														<li>
-															<a href="/documentation/extensibility-handlers.html">Node and text handlers</a>
-														</li>
-														<li>
-															<a href="/documentation/extensibility-xml-filters.html">View XML filters</a>
-														</li>
-														<li>
-															<a href="/documentation/extensibility-resource-providers.html">Resource providers</a>
-														</li>
-														<li>
-															<a href="/documentation/extensibility-url-resolvers.html">URL resolvers</a>
-														</li>
-														<li>
-															<a href="/documentation/extensibility-xslt-extensions.html">XSLT extension objects</a>
-															<ul>
-																<li>
-																	<a href="/documentation/xslt-extensions-basic.html">Basic</a>
-																</li>
-																<li>
-																	<a href="/documentation/xslt-extensions-io.html">IO</a>
-																</li>
-																<li>
-																	<a href="/documentation/xslt-extensions-set.html">Set</a>
-																</li>
-																<li>
-																	<a href="/documentation/xslt-extensions-string.html">String</a>
-																</li>
-															</ul>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<a href="/documentation/configuration.html">Configuration</a>
-													<ul>
-														<li>
-															<a href="/documentation/configuration-project.html">Project</a>
-														</li>
-														<li>
-															<a href="/documentation/configuration-rewriters.html">Rewriters</a>
-														</li>
-														<li>
-															<a href="/documentation/configuration-handlers.html">Handlers</a>
-														</li>
-														<li>
-															<a href="/documentation/configuration-compression.html">Compression</a>
-														</li>
-													</ul>
-												</li>
-												<li>
-													<span>Extensions</span>
-													<ul>
-														<li>
-															<a href="/documentation/extension-devtools.html">Developer tools</a>
-														</li>
-													</ul>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</site:navigation>
-								<sage:head>
-									<xhtml:link rel="icon" href="/favicon.ico" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
-									<xhtml:link type="text/css" rel="stylesheet" href="/assets/css/documentation.css" />
-									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon.js"/>
-									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/breadcrumb/breadcrumb.css" />
-									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/developertoolbar/developertoolbar.css" />
-								</sage:head>
-								<sage:body>
-									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/breadcrumb/breadcrumb.js"/>
-									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.js"/>
-									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.css" />
-									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/developertoolbar/developertoolbar.js"/>
-								</sage:body>
+								<sage:head/>
+								<sage:body/>
 							</sage:resources>
 							<sage:model>
 								<html>
 									<head>
-										<sage:basehref/>
-										<title>Sage license</title>
+										<title>Hello</title>
 									</head>
 									<body>
-										<h1>License</h1>
-										<mod:BreadCrumb id="module0" xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
-											<mod:config>
-												<mod:current>/documentation/sage-license.html</mod:current>
-											</mod:config>
-										</mod:BreadCrumb>
-										<pre>
-											Copyright 2012 Igor France
-
-											Licensed under the Apache License, Version 2.0 (the "License");
-											you may not use this file except in compliance with the License.
-											You may obtain a copy of the License at
-
-											http://www.apache.org/licenses/LICENSE-2.0
-
-											Unless required by applicable law or agreed to in writing, software
-											distributed under the License is distributed on an "AS IS" BASIS,
-											WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-											See the License for the specific language governing permissions and
-											limitations under the License.
-										</pre>
-										<mod:DeveloperToolbar>
-											<mod:data>
-												<mod:meta>
-													<mod:view name="xml">Serves the fully prepared, but not yet transformed, raw XML used for the controller view.</mod:view>
-													<mod:view name="xmlx">Provides a pretty-printed, collapsible view of the fully prepared, but not yet transformed, raw XML used for the controller view.</mod:view>
-													<mod:view name="htmlx">Provides a pretty-printed, collapsible view of the fully transformed, final HTML of the controller view.</mod:view>
-													<mod:view name="json">Provides a JSON view of the fully prepared, but not yet transformed XML used for the controller view. Experimental.</mod:view>
-												</mod:meta>
-											</mod:data>
-										</mod:DeveloperToolbar>
+										<h1>Hello, world!</h1>
 									</body>
 								</html>
 							</sage:model>
@@ -349,36 +103,766 @@
 
 		<h3 class="section">Input document elements</h3>
 
-		<ul class="root reference">
+		<ul class="root separate">
 			<li>
-				<h5 class="casual">sage:view</h5>
-				<p>
-					The root element of the view.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@controller</h6>
-						<span>The name of the current controller</span>
-					</li>
-					<li>
-						<h6 class="casual">@action</h6>
-						<p>The name of the current controller action</p>
-					</li>
-				</ul>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:view">sage:view</h5>
+					<p>
+						The root element of the view.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:view controller="documentation" action="xml-input-document">
+									<sage:request>...</sage:request>
+									<sage:response>...</sage:response>
+								</sage:view>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@controller</h6>
+							<span>The name of the current controller</span>
+						</li>
+						<li>
+							<h6 class="casual">@action</h6>
+							<p>The name of the current controller action</p>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">None</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>,
+							<a href="url:self(#sage:response)">sage:response</a>.
+						</li>
+					</ul>
+				</blockquote>
 			</li>
 			<li>
-				<h5 class="casual">sage:request</h5>
-				<p>
-					Contain information about the  current request.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@apppath</h6>
-						<span>The name of the current controller</span>
-					</li>
-				</ul>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:request">sage:request</h5>
+					<p>
+						Contains information about the  current request.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:request method="GET" basehref="http://sage.local/"
+									localAddress="127.0.0.1" remoteAddress="127.0.0.1"
+									category="default" locale="en" thread="634681460570201342" developer="1" debug="0">
+									<sage:path/>
+									<sage:address/>
+									<sage:useragent/>
+									<sage:assembly/>
+									<sage:querystring/>
+									<sage:cookies/>
+									<sage:dateTime/>
+								</sage:request>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual separatesmall">
+						<li>
+							<h6 class="casual">@method</h6>
+							<span>The current HTTP method; typically GET or POST.</span>
+						</li>
+						<li>
+							<h6 class="casual">@localAddress</h6>
+							<span>The IP address of the local server.</span>
+						</li>
+						<li>
+							<h6 class="casual">@remoteAddress</h6>
+							<span>The IP address of the remote client.</span>
+						</li>
+						<li>
+							<h6 class="casual">@category</h6>
+							<span>The name of the current category</span>
+						</li>
+						<li>
+							<h6 class="casual">@locale</h6>
+							<span>The name of the current locale</span>
+						</li>
+						<li>
+							<h6 class="casual">@thread</h6>
+							<span>The name given to the thread of the request, used to identify this request's log messages in the main
+							log file.</span>
+						</li>
+						<li>
+							<h6 class="casual">@developer</h6>
+							<span>
+								Indicates whether the user making this request is considered a developer. Developers are granted a few
+								privileges without having to log on. Developers are selected on the basis of the IP address, this is configured
+								in the <a href="url:link(configuration-project)">project configuration file</a>. Possible values of this attribute
+								are zero (0) and one (1).
+							</span>
+						</li>
+						<li>
+							<h6 class="casual">@debug</h6>
+							<span>
+								Indicates whether the current project is running in debug mode. When running in debug mode, modules can
+								emit debugging information inline to aid with problem fixing. When not in debug mode, errors are typically
+								caught and logged without showing the error to the end user. This value is configured
+								in the <a href="url:link(configuration-project)">project configuration file</a>. Possible values of this attribute
+								are zero (0) and one (1).
+							</span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:view)">sage:view</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:path)">sage:path</a>,
+							<a href="url:self(#sage:address)">sage:address</a>,
+							<a href="url:self(#sage:useragent)">sage:useragent</a>,
+							<a href="url:self(#sage:assembly)">sage:assembly</a>,
+							<a href="url:self(#sage:querystring)">sage:querystring</a>,
+							<a href="url:self(#sage:form)">sage:form</a>,
+							<a href="url:self(#sage:cookies)">sage:cookies</a>,
+							<a href="url:self(#sage:dateTime)">sage:dateTime</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:path">sage:path</h5>
+					<p>
+						Provides the current paths that might be useful for the frontend.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:path applicationPath="/" assetPath="/assets/" sharedAssetPath="/assets/" modulePath="/assets/lib/modules/"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@applicationPath</h6>
+							<span>The current application path, for instance; <i>/myapp/</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@assetPath</h6>
+							<span>The path to the assets, taking the current category into account (if running a multi-category project),
+							for instance; <i>/myapp/assets/</i>, or <i>/myapp/assets/category1/</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@sharedAssetPath</h6>
+							<span>The path to the shared assets, applicable in multi-category scenarios,
+							for instance; <i>/myapp/assets/shared/</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@modulePath</h6>
+							<span>The modules directory path, for instance; <i>/myapp/assets/lib/modules/</i>.</span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:address">sage:address</h5>
+					<p>
+						Provides information about the current URL and its constituent parts.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:address basehref="http://sage.local/" url="http://sage.local/documentation/xml-input-document.html?view=xmlx"
+									referrer="http://sage.local/documentation/xml-input-document.html"
+									serverName="sage.local" serverNameFull="http://sage.local"
+									scriptName="/documentation/xml-input-document.html"
+									scriptNameFull="/documentation/xml-input-document.html?view=xmlx" queryString="?view=xmlx"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@basehref</h6>
+							<span>Fully qualified base URL for the current application, for instance;
+							<i>https://www.myserver.com/myapp/</i></span>
+						</li>
+						<li>
+							<h6 class="casual">@url</h6>
+							<span>The current, visible URL of the request, for instance;
+							<i>https://www.myserver.com/myapp/pages/mycoolpage.html?show=everything</i>
+							</span>
+						</li>
+						<li>
+							<h6 class="casual">@referrer</h6>
+							<span>The URL referrer string, if any.</span>
+						</li>
+						<li>
+							<h6 class="casual">@serverName</h6>
+							<span>The name of the current server, for instance; <i>www.myserver.com</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@serverNameFull</h6>
+							<span>The name of the current server, prefixed with the current protocol, with server port number
+							added (if other than 80 for http and 443 for https); <i>https://www.myserver.com:444</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@scriptName</h6>
+							<span>The local part of the current URL; <i>/myapp/pages/mycoolpage.html</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@scriptNameFull</h6>
+							<span>The local part of the current URL, with the quesry string included;
+							<i>/myapp/pages/mycoolpage.html?show=everything</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@querystring</h6>
+							<span>Only the querystring part of the URL, for instance;
+							<i>show=everything&amp;page=45&amp;order=desc</i></span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:useragent">sage:useragent</h5>
+					<p>
+						Provides information about the current user agent.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:useragent id="firefox11" name="Firefox" version="11.0" version.major="11" version.minor="0"
+									isCrawler="0" value="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@id</h6>
+							<span>The user agent ID. This is a copy of the value of <a href="#">HttpBrowserCapabilities.Type</a>
+							property, or in other words; the name and major (integer) version number of the browser. Examples:
+							<i>firefox11</i>, <i>chrome17</i> or <i>ie9</i>.
+							</span>
+						</li>
+						<li>
+							<h6 class="casual">@name</h6>
+							<span>The name of the user agent. Examples: <i>IE</i>, <i>Chrome</i> or <i>Firefox</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@version</h6>
+							<span>The version string of the user agent, for instance; <i>11.0</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@version.major</h6>
+							<span>The <i>major</i> part of the user agent version, for instance; <i>11</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@version.minor</h6>
+							<span>The <i>minor</i> part of the user agent version, for instance; <i>0</i>.</span>
+						</li>
+						<li>
+							<h6 class="casual">@isCrawler</h6>
+							<span>If the user agent string indicates that the current user agent is a crawler (<i>Googlebot</i>,
+							<i>YahooSeeker</i>, etc), this attribute's value will be <code>1</code>; otherwise it will be <code>0</code>.
+							</span>
+						</li>
+						<li>
+							<h6 class="casual">@value</h6>
+							<span>
+								The raw user agent string, for instance;
+								<i>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0</i>
+							</span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:assembly">sage:assembly</h5>
+					<p>
+						Provides the current assembly version to the frontend.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:assembly version="1.0.4465.30736"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@version</h6>
+							<span>The current version of the compiled Sage assembly.</span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:querystring">sage:querystring</h5>
+					<p>
+						This element provides read access to all POSTed form values contained in the request, in the form of attributes,
+						where each value's name is the name of the attribute, and the attribute value is the posted value.
+						If the request method is GET, this element will not be present.
+						If there are no posted values at the time of the request, the element will have no attributes.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:querystring view="xmlx" show="everything" page="45" order="desc"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							Dynamic list of attributes corresponding to the QueryString values.
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="others">
+						<li>
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:form">sage:form</h5>
+					<p>
+						This element provides read access to all POSTed form values contained in the request, in the form of attributes,
+						where each value's name is the name of the attribute, and the attribute value is the posted value.
+						If the request method is GET, this element will not be present.
+						If there are no posted values at the time of the request, the element will have no attributes.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:form FirstName="James" LastName="Johnson" Address="Sunset Rd. 758, 95646 CA, Alpine" EmailAddress="jjohnson@myweb.com"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							Dynamic list of attributes corresponding to the POSTed values.
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:cookies">sage:cookies</h5>
+					<p>
+						This element provides read access to all cookies applicable for the request, in the form of attributes,
+						where each cookie's name is the name of the attribute, and the attribute value is the value of that cookie.
+						If there are no applicable cookies at the time of the request, the element will have no attributes.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:cookies username="jjohnson" authid="5f4dcc3b5aa765d61d8327deb882cf99" lastvisit="1332547367874"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							Dynamic list of attributes corresponding to currently applicable cookies.
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:dateTime">sage:dateTime</h5>
+					<p>
+						Contains attributes that describe the current date and time. By adding this element, these values become
+						available to XSLT for further processing based on date and/or time, without having to resort to extension
+						methods (as XSLT 1.0 has no built-in support for working with dates).
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:dateTime date="24-03-2012" time="12:34:17" day="24" month="03" year="2012" hour="12" minute="34" second="17"/>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Attributes</h6>
+					<ul class="casual">
+						<li>
+							<h6 class="casual">@date</h6>
+							<span>Contains the current date at the moment of the request, in the fixed format of <code>dd-MM-yyyy</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@time</h6>
+							<span>Contains the current date at the moment of the request, in the fixed format of <code>hh:mm:ss</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@day</h6>
+							<span>Contains the current date at the moment of the request, in the fixed format of <code>dd</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@month</h6>
+							<span>Contains the current month at the moment of the request, in the fixed format of <code>MM</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@year</h6>
+							<span>Contains the current year at the moment of the request, in the fixed format of <code>yyyy</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@hour</h6>
+							<span>Contains the current hour at the moment of the request, in the fixed format of <code>hh</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@minute</h6>
+							<span>Contains the current minute at the moment of the request, in the fixed format of <code>mm</code></span>
+						</li>
+						<li>
+							<h6 class="casual">@second</h6>
+							<span>Contains the current second at the moment of the request, in the fixed format of <code>ss</code></span>
+						</li>
+					</ul>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:request)">sage:request</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							None.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:response">sage:response</h5>
+					<p>
+						Contains the response data for the current view; the view template (within <a href="url:self(#sage:model)">sage:model</a>
+						element) and the resources used by the view template (within <a href="url:self(#sage:resources)">sage:resources</a>
+						element.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:response>
+									<sage:resources/>
+									<sage:model/>
+								</sage:response>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:view)">sage:view</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:resources)">sage:resources</a>,
+							<a href="url:self(#sage:model)">sage:model</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:resources">sage:resources</h5>
+					<p>
+						This element is container for all resources reference by the view's modules and/or libraries. If there are
+						no data, head or body resources, this element will not be present.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:resources>
+									<sage:data/>
+									<sage:head/>
+									<sage:body/>
+								</sage:resources>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:response)">sage:response</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:data)">sage:data</a>,
+							<a href="url:self(#sage:head)">sage:head</a>,
+							<a href="url:self(#sage:body)">sage:body</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:data">sage:data</h5>
+					<p>
+						Contains the module and/or library document resources that should be loaded within this element, and hence be
+						made available to XSLT processing (typically by the module that references it). If there are no data resources
+						on the current view, this element will not be present.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:data>
+									<any/>
+								</sage:data>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:resources)">sage:resources</a>.
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							Any.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:head">sage:head</h5>
+					<p>
+						Contains the module and/or library resources, such as scripts and styles referenced by the view or the
+						modules contained on it, that should be loaded within the head of the HTML page. If there are no head resources
+						on the current view, this element will not be present.
+					</p>
+					<p>
+						The <code>xhtml:link</code> elements supported are stylesheets (<code>rel=stylesheet</code>) and
+						shortcut icons (<code>rel=icon</code>).
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:head>
+									<xhtml:link rel="icon" href="/favicon.ico"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/css/documentation.css"/>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon.js"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/breadcrumb/breadcrumb.css"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/xmltree/xmltree.css"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/developertoolbar/developertoolbar.css"/>
+								</sage:head>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:resources)">sage:resources</a>.
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="http://www.w3.org/TR/2002/WD-xhtml2-20020805/mod-scripting.html#sec_18.2.">xhtml:script</a>,
+							<a href="http://www.w3.org/TR/2006/WD-xhtml2-20060726/mod-meta.html#sec_23.1.">xhtml:link</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:body">sage:body</h5>
+					<p>
+						Contains the module and/or library resources, such as scripts and styles referenced by the view or the
+						modules contained on it, that should be loaded within the body of the HTML page. If there are no body resources
+						on the current view, this element will not be present.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:body>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/breadcrumb/breadcrumb.js"/>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/xmltree/xmltree.js"/>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.js"/>
+									<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.css"/>
+									<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/developertoolbar/developertoolbar.js"/>
+								</sage:body>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:resources)">sage:resources</a>.
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="http://www.w3.org/TR/2002/WD-xhtml2-20020805/mod-scripting.html#sec_18.2.">xhtml:script</a>,
+							<a href="http://www.w3.org/TR/2006/WD-xhtml2-20060726/mod-meta.html#sec_23.1.">xhtml:link</a>.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" id="sage:model">sage:model</h5>
+					<p>
+						Holds the X(HT)ML view configuration document that was used; typically, the XHTML file that represents the
+						current view.
+					</p>
+				</div>
+				<blockquote class="casual">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<sage:model>
+									<html>...</html>
+								</sage:model>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others">
+							<a href="url:self(#sage:response)">sage:response</a>
+						</li>
+					</ul>
+					<h6 class="tiny">Child elements</h6>
+					<ul class="casual">
+						<li class="others">
+							Any.
+						</li>
+					</ul>
+				</blockquote>
 			</li>
 		</ul>
 
