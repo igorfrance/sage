@@ -21,16 +21,20 @@ namespace Kelp.SyntaxHighlighting
 	using System.Text;
 	using System.Text.RegularExpressions;
 
+	using Kelp.Extensions;
+
 	/// <summary>
 	/// Formats source code strings with syntax highlighting HTML markup as defined with <see cref="LanguageDefinition"/>.
 	/// </summary>
 	public class SyntaxHighlighter
 	{
 		private const string PlaceHolder = "@@%%__%%@@";
+		private const string SpaceString = "&#160;";
 		private const string WrapExpression = "<span class='{1}'>{0}</span>";
 		private const string WrapBlock = "<div class='syntax {1} linecols-{2}'>{0}</div>";
 		private const string LineBlock = "<div class='line {2}'><span class='num'>{1}</span><span class='content'>{0}</span></div>";
 
+		private static readonly Regex spaceMatch = new Regex(@"(?:^\s+)|(?:\s{2,})", RegexOptions.Compiled);
 		private readonly string tabString;
 		private readonly LanguageDefinition language;
 		private readonly List<string> patterns;
@@ -84,6 +88,13 @@ namespace Kelp.SyntaxHighlighting
 			formattedSource = Regex.Replace(formattedSource, "\r", string.Empty);
 			formattedSource = Regex.Replace(formattedSource, "\t", this.tabString);
 
+			while (this.patterns.Count != 0)
+			{
+				int lastIndex = this.patterns.Count - 1;
+				formattedSource = Regex.Replace(formattedSource, GetPlaceHolderPattern(this.patterns.Count), this.patterns[lastIndex]);
+				this.patterns.RemoveAt(lastIndex);
+			}
+
 			StringBuilder result = new StringBuilder();
 
 			string[] lines = formattedSource.Split('\n');
@@ -93,13 +104,6 @@ namespace Kelp.SyntaxHighlighting
 			}
 
 			formattedSource = result.ToString();
-
-			while (this.patterns.Count != 0)
-			{
-				int lastIndex = this.patterns.Count - 1;
-				formattedSource = Regex.Replace(formattedSource, GetPlaceHolderPattern(this.patterns.Count), this.patterns[lastIndex]);
-				this.patterns.RemoveAt(lastIndex);
-			}
 
 			return string.Format(WrapBlock, formattedSource, this.language.Name, lines.Length.ToString().Length);
 		}
@@ -118,6 +122,9 @@ namespace Kelp.SyntaxHighlighting
 
 		private static string WrapWord(string word, string className)
 		{
+			word = spaceMatch.Replace(word, match => 
+				SpaceString.Repeat(match.Groups[0].Value.Length));
+
 			return string.Format(WrapExpression, word, className);
 		}
 
@@ -191,7 +198,13 @@ namespace Kelp.SyntaxHighlighting
 					string prev = text.Substring(i - commentEnd.Length + 1, 1);
 					if (end == commentEnd && prev != language.EscapeChar)
 					{
-						this.patterns.Add(WrapWord(currentComment.ToString(), LanguageDefinition.ClassNameComment));
+						string[] commentLines = currentComment.ToString().Split('\n');
+						for (int j = 0; j < commentLines.Length; j++)
+						{
+							commentLines[j] = WrapWord(commentLines[j], LanguageDefinition.ClassNameComment);
+						}
+
+						this.patterns.Add(WrapWord(string.Join("\n", commentLines), LanguageDefinition.ClassNameComment));
 						resultValue.Append(GetPlaceHolderPattern(this.patterns.Count));
 						mode = ParseMode.Code;
 					}
@@ -204,7 +217,7 @@ namespace Kelp.SyntaxHighlighting
 					currentComment.Append(curr);
 					if (curr == "\r" || curr == "\n")
 					{
-						this.patterns.Add(WrapWord(currentComment.ToString(), LanguageDefinition.ClassNameComment));
+						this.patterns.Add(WrapWord(currentComment.ToString(), LanguageDefinition.ClassNameLineComment));
 						resultValue.Append(GetPlaceHolderPattern(this.patterns.Count));
 						mode = ParseMode.Code;
 					}

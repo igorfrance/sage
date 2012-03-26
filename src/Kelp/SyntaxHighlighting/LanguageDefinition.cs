@@ -24,9 +24,14 @@ namespace Kelp.SyntaxHighlighting
 	public class LanguageDefinition
 	{
 		/// <summary>
-		/// The CSS class name that will be used on comments.
+		/// The CSS class name that will be used on singleline comments.
 		/// </summary>
-		public const string ClassNameComment = "comment";
+		public const string ClassNameLineComment = "comment single";
+
+		/// <summary>
+		/// The CSS class name that will be used on multiline comments.
+		/// </summary>
+		public const string ClassNameComment = "comment multi";
 
 		/// <summary>
 		/// The CSS class name that will be used on strings.
