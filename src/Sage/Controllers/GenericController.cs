@@ -22,7 +22,6 @@ namespace Sage.Controllers
 	using System.Web.Mvc;
 	using System.Web.Routing;
 
-	using log4net;
 	using Sage.Views;
 
 	/// <summary>
@@ -36,7 +35,6 @@ namespace Sage.Controllers
 	/// </remarks>
 	public class GenericController : SageController
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(GenericController).FullName);
 		private ViewInfo genericViewInfo;
 		private string controllerName;
 
@@ -73,29 +71,29 @@ namespace Sage.Controllers
 			return new ContentResult { Content = "File not found (A.K.A. Error 404)", ContentType = "text/html" };
 		}
 
-        /// <summary>
-        /// Gets the last modification date for the specified <paramref name="viewName"/>.
-        /// </summary>
-        /// <param name="viewName">The name of the action for which to retrieve the last modification date.</param>
-        /// <returns>
-        /// The last modified date for the specified <paramref name="viewName"/>.
-        /// </returns>
+		/// <summary>
+		/// Gets the last modification date for the specified <paramref name="viewName"/>.
+		/// </summary>
+		/// <param name="viewName">The name of the action for which to retrieve the last modification date.</param>
+		/// <returns>
+		/// The last modified date for the specified <paramref name="viewName"/>.
+		/// </returns>
 		public override DateTime? GetLastModificationDate(string viewName)
 		{
 			return genericViewInfo.LastModified;
 		}
 
-        /// <summary>
-        /// Initializes the controller.
-        /// </summary>
-        /// <param name="requestContext">The request context.</param>
+		/// <summary>
+		/// Initializes the controller.
+		/// </summary>
+		/// <param name="requestContext">The request context.</param>
 		protected override void Initialize(RequestContext requestContext)
 		{
 			base.Initialize(requestContext);
 
 			string action = SageController.DefaultAction;
 			string childPath = Regex.Replace(Context.Request.Path, "^" + Context.Request.ApplicationPath, string.Empty, RegexOptions.IgnoreCase);
-			string testPath = string.Concat(Context.Path.ViewPath.TrimEnd('/'), '/', childPath.TrimStart('/'));
+			string testPath = string.Concat(Context.Path.ViewPath, childPath.TrimStart('/'));
 
 			var pathParts = childPath.TrimStart('/').Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 			if (pathParts.Length >= 1)
@@ -111,7 +109,7 @@ namespace Sage.Controllers
 					action = Path.Combine(action, SageController.DefaultAction);
 			}
 
-			genericViewInfo = this.GetViewInfo(action);
+			this.genericViewInfo = this.GetViewInfo(action);
 		}
 	}
 }
