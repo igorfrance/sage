@@ -151,6 +151,32 @@ namespace Sage.Views
 			this.ModuleResults[moduleTagName].Add(result);
 		}
 
+		internal void AddModuleLibraryReference(string libraryName, string moduleName)
+		{
+			var config = this.context.ProjectConfiguration;
+			if (!config.ResourceLibraries.ContainsKey(libraryName))
+			{
+				log.ErrorFormat("Module '{0}' is referencing non-existent library '{1}'", moduleName, libraryName);
+				return;
+			}
+
+			AddLibraryReference(libraryName);
+		}
+
+		internal void AddViewLibraryReference(string libraryName)
+		{
+			var config = this.context.ProjectConfiguration;
+			if (!config.ResourceLibraries.ContainsKey(libraryName))
+			{
+				log.ErrorFormat("View '{0}' is referencing non-existent library '{1}'", 
+					this.ViewConfiguration.Info.ConfigName, libraryName);
+
+				return;
+			}
+
+			AddLibraryReference(libraryName);
+		}
+
 		private void AddModuleType(string moduleTagName)
 		{
 			var config = this.context.ProjectConfiguration;
@@ -211,30 +237,30 @@ namespace Sage.Views
 				this.modules.Add(module.Name, module);
 				foreach (string name in module.Libraries)
 				{
-					if (!config.ResourceLibraries.ContainsKey(name))
-					{
-						log.ErrorFormat("Module '{0}' is referencing non-existent library '{1}'", module.Name, name);
-						continue;
-					}
-
-					ResourceLibraryInfo library = config.ResourceLibraries[name];
-					foreach (string libraryRef in library.Dependencies)
-					{
-						if (!config.ResourceLibraries.ContainsKey(libraryRef))
-						{
-							log.ErrorFormat("Library '{0}' is referencing a non-existing library '{1}'.", library.Name, libraryRef);
-							continue;
-						}
-
-						ResourceLibraryInfo referenced = config.ResourceLibraries[libraryRef];
-						this.moduleResources.AddRange(referenced.Resources);
-					}
-
-					this.moduleResources.AddRange(library.Resources);
+					this.AddModuleLibraryReference(name, module.Name);
 				}
 
 				this.moduleResources.AddRange(module.Resources);
 			}
+		}
+
+		private void AddLibraryReference(string libraryName)
+		{
+			var config = this.context.ProjectConfiguration;
+			ResourceLibraryInfo library = config.ResourceLibraries[libraryName];
+			foreach (string libraryRef in library.Dependencies)
+			{
+				if (!config.ResourceLibraries.ContainsKey(libraryRef))
+				{
+					log.ErrorFormat("Library '{0}' is referencing a non-existing library '{1}'.", library.Name, libraryRef);
+					continue;
+				}
+
+				ResourceLibraryInfo referenced = config.ResourceLibraries[libraryRef];
+				this.moduleResources.AddRange(referenced.Resources);
+			}
+
+			this.moduleResources.AddRange(library.Resources);
 		}
 	}
 }

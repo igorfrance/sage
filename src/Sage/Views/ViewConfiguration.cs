@@ -32,6 +32,7 @@ namespace Sage.Views
 	{
 		internal const string ModuleIdPattern = "module{0}";
 		internal const string ModuleSelectPattern = ".//mod:{0}[not(ancestor::sage:literal)]";
+		internal const string LibrarySelectXpath = ".//sage:library[@ref][not(ancestor::sage:literal)]";
 
 		private readonly XmlElement configElement;
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewConfiguration).FullName);
@@ -159,7 +160,7 @@ namespace Sage.Views
 		/// <returns>
 		/// An object that contains the result of processing this configuration.
 		/// </returns>
-		public ViewInput ExpandModules()
+		public ViewInput ExpandConfiguration()
 		{
 			ViewInput input = new ViewInput(this, configElement);
 
@@ -185,6 +186,14 @@ namespace Sage.Views
 						}
 					}
 				}
+			}
+
+			XmlNodeList libraries = input.ConfigNode.SelectNodes(LibrarySelectXpath, XmlNamespaces.Manager);
+			foreach (XmlElement library in libraries)
+			{
+				string libraryName = library.GetAttribute("ref");
+				input.AddViewLibraryReference(libraryName);
+				library.ParentNode.RemoveChild(library);
 			}
 
 			return input;
