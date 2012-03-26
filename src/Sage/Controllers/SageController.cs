@@ -175,8 +175,15 @@ namespace Sage.Controllers
 		/// </returns>
 		public virtual ViewInput ProcessView(ViewInfo viewInfo)
 		{
-			ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
-			return config.ExpandModules();
+			try
+			{
+				ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
+				return config.ExpandConfiguration();
+			}
+			catch (Exception ex)
+			{
+				throw new SageHelpException(new ProblemInfo(ProblemType.ModuleProcessingError), ex);
+			}
 		}
 
 		/// <inheritdoc/>
@@ -217,40 +224,51 @@ namespace Sage.Controllers
 
 			XmlElement responseNode = viewRoot.AppendElement("sage:response", XmlNamespaces.SageNamespace);
 
-			if (input != null && input.ConfigNode != null)
+			try
 			{
-				var inputResources = input.Resources.Where(r => r.IsValidFor(Context.UserAgentID)).ToList();
-				if (inputResources.Count != 0)
+				if (input != null && input.ConfigNode != null)
 				{
-					XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
-
-					List<Resource> headResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Head).ToList();
-					List<Resource> bodyResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Body).ToList();
-					List<Resource> dataResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Data).ToList();
-
-					foreach (Resource resource in dataResources)
+					var inputResources = input.Resources.Where(r => r.IsValidFor(Context.UserAgentID)).ToList();
+					if (inputResources.Count != 0)
 					{
-						resourceRoot.AppendChild(resource.ToXml(result, this.Context));
+						XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
+
+						List<Resource> headResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Head).ToList();
+						List<Resource> bodyResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Body).ToList();
+						List<Resource> dataResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Data).ToList();
+
+						if (dataResources.Count != 0)
+						{
+							XmlNode dataNode = resourceRoot.AppendElement("sage:data", XmlNamespaces.SageNamespace);
+							foreach (Resource resource in dataResources)
+							{
+								dataNode.AppendChild(resource.ToXml(result, this.Context));
+							}
+						}
+
+						if (headResources.Count != 0)
+						{
+							XmlNode headNode = resourceRoot.AppendElement("sage:head", XmlNamespaces.SageNamespace);
+							foreach (Resource resource in headResources)
+								headNode.AppendChild(resource.ToXml(result, this.Context));
+						}
+
+						if (bodyResources.Count != 0)
+						{
+							XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
+							foreach (Resource resource in bodyResources)
+								bodyNode.AppendChild(resource.ToXml(result, this.Context));
+						}
 					}
 
-					if (headResources.Count != 0)
-					{
-						XmlNode headNode = resourceRoot.AppendElement("sage:head", XmlNamespaces.SageNamespace);
-						foreach (Resource resource in headResources)
-							headNode.AppendChild(resource.ToXml(result, this.Context));
-					}
-
-					if (bodyResources.Count != 0)
-					{
-						XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
-						foreach (Resource resource in bodyResources)
-							bodyNode.AppendChild(resource.ToXml(result, this.Context));
-					}
+					responseNode
+						.AppendElement("sage:model", XmlNamespaces.SageNamespace)
+						.AppendChild(result.ImportNode(input.ConfigNode, true));
 				}
-
-				responseNode
-					.AppendElement("sage:model", XmlNamespaces.SageNamespace)
-					.AppendChild(result.ImportNode(input.ConfigNode, true));
+			}
+			catch (Exception ex)
+			{
+				throw new SageHelpException(new ProblemInfo(ProblemType.ResourceProcessingError), ex);
 			}
 
 			foreach (var key in viewContext.ViewData.Keys)
@@ -285,7 +303,14 @@ namespace Sage.Controllers
 				}
 			}
 
-			return FilterViewXml(viewContext, result);
+			try
+			{
+				return FilterViewXml(viewContext, result);
+			}
+			catch (Exception ex)
+			{
+				throw new SageHelpException(new ProblemInfo(ProblemType.ViewXmlFilteringError), ex);
+			}
 		}
 
 		/// <summary>
