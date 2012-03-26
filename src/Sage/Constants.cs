@@ -147,19 +147,45 @@ namespace Sage
 		IncludeFragmentNotFound,
 
 		/// <summary>
-		/// Occurs if the expression specified with the <c>xpointer</c> attribute generates a syntax error
+		/// Occurs if the expression specified with the <c>xpointer</c> attribute generates a syntax error.
 		/// </summary>
 		IncludeSyntaxError,
 
 		/// <summary>
-		/// Indicates an error that occured during initialization of the project configuration
+		/// Indicates an error that occured during initialization of the project configuration.
 		/// </summary>
 		ConfigurationInitializationError,
 
 		/// <summary>
-		/// Indicates a schema validation error within the project configuration
+		/// Indicates a schema validation error within the project configuration.
 		/// </summary>
 		ConfigurationSchemaError,
+
+		/// <summary>
+		/// Occurs if an exception is raised during initialization of the view document.
+		/// </summary>
+		ViewDocumentInitError,
+
+		/// <summary>
+		/// Indicates an error that occurs during contextualization step of view transform.
+		/// </summary>
+		ContextualizeError,
+
+		/// <summary>
+		/// Indicates an error that occurs during processing of view modules.
+		/// </summary>
+		ModuleProcessingError,
+
+		/// <summary>
+		/// Indicates an error that occurs during processing of view modules.
+		/// </summary>
+		ResourceProcessingError,
+
+		/// <summary>
+		/// Indicates an error that occurs during processing of view filters.
+		/// </summary>
+		ViewXmlFilteringError,
+
 	}
 
 	/// <summary>
@@ -375,6 +401,16 @@ namespace Sage
 		public const string CategoryConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/category.xsd";
 
 		/// <summary>
+		/// Specifies the prefix for the sitemap configuration namespace.
+		/// </summary>
+		public const string SitemapConfigurationPrefix = "s";
+
+		/// <summary>
+		/// Specifies the sitemap configuration namespace.
+		/// </summary>
+		public const string SitemapConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/sitemap.xsd";
+
+		/// <summary>
 		/// Specifies the prefix for the developer (dev tools) configuration namespace.
 		/// </summary>
 		public const string DeveloperConfigurationPrefix = "dev";
@@ -459,6 +495,7 @@ namespace Sage
 							tempManager.AddNamespace(ContextualizationNsPrefix, ContextualizationNamespace);
 							tempManager.AddNamespace(ProjectConfigurationPrefix, ProjectConfigurationNamespace);
 							tempManager.AddNamespace(CategoryConfigurationPrefix, CategoryConfigurationNamespace);
+							tempManager.AddNamespace(SitemapConfigurationPrefix, SitemapConfigurationNamespace);
 							tempManager.AddNamespace(DeveloperConfigurationPrefix, DeveloperConfigurationNamespace);
 							tempManager.AddNamespace(InternationalizationNsPrefix, InternationalizationNamespace);
 							tempManager.AddNamespace(ModulesNsPrefix, ModulesNamespace);
