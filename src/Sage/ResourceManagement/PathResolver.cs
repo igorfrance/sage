@@ -23,6 +23,8 @@ namespace Sage.ResourceManagement
 	using System.Web.Hosting;
 
 	using Kelp;
+	using Kelp.Extensions;
+
 	using Sage.Configuration;
 
 	/// <summary>
@@ -33,6 +35,18 @@ namespace Sage.ResourceManagement
 	{
 		private readonly SageContext context;
 		private static Dictionary<string, string> virtualDirectories;
+		private string viewPath;
+		private string modulePath;
+		private string extensionPath;
+		private string physicalViewPath;
+		private string categoryConfigurationPath;
+		private string physicalCategoryConfigurationPath;
+		private string sharedViewPath;
+		private string physicalSharedViewPath;
+		private string siteMapPath;
+		private string assetPath;
+		private string sharedAssetPath;
+		private string defaultStylesheetPath;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PathResolver"/> class using the specified <see cref="SageContext"/>
@@ -85,18 +99,24 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return context.ProjectConfiguration.PathTemplates.View.Replace("{assetpath}", this.AssetPath);
+				return this.viewPath ?? (this.viewPath =
+					this.context.ProjectConfiguration.PathTemplates.View
+						.Replace("{assetpath}", this.AssetPath)
+						.ReplaceAll("(?<!:)//", "/"));
 			}
 		}
 
 		/// <summary>
-		/// Gets the view path of the currently active category.
+		/// Gets the path to the directory from which modules are loaded.
 		/// </summary>
 		public string ModulePath
 		{
 			get
 			{
-				return context.ProjectConfiguration.PathTemplates.Module.Replace("{assetpath}", this.AssetPath);
+				return this.modulePath ?? (this.modulePath =
+					this.context.ProjectConfiguration.PathTemplates.Module
+						.Replace("{assetpath}", this.AssetPath)
+						.ReplaceAll("(?<!:)//", "/"));
 			}
 		}
 
@@ -107,7 +127,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.Resolve(context.ProjectConfiguration.PathTemplates.Extension);
+				return this.extensionPath ?? (this.extensionPath =
+					this.Resolve(context.ProjectConfiguration.PathTemplates.Extension));					 
 			}
 		}
 
@@ -118,7 +139,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return context.MapPath(ViewPath);
+				return this.physicalViewPath ?? (this.physicalViewPath =
+					context.MapPath(ViewPath));
 			}
 		}
 
@@ -129,7 +151,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.Substitute(context.ProjectConfiguration.PathTemplates.CategoryConfiguration);
+				return this.categoryConfigurationPath ?? (this.categoryConfigurationPath =
+					this.Substitute(context.ProjectConfiguration.PathTemplates.CategoryConfiguration));
 			}
 		}
 
@@ -140,7 +163,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.Resolve(CategoryConfigurationPath);
+				return this.physicalCategoryConfigurationPath ?? (this.physicalCategoryConfigurationPath =
+					this.Resolve(CategoryConfigurationPath));
 			}
 		}
 
@@ -151,7 +175,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return context.ProjectConfiguration.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath);
+				return sharedViewPath ?? (sharedViewPath =
+					context.ProjectConfiguration.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath));
 			}
 		}
 
@@ -162,8 +187,21 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.Resolve(context.ProjectConfiguration.PathTemplates.View, 
-					new QueryString { { "category", context.ProjectConfiguration.SharedCategory } });
+				return physicalSharedViewPath ?? (physicalSharedViewPath =
+					this.Resolve(context.ProjectConfiguration.PathTemplates.View, 
+						new QueryString { { "category", context.ProjectConfiguration.SharedCategory } }));
+			}
+		}
+
+		/// <summary>
+		/// Gets the physical path to the sitemap file for this project.
+		/// </summary>
+		public string SiteMapPath
+		{
+			get
+			{
+				return siteMapPath ?? (siteMapPath =
+					this.Resolve(context.ProjectConfiguration.PathTemplates.SiteMap));
 			}
 		}
 
@@ -174,7 +212,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.GetAssetPath(context.Category);
+				return assetPath ?? (this.assetPath 
+					= this.GetAssetPath(context.Category));
 			}
 		}
 
@@ -185,7 +224,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.GetAssetPath(context.ProjectConfiguration.SharedCategory);
+				return sharedAssetPath ?? (this.sharedAssetPath 
+					= this.GetAssetPath(context.ProjectConfiguration.SharedCategory));
 			}
 		}
 
@@ -196,7 +236,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.Resolve(context.ProjectConfiguration.PathTemplates.DefaultStylesheet);
+				return defaultStylesheetPath ?? (defaultStylesheetPath =
+					this.Resolve(context.ProjectConfiguration.PathTemplates.DefaultStylesheet));
 			}
 		}
 
@@ -230,7 +271,7 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public string GetModulePath(string moduleName)
 		{
-			string templatePath = string.Concat(this.ModulePath.TrimEnd('/'), "/", moduleName);
+			string templatePath = string.Concat(this.ModulePath, moduleName);
 			return this.Resolve(templatePath);
 		}
 
@@ -254,8 +295,28 @@ namespace Sage.ResourceManagement
 			if (childPath.StartsWith("~/"))
 				return context.MapPath(childPath);
 
-			string templatePath = string.Concat(this.ModulePath.TrimEnd('/'), "/", moduleName, "/", childPath);
+			string templatePath = string.Concat(
+				this.ModulePath, 
+				moduleName.Replace("Module", string.Empty), "/", 
+				childPath);
+
 			return this.Resolve(templatePath);
+		}
+
+		/// <summary>
+		/// Expands the specified <paramref name="childPath"/> to its full path within the module specified with
+		/// <paramref name="moduleType"/>.
+		/// </summary>
+		/// <param name="moduleType">The type of the module for which the path is being expanded.</param>
+		/// <param name="childPath">The path to expand</param>
+		/// <returns>The expended version of the specified <paramref name="childPath"/>. If the <paramref name="childPath"/>
+		/// is either an absolute web or absolute local path, the path will not be expanded.</returns>
+		public string GetModulePath(Type moduleType, string childPath)
+		{
+			Contract.Requires<ArgumentNullException>(moduleType != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(childPath));
+
+			return this.GetModulePath(moduleType.Name, childPath);
 		}
 
 		/// <summary>
@@ -278,7 +339,7 @@ namespace Sage.ResourceManagement
 			if (childPath.StartsWith("~/"))
 				return context.MapPath(childPath);
 
-			string templatePath = string.Concat(this.ExtensionPath.TrimEnd('/'), "/", pluginName, "/", childPath);
+			string templatePath = string.Concat(this.ExtensionPath, pluginName, "/", childPath);
 			return this.Resolve(templatePath);
 		}
 
@@ -369,7 +430,7 @@ namespace Sage.ResourceManagement
 				return path;
 
 			if (prependApplicationPath && !path.StartsWith(context.ApplicationPath))
-				path = string.Concat(context.ApplicationPath, "/", path).Replace("//", "/");
+				path = string.Concat(context.ApplicationPath, path);
 
 			return path;
 		}
@@ -443,8 +504,8 @@ namespace Sage.ResourceManagement
 		/// <returns>The expanded relative path.</returns>
 		public string Expand(string relativePath, string category)
 		{
-			var assetPath = GetAssetPath(category);
-			var templatePath = relativePath.StartsWith(assetPath) ? relativePath : Path.Combine(assetPath, relativePath);
+			var categoryAssetPath = GetAssetPath(category);
+			var templatePath = relativePath.StartsWith(categoryAssetPath) ? relativePath : Path.Combine(categoryAssetPath, relativePath);
 			var substituted = Substitute(templatePath, new QueryString { { "category", category } });
 
 			return context.MapPath(substituted);
