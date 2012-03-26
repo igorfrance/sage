@@ -219,11 +219,6 @@ namespace Kelp.ResourceHandling
 
 		private byte[] Load()
 		{
-			// usecache = false
-			// do we have a cached file with all the specifications ?
-				// yes:
-					// is the source older than cache file?
-						// usecache = true
 			bool useCache = false;
 			byte[] imageData = null;
 			DateTime dateSource = Util.GetDateLastModified(absolutePath);
@@ -233,7 +228,7 @@ namespace Kelp.ResourceHandling
 
 			if (useCache)
 			{
-				return File.ReadAllBytes(CachePath);
+				return File.ReadAllBytes(this.CachePath);
 			}
 
 			using (Bitmap inputImage = new Bitmap(absolutePath))
