@@ -22,6 +22,8 @@ namespace Sage.ResourceManagement
 	using System.Reflection;
 	using System.Xml;
 
+	using Kelp;
+
 	using log4net;
 	using Sage.Extensibility;
 
@@ -67,9 +69,9 @@ namespace Sage.ResourceManagement
 							if (providers.ContainsKey(attrib.ResourceName))
 							{
 								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",
-									ResourceManager.GetDelegateSignature(providers[attrib.ResourceName].Method),
+									Util.GetMethodSignature(providers[attrib.ResourceName].Method),
 									attrib.ResourceName,
-									ResourceManager.GetDelegateSignature(del.Method));
+									Util.GetMethodSignature(del.Method));
 							}
 
 							providers[attrib.ResourceName] = del;
@@ -93,7 +95,7 @@ namespace Sage.ResourceManagement
 				GetResource provider = providers[resourceName];
 				log.DebugFormat("Found a specific resource provider for {0}: {1}",
 					resourceUri,
-					ResourceManager.GetDelegateSignature(provider.Method));
+					Util.GetMethodSignature(provider.Method));
 
 				resourceDoc = provider(context, resourceUri);
 			}

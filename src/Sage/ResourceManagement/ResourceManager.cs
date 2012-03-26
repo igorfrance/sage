@@ -26,6 +26,8 @@ namespace Sage.ResourceManagement
 	using System.Xml;
 	using System.Xml.Schema;
 
+	using Kelp;
+
 	using log4net;
 	using Sage.Extensibility;
 
@@ -113,9 +115,9 @@ namespace Sage.ResourceManagement
 			if (nodeHandlerRegistry.ContainsKey(qualifiedName))
 			{
 				log.WarnFormat("Replacing existing handler '{0}' for element '{1}' with new handler '{2}'",
-					GetDelegateSignature(nodeHandlerRegistry[qualifiedName].Method),
+					Util.GetMethodSignature(nodeHandlerRegistry[qualifiedName].Method),
 					qualifiedName,
-					GetDelegateSignature(handler.Method));
+					Util.GetMethodSignature(handler.Method));
 
 				nodeHandlerRegistry[qualifiedName] = handler;
 			}
@@ -141,9 +143,9 @@ namespace Sage.ResourceManagement
 			if (textHandlerRegistry.ContainsKey(variableName))
 			{
 				log.WarnFormat("Replacing existing handler '{0}' for variable '{1}' with new handler '{2}'",
-					GetDelegateSignature(textHandlerRegistry[variableName].Method),
+					Util.GetMethodSignature(textHandlerRegistry[variableName].Method),
 					variableName,
-					GetDelegateSignature(handler.Method));
+					Util.GetMethodSignature(handler.Method));
 
 				textHandlerRegistry[variableName] = handler;
 			}
@@ -409,7 +411,7 @@ namespace Sage.ResourceManagement
 			}
 
 			value = escapeCleanupExpression.Replace(value, "$1");
-			return value;
+			return context.ProcessFunctions(value);
 		}
 
 		internal static ProcessNode GetNodeHandler(XmlNode node)
@@ -419,11 +421,6 @@ namespace Sage.ResourceManagement
 				return nodeHandlerRegistry[key];
 
 			return ResourceManager.CopyTree;
-		}
-
-		internal static string GetDelegateSignature(MethodInfo method)
-		{
-			return string.Concat(method.DeclaringType.FullName, ".", method.Name);
 		}
 
 		/// <summary>
