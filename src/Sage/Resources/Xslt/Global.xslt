@@ -22,7 +22,7 @@
 		encoding="utf-8" media-type="text/xml" indent="yes"
 		doctype-system="about:legacy-compat"/>
 
-	<xsl:template match="sage:view">
+	<xsl:template match="/sage:view">
 		<xsl:choose>
 			<xsl:when test="count($response/sage:model/node()) = 0">
 				<html>VOID MODEL</html>
@@ -48,6 +48,15 @@
 	<xsl:template match="xhtml:html">
 		<html>
 			<xsl:apply-templates select="@*"/>
+			<xsl:attribute name="class">
+				<xsl:value-of select="$view/@controller"/>
+				<xsl:text>&#32;&#160;</xsl:text>
+				<xsl:value-of select="$view/@action"/>
+				<xsl:if test="string-length(@class)">
+					<xsl:text>&#32;&#160;</xsl:text>
+					<xsl:value-of select="$view/@class"/>
+				</xsl:if>
+			</xsl:attribute>
 			<xsl:attribute name="data-thread">
 				<xsl:value-of select="$request/@thread" />
 			</xsl:attribute>
