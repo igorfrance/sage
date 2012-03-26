@@ -37,6 +37,7 @@ namespace Sage.Configuration
 			this.ViewTemplate = "{assetpath}/views/{controller}/{action}";
 			this.DefaultStylesheet = "{assetpath}/views/xslt/default.xsl";
 			this.Dictionary = "{assetpath}/configuration/dictionary/{locale}.xml";
+			this.SiteMap = "{assetpath}/configuration/sitemap.xml";
 			this.GlobalizedDirectory = "_target/";
 			this.GlobalizedDirectoryForNonFileResources = "~/_target/";
 		}
@@ -83,6 +84,11 @@ namespace Sage.Configuration
 		public string Dictionary { get; private set; }
 
 		/// <summary>
+		/// Gets the template for constucting paths to sitemap files.
+		/// </summary>
+		public string SiteMap { get; private set; }
+
+		/// <summary>
 		/// Gets the path template to the default XSLT stylesheet that can be used if a view
 		/// doesn't have it's own, specific stylesheet.
 		/// </summary>
@@ -113,20 +119,19 @@ namespace Sage.Configuration
 				throw new ArgumentNullException("configElement");
 
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
-			XmlNode testNode;
 			string testValue;
 
-			testNode = configElement.SelectSingleNode("p:View", nm);
+			XmlNode testNode = configElement.SelectSingleNode("p:View", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.View = testValue;
+				this.View = testValue.TrimEnd('/') + "/";
 
 			testNode = configElement.SelectSingleNode("p:Module", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.Module = testValue;
+				this.Module = testValue.TrimEnd('/') + "/";
 
 			testNode = configElement.SelectSingleNode("p:Extension", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.Extension = testValue;
+				this.Extension = testValue.TrimEnd('/') + "/";
 
 			testNode = configElement.SelectSingleNode("p:CategoryConfiguration", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
@@ -138,7 +143,7 @@ namespace Sage.Configuration
 
 			testNode = configElement.SelectSingleNode("p:ViewTemplate", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.ViewTemplate = testValue;
+				this.ViewTemplate = testValue.TrimEnd('/') + "/";
 
 			testNode = configElement.SelectSingleNode("p:DefaultStylesheet", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
@@ -147,6 +152,10 @@ namespace Sage.Configuration
 			testNode = configElement.SelectSingleNode("p:Dictionary", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
 				this.Dictionary = testValue;
+
+			testNode = configElement.SelectSingleNode("p:SiteMap", nm);
+			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
+				this.SiteMap = testValue;
 
 			testNode = configElement.SelectSingleNode("p:GlobalizedDirectory", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
