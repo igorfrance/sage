@@ -232,8 +232,6 @@ namespace Sage
 			}
 
 			this.ProjectConfiguration = config ?? ProjectConfiguration.Current;
-			this.ApplicationPath = HostingEnvironment.ApplicationVirtualPath.TrimEnd('/') + "/";
-			this.PhysicalApplicationPath = HostingEnvironment.ApplicationPhysicalPath;
 			this.Query = new QueryString();
 			this.Cache = new CacheWrapper(httpContext);
 			this.LmCache = new LastModifiedCache(this);
@@ -258,6 +256,11 @@ namespace Sage
 				this.UserAgentType = httpContext.Request.Browser.Crawler
 					? UserAgentType.Crawler
 					: UserAgentType.Browser;
+			}
+			else
+			{
+				this.ApplicationPath = (HostingEnvironment.ApplicationVirtualPath ?? "/").TrimEnd('/') + "/";
+				this.PhysicalApplicationPath = HostingEnvironment.ApplicationPhysicalPath ?? @"c:\inetpub\wwwroot";
 			}
 
 			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
