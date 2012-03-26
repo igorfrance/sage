@@ -1,5 +1,7 @@
 ﻿.xmltree
-	{ margin-top: -17px; }
+	{ overflow: hidden; }
+.xmlroot
+	{ margin-top: -18px;  }
 .xmltree,
 .xmltree pre
 	{ font: 10pt Consolas; }
