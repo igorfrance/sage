@@ -76,15 +76,12 @@
     <Reference Include="log4net">
       <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Mvp.Xml, Version=2.0.4366.26981, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\lib\Mvp.Xml.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -111,6 +108,7 @@
     <Compile Include="Extensibility\Delegates.cs" />
     <Compile Include="Extensibility\ExtensionInfo.cs" />
     <Compile Include="Extensibility\ExtensionManager.cs" />
+    <Compile Include="Extensibility\TextFunctionAttribute.cs" />
     <Compile Include="Extensibility\TextHandlerAttributes.cs" />
     <Compile Include="Modules\ModuleConfiguration.cs" />
     <Compile Include="Configuration\ProjectConfiguration.cs" />
