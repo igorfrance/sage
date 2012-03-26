@@ -46,7 +46,8 @@ namespace Kelp.XInclude.XPath
 		/// <summary>
 		/// Evaluates the given expression and returns the typed result.
 		/// </summary>
-		public static object Evaluate(string expression, XPathNavigator source, params XPathVariable[] variables)
+		public static object Evaluate(
+			string expression, XPathNavigator source, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			expr.SetContext(PrepareContext(source, null, null, variables));
@@ -67,7 +68,8 @@ namespace Kelp.XInclude.XPath
 		/// <summary>
 		/// Evaluates the given expression and returns the typed result.
 		/// </summary>
-		public static object Evaluate(string expression, XPathNavigator source, XmlPrefix[] prefixes, params XPathVariable[] variables)
+		public static object Evaluate(
+			string expression, XPathNavigator source, XmlPrefix[] prefixes, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			expr.SetContext(PrepareContext(source, null, prefixes, variables));
@@ -77,7 +79,8 @@ namespace Kelp.XInclude.XPath
 		/// <summary>
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
-		public static XPathNodeIterator Select(string expression, XPathNavigator source, params XPathVariable[] variables)
+		public static XPathNodeIterator Select(
+			string expression, XPathNavigator source, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			expr.SetContext(PrepareContext(source, null, null, variables));
@@ -109,7 +112,8 @@ namespace Kelp.XInclude.XPath
 		/// <summary>
 		/// Selects a list of nodes matching the XPath expression.
 		/// </summary>
-		public static XmlNodeList SelectNodes(string expression, XmlNode source, params XPathVariable[] variables)
+		public static XmlNodeList SelectNodes(
+			string expression, XmlNode source, params XPathVariable[] variables)
 		{
 			XPathNodeIterator it = Select(expression, source.CreateNavigator(), variables);
 			return XmlNodeListFactory.CreateNodeList(it);
@@ -148,14 +152,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XmlNodeList SelectNodesSorted(
-			string expression, 
-			XmlNode source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			params XPathVariable[] variables)
+			string expression, XmlNode source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, params XPathVariable[] variables)
 		{
 			return
 				XmlNodeListFactory.CreateNodeList(
@@ -166,15 +163,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XmlNodeList SelectNodesSorted(
-			string expression, 
-			XmlNode source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			XmlNamespaceManager context, 
-			params XPathVariable[] variables)
+			string expression, XmlNode source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, XmlNamespaceManager context, params XPathVariable[] variables)
 		{
 			return
 				XmlNodeListFactory.CreateNodeList(
@@ -185,12 +174,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XmlNodeList SelectNodesSorted(
-			string expression, 
-			XmlNode source, 
-			object sortExpression, 
-			IComparer comparer, 
-			XmlNamespaceManager context, 
-			params XPathVariable[] variables)
+			string expression, XmlNode source, object sortExpression, IComparer comparer, XmlNamespaceManager context, params XPathVariable[] variables)
 		{
 			return
 				XmlNodeListFactory.CreateNodeList(
@@ -201,15 +185,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XmlNodeList SelectNodesSorted(
-			string expression, 
-			XmlNode source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			XmlPrefix[] prefixes, 
-			params XPathVariable[] variables)
+			string expression, XmlNode source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, XmlPrefix[] prefixes, params XPathVariable[] variables)
 		{
 			return
 				XmlNodeListFactory.CreateNodeList(
@@ -220,12 +196,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XmlNodeList SelectNodesSorted(
-			string expression, 
-			XmlNode source, 
-			object sortExpression, 
-			IComparer comparer, 
-			XmlPrefix[] prefixes, 
-			params XPathVariable[] variables)
+			string expression, XmlNode source, object sortExpression, IComparer comparer, XmlPrefix[] prefixes, params XPathVariable[] variables)
 		{
 			return
 				XmlNodeListFactory.CreateNodeList(
@@ -235,7 +206,8 @@ namespace Kelp.XInclude.XPath
 		/// <summary>
 		/// Selects the first XmlNode that matches the XPath expression.
 		/// </summary>
-		public static XmlNode SelectSingleNode(string expression, XmlNode source, params XPathVariable[] variables)
+		public static XmlNode SelectSingleNode(
+			string expression, XmlNode source, params XPathVariable[] variables)
 		{
 			foreach (XmlNode node in SelectNodes(expression, source, variables))
 			{
@@ -289,14 +261,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XPathNodeIterator SelectSorted(
-			string expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			params XPathVariable[] variables)
+			string expression, XPathNavigator source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			expr.SetContext(PrepareContext(source, null, null, variables));
@@ -308,15 +273,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XPathNodeIterator SelectSorted(
-			string expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			XmlNamespaceManager context, 
-			params XPathVariable[] variables)
+			string expression, XPathNavigator source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, XmlNamespaceManager context, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			XmlNamespaceManager ctx = PrepareContext(source, context, null, variables);
@@ -329,12 +286,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XPathNodeIterator SelectSorted(
-			string expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			IComparer comparer, 
-			XmlNamespaceManager context, 
-			params XPathVariable[] variables)
+			string expression, XPathNavigator source, object sortExpression, IComparer comparer, XmlNamespaceManager context, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			XmlNamespaceManager ctx = PrepareContext(source, context, null, variables);
@@ -347,15 +299,7 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XPathNodeIterator SelectSorted(
-			string expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			XmlPrefix[] prefixes, 
-			params XPathVariable[] variables)
+			string expression, XPathNavigator source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, XmlPrefix[] prefixes, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			XmlNamespaceManager ctx = PrepareContext(source, null, prefixes, variables);
@@ -368,35 +312,13 @@ namespace Kelp.XInclude.XPath
 		/// Selects a node set using the specified XPath expression.
 		/// </summary>
 		public static XPathNodeIterator SelectSorted(
-			string expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			IComparer comparer, 
-			XmlPrefix[] prefixes, 
-			params XPathVariable[] variables)
+			string expression, XPathNavigator source, object sortExpression, IComparer comparer, XmlPrefix[] prefixes, params XPathVariable[] variables)
 		{
 			XPathExpression expr = GetCompiledExpression(expression, source);
 			XmlNamespaceManager ctx = PrepareContext(source, null, prefixes, variables);
 			expr.SetContext(ctx);
 			PrepareSort(expr, source, sortExpression, comparer, ctx);
 			return source.Select(expr);
-		}
-
-		/// <summary>
-		/// Retrieves a cached compiled expression, or a newly compiled one.
-		/// </summary>
-		private static XPathExpression GetCompiledExpression(string expression, XPathNavigator source)
-		{
-			XPathExpression expr;
-
-			if (!Cache.TryGetValue(expression, out expr))
-			{
-				// No double checks. At most we will compile twice. No big deal.			  
-				expr = source.Compile(expression);
-				Cache[expression] = expr;
-			}
-
-			return expr.Clone();
 		}
 
 		/// <summary>
@@ -439,13 +361,7 @@ namespace Kelp.XInclude.XPath
 		}
 
 		private static void PrepareSort(
-			XPathExpression expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType)
+			XPathExpression expression, XPathNavigator source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType)
 		{
 			if (sortExpression is string)
 			{
@@ -462,14 +378,7 @@ namespace Kelp.XInclude.XPath
 		}
 
 		private static void PrepareSort(
-			XPathExpression expression, 
-			XPathNavigator source, 
-			object sortExpression, 
-			XmlSortOrder order, 
-			XmlCaseOrder caseOrder, 
-			string lang, 
-			XmlDataType dataType, 
-			XmlNamespaceManager context)
+			XPathExpression expression, XPathNavigator source, object sortExpression, XmlSortOrder order, XmlCaseOrder caseOrder, string lang, XmlDataType dataType, XmlNamespaceManager context)
 		{
 			XPathExpression se;
 
@@ -490,7 +399,8 @@ namespace Kelp.XInclude.XPath
 			expression.AddSort(se, order, caseOrder, lang, dataType);
 		}
 
-		private static void PrepareSort(XPathExpression expression, XPathNavigator source, object sortExpression, IComparer comparer)
+		private static void PrepareSort(
+			XPathExpression expression, XPathNavigator source, object sortExpression, IComparer comparer)
 		{
 			if (sortExpression is string)
 			{
@@ -526,6 +436,24 @@ namespace Kelp.XInclude.XPath
 
 			se.SetContext(context);
 			expression.AddSort(se, comparer);
+		}
+
+		/// <summary>
+		/// Retrieves a cached compiled expression, or a newly compiled one.
+		/// </summary>
+		private static XPathExpression GetCompiledExpression(
+			string expression, XPathNavigator source)
+		{
+			XPathExpression expr;
+
+			if (!Cache.TryGetValue(expression, out expr))
+			{
+				// No double checks. At most we will compile twice. No big deal.			  
+				expr = source.Compile(expression);
+				Cache[expression] = expr;
+			}
+
+			return expr.Clone();
 		}
 	}
 }

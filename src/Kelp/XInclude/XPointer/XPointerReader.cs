@@ -140,6 +140,7 @@ namespace Kelp.XInclude.XPointer
 				// XmlReader r = new XmlBaseAwareXmlReader(uri, new StringReader(content));
 				var settings = new XmlReaderSettings();
 				settings.DtdProcessing = DtdProcessing.Prohibit;
+				settings.IgnoreProcessingInstructions = true;
 				XmlReader r = Create(new StringReader(content), settings, uri);
 				doc = this.CreateAndCacheDocument(r);
 			}

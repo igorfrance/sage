@@ -62,7 +62,7 @@ namespace Kelp.XInclude.XPointer
 			}
 
 			throw new NoSubresourcesIdentifiedException(
-				string.Format(CultureInfo.CurrentCulture, Resources.NoSubresourcesIdentifiedException, this.xpointer));
+				string.Format(CultureInfo.CurrentCulture, Resources.NoSubresourcesIdentifiedException, this.xpointer, nav.BaseURI));
 		}
 	}
 }

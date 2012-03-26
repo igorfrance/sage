@@ -42,7 +42,6 @@ namespace Kelp.XInclude
 		private readonly XIncludeKeywords keywords;
 		private readonly XmlNameTable nameTable;
 		private readonly Stack<XmlReader> readers;
-
 		private readonly Uri topBaseUri;
 
 		private static IDictionary<string, WeakReference> cache;
@@ -67,30 +66,21 @@ namespace Kelp.XInclude
 		/// <param name="reader">Underlying reader to read from</param>        
 		public XIncludingReader(XmlReader reader)
 		{
-			MakeRelativeBaseUri = true;
+			this.MakeRelativeBaseUri = true;
 			var xtr = reader as XmlTextReader;
 			if (xtr != null)
 			{
-				// #pragma warning disable 0618
-				// XmlValidatingReader vr = new XmlValidatingReader(reader);
-				// vr.ValidationType = ValidationType.None;
-				// vr.EntityHandling = EntityHandling.ExpandEntities;
-				// vr.ValidationEventHandler += new ValidationEventHandler(
-				// ValidationCallback);
-				// _whiteSpaceHandling = xtr.WhitespaceHandling;
-				// _reader = vr;                                
 				var s = new XmlReaderSettings();
 				s.DtdProcessing = DtdProcessing.Prohibit;
 				s.ValidationType = ValidationType.None;
 				s.ValidationEventHandler += ValidationCallback;
+				
 				if (xtr.WhitespaceHandling == WhitespaceHandling.Significant)
 				{
 					s.IgnoreWhitespace = true;
 				}
 
 				this.reader = Create(reader, s);
-
-				// #pragma warning restore 0618
 			}
 			else
 			{
@@ -245,7 +235,7 @@ namespace Kelp.XInclude
 		{
 		}
 
-		/// <summary>See <see cref="XmlReader.AttributeCount"/></summary>
+		/// <inheritdoc/>
 		public override int AttributeCount
 		{
 			get
@@ -270,7 +260,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.BaseURI"/></summary>
+		/// <inheritdoc/>
 		public override string BaseURI
 		{
 			get
@@ -279,7 +269,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.Depth"/></summary>
+		/// <inheritdoc/>
 		public override int Depth
 		{
 			get
@@ -294,7 +284,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.EOF"/></summary>
+		/// <inheritdoc/>
 		public override bool EOF
 		{
 			get
@@ -333,7 +323,7 @@ namespace Kelp.XInclude
 		/// </summary>
 		public bool ExposeTextInclusionsAsCDATA { get; set; }
 
-		/// <summary>See <see cref="XmlReader.HasValue"/></summary>
+		/// <inheritdoc/>
 		public override bool HasValue
 		{
 			get
@@ -347,7 +337,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.IsDefault"/></summary>
+		/// <inheritdoc/>
 		public override bool IsDefault
 		{
 			get
@@ -361,7 +351,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.IsEmptyElement"/></summary>
+		/// <inheritdoc/>
 		public override bool IsEmptyElement
 		{
 			get
@@ -406,7 +396,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.LocalName"/></summary>
+		/// <inheritdoc/>
 		public override string LocalName
 		{
 			get
@@ -432,7 +422,7 @@ namespace Kelp.XInclude
 		/// </summary>
 		public bool MakeRelativeBaseUri { get; set; }
 
-		/// <summary>See <see cref="XmlReader.Name"/></summary>
+		/// <inheritdoc/>
 		public override string Name
 		{
 			get
@@ -452,7 +442,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.NameTable"/></summary>
+		/// <inheritdoc/>
 		public override sealed XmlNameTable NameTable
 		{
 			get
@@ -461,7 +451,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.NamespaceURI"/></summary>
+		/// <inheritdoc/>
 		public override string NamespaceURI
 		{
 			get
@@ -480,7 +470,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.NodeType"/></summary>
+		/// <inheritdoc/>
 		public override XmlNodeType NodeType
 		{
 			get
@@ -499,7 +489,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.Prefix"/></summary>
+		/// <inheritdoc/>
 		public override string Prefix
 		{
 			get
@@ -518,7 +508,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.QuoteChar"/></summary>
+		/// <inheritdoc/>
 		public override char QuoteChar
 		{
 			get
@@ -534,7 +524,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.ReadState"/></summary>
+		/// <inheritdoc/>
 		public override ReadState ReadState
 		{
 			get
@@ -543,7 +533,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.Value"/></summary>
+		/// <inheritdoc/>
 		public override string Value
 		{
 			get
@@ -567,7 +557,7 @@ namespace Kelp.XInclude
 		/// </summary>
 		public WhitespaceHandling WhitespaceHandling { get; set; }
 
-		/// <summary>See <see cref="XmlReader.XmlLang"/></summary>
+		/// <inheritdoc/>
 		public override string XmlLang
 		{
 			get
@@ -587,7 +577,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.XmlSpace"/></summary>
+		/// <inheritdoc/>
 		public override XmlSpace XmlSpace
 		{
 			get
@@ -596,7 +586,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.this[int]"/></summary>
+		/// <inheritdoc/>
 		public override string this[int i]
 		{
 			get
@@ -605,7 +595,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.this[string]"/></summary>
+		/// <inheritdoc/>
 		public override string this[string name]
 		{
 			get
@@ -614,7 +604,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.this[string, string]"/></summary>
+		/// <inheritdoc/>
 		public override string this[string name, string namespaceURI]
 		{
 			get
@@ -623,7 +613,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.Close"/></summary>
+		/// <inheritdoc/>
 		public override void Close()
 		{
 			if (this.reader != null)
@@ -642,7 +632,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.GetAttribute(int)"/></summary>
+		/// <inheritdoc/>
 		public override string GetAttribute(int i)
 		{
 			if (this.topLevel)
@@ -673,7 +663,7 @@ namespace Kelp.XInclude
 			return this.reader.GetAttribute(i);
 		}
 
-		/// <summary>See <see cref="XmlReader.GetAttribute(string)"/></summary>
+		/// <inheritdoc/>
 		public override string GetAttribute(string name)
 		{
 			if (this.topLevel)
@@ -688,7 +678,7 @@ namespace Kelp.XInclude
 			return this.reader.GetAttribute(name);
 		}
 
-		/// <summary>See <see cref="XmlReader.GetAttribute(string, string)"/></summary>
+		/// <inheritdoc/>
 		public override string GetAttribute(string name, string namespaceURI)
 		{
 			if (this.topLevel)
@@ -718,13 +708,13 @@ namespace Kelp.XInclude
 			return false;
 		}
 
-		/// <summary>See <see cref="XmlReader.LookupNamespace"/></summary>
+		/// <inheritdoc/>
 		public override string LookupNamespace(string prefix)
 		{
 			return this.reader.LookupNamespace(prefix);
 		}
 
-		/// <summary>See <see cref="XmlReader.MoveToAttribute(int)"/></summary>
+		/// <inheritdoc/>
 		public override void MoveToAttribute(int i)
 		{
 			if (this.topLevel)
@@ -744,7 +734,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.MoveToAttribute(string)"/></summary>
+		/// <inheritdoc/>
 		public override bool MoveToAttribute(string name)
 		{
 			if (this.topLevel)
@@ -765,7 +755,7 @@ namespace Kelp.XInclude
 			return this.reader.MoveToAttribute(name);
 		}
 
-		/// <summary>See <see cref="XmlReader.MoveToAttribute(string, string)"/></summary>
+		/// <inheritdoc/>
 		public override bool MoveToAttribute(string name, string ns)
 		{
 			if (this.topLevel)
@@ -786,13 +776,13 @@ namespace Kelp.XInclude
 			return this.reader.MoveToAttribute(name, ns);
 		}
 
-		/// <summary>See <see cref="XmlReader.MoveToElement"/></summary>
+		/// <inheritdoc/>
 		public override bool MoveToElement()
 		{
 			return this.reader.MoveToElement();
 		}
 
-		/// <summary>See <see cref="XmlReader.MoveToFirstAttribute"/></summary>
+		/// <inheritdoc/>
 		public override bool MoveToFirstAttribute()
 		{
 			if (this.topLevel)
@@ -818,7 +808,7 @@ namespace Kelp.XInclude
 			return this.reader.MoveToFirstAttribute();
 		}
 
-		/// <summary>See <see cref="XmlReader.MoveToNextAttribute"/></summary>
+		/// <inheritdoc/>
 		public override bool MoveToNextAttribute()
 		{
 			if (!this.topLevel)
@@ -992,7 +982,7 @@ namespace Kelp.XInclude
 			return false;
 		}
 
-		/// <summary>See <see cref="XmlReader.ReadAttributeValue"/></summary>
+		/// <inheritdoc/>
 		public override bool ReadAttributeValue()
 		{
 			switch (this.state)
@@ -1012,7 +1002,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.ReadInnerXml"/></summary>
+		/// <inheritdoc/>
 		public override string ReadInnerXml()
 		{
 			switch (this.state)
@@ -1060,7 +1050,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.ReadOuterXml"/></summary>
+		/// <inheritdoc/>
 		public override string ReadOuterXml()
 		{
 			switch (this.state)
@@ -1094,7 +1084,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.ReadString"/></summary>
+		/// <inheritdoc/>
 		public override string ReadString()
 		{
 			switch (this.state)
@@ -1112,7 +1102,7 @@ namespace Kelp.XInclude
 			}
 		}
 
-		/// <summary>See <see cref="XmlReader.ResolveEntity"/></summary>
+		/// <inheritdoc/>
 		public override void ResolveEntity()
 		{
 			this.reader.ResolveEntity();
@@ -1621,6 +1611,7 @@ namespace Kelp.XInclude
 					var settings = new XmlReaderSettings();
 					settings.XmlResolver = this.xmlResolver;
 					settings.IgnoreWhitespace = this.WhitespaceHandling == WhitespaceHandling.None;
+					
 					XmlReader r = new XmlBaseAwareXmlReader(response.ResponseUri.AbsoluteUri, stream, this.nameTable);
 					this.reader = r;
 				}
