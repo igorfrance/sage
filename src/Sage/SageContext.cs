@@ -20,7 +20,9 @@ namespace Sage
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.IO;
+	using System.Linq;
 	using System.Reflection;
+	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Hosting;
 	using System.Web.Mvc;
@@ -55,11 +57,44 @@ namespace Sage
 		/// </summary>
 		public const string CategoryVariableName = "category";
 
+		private const string FunctionPlaceholder = "<<Funct{0}>>";
+		private static readonly Regex functionExpression = new Regex(@"(?'FunctionName'[:\w\.$]+)\((?'FunctionArguments'[^\)]+)\)", RegexOptions.Compiled);
+		private static readonly Regex functionPlaceholderExpression = new Regex(@"<<Funct(?'FunctionIndex'\d+)>>", RegexOptions.Compiled);
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageContext).FullName);
+		private static readonly Dictionary<string, TextFunction> functionHandlers;
 		private static readonly Dictionary<string, CategoryConfiguration> categoryConfigurations =
 			new Dictionary<string, CategoryConfiguration>();
 
 		private readonly Func<string, string> pathMapper;
+
+		static SageContext()
+		{
+			const BindingFlags BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
+			//// Discover and store all text functions
+			List<string> names = new List<string>();
+			functionHandlers = new Dictionary<string, TextFunction>();
+			foreach (Assembly a in Sage.Application.RelevantAssemblies)
+			{
+				var types = from t in a.GetTypes()
+							where t.IsClass && !t.IsAbstract
+							select t;
+
+				foreach (Type type in types)
+				{
+					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
+					{
+						foreach (TextFunctionAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextFunctionAttribute), false))
+						{
+							TextFunction del = (TextFunction) Delegate.CreateDelegate(typeof(TextFunction), methodInfo);
+							functionHandlers.Add(attrib.Name, del);
+							names.Add(attrib.Name);
+						}
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
@@ -197,7 +232,7 @@ namespace Sage
 			}
 
 			this.ProjectConfiguration = config ?? ProjectConfiguration.Current;
-			this.ApplicationPath = HostingEnvironment.ApplicationVirtualPath;
+			this.ApplicationPath = HostingEnvironment.ApplicationVirtualPath.TrimEnd('/') + "/";
 			this.PhysicalApplicationPath = HostingEnvironment.ApplicationPhysicalPath;
 			this.Query = new QueryString();
 			this.Cache = new CacheWrapper(httpContext);
@@ -217,7 +252,7 @@ namespace Sage
 				if (httpContext.Request.UrlReferrer != null)
 					this.ReferrerUrl = httpContext.Request.UrlReferrer.ToString();
 
-				this.ApplicationPath = httpContext.Request.ApplicationPath;
+				this.ApplicationPath = httpContext.Request.ApplicationPath.TrimEnd('/') + "/";
 				this.PhysicalApplicationPath = httpContext.Request.PhysicalApplicationPath;
 				this.UserAgentID = httpContext.Request.Browser.Type.ToLower();
 				this.UserAgentType = httpContext.Request.Browser.Crawler
@@ -330,9 +365,9 @@ namespace Sage
 					if (ccfg.Name != this.Category)
 					{
 						throw new ConfigurationError(string.Format(
-							"Mismatched category name. Current categorry is '{0}', while the name in category " +
+							"Mismatched category name. Current category is '{0}', while the name in category " +
 							"configuration document '{1}' is '{2}'. Please make sure the names match before attempting " +
-							"to run this application again.", this.Category, this.Path.CategoryConfigurationPath, ccfg.Name));
+							"to run this project again.", this.Category, this.Path.CategoryConfigurationPath, ccfg.Name));
 					}
 
 					categoryConfigurations[this.Category] = ccfg;
@@ -505,47 +540,50 @@ namespace Sage
 
 			XmlElement resultElement = ownerDocument.CreateElement("sage:request", XmlNamespaces.SageNamespace);
 			HttpRequestBase request = this.Request;
-			Uri requestUri = new Uri(this.Url.VisibleUrl);
+			Uri requestUri = new Uri(this.Url.RawUrl);
 
-			resultElement.SetAttribute("apppath", request.ApplicationPath);
-			resultElement.SetAttribute("basehref", this.BaseHref);
 			resultElement.SetAttribute("method", request.HttpMethod);
-			resultElement.SetAttribute("localip", request.ServerVariables["LOCAL_ADDR"]);
-			resultElement.SetAttribute("remoteip", request.ServerVariables["REMOTE_ADDR"]);
+			resultElement.SetAttribute("basehref", this.BaseHref);
+			resultElement.SetAttribute("localAddress", request.ServerVariables["LOCAL_ADDR"]);
+			resultElement.SetAttribute("remoteAddress", request.ServerVariables["REMOTE_ADDR"]);
 
 			resultElement.SetAttribute("category", this.Category);
 			resultElement.SetAttribute("locale", this.Locale);
-			resultElement.SetAttribute("charset", ProjectConfiguration.IsLatinLocale(this.Locale) ? "latin" : "non-latin");
 			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
 			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugMode ? "1" : "0");
 
+			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
+			addressNode.SetAttribute("basehref", this.BaseHref);
+			addressNode.SetAttribute("url", this.Url.RawUrl);
+			if (request.UrlReferrer != null)
+				addressNode.SetAttribute("referrer", request.UrlReferrer.ToString());
+
+			addressNode.SetAttribute("serverName", requestUri.Host);
+			addressNode.SetAttribute("serverNameFull", string.Format("{0}://{1}", requestUri.Scheme, requestUri.Authority));
+			addressNode.SetAttribute("scriptName", requestUri.LocalPath.TrimEnd('/'));
+			addressNode.SetAttribute("scriptNameFull", requestUri.PathAndQuery);
+			addressNode.SetAttribute("queryString", requestUri.Query);
+
 			XmlElement pathNode = resultElement.AppendElement("sage:path", XmlNamespaces.SageNamespace);
+			pathNode.SetAttribute("applicationPath", this.ApplicationPath);
 			pathNode.SetAttribute("assetPath", this.Path.GetRelativeWebPath(this.Path.AssetPath));
 			pathNode.SetAttribute("sharedAssetPath", this.Path.GetRelativeWebPath(this.Path.SharedAssetPath));
 			pathNode.SetAttribute("modulePath", this.Path.GetRelativeWebPath(this.Path.ModulePath));
 
-			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
-			addressNode.SetAttribute("url", this.Url.VisibleUrl);
-			if (request.UrlReferrer != null)
-				addressNode.SetAttribute("referrer", request.UrlReferrer.ToString());
-
-			addressNode.SetAttribute("servername", requestUri.Host);
-			addressNode.SetAttribute("servernamefull", string.Format("{0}://{1}", requestUri.Scheme, requestUri.Authority));
-			addressNode.SetAttribute("scriptname", requestUri.LocalPath.TrimEnd('/'));
-			addressNode.SetAttribute("scriptnamefull", requestUri.PathAndQuery);
-			addressNode.SetAttribute("querystring", requestUri.Query);
-
 			// browser element
 			XmlElement browserNode = resultElement.AppendElement("sage:useragent", XmlNamespaces.SageNamespace);
-			browserNode.SetAttribute("value", request.UserAgent);
 			if (request.Browser != null)
 			{
+				browserNode.SetAttribute("id", this.UserAgentID);
 				browserNode.SetAttribute("name", request.Browser.Browser);
 				browserNode.SetAttribute("version", request.Browser.Version);
 				browserNode.SetAttribute("version.major", request.Browser.MajorVersion.ToString());
 				browserNode.SetAttribute("version.minor", request.Browser.MinorVersion.ToString());
+				browserNode.SetAttribute("isCrawler", this.UserAgentType == UserAgentType.Crawler ? "1" : "0");
 			}
+
+			browserNode.SetAttribute("value", request.UserAgent);
 
 			XmlElement assemblyNode = resultElement.AppendElement("sage:assembly", XmlNamespaces.SageNamespace);
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -572,6 +610,53 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Looks for function expressions - <code>function(arguments)</code> - in the specified <paramref name="value"/>
+		/// and applies any matching function handlers on them.
+		/// </summary>
+		/// <param name="value">The value to process.</param>
+		/// <returns>The specified <paramref name="value"/> with any matching function expressions replaces by the 
+		/// result of invoking their matching function.</returns>
+		public string ProcessFunctions(string value)
+		{
+			var expressionsFound = new List<string>();
+
+			//// First copy all expressions into a temp list
+			while (functionExpression.Match(value).Success)
+			{
+				value = functionExpression.Replace(value, delegate(Match match)
+				{
+					expressionsFound.Add(match.Groups[0].Value);
+					return string.Format(FunctionPlaceholder, expressionsFound.Count - 1);
+				});
+			}
+
+			//// Now substitute all expression with either the function result (if a matching function is found)
+			//// or by the original text.
+			while (functionPlaceholderExpression.Match(value).Success)
+			{
+				value = functionPlaceholderExpression.Replace(value, delegate(Match match)
+				{
+					int functionIndex = int.Parse(match.Groups["FunctionIndex"].Value);
+					string expressionText = expressionsFound[functionIndex];
+					return functionExpression.Replace(expressionText, delegate(Match inner)
+					{
+						string functionName = inner.Groups["FunctionName"].Value;
+						string functionArguments = inner.Groups["FunctionArguments"].Value;
+						if (functionHandlers.ContainsKey(functionName))
+						{
+							TextFunction function = functionHandlers[functionName];
+							return function.Invoke(functionArguments, this);
+						}
+
+						return expressionText;
+					});
+				});
+			}
+
+			return value;
+		}
+
+		/// <summary>
 		/// Selects the case that matches the condition specified with the <paramref name="switchNode"/> and returns it's contents.
 		/// </summary>
 		/// <param name="switchNode">The node that specifies the condition</param>
@@ -588,6 +673,9 @@ namespace Sage
 		[NodeHandler(XmlNodeType.Element, "switch", XmlNamespaces.ContextualizationNamespace)]
 		internal static XmlNode ProcessContextSwitchNode(XmlNode switchNode, SageContext context)
 		{
+			if (switchNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return switchNode;
+
 			XmlElement switchElem = (XmlElement) switchNode;
 
 			string propName = switchElem.GetAttribute("property");
@@ -656,6 +744,9 @@ namespace Sage
 		[NodeHandler(XmlNodeType.Element, "value", XmlNamespaces.ContextualizationNamespace)]
 		internal static XmlNode ProcessContextValueNode(XmlNode valueElement, SageContext context)
 		{
+			if (valueElement.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return valueElement;
+
 			XmlElement valueElem = (XmlElement) valueElement;
 
 			string propName = valueElem.GetAttribute("property");
@@ -684,7 +775,7 @@ namespace Sage
 			switch (variable.ToLower())
 			{
 				case "apppath":
-					return context.ApplicationPath.TrimEnd('/') + "/";
+					return context.ApplicationPath;
 
 				case "locale":
 					return context.Locale;
@@ -699,10 +790,10 @@ namespace Sage
 					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
 
 				case "sharedassetpath":
-					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
+					return context.Path.GetRelativeWebPath(context.Path.SharedAssetPath);
 
 				case "modulepath":
-					return context.Path.GetRelativeWebPath(context.Path.AssetPath);
+					return context.Path.GetRelativeWebPath(context.Path.ModulePath);
 			}
 
 			return string.Format("{{?{0}?}}", variable);
