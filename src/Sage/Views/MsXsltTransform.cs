@@ -51,8 +51,17 @@ namespace Sage.Views
 			UrlResolver resolver = new UrlResolver(context);
 
 			this.processor = new XslCompiledTransform();
-			this.processor.Load(stylesheetMarkup, XsltSettings.TrustedXslt, resolver);
-			this.dependencies.AddRange(resolver.Dependencies);
+
+			try
+			{
+				this.processor.Load(stylesheetMarkup, XsltSettings.TrustedXslt, resolver);
+				this.dependencies.AddRange(resolver.Dependencies);
+			}
+			catch (Exception ex)
+			{
+				ProblemInfo problem = this.DetectProblemType(ex);
+				throw new SageHelpException(problem, ex);
+			}
 		}
 
 		/// <summary>
@@ -75,8 +84,7 @@ namespace Sage.Views
 		/// <inheritdoc/>
 		public override void Transform(XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{
-			Stopwatch sw = new Stopwatch();
-			long milliseconds = sw.TimeMilliseconds(delegate
+			Action executor = delegate
 			{
 				XmlWriter xmlWriter = XmlWriter.Create(outputWriter, this.OutputSettings);
 				XmlWriter output = new XHtmlXmlWriter(xmlWriter);
@@ -87,26 +95,39 @@ namespace Sage.Views
 
 				try
 				{
-					processor.Transform(reader, transformArgs, output, resolver);
-
+					this.processor.Transform(reader, transformArgs, output, resolver);
+				}
+				catch (Exception ex)
+				{
+					ProblemInfo problem = this.DetectProblemType(ex);
+					throw new SageHelpException(problem, ex);
+				}
+				finally
+				{
 					reader.Close();
 					output.Close();
 					xmlWriter.Close();
 				}
-				catch (XmlException ex)
-				{
-					ProblemInfo problem = DetectProblemType(ex);
-					throw new SageHelpException(problem, ex);
-				}
-			});
+			};
 
+			Stopwatch sw = new Stopwatch();
+			long milliseconds = sw.TimeMilliseconds(executor);
 			log.DebugFormat("Transform completed in {0}ms", milliseconds);
 		}
 
 		private ProblemInfo DetectProblemType(Exception ex)
 		{
-			if (ex.Message.Contains("does not have a root element"))
-				return new ProblemInfo(ProblemType.TransformResultMissingRootElement, this.Dependencies[0]);
+			if (ex is XmlException)
+			{
+				if (ex.Message.Contains("does not have a root element"))
+					return new ProblemInfo(ProblemType.TransformResultMissingRootElement, this.Dependencies[0]);
+			}
+
+			if (ex.GetType().Name == "XslTransformException")
+			{
+				if (ex.Message.Contains("Prefix") && ex.Message.Contains("is not defined"))
+					return new ProblemInfo(ProblemType.MissingNamespaceDeclaration, this.Dependencies[0]);
+			}
 
 			return new ProblemInfo(ProblemType.TransformError);
 		}
