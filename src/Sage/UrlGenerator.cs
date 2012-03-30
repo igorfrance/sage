@@ -457,9 +457,9 @@ namespace Sage
 			}
 
 			string[] arguments = argumentString.Split(',');
-			for (int i = 1; i < arguments.Length; i++)
+			foreach (string t in arguments)
 			{
-				string argument = arguments[i].Trim();
+				string argument = t.Trim();
 
 				QueryString tempQuery;
 				if (argument.IndexOf("?") == 0)

@@ -27,7 +27,7 @@ namespace Sage.Extensibility
 	/// <param name="context">The context under which the code is executing.</param>
 	/// <param name="resourceUri">The URI of the resource to open.</param>
 	/// <returns>A <see cref="CacheableXmlDocument"/> associated with the <paramref name="resourceUri"/>.</returns>
-	public delegate CacheableXmlDocument GetResource(SageContext context, string resourceUri);
+	public delegate CacheableXmlDocument XmlProvider(SageContext context, string resourceUri);
 
 	/// <summary>
 	/// Defines the signature of a method that can be used to handle a single XML node during copying of an XML document.
@@ -37,7 +37,7 @@ namespace Sage.Extensibility
 	/// <returns>The XML node that should be copied in the result document, or a <c>null</c> if the node should be skipped.</returns>
 	/// <seealso cref="ResourceManager.CopyTree"/>
 	/// <seealso cref="ResourceManager.RegisterNodeHandler"/>
-	public delegate XmlNode ProcessNode(XmlNode node, SageContext context);
+	public delegate XmlNode NodeHandler(XmlNode node, SageContext context);
 
 	/// <summary>
 	/// Defines the signature of a method that can be used to substitute placeholders in element or attribute text during 
@@ -48,11 +48,11 @@ namespace Sage.Extensibility
 	/// <returns>The text that should be used instead of the original text, or a <c>null</c> if the node should be skipped.</returns>
 	/// <seealso cref="ResourceManager.CopyTree"/>
 	/// <seealso cref="ResourceManager.RegisterTextHandler"/>
-	public delegate string ProcessText(string variableName, SageContext context);
+	public delegate string TextHandler(string variableName, SageContext context);
 
 	/// <summary>
-	/// Defines the signature of a method that can be used to filter the XML document that view be server from the controller
-	/// to the view.
+	/// Defines the signature of a method that can be used to further filter and/or modify the XML document that is 
+	/// prepared by the controller for the XSLT transformation.
 	/// </summary>
 	/// <param name="controller">The controller calling this method.</param>
 	/// <param name="viewContext">The current viewContext associated with this method call.</param>
@@ -60,7 +60,7 @@ namespace Sage.Extensibility
 	/// <returns>The filtered version of the specified <paramref name="viewXml"/>.</returns>
 	/// <seealso cref="ViewXmlFilterAttribute"/>
 	/// <seealso cref="SageController.FilterViewXml"/>
-	public delegate XmlDocument FilterViewXml(SageController controller, ViewContext viewContext, XmlDocument viewXml);
+	public delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
 
 	/// <summary>
 	/// Defines the signature of a method that can be used to process a function-like expression in text.

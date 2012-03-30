@@ -125,6 +125,8 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Imaging\Filters\QueryFilterFactoryAttribute.cs" />
+    <Compile Include="SyntaxHighlighting\XmlLanguageDefinition.cs" />
+    <Compile Include="SyntaxHighlighting\Delimiters.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="XInclude\Common\XmlBaseAwareXmlReader.cs" />
     <Compile Include="XInclude\Common\XmlBaseState.cs" />

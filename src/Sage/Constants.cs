@@ -174,7 +174,7 @@ namespace Sage
 		/// <summary>
 		/// Indicates an error that occurs during processing of view modules.
 		/// </summary>
-		ModuleProcessingError,
+		ViewProcessingError,
 
 		/// <summary>
 		/// Indicates an error that occurs during processing of view modules.

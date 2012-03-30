@@ -82,13 +82,13 @@
 		<h3 class="section">Modules</h3>
 
 		<p>
-			Any XSLT stylesheets that are <a href="url:link(configuration-module)">configured for use with modules</a> are included automatically in the base stylesheet,
+			Any XSLT stylesheets that are <a href="url:link(sage-modules)">configured for use with modules</a> are included automatically in the base stylesheet,
 			so that any associated module templates can process the module element occurrences wherever they occur in controller views.
 		</p>
 
 		<p xml:space="preserve">
 			The XSLT markup from all module is combined in a single resource, provided by a
-			<a href="url:link(extensibility-resource-providers)">custom resource provider</a> that
+			<a href="url:link(extensibility-xml-providers)">custom resource provider</a> that
 			generates it's content. Since that resource provider <a href="url:link(sage-uri-schemes)">registers for path</a>
 			<code>modules.xslt</code>, we can include the module XSLT simply by specifying:
 		</p>

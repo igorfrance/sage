@@ -102,6 +102,7 @@
     <Compile Include="Configuration\ExtensionPackageConfiguration.cs" />
     <Compile Include="Configuration\PackageGroup.cs" />
     <Compile Include="Extensibility\Constants.cs" />
+    <Compile Include="Extensibility\ExtensionFile.cs" />
     <Compile Include="Extensibility\InstallItem.cs" />
     <Compile Include="Extensibility\InstallLog.cs" />
     <Compile Include="Extensibility\NodeHandlerAttribute.cs" />
@@ -137,7 +138,7 @@
     <Compile Include="Modules\ModuleResource.cs" />
     <Compile Include="Modules\NullModule.cs" />
     <Compile Include="Rewriters\LocalizePathRewriter.cs" />
-    <Compile Include="Extensibility\SageResourceProviderAttribute.cs" />
+    <Compile Include="Extensibility\XmlProviderAttribute.cs" />
     <Compile Include="ResourceManagement\SageResourceResolver.cs" />
     <Compile Include="Views\Meta\DivertView.cs" />
     <Compile Include="Views\Meta\JsonView.cs" />
@@ -148,7 +149,7 @@
     <Compile Include="LastModifiedCache.cs" />
     <Compile Include="Modules\IModuleFactory.cs" />
     <Compile Include="ResourceManagement\EntityResult.cs" />
-    <Compile Include="ResourceManagement\ISageXmlUrlResolver.cs" />
+    <Compile Include="ResourceManagement\IUrlResolver.cs" />
     <Compile Include="ResourceManagement\UrlResolver.cs" />
     <Compile Include="Extensibility\UrlResolverAttribute.cs" />
     <Compile Include="Modules\IModule.cs" />
@@ -183,7 +184,6 @@
     <Compile Include="Extensibility\XsltExtensionObjectAttribute.cs" />
     <Compile Include="XsltExtensions\Date.cs" />
     <Compile Include="XsltExtensions\String.cs" />
-    <Compile Include="XsltExtensions\IO.cs" />
     <Compile Include="Views\XsltView.cs" />
     <Compile Include="Views\XsltViewEngine.cs" />
     <Compile Include="Views\XsltTransform.cs" />

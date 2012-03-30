@@ -7,17 +7,65 @@
 
 	<head>
 		<sage:basehref/>
-		<title>The Basic XSLT extension object</title>
+		<title>Basic</title>
 	</head>
 	<body>
 
-		<h1>The Basic XSLT extension object</h1>
+		<h1>Basic</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
 				<mod:current><sage:url ref="xslt-extensions-basic"/></mod:current>
 			</mod:config>
 		</mod:BreadCrumb>
+
+		<p class="sectionblock">
+			Provides a few utility functions originating from Basic.
+		</p>
+
+		<h3 class="section">functions</h3>
+
+		<ul class="root separate">
+			<li>
+				<p class="sectionblock">
+					<code>basic:iif(condition, trueValue, falseValue)</code>
+				</p>
+				<blockquote>
+					<p>
+						Evalutes condition as <code>boolean</code>, returning <code>trueValue</code> or <code>falseValue</code>
+						depending on the result.
+					</p>
+				</blockquote>
+			</li>
+			<li>
+				<p class="sectionblock">
+					<code>basic:isnull(object, alternative)</code>
+				</p>
+				<blockquote>
+					<p>
+						Returns <code>object</code>, unless it is <code>null</code> in which case it returns <code>alternative</code>.
+					</p>
+					<p>
+						How the value is evaluated depends on the type name of <code>object</code> that was used.
+					</p>
+					<ul>
+						<li>
+							<label>Boolean</label> - the <code>object</code> is evaluated as <code>boolean</code>.
+						</li>
+						<li>
+							<label>String</label> - result is not null is string value of <code>object</code> is neither null
+							nor whitespace alone; it needs to contais some text.
+						</li>
+						<li>
+							<label>Double</label> - result is not null if double value of <code>object</code> is not 0.
+						</li>
+						<li>
+							<label>(default)</label> - result is evaluated as a nodeset and is not null if the count of nodes is not 0.
+						</li>
+					</ul>
+				</blockquote>
+			</li>
+		</ul>
 
 	</body>
 </html>

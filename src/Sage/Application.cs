@@ -79,7 +79,7 @@ namespace Sage
 					}
 				}
 
-				return relevantAssemblies;
+				return relevantAssemblies.Distinct().ToList();
 			}
 		}
 

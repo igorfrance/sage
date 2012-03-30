@@ -46,7 +46,8 @@ namespace Kelp.SyntaxHighlighting
 			this.QuoteDelimiters = new List<string>();
 			this.LineCommentDelimiters = new List<string>();
 			this.Expressions = new List<ExpressionGroup>();
-			this.CommentDelimiters = new List<string[]>();
+			this.CommentDelimiters = new List<Delimiters>();
+			this.CaseSensitive = true;
 		}
 
 		/// <summary>
@@ -73,6 +74,17 @@ namespace Kelp.SyntaxHighlighting
 		public string Name { get; protected set; }
 
 		/// <summary>
+		/// Gets the class name of the language. 
+		/// </summary>
+		public virtual string ClassName
+		{
+			get
+			{
+				return this.Name;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this language is case sensitive.
 		/// </summary>
 		/// <value><c>true</c> if this language is case sensitive; otherwise, <c>false</c>.</value>
@@ -91,7 +103,7 @@ namespace Kelp.SyntaxHighlighting
 		/// <summary>
 		/// Gets or sets the list of language's comment delimiters.
 		/// </summary>
-		public List<string[]> CommentDelimiters { get; protected set; }
+		public List<Delimiters> CommentDelimiters { get; protected set; }
 
 		/// <summary>
 		/// Gets or sets the language expression groups.

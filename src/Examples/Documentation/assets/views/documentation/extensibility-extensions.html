@@ -7,11 +7,11 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Extensions</title>
+		<title>Extension projects</title>
 	</head>
 	<body>
 
-		<h1>Extensions</h1>
+		<h1>Extensions projects</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -19,6 +19,42 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<dfn class="sectionblock">
+			Extension projects are Sage projects packaged into archives and delivered to other Sage projects.
+		</dfn>
+
+		<blockquote>
+			<h3 class="section">Developing</h3>
+
+			<p>
+				As a type of Sage project, extension projects can have any combination of controllers, modules, views and other
+				resources. The extension project itself can be worked on independently and the extension project itself provides
+				the text/example project of the extension.
+			</p>
+			<p>
+				The <a href="url:link(configuration-project)">project configuration</a> specifies which of the extensions components
+				and resources should be copied into the deliverable archive. This allows extension developers to mix other work
+				items, such as test views and specifications with the deliverable code, and filter them out in the compile step.
+			</p>
+
+			<h3 class="section">Packaging</h3>
+
+			<p>
+				The extension projects are packaged by the <code>Sage.Build</code> utility, invoked from the command line.
+				Relative paths are considered relative to the working directory.
+			</p>
+
+			<code class="principal">
+				sage.build extension -source:&lt;extension-project-path&gt; -target:&lt;path-to-archive&gt;
+			</code>
+
+			<h3 class="section">Consuming</h3>
+
+			<p>
+				The extension archives are placed in the extensions directory of the target project. With each initialization
+				of the application, the extension will be registered with the project.
+			</p>
+		</blockquote>
 
 	</body>
 </html>

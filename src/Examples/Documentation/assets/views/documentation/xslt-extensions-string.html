@@ -3,21 +3,172 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
  	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
-		<title>The String XSLT extension object</title>
+		<title>String</title>
 	</head>
 	<body>
 
-		<h1>The String XSLT extension object</h1>
+		<h1>String</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
 				<mod:current><sage:url ref="xslt-extensions-string"/></mod:current>
 			</mod:config>
 		</mod:BreadCrumb>
+
+		<p class="sectionblock">
+			Provides additional functions for working with strings.
+		</p>
+
+		<h3 class="section">functions</h3>
+
+		<ul class="root separate">
+			<li>
+				<p class="sectionblock">
+					<code>string:format(template, param1, param2 = null, param3 = null, param4 = null, param5 = null)</code>
+				</p>
+				<blockquote>
+					<p>
+						Invokes <code>string.Format</code> on the specified <code>template</code> string, using the specified
+						1-5 substitution values.
+					</p>
+					<h6 class="tiny">Arguments</h6>
+					<dl class="arguments">
+						<dt>template</dt>
+						<dd>The template string, e.g. "Hello, {0} {1} {2}."</dd>
+						<dt>param1-5</dt>
+						<dd>Substitution values 0-4.</dd>
+					</dl>
+					<h6 class="tiny">Returns</h6>
+					<dl class="arguments">
+						<dt>string</dt>
+						<dd>The formatted template string, e.g. "Hello, Mr. John Smith."</dd>
+					</dl>
+					<h6 class="tiny">Example</h6>
+					<blockquote>
+						<mod:XmlTree>
+							<mod:data>
+								<sage:literal>
+									<xsl:variable name="date" select="/sage:view/sage:request/sage:dateTime"/>
+									<xsl:value-of select="string:format('{0}-{1}-{2}', $date/@day, $date/@month, $day/@year)"/>
+									<xsl:value-of select="string:format('{0}:{1}:{2}', $date/@hour, $date/@minute, $day@/second)"/>
+								</sage:literal>
+							</mod:data>
+						</mod:XmlTree>
+					</blockquote>
+				</blockquote>
+			</li>
+			<li>
+				<p class="sectionblock">
+					<code>string:replace(value, expression, replacement)</code>
+				</p>
+				<blockquote>
+					<p>
+						Searched the specified <code>value</code> for regular <code>expression</code> and replaces it with
+						specified <code>replacement</code>.
+					</p>
+					<h6 class="tiny">Arguments</h6>
+					<dl class="arguments">
+						<dt>value</dt>
+						<dd>The string to replace</dd>
+						<dt>expression</dt>
+						<dd>The expression to look for.</dd>
+						<dt>replacement</dt>
+						<dd>The replacement string to substitute with.</dd>
+					</dl>
+					<h6 class="tiny">Returns</h6>
+					<dl class="arguments">
+						<dt>string</dt>
+						<dd>The processed version of speciried <code>value</code></dd>
+					</dl>
+					<h6 class="tiny">Example</h6>
+					<blockquote>
+						<mod:XmlTree>
+							<mod:data>
+								<sage:literal>
+									<xsl:value-of select="string:replace(./@fullName, '^(\w+) (\w+)$', '$2 $1')"/>
+								</sage:literal>
+							</mod:data>
+						</mod:XmlTree>
+					</blockquote>
+				</blockquote>
+			</li>
+			<li>
+				<p class="sectionblock">
+					<code>string:matches(value, expression)</code>
+				</p>
+				<blockquote>
+					<p>
+						Returns true if the specified <code>value</code> matches the specified regular <code>expression</code>.
+					</p>
+					<h6 class="tiny">Arguments</h6>
+					<dl class="arguments">
+						<dt>value</dt>
+						<dd>The string to search</dd>
+						<dt>expression</dt>
+						<dd>The expression to look for.</dd>
+					</dl>
+					<h6 class="tiny">Returns</h6>
+					<dl class="arguments">
+						<dt>string</dt>
+						<dd><code>true</code> if the specified <code>value</code> matches the specified <code>expression</code>;
+						otherwise <code>false</code>.
+						</dd>
+					</dl>
+					<h6 class="tiny">Example</h6>
+					<blockquote>
+						<mod:XmlTree>
+							<mod:data>
+								<sage:literal>
+									<xsl:variable name="forbiddenChars" select="[^\w$\-.]"/>
+									<xsl:variable name="rangeExpression" select="^[\s\S]{{0},{1}}$"/>
+									<xsl:choose>
+										<xsl:when test="string:matches(./@firstName, $forbiddenChars)">
+											<xsl:apply-templates select="./@firstName" mode="forbiddenChars"/>
+										</xsl:when>
+										<xsl:when test="!string:matches(./@firstName, string:format($rangeExpression, 3, 12))">
+											<xsl:apply-templates select="./@firstName" mode="allowedRange"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:apply-templates select="./@firstName" mode="showNormal"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</sage:literal>
+							</mod:data>
+						</mod:XmlTree>
+					</blockquote>
+				</blockquote>
+			</li>
+			<li>
+				<p class="sectionblock">
+					<code>string:contains(subject, value)</code>
+				</p>
+				<blockquote>
+					<p>
+						Returns a value indicating whether the specified <code>value</code> exists in the specified
+						<code>subject</code>. This is equivalent to calling <code>string.Contains</code> in C#.
+					</p>
+					<h6 class="tiny">Arguments</h6>
+					<dl class="arguments">
+						<dt>subject</dt>
+						<dd>The string to search</dd>
+						<dt>value</dt>
+						<dd>The value to look for.</dd>
+					</dl>
+					<h6 class="tiny">Returns</h6>
+					<dl class="arguments">
+						<dt>string</dt>
+						<dd><code>true</code> if the specified <code>value</code> contains the specified <code>expression</code>;
+						otherwise <code>false</code>.
+						</dd>
+					</dl>
+				</blockquote>
+			</li>
+		</ul>
 
 	</body>
 </html>

@@ -19,5 +19,53 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<p class="sectionblock">
+			<a class="external" href="http://msdn.microsoft.com/en-us/library/tf741884.aspx">XSLT Extension Objects</a>
+			provide additional functionality to the XLST that uses them through public methods they expose.
+		</p>
+
+		<blockquote>
+			<p>
+				Any class can be configured as an XSLT Extension Object provider by attaching the
+				<code>XsltExtensionObjectAttribute</code> to it. This attribute has a
+				single required string argument which is the namespace that this extension will be registered with. This
+				name doubles as it's unique id in the registry of XSLT extension objects.
+			</p>
+			<p>
+				To use it anywhere within XSLT, simply reference an existing XSLT extenion object's namespace and it becomes
+				automatically available in the document.
+			</p>
+			<p>
+				All XSLT stylesheets are cached once they are loaded, and remain cached unless one of its constituent files
+				changes, and the extension object will be cached with the stylesheet. This is a performance optimization.
+			</p>
+
+			<h6 class="caption">XsltExtensionObjectAttribute usage</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">String|XmlNamespaces</mod:group>
+						<mod:group name="attribute">XsltExtensionObject|SuppressMessage</mod:group>
+						<mod:group name="delegate">XmlProvider</mod:group>
+					</mod:keywords>
+					<mod:code><![CDATA[
+
+						[XsltExtensionObject(XmlNamespaces.Extensions.String)]
+						public class String
+
+					]]></mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+		</blockquote>
+
+		<mod:RelatedArticles>
+			<mod:config>
+				<mod:display>children</mod:display>
+				<mod:current><sage:url ref="extensibility-xslt-extensions"/></mod:current>
+				<mod:title>XSLT Extension Objects provided by Sage</mod:title>
+			</mod:config>
+		</mod:RelatedArticles>
+
 	</body>
 </html>

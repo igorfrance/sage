@@ -1,35 +1,34 @@
 ﻿.syntaxbox
-	{ font-family: Consolas, Courier New, Courier; font-size: 9pt; color: #000; background: #ebebeb; }
-.syntaxbox .tab
-	{ width: 20px; height: 3px; display: inline-block; }
-.syntaxbox .line
+	{ font-family: Consolas, Courier New, Courier; font-size: 9pt; color: #000; 
+	  position: relative; background: #ebebeb; overflow: auto; }
+
+.syntax
 	{ position: relative; }
-.syntaxbox .line .num
-	{ background: #586575; color: #a7b1bb; width: 16px; text-align: right; display: inline-block;
-	  cursor: default; user-select: none; -moz-user-select: none; -webkit-user-select: none; -o-user-select: none;
-		position: absolute; left: 0; top: 0; bottom: 0; z-index: 0; }
-.syntaxbox .line .content
-	{ position: relative; z-index: 1; display: block; min-height: 16px; }
-.syntaxbox .linecols-1 .num
-	{ width: 32px; }
-.syntaxbox .linecols-2 .num
-	{ width: 32px; }
-.syntaxbox .linecols-3 .num
+.syntax .linebg
+	{ position: absolute; z-index: 0; top: 0; left: 0; bottom: 0; width: 100px; background: #d4d4d4; border-right: 2px solid #898989; }
+.syntax ol
+	{ position: relative; z-index: 1; margin: 0; color: #000; }
+.syntax ol > li
+	{ color: #666; }
+.syntax ol > li *
+	{ color: #000; }
+.syntax ol li
+	{ padding-left: 5px; }
+.syntax .tab
+	{ width: 20px; height: 3px; display: inline-block; }
+.syntax.cols-1 .linebg
+	{ width: 36px; }
+.syntax.cols-2 .linebg
+	{ width: 36px; }
+.syntax.cols-3 .linebg
 	{ width: 48px; }
-.syntaxbox .linecols-4 .num
+.syntax.cols-4 .linebg
 	{ width: 64px; }
-
-.syntaxbox .linecols-1 .line
-	{ padding-left: 36px; }
-.syntaxbox .linecols-2 .line
-	{ padding-left: 36px; }
-.syntaxbox .linecols-3 .line
-	{ padding-left: 52px; }
-.syntaxbox .linecols-4 .line
-	{ padding-left: 68px; }
-
+	
 .syntax *
 	{ float: none !important; }
+.syntax ol li
+	{ padding-left: 5px; }
 .syntax .comment
 	{ color: #aaaaaa; }
 .syntax .string
@@ -44,6 +43,12 @@
 	{ color: #0080c0; }
 .syntax .value
 	{ color: #993300; font-weight: bold; }
+.syntax .delegate
+	{ color: #0080c0; }
+.syntax .constant
+	{ color: #987A05; font-weight: bold; font-style: italic; }
+.syntax .struct
+	{ color: #00c032; font-style: italic; }
 .syntax .keyword
 	{ color: #0000ff; }
 .syntax .keyword1
@@ -60,3 +65,25 @@
 	{ color: #FF0033; }
 .syntax .special3
 	{ color: #FF0033; }
+
+.syntax.csharp .attribute
+	{ color: #ff6400; font-weight: bold; font-style: italic; }
+
+.syntax.xml .markup
+	{ color: #00f; }
+.syntax.xml .element
+	{ color: #00f; }
+.syntax.xml .attrName
+	{ color: #00f; }
+.syntax.xml .attrValue
+	{ color: #008080; }
+.syntax.xml .pi
+	{ color: #4141b4; font-style: italic; }
+.syntax.xml .comment
+	{ color: #aaa; font-style: italic; }
+.syntax.xml .cdata
+	{ color: #666; }
+.syntax.xml .entity
+	{ color: #f30; font-weight: bold; }
+
+

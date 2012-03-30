@@ -147,11 +147,17 @@ namespace Sage.DevTools.Modules
 
 			string definitionPath = context.Path.GetModulePath("SyntaxHighlighter", "SyntaxHighlighter.xml");
 			XmlDocument definitionDoc = context.Resources.LoadXml(definitionPath);
+			XmlNode definitionRoot = definitionDoc.SelectSingleNode("//mod:definitions", nm);
 
 			languages = new Dictionary<string, LanguageDefinition>();
-			foreach (XmlElement languageElement in definitionDoc.SelectNodes("//mod:definitions/mod:language", nm))
+			foreach (XmlElement languageElement in definitionRoot.SelectNodes("mod:language | mod:xmllanguage", nm))
 			{
-				LanguageDefinition definition = new ModularLanguageDefinition(languageElement);
+				LanguageDefinition definition;
+				if (languageElement.LocalName == "xmllanguage")
+					definition = new ModularXmlLanguageDefinition(languageElement);
+				else
+					definition = new ModularLanguageDefinition(languageElement);
+
 				languages.Add(definition.Name, definition);
 			}
 

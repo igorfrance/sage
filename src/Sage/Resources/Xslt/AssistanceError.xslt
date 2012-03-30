@@ -164,8 +164,8 @@
 			<xsl:when test="$problemType = 'ContextualizeError'">
 				Contextualization error
 			</xsl:when>
-			<xsl:when test="$problemType = 'ModuleProcessingError'">
-				Module processing error
+			<xsl:when test="$problemType = 'ViewProcessingError'">
+				View processing error
 			</xsl:when>
 			<xsl:when test="$problemType = 'ResourceProcessingError'">
 				Resource processing error
@@ -222,8 +222,8 @@
 			<xsl:when test="$problemType = 'ContextualizeError'">
 				A problem happend during the contextualization of an XML document.
 			</xsl:when>
-			<xsl:when test="$problemType = 'ModuleProcessingError'">
-				A problem happend during the processing of modules used on a view.
+			<xsl:when test="$problemType = 'ViewProcessingError'">
+				A problem happend during the processing of the view configuration.
 			</xsl:when>
 			<xsl:when test="$problemType = 'ResourceProcessingError'">
 				A problem occured during inclusion of resources referenced by modules and/or libraries in use on a view.
@@ -328,8 +328,8 @@
 			<xsl:when test="$problemType = 'ContextualizeError'">
 				<p>Look into the XML document(s) you are working with and try to look for the cause indicated by the exception text.</p>
 			</xsl:when>
-			<xsl:when test="$problemType = 'ModuleProcessingError'">
-				<p>Look into the module(s) you are working with and try to look for the cause indicated by the exception text.</p>
+			<xsl:when test="$problemType = 'ViewProcessingError'">
+				<p>Look in the view document you are working with and try to look for the cause indicated by the exception text.</p>
 			</xsl:when>
 			<xsl:when test="$problemType = 'ResourceProcessingError'">
 				<p>

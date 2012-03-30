@@ -32,13 +32,13 @@ namespace Sage.ResourceManagement
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlResolver).FullName);
 		private static readonly Dictionary<string, Type> staticResolvers = new Dictionary<string, Type>();
-		private readonly Dictionary<string, ISageXmlUrlResolver> instanceResolvers = new Dictionary<string, ISageXmlUrlResolver>();
+		private readonly Dictionary<string, IUrlResolver> instanceResolvers = new Dictionary<string, IUrlResolver>();
 
 		/// <summary>
 		/// Local reference to the context under which this instance was created.
 		/// </summary>
 		private readonly SageContext context;
-		private readonly Dictionary<string, ISageXmlUrlResolver> instances;
+		private readonly Dictionary<string, IUrlResolver> instances;
 
 		private readonly List<string> dependencies = new List<string>();
 		private readonly List<string> resolved = new List<string>();
@@ -49,7 +49,7 @@ namespace Sage.ResourceManagement
 			{
 				var types = from t in a.GetTypes()
 								  where t.IsClass && !t.IsAbstract
-										&& typeof(ISageXmlUrlResolver).IsAssignableFrom(t)
+										&& typeof(IUrlResolver).IsAssignableFrom(t)
 										&& t.GetCustomAttributes(typeof(UrlResolverAttribute), false).Count() != 0
 								  select t;
 
@@ -72,7 +72,7 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		public UrlResolver()
 		{
-			this.instances = new Dictionary<string, ISageXmlUrlResolver>();
+			this.instances = new Dictionary<string, IUrlResolver>();
 		}
 
 		/// <summary>
@@ -118,7 +118,7 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		/// <param name="scheme">The scheme.</param>
 		/// <param name="resolver">The resolver.</param>
-		public void RegisterResolver(string scheme, ISageXmlUrlResolver resolver)
+		public void RegisterResolver(string scheme, IUrlResolver resolver)
 		{
 			if (instanceResolvers.ContainsKey(scheme))
 			{
@@ -132,7 +132,7 @@ namespace Sage.ResourceManagement
 		/// <inheritdoc/>
 		public override object GetEntity(Uri uri, string role, Type returnObject)
 		{
-			ISageXmlUrlResolver resolver = GetResolver(uri.Scheme);
+			IUrlResolver resolver = GetResolver(uri.Scheme);
 			if (resolver != null)
 			{
 				EntityResult result = resolver.GetEntity(this, context, uri.ToString().Replace("\\", "/"));
@@ -153,7 +153,7 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-		private ISageXmlUrlResolver GetResolver(string scheme)
+		private IUrlResolver GetResolver(string scheme)
 		{
 			if (instanceResolvers.ContainsKey(scheme))
 				return instanceResolvers[scheme];
@@ -164,7 +164,7 @@ namespace Sage.ResourceManagement
 			if (staticResolvers.ContainsKey(scheme))
 			{
 				ConstructorInfo constructor = staticResolvers[scheme].GetConstructor(new Type[] { });
-				ISageXmlUrlResolver resolver = (ISageXmlUrlResolver) constructor.Invoke(new object[] { });
+				IUrlResolver resolver = (IUrlResolver) constructor.Invoke(new object[] { });
 				instances[scheme] = resolver;
 				return resolver;
 			}

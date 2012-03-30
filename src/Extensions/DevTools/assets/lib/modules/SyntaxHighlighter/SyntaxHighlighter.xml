@@ -2,6 +2,29 @@
 <mod:SyntaxHighlighter xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
 	<mod:defaults>
 		<mod:definitions>
+			<mod:xmllanguage name="xml"/>
+			<mod:xmllanguage name="xslt">
+				<mod:elements>
+					<mod:group name="xslt">
+						xsl:apply-imports|xsl:apply-templates |xsl:attribute|xsl:attribute-set|xsl:call-template
+						xsl:choose|xsl:comment|xsl:copy|xsl:copy-of|xsl:decimal-format|xsl:element|xsl:fallback
+						xsl:for-each|xsl:if|xsl:import|xsl:include|xsl:key|xsl:locale|xsl:message|xsl:namespace-alias
+						xsl:number|xsl:otherwise|xsl:output|xsl:param|xsl:preserve-space|xsl:processing-instruction
+						xsl:sort|xsl:strip-space|xsl:stylesheet|xsl:template|xsl:text|xsl:transform|xsl:use-attribute-sets
+						xsl:value-of|xsl:variable|xsl:when|xsl:with-param
+					</mod:group>
+				</mod:elements>
+				<mod:attributes>
+					<mod:group name="xslt">
+						case-order |cdata-section-elements|count |data-type |decimal-separator|digit |disable-output-escaping
+						doctype-public|doctype-system|elements|encoding|exclude-result-prefixes|extension-element-prefixes
+						format|from|grouping-separator|grouping-size|href|id|indent|infinity|lang|letter-value|level
+						match|media-type|method|minus-sign|mode|name|namespace|NaN|omit-xml-declaration|order|pattern-separator
+						percent|per-mille|priority|result-prefix|section-elements|select|standalone|stylesheet-prefix
+						terminate|test|use|use-attribute-sets|value|version|xml-declaration|xml:space|xmlns:xsl|zero-digit
+					</mod:group>
+				</mod:attributes>
+			</mod:xmllanguage>
 			<mod:language name="javascript">
 				<mod:escape>\</mod:escape>
 				<mod:regexp>/ /</mod:regexp>
@@ -115,7 +138,7 @@
 					<mod:group name="special2" treatAsWord="false">#[0-9a-fA-F]{3,6}</mod:group>
 				</mod:keywords>
 			</mod:language>
-			<mod:language name="c#">
+			<mod:language name="csharp">
 				<mod:escape>\</mod:escape>
 				<mod:comments>
 					<mod:comment>/* */</mod:comment>
@@ -127,15 +150,17 @@
 				</mod:quotes>
 				<mod:keywords>
 					<mod:group name="preprocessor">
-						define|elif|else|endif|endregion|error|if|line|region|undef|pragma|warning
+						#define|#elif|#else|#endif|#endregion|#error|#if|#line|#region|#undef|#pragma|#warning
 					</mod:group>
 					<mod:group name="keyword">
-						abstract|event|new|struct|as|explicit|null|switch|base|extern|object|this|bool|false|operator|throw
-						break|finally|out|true|byte|fixed|override|try|case|float|params|typeof|catch|for|private|uint|char
-						foreach|protected|ulong|checked|goto|public|unchecked|class|if|readonly|unsafe|const|implicit|ref|ushort|continue
-						in|return|using|decimal|int|sbyte|virtual|default|interface|sealed|volatile|delegate|internal|short|void
-						do|is|sizeof|while|double|lock|stackalloc|else|long|static|enum|namespace|string|get|set|var|value|partial|yield
-						select|from|group|into|join|where|let|orderby|add|alias|ascending|descending|dynamic|global|remove
+						abstract|add|alias|as|ascending|base|bool|break|byte|case|catch|char|checked|class|
+						const|continue|decimal|default|delegate|descending|do|double|dynamic|else|enum|event|
+						explicit|extern|false|finally|fixed|float|for|foreach|from|get|global|goto|group|if|
+						implicit|in|int|interface|internal|into|is|join|let|lock|long|namespace|new|null|object|
+						operator|orderby|out|override|params|partial|private|protected|public|readonly|ref|remove|
+						return|sbyte|sealed|select|set|short|sizeof|stackalloc|static|string|struct|switch|this|
+						throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|value|var|virtual|void|
+						volatile|where|while|yield|
 					</mod:group>
 				</mod:keywords>
 			</mod:language>

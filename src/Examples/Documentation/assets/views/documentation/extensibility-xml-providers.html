@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Xml Providers</title>
+	</head>
+	<body>
+
+		<h1>Xml providers</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="extensibility-xml-providers"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<p class="sectionblock">
+			In Sage, XML Providers are methods that populate and return a <code>CacheableXmlDocument</code> when a name for
+			which they are registered is requested through the
+			<a href="url:link(sage-uri-schemes)">sageres://</a> URL scheme.
+		</p>
+
+		<blockquote>
+			<p>
+				Any method that matches the <code>XmlProvider</code> signature can be configured as an XML
+				rovider delegate by attaching the <code>XmlProviderAttribute</code> to it. This attribute has a
+				single required string argument which is the name that should be associated with the this method
+				returns.
+			</p>
+
+			<h6 class="caption">XmlProvider delegate</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">CacheableXmlDocument|SageContext</mod:group>
+						<mod:group name="delegate">XmlProvider</mod:group>
+					</mod:keywords>
+					<mod:code><![CDATA[
+
+						delegate CacheableXmlDocument XmlProvider(SageContext controller, string resourceUri);
+
+					]]></mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">XmlProvider delegate implementation and registration</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							CacheableXmlDocument|SageContext|ModuleConfiguration|XsltTransform
+						</mod:group>
+						<mod:group name="attribute">XmlProvider</mod:group>
+						<mod:group name="enum">XmlNodeType</mod:group>
+						<mod:group name="value">Element</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						[XmlProvider("modules.xslt")]
+						internal static CacheableXmlDocument CombineModuleXslt(SageContext context, string resourceUri)
+						{
+							CacheableXmlDocument resultDoc = new CacheableXmlDocument();
+							resultDoc.LoadXml(DefaultXslt);
+
+							foreach (ModuleConfiguration config in context.ProjectConfiguration.Modules.Values)
+							{
+								foreach (string path in config.Stylesheets)
+								{
+									string stylesheetPath = context.Path.GetModulePath(config.Name, path);
+									CopyXslElements(context, stylesheetPath, resultDoc);
+								}
+							}
+
+							XsltTransform.OmitNamespacePrefixResults(resultDoc);
+							return resultDoc;
+						}
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">Using the registered XmlProvider in C#:</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							XmlDocument
+						</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						//// context is a SageContext instance
+						XmlDocument combinedModuleXslt = context.Resources.LoadXml("sageres://modules.xslt");
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">Using the registered XmlProvider in XSLT:</h6>
+			<mod:XmlTree>
+				<mod:data>
+					<xsl:include href="sageres://modules.xslt" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" />
+				</mod:data>
+			</mod:XmlTree>
+
+		</blockquote>
+
+	</body>
+</html>

@@ -47,10 +47,6 @@
   <ItemGroup>
     <Content Include="assets\configuration\dictionary\en.xml" />
     <Content Include="assets\configuration\navigation.xml" />
-    <Content Include="assets\css\dev\logview.css" />
-    <Content Include="assets\css\gradients.css" />
-    <Content Include="assets\css\tutorial-ie.css" />
-    <Content Include="assets\css\tutorial.css" />
     <Content Include="assets\lib\modules\BreadCrumb\breadcrumb.css" />
     <Content Include="assets\lib\modules\BreadCrumb\breadcrumb.js" />
     <Content Include="assets\lib\modules\BreadCrumb\breadcrumb.xsl" />
@@ -74,8 +70,8 @@
     <Content Include="assets\views\documentation\configuration-rewriters.html" />
     <Content Include="assets\views\documentation\configuration.html" />
     <Content Include="assets\views\documentation\extensibility-extensions.html" />
-    <Content Include="assets\views\documentation\extensibility-handlers.html" />
-    <Content Include="assets\views\documentation\extensibility-resource-providers.html" />
+    <Content Include="assets\views\documentation\extensibility-node-handlers.html" />
+    <Content Include="assets\views\documentation\extensibility-xml-providers.html" />
     <Content Include="assets\views\documentation\extensibility-url-resolvers.html" />
     <Content Include="assets\views\documentation\extensibility-xml-filters.html" />
     <Content Include="assets\views\documentation\extensibility-xslt-extensions.html" />

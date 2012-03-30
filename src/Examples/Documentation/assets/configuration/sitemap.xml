@@ -128,13 +128,13 @@
 					<page name="extensibility-extensions" url="~/documentation/extensibility-extensions.html">
 						<title>Extensions</title>
 					</page>
-					<page name="extensibility-handlers" url="~/documentation/extensibility-handlers.html">
+					<page name="extensibility-node-handlers" url="~/documentation/extensibility-node-handlers.html">
 						<title>Node and text handlers</title>
 					</page>
 					<page name="extensibility-xml-filters" url="~/documentation/extensibility-xml-filters.html">
 						<title>View XML filters</title>
 					</page>
-					<page name="extensibility-resource-providers" url="~/documentation/extensibility-resource-providers.html">
+					<page name="extensibility-xml-providers" url="~/documentation/extensibility-xml-providers.html">
 						<title>Resource providers</title>
 					</page>
 					<page name="extensibility-url-resolvers" url="~/documentation/extensibility-url-resolvers.html">

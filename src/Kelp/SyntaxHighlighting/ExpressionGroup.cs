@@ -31,11 +31,11 @@ namespace Kelp.SyntaxHighlighting
 	/// </remarks>
 	public class ExpressionGroup
 	{
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExpressionGroup"/> class.
-        /// </summary>
-        /// <param name="groupElement">The group element.</param>
-        /// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ExpressionGroup"/> class.
+		/// </summary>
+		/// <param name="groupElement">The group element.</param>
+		/// <param name="caseSensitive">if set to <c>true</c> [case sensitive].</param>
 		public ExpressionGroup(XmlElement groupElement, bool caseSensitive)
 		{
 			Contract.Requires<ArgumentNullException>(groupElement != null);
@@ -56,18 +56,22 @@ namespace Kelp.SyntaxHighlighting
 
 			this.Expression = new Regex(pattern, options);
 			this.ClassName = groupName;
+			this.Keywords = keywords.Split('|');
 		}
+
+		/// <summary>
+		/// Gets the keywords associated with this group.
+		/// </summary>
+		public string[] Keywords { get; private set; }
 
 		/// <summary>
 		/// Gets the CSS class name associated with this group.
 		/// </summary>
-		/// <value>The CSS class name associated with this group.</value>
 		public string ClassName { get; private set; }
 
 		/// <summary>
 		/// Gets the regular expression for this group of words.
 		/// </summary>
-		/// <value>The regular expression for this group of words.</value>
 		public Regex Expression { get; private set; }
 	}
 }

@@ -17,7 +17,7 @@
 						<xs:choice>
 							<xs:element name="definitions">
 								<xs:complexType>
-									<xs:sequence>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
 										<xs:element name="language" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:choice minOccurs="0" maxOccurs="5">
@@ -51,12 +51,7 @@
 													<xs:element name="keywords" minOccurs="0" maxOccurs="1">
 														<xs:complexType>
 															<xs:sequence>
-																<xs:element name="group" minOccurs="0" maxOccurs="unbounded">
-																	<xs:complexType mixed="true">
-																		<xs:attribute name="name" use="required"/>
-																		<xs:attribute name="treatAsWord" use="optional" type="xs:boolean" default="true"/>
-																	</xs:complexType>
-																</xs:element>
+																<xs:element name="group" minOccurs="0" maxOccurs="unbounded" type="languageGroup"/>
 															</xs:sequence>
 														</xs:complexType>
 													</xs:element>
@@ -64,7 +59,28 @@
 												<xs:attribute name="name" type="xs:string" use="required"/>
 											</xs:complexType>
 										</xs:element>
-									</xs:sequence>
+										<xs:element name="xmllanguage" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="2">
+													<xs:element name="elements" minOccurs="0" maxOccurs="1">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="group" minOccurs="0" maxOccurs="unbounded" type="languageGroup"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="attributes" minOccurs="0" maxOccurs="1">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="group" minOccurs="0" maxOccurs="unbounded" type="languageGroup"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+												<xs:attribute name="name" type="xs:string" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
 								</xs:complexType>
 							</xs:element>
 						</xs:choice>
@@ -80,20 +96,19 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="data" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:choice minOccurs="0" maxOccurs="1">
-							<xs:element name="meta" minOccurs="0" maxOccurs="1">
-								<xs:complexType>
-									<xs:choice>
-										<xs:element name="view" type="sage:generic"/>
-									</xs:choice>
-								</xs:complexType>
-							</xs:element>
+					<xs:complexType mixed="true">
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:any namespace="##any"/>
 						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:complexType name="languageGroup" mixed="true">
+		<xs:attribute name="name" use="required"/>
+		<xs:attribute name="treatAsWord" use="optional" type="xs:boolean" default="true"/>
+	</xs:complexType>
 	
 </xs:schema>

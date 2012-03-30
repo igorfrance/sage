@@ -1,4 +1,19 @@
-﻿namespace Sage.DevTools.Modules
+﻿/**
+ * Copyright 2012 Igor France
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+namespace Sage.DevTools.Modules
 {
 	using System;
 	using System.Diagnostics.Contracts;
@@ -20,7 +35,7 @@
 			XmlNamespaceManager nm = Sage.XmlNamespaces.Manager;
 
 			this.Name = configurationElement.GetAttribute("name");
-			this.CaseSensitive = configurationElement.GetAttribute("caseSensitive").ContainsAnyOf("false", "no", "0");
+			this.CaseSensitive = !configurationElement.GetAttribute("caseSensitive").ContainsAnyOf("false", "no", "0");
 
 			XmlElement selection = configurationElement.SelectSingleElement("mod:escape", nm);
 			if (selection != null)
@@ -44,7 +59,7 @@
 			{
 				var pair = commentNode.InnerText.Trim().Split(' ');
 				if (pair.Length == 2)
-					this.CommentDelimiters.Add(pair);
+					this.CommentDelimiters.Add(new Delimiters(pair[0], pair[1]));
 			}
 
 			foreach (XmlElement quoteNode in configurationElement.SelectNodes("mod:quotes/mod:quote", nm))

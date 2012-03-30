@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Node handlers</title>
+	</head>
+	<body>
+
+		<h1>Node handlers</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="extensibility-node-handlers"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<dfn class="sectionblock">
+			In Sage, Node handlers are registered delegate that are invoked during the
+			<a href="url:link(xml-flow-copy-tree)">contextualization step</a> when tree processing encounters an element
+			or attribute for which the handler has been registered.
+		</dfn>
+
+		<blockquote>
+			<p>
+				During the <a href="url:link(xml-flow-copy-tree)">contextualization step</a> of
+				<a href="url:link(xml-flow)">document processing</a>, Sage processes all XML elements and their attributes
+				in the opened document, recursiverly traversing the whole document.
+			</p>
+			<p>
+				This means that each element, attribute and text node in an XML document is processed
+				by either the default handler - whose function is to simply copy the node as-is; or by another, more specific
+				handler registered for this node.
+			</p>
+
+			<h6 class="caption">NodeHandler delegate signature</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							XmlNode|SageContext
+						</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						delegate XmlNode NodeHandler(XmlNode node, SageContext context);
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">NodeHandler delegate implementation and registration</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							NodeHandler|SageContext|XmlNode|XmlNamespaces|XmlElement
+						</mod:group>
+						<mod:group name="enum">
+							XmlNodeType
+						</mod:group>
+						<mod:group name="value">
+							Element
+						</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						[NodeHandler(XmlNodeType.Element, "value", "http://www.cycle99.com/schemas/sage/contextualization.xsd")]
+						internal static XmlNode ProcessContextValueNode(XmlNode valueElement, SageContext context)
+						{
+							if (valueElement.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+								return valueElement;
+
+							XmlElement valueElem = (XmlElement) valueElement;
+
+							string propName = valueElem.GetAttribute("property");
+							string propKey = valueElem.GetAttribute("key");
+							string propValue = GetContextProperty(context, propName, propKey);
+
+							if (propValue != null)
+								return valueElement.OwnerDocument.CreateTextNode(propValue);
+
+							return valueElement;
+						}
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+		</blockquote>
+
+	</body>
+</html>

@@ -39,70 +39,71 @@ namespace Sage.Extensibility
 		private readonly IOrderedEnumerable<InstallLog> orderedLogs;
 		private readonly SageContext context;
 		private List<Assembly> assemblies;
-		private bool loaded;
+		private List<InstallLog> installHistory;
 
-		internal ExtensionInfo(string pluginArchive, SageContext context)
+		private bool isLoaded;
+
+		internal ExtensionInfo(string archiveFileName, SageContext context)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(pluginArchive));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(archiveFileName));
 			Contract.Requires<ArgumentNullException>(context != null);
-			Contract.Requires<ArgumentException>(File.Exists(pluginArchive));
+			Contract.Requires<ArgumentException>(File.Exists(archiveFileName));
 
-			this.context = context;
-
-			this.Name = Path.GetFileNameWithoutExtension(pluginArchive);
-			this.ArchiveDate = File.GetLastWriteTime(pluginArchive).Max(File.GetCreationTime(pluginArchive));
-			this.SourceAssets = new List<string>();
-			this.AssembyNames = new List<string>();
-			this.SourceArchive = pluginArchive;
-			this.SourceDirectory = Path.ChangeExtension(pluginArchive, null);
-			this.InstallLogFile = Path.ChangeExtension(this.SourceArchive, ".history.xml");
-
-			if (!Directory.Exists(this.SourceDirectory))
+			FileStream fs = File.OpenRead(archiveFileName);
+			try
 			{
-				Directory.CreateDirectory(this.SourceDirectory);
-				this.ExtractArchive();
-			}
-			else if (this.ArchiveDate > Directory.GetLastWriteTime(this.SourceDirectory))
-			{
-				try
+				using (ZipFile extensionArchive = new ZipFile(fs))
 				{
-					Directory.Delete(this.SourceDirectory);
+					this.ArchiveFiles = new List<ExtensionFile>();
+					foreach (ZipEntry entry in extensionArchive)
+					{
+						if (entry.IsFile)
+							this.ArchiveFiles.Add(new ExtensionFile(extensionArchive, entry));
+					}
+
+					string assetPath = "assets";
+					this.context = context;
+
+					this.Name = Path.GetFileNameWithoutExtension(archiveFileName);
+					this.ArchiveDate = File.GetLastWriteTime(archiveFileName).Max(File.GetCreationTime(archiveFileName));
+					this.ArchiveFileName = archiveFileName;
+					this.InstallLogFile = Path.ChangeExtension(this.ArchiveFileName, ".history.xml");
+
+					ExtensionFile configFile = this.ArchiveFiles.FirstOrDefault(file => file.Name.Equals(ProjectConfiguration.ExtensionConfigName));
+					if (configFile != null)
+					{
+						this.Config = ProjectConfiguration.Create(extensionArchive.GetInputStream(configFile.Entry));
+						assetPath = (this.Config.AssetPath ?? assetPath).Replace("~/", string.Empty);
+					}
+
+					this.AssemblyFiles = this.ArchiveFiles
+						.Where(v =>
+							v.Name.StartsWith("bin/", StringComparison.InvariantCultureIgnoreCase) &&
+							v.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+						.ToList();
+
+					this.AssetFiles = this.ArchiveFiles
+						.Where(v => v.Name.StartsWith(assetPath, StringComparison.InvariantCultureIgnoreCase))
+						.ToList();
+
+					this.TargetAssets = this.AssetFiles.Select(this.GetTargetPath).ToList();
 				}
-				catch (Exception ex)
-				{
-					log.ErrorFormat("Could not delete the source directory '{0}' for extension '{1}': {2}.",
-						this.SourceDirectory, this.Name, ex.Message);
-				}
-
-				this.ExtractArchive();
 			}
-
-			this.ReadLog();
-
-			string bindir = Path.Combine(this.SourceDirectory, "bin");
-			if (Directory.Exists(bindir))
+			finally
 			{
-				this.AssembyNames.AddRange(
-					Directory.GetFiles(bindir, "*.dll", SearchOption.AllDirectories));
-			}
-
-			string assetdir = Path.Combine(this.SourceDirectory, "assets");
-			if (Directory.Exists(assetdir))
-			{
-				this.SourceAssets.AddRange(
-					Directory.GetFiles(assetdir, "*.*", SearchOption.AllDirectories));
-			}
-
-			string configPath = Path.Combine(this.SourceDirectory, "Extension.config");
-			if (File.Exists(configPath))
-				this.Config = ProjectConfiguration.Create(configPath);
-
-			this.TargetAssets = this.SourceAssets.Select(this.GetTargetPath).ToList();
-
-			orderedLogs = from i in InstallHistory
-						  orderby i.Date
-						  select i;
+				fs.Close();
+			} 
+			
+			this.orderedLogs = from i in this.InstallHistory
+							   orderby i.Date
+							   select i;
 		}
+
+		public List<ExtensionFile> ArchiveFiles { get; private set; }
+
+		public List<ExtensionFile> AssemblyFiles { get; private set; }
+
+		public List<ExtensionFile> AssetFiles { get; private set; }
 
 		public string Name { get; private set; }
 
@@ -129,19 +130,32 @@ namespace Sage.Extensibility
 			}
 		}
 
-		public List<string> AssembyNames { get; private set; }
-
-		public List<string> SourceAssets { get; private set; }
-
 		public List<string> TargetAssets { get; private set; }
 
-		public List<InstallLog> InstallHistory { get; private set; }
+		public List<InstallLog> InstallHistory 
+		{
+			get
+			{
+				if (this.installHistory == null)
+				{
+					this.installHistory = new List<InstallLog>();
+					if (File.Exists(this.InstallLogFile))
+					{
+						XmlDocument logDoc = new XmlDocument();
+						logDoc.Load(this.InstallLogFile);
+
+						foreach (XmlElement element in logDoc.SelectNodes("/plugin/install"))
+							this.installHistory.Add(new InstallLog(element));
+					}
+				}
+
+				return this.installHistory;
+			}
+		}
 
 		public string InstallLogFile { get; private set; }
 
-		public string SourceArchive { get; private set; }
-
-		public string SourceDirectory { get; private set; }
+		public string ArchiveFileName { get; private set; }
 
 		public bool IsInstalled
 		{
@@ -186,18 +200,20 @@ namespace Sage.Extensibility
 
 			log.DebugFormat("Installation of extension '{0}' started", this.Name);
 
+			FileStream fs = File.OpenRead(this.ArchiveFileName);
+			ZipFile extensionArchive = new ZipFile(fs);
 			try
 			{
-				foreach (string file in this.SourceAssets)
+				foreach (ExtensionFile file in this.ArchiveFiles)
 				{
-					string childPath = file.ToLower().Replace(this.SourceDirectory.ToLower(), string.Empty);
+					string childPath = file.Name;
 					string targetPath = context.Path.Resolve(childPath);
 					string targetDir = Path.GetDirectoryName(targetPath);
 
 					Directory.CreateDirectory(targetDir);
 
 					InstallItem entry = installLog.AddFile(targetPath);
-					entry.CrcCode = Crc32.GetHash(file);
+					entry.CrcCode = Crc32.GetHash(extensionArchive.GetInputStream(file.Entry));
 
 					if (File.Exists(targetPath))
 					{
@@ -220,7 +236,7 @@ namespace Sage.Extensibility
 						}
 					}
 
-					File.Copy(file, targetPath, true);
+					file.Extract(extensionArchive, targetPath);
 					entry.State = InstallState.Installed;
 				}
 
@@ -233,10 +249,13 @@ namespace Sage.Extensibility
 				installLog.Error = ex;
 				installLog.Result = InstallState.NotInstalled;
 
-				Rollback(installLog);
+				this.Rollback(installLog);
 			}
 			finally
 			{
+				fs.Close();
+				extensionArchive.Close();
+
 				SaveLog(installLog);
 			}
 
@@ -246,17 +265,27 @@ namespace Sage.Extensibility
 
 		public void Refresh()
 		{
-			foreach (string sourcePath in this.SourceAssets)
+			FileStream fs = File.OpenRead(this.ArchiveFileName);
+			ZipFile extensionArchive = new ZipFile(fs);
+			try
 			{
-				string targetPath = GetTargetPath(sourcePath);
-				if (!File.Exists(targetPath))
+				foreach (ExtensionFile file in this.ArchiveFiles)
 				{
-					string directoryPath = Path.GetDirectoryName(targetPath);
-					if (!Directory.Exists(directoryPath))
-						Directory.CreateDirectory(directoryPath);
+					string targetPath = this.GetTargetPath(file);
+					if (!File.Exists(targetPath))
+					{
+						string directoryPath = Path.GetDirectoryName(targetPath);
+						if (!Directory.Exists(directoryPath))
+							Directory.CreateDirectory(directoryPath);
 
-					File.Copy(sourcePath, targetPath, true);
+						file.Extract(extensionArchive, targetPath);
+					}
 				}
+			}
+			finally
+			{
+				extensionArchive.Close();
+				fs.Close();
 			}
 		}
 
@@ -268,22 +297,33 @@ namespace Sage.Extensibility
 			log.DebugFormat("Uninstalling extension '{0}'", this.Name);
 
 			var installLog = orderedLogs.Last();
-			Rollback(installLog, isUpdateUninstall, deleteChangedFiles);
+			this.Rollback(installLog, deleteChangedFiles);
 			SaveLog(installLog);
 		}
 
 		public void LoadAssemblies()
 		{
-			if (loaded)
+			if (this.isLoaded)
 				return;
 
-			assemblies = new List<Assembly>();
-			foreach (string assemblyPath in this.AssembyNames)
+			FileStream fs = File.OpenRead(this.ArchiveFileName);
+			ZipFile extensionArchive = new ZipFile(fs);
+			try
 			{
-				assemblies.Add(Assembly.LoadFrom(assemblyPath));
-			}
+				this.assemblies = new List<Assembly>();
+				foreach (ExtensionFile assemblyFile in this.AssemblyFiles)
+				{
+					Assembly extensionAssembly = Assembly.Load(assemblyFile.Read(extensionArchive));
+					this.assemblies.Add(extensionAssembly);
+				}
 
-			loaded = true;
+				this.isLoaded = true;
+			}
+			finally 
+			{
+				extensionArchive.Close();
+				fs.Close();
+			}
 		}
 
 		public bool HasInstalled(string itemPath)
@@ -319,44 +359,38 @@ namespace Sage.Extensibility
 			return new SageContext(context, this.Config);
 		}
 
-		private void Rollback(InstallLog installLog, bool isUpdateRollback = false, bool deleteChangedFiles = false)
+		private void Rollback(InstallLog installLog, bool deleteChangedFiles = false)
 		{
 			log.DebugFormat("Rolling back log extension '{0}'", this.Name);
 
 			IEnumerable<InstallItem> installedItems = installLog.Items.Where(f => f.State == InstallState.Installed);
-			foreach (InstallItem file in installedItems)
+			foreach (InstallItem installItem in installedItems)
 			{
-				if (!File.Exists(file.Path))
+				if (!File.Exists(installItem.Path))
 				{
-					file.State = InstallState.UnInstalled;
+					installItem.State = InstallState.UnInstalled;
 					continue;
 				}
 
-				string currentCrc = Crc32.GetHash(file.Path);
-				string originalCrc = file.CrcCode;
+				ExtensionFile archiveFile = GetArchiveFile(installItem.Path);
 
-				if (!deleteChangedFiles && currentCrc != originalCrc)
+				//// CRC of the file in the current application
+				string currentCrc = Crc32.GetHash(installItem.Path);
+				//// CRC of the file at the time when it was installed
+				string originalCrc = installItem.CrcCode;
+				//// CRC of the file in the current archive
+				string updatedCrc = archiveFile == null ? null : archiveFile.CrcCode;
+
+				if (!deleteChangedFiles && (currentCrc != originalCrc && updatedCrc != null && currentCrc != updatedCrc))
 				{
-					bool deleteFile = false;
-					if (isUpdateRollback)
-					{
-						string sourceFile = GetSourcePath(file.Path);
-						string updatedCrc = Crc32.GetHash(sourceFile);
-						if (updatedCrc == currentCrc)
-							deleteFile = true;
-					}
-
-					if (!deleteFile)
-					{
-						log.WarnFormat("The file '{0}' has changed since it was installed, it will not be deleted", file.Path);
-						continue;
-					}
+					log.WarnFormat("The file '{0}' has changed since it was installed, it will not be deleted", installItem.Path);
+					continue;
 				}
 
 				try
 				{
-					File.Delete(file.Path);
-					file.State = InstallState.UnInstalled;
+					File.Delete(installItem.Path);
+					installItem.State = InstallState.UnInstalled;
 				}
 				catch (Exception ex)
 				{
@@ -379,73 +413,15 @@ namespace Sage.Extensibility
 			logDoc.Save(this.InstallLogFile);
 		}
 
-		private void ExtractArchive()
+		private string GetTargetPath(ExtensionFile sourceFile)
 		{
-			ZipFile zipfile = null;
-			try
-			{
-				FileStream fs = File.OpenRead(this.SourceArchive);
-				zipfile = new ZipFile(fs);
-
-				foreach (ZipEntry zipEntry in zipfile)
-				{
-					if (!zipEntry.IsFile)
-						continue;
-
-					string entryFileName = zipEntry.Name;
-
-					byte[] buffer = new byte[4096]; //// 4K is optimum
-					Stream zipStream = zipfile.GetInputStream(zipEntry);
-
-					// Manipulate the output filename here as desired.
-					string fullZipToPath = Path.Combine(this.SourceDirectory, entryFileName);
-					string directoryName = Path.GetDirectoryName(fullZipToPath);
-					if (directoryName.Length > 0)
-						Directory.CreateDirectory(directoryName);
-
-					//// Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
-					//// of the file, but does not waste memory.
-					//// The "using" will close the stream even if an exception occurs.
-					using (FileStream streamWriter = File.Create(fullZipToPath))
-					{
-						StreamUtils.Copy(zipStream, streamWriter, buffer);
-					}
-				}
-			}
-			finally
-			{
-				if (zipfile != null)
-				{
-					zipfile.IsStreamOwner = true;
-					zipfile.Close();
-				}
-			}
+			return context.Path.Resolve(sourceFile.Name);
 		}
 
-		private void ReadLog()
+		private ExtensionFile GetArchiveFile(string targetPath)
 		{
-			this.InstallHistory = new List<InstallLog>();
-
-			if (!File.Exists(this.InstallLogFile))
-				return;
-
-			XmlDocument logDoc = new XmlDocument();
-			logDoc.Load(this.InstallLogFile);
-
-			foreach (XmlElement element in logDoc.SelectNodes("/plugin/install"))
-				this.InstallHistory.Add(new InstallLog(element));
-		}
-
-		private string GetTargetPath(string sourcePath)
-		{
-			string childPath = sourcePath.ToLower().Replace(this.SourceDirectory.ToLower(), string.Empty);
-			return context.Path.Resolve(childPath);
-		}
-
-		private string GetSourcePath(string targetPath)
-		{
-			string childPath = targetPath.ToLower().Replace(context.Path.Resolve("/").ToLower(), string.Empty);
-			return Path.Combine(this.SourceDirectory, childPath);
+			string childPath = targetPath.ToLower().Replace(context.Path.Resolve("~/").ToLower(), string.Empty);
+			return this.ArchiveFiles.FirstOrDefault(f => f.Name.Equals(childPath, StringComparison.InvariantCultureIgnoreCase));
 		}
 	}
 }

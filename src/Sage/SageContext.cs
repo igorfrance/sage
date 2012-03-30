@@ -799,7 +799,7 @@ namespace Sage
 					return context.Path.GetRelativeWebPath(context.Path.ModulePath);
 			}
 
-			return string.Format("{{?{0}?}}", variable);
+			return variable;
 		}
 
 		/// <summary>

@@ -80,13 +80,13 @@
     <Compile Include="Modules\DirectoryTreeModule.cs" />
     <Compile Include="Modules\LogViewerModule.cs" />
     <Compile Include="Modules\ModularLanguageDefinition.cs" />
+    <Compile Include="Modules\ModularXmlLanguageDefinition.cs" />
     <Compile Include="Modules\SyntaxHighlighterModule.cs" />
     <Compile Include="Modules\XmlTreeModule.cs" />
     <Compile Include="Modules\ViewInspectorModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\css\devtools.css" />
     <Content Include="assets\lib\modules\DeveloperToolbar\DeveloperToolbar.css" />
     <Content Include="assets\lib\modules\DeveloperToolbar\DeveloperToolbar.js" />
     <Content Include="assets\lib\modules\DeveloperToolbar\DeveloperToolbar.xsl" />
@@ -106,7 +106,9 @@
     <Content Include="assets\lib\modules\LogViewer\LogViewer.xsl" />
     <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
     <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.js" />
-    <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.xml" />
+    <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="assets\lib\modules\SyntaxHighlighter\SyntaxHighlighter.xsl" />
     <Content Include="assets\lib\modules\ViewInspector\images\close.png" />
     <Content Include="assets\lib\modules\ViewInspector\images\gear.png" />

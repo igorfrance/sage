@@ -13,16 +13,78 @@
 		<xi:include href="sageres://views/shared/elements.html"
 			xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class]) "/>
 
+		<h2>Highlighting XSLT</h2>
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>xslt</mod:language>
+				<mod:code><![CDATA[
+
+					<?xml version="1.0" encoding="utf-8"?>
+					<?xml-stylesheet type="text/xsl" href=""?>
+					<xsl:stylesheet version="1.0"
+						xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+						xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+						xmlns="http://www.w3.org/1999/xhtml"
+						exclude-result-prefixes="mod">
+
+						<!-- multi
+						line
+						comment
+						xslt -->
+						<xsl:template match="mod:SyntaxHighlighter">
+							<div class="syntaxbox">&#160;<xsl:value-of select="mod:data/mod:formatted" disable-output-escaping="yes" /></div>
+						</xsl:template>
+
+					</xsl:stylesheet>
+				]]></mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
+		<h2>Highlighting C# with API documentation</h2>
+		<mod:SyntaxHighlighter>
+			<mod:config>
+				<mod:language>csharp</mod:language>
+				<mod:keywords>
+					<mod:group name="type">
+						XmlDocument|SageController|ViewContext
+					</mod:group>
+					<mod:group name="delegate">
+						ViewXmlFilter
+					</mod:group>
+				</mod:keywords>
+				<mod:code><![CDATA[
+
+					/// <summary>
+					/// Defines the signature of a method that can be used to further filter and/or modify the XML document that is
+					/// prepared by the controller for the XSLT transformation.
+					/// </summary>
+					/// <param name="controller">The controller calling this method.</param>
+					/// <param name="viewContext">The current viewContext associated with this method call.</param>
+					/// <param name="viewXml">The view XML document being changed.</param>
+					/// <returns>The filtered version of the specified <paramref name="viewXml"/>.</returns>
+					/// <seealso cref="ViewXmlFilterAttribute"/>
+					/// <seealso cref="SageController.FilterViewXml"/>
+					delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
+
+				]]></mod:code>
+			</mod:config>
+		</mod:SyntaxHighlighter>
+
 		<h2>Highlighting javascript</h2>
 		<mod:SyntaxHighlighter>
 			<mod:config>
 				<mod:language>javascript</mod:language>
 				<mod:code><![CDATA[
 
+					/**
+					 * Tests my function.
+					 * @param {String} arg1 Argument 1
+					 * @param {String} arg2 Argument 2
+					 */
 					function testMyFunction(arg1, arg2)
 					{
 						if (arg1 > 200 && new Date().getMonth() == 11)
-						return arg2 * 4;
+							return arg2 * 4;
 
 						x |= RegExp.$1;
 
@@ -36,7 +98,7 @@
 		<h2>Highlighting C# with custom keywords supplied</h2>
 		<mod:SyntaxHighlighter>
 			<mod:config>
-				<mod:language>c#</mod:language>
+				<mod:language>csharp</mod:language>
 				<mod:keywords>
 					<mod:group name="type">
 						XmlNode|SageContext
@@ -53,7 +115,7 @@
 		<h2>Highlighting C# with comment-like text in string</h2>
 		<mod:SyntaxHighlighter>
 			<mod:config>
-				<mod:language>c#</mod:language>
+				<mod:language>csharp</mod:language>
 				<mod:keywords>
 					<mod:group name="type">
 						NodeHandler|SageContext|XmlNode

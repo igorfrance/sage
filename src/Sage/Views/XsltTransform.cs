@@ -151,7 +151,7 @@ namespace Sage.Views
 			}
 
 			CacheableXmlDocument stylesheetDocument = ResourceManager.LoadXmlDocument(stylesheetPath, context);
-			ExcludeNamespacesPrefixResults(stylesheetDocument);
+			OmitNamespacePrefixResults(stylesheetDocument);
 
 			XsltTransform result = XsltTransform.Create(context, stylesheetDocument);
 			result.dependencies.AddRange(stylesheetDocument.Dependencies);
@@ -205,7 +205,7 @@ namespace Sage.Views
 		public abstract void Transform(
 			XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null);
 
-		internal static void ExcludeNamespacesPrefixResults(CacheableXmlDocument document)
+		internal static void OmitNamespacePrefixResults(CacheableXmlDocument document)
 		{
 			if (document.DocumentElement == null)
 			{

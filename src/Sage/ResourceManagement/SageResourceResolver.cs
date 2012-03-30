@@ -32,40 +32,40 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	/// <remarks>
 	/// In order to hook into this resolver and provide custom resources that can be referred to in
-	/// url's, create a method that matches <see cref="GetResource"/> delegate and tag it with
-	/// <see cref="SageResourceProviderAttribute"/>. The name that you specify in the constructor for
-	/// <see cref="SageResourceProviderAttribute"/> is the string that follows <c>sageres://</c>.
+	/// url's, create a method that matches <see cref="XmlProvider"/> delegate and tag it with
+	/// <see cref="XmlProviderAttribute"/>. The name that you specify in the constructor for
+	/// <see cref="XmlProviderAttribute"/> is the string that follows <c>sageres://</c>.
 	/// </remarks>
 	[UrlResolver(Scheme = SageResourceResolver.Scheme)]
-	public class SageResourceResolver : ISageXmlUrlResolver
+	public class SageResourceResolver : IUrlResolver
 	{
 		/// <summary>
 		/// The scheme associated with this resolver;
 		/// </summary>
 		public const string Scheme = "sageres";
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageResourceResolver).FullName);
-		private static readonly Dictionary<string, GetResource> providers;
+		private static readonly Dictionary<string, XmlProvider> providers;
 		private const BindingFlags AttributeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
 		static SageResourceResolver()
 		{
-			providers = new Dictionary<string, GetResource>();
+			providers = new Dictionary<string, XmlProvider>();
 
 			foreach (Assembly a in Application.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 							where
 								t.IsClass &&
-								t.GetMethods(AttributeFlags).Count(m => m.GetCustomAttributes(typeof(SageResourceProviderAttribute), false).Count() != 0) != 0
+								t.GetMethods(AttributeFlags).Count(m => m.GetCustomAttributes(typeof(XmlProviderAttribute), false).Count() != 0) != 0
 							select t;
 
 				foreach (Type type in types)
 				{
 					foreach (MethodInfo methodInfo in type.GetMethods(AttributeFlags))
 					{
-						foreach (SageResourceProviderAttribute attrib in methodInfo.GetCustomAttributes(typeof(SageResourceProviderAttribute), false))
+						foreach (XmlProviderAttribute attrib in methodInfo.GetCustomAttributes(typeof(XmlProviderAttribute), false))
 						{
-							GetResource del = (GetResource) Delegate.CreateDelegate(typeof(GetResource), methodInfo);
+							XmlProvider del = (XmlProvider) Delegate.CreateDelegate(typeof(XmlProvider), methodInfo);
 							if (providers.ContainsKey(attrib.ResourceName))
 							{
 								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",
@@ -92,7 +92,7 @@ namespace Sage.ResourceManagement
 			// first check if we have a registered provider for the specified resour name
 			if (providers.ContainsKey(resourceName))
 			{
-				GetResource provider = providers[resourceName];
+				XmlProvider provider = providers[resourceName];
 				log.DebugFormat("Found a specific resource provider for {0}: {1}",
 					resourceUri,
 					Util.GetMethodSignature(provider.Method));

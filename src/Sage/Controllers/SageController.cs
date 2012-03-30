@@ -45,7 +45,7 @@ namespace Sage.Controllers
 		internal const string DefaultAction = "index";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageController).FullName);
-		private static readonly List<FilterViewXml> xmlFilters = new List<FilterViewXml>();
+		private static readonly List<ViewXmlFilter> xmlFilters = new List<ViewXmlFilter>();
 
 		private readonly ControllerMessages messages = new ControllerMessages();
 		private readonly IModuleFactory moduleFactory = new SageModuleFactory();
@@ -63,15 +63,15 @@ namespace Sage.Controllers
 				{
 					foreach (MethodInfo methodInfo in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttributes(typeof(ViewXmlFilterAttribute), false).Count() != 0))
 					{
-						FilterViewXml del;
+						ViewXmlFilter del;
 						try
 						{
-							del = (FilterViewXml) Delegate.CreateDelegate(typeof(FilterViewXml), methodInfo);
+							del = (ViewXmlFilter) Delegate.CreateDelegate(typeof(ViewXmlFilter), methodInfo);
 						}
 						catch
 						{
 							log.ErrorFormat("The method {0} on type {1} marked with attribute {2} doesn't match the required delegate {3}, and will therefore not be registered as an XML filter method",
-								methodInfo.Name, type.FullName, typeof(ViewXmlFilterAttribute).Name, typeof(FilterViewXml).Name);
+								methodInfo.Name, type.FullName, typeof(ViewXmlFilterAttribute).Name, typeof(ViewXmlFilter).Name);
 
 							continue;
 						}
@@ -178,11 +178,11 @@ namespace Sage.Controllers
 			try
 			{
 				ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
-				return config.ExpandConfiguration();
+				return config.Process();
 			}
 			catch (Exception ex)
 			{
-				throw new SageHelpException(new ProblemInfo(ProblemType.ModuleProcessingError), ex);
+				throw new SageHelpException(new ProblemInfo(ProblemType.ViewProcessingError), ex);
 			}
 		}
 
@@ -202,7 +202,7 @@ namespace Sage.Controllers
 		/// <returns>
 		/// The actual XML document that will be used as input for the final XSLT transform.
 		/// </returns>
-		public virtual XmlDocument PrepareViewXml(ViewContext viewContext)
+		public XmlDocument PrepareViewXml(ViewContext viewContext)
 		{
 			ViewInput input = viewContext.ViewData.Model as ViewInput;
 
@@ -305,7 +305,7 @@ namespace Sage.Controllers
 
 			try
 			{
-				return FilterViewXml(viewContext, result);
+				return this.FilterViewXml(viewContext, result);
 			}
 			catch (Exception ex)
 			{
@@ -372,7 +372,7 @@ namespace Sage.Controllers
 		/// </returns>
 		protected virtual XmlDocument FilterViewXml(ViewContext viewContext, XmlDocument viewXml)
 		{
-			foreach (FilterViewXml filter in xmlFilters)
+			foreach (ViewXmlFilter filter in xmlFilters)
 			{
 				viewXml = filter.Invoke(this, viewContext, viewXml);
 			}

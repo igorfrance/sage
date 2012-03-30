@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Text handlers</title>
+	</head>
+	<body>
+
+		<h1>Text handlers</h1>
+
+		<mod:BreadCrumb>
+			<mod:config>
+				<mod:current><sage:url ref="extensibility-text-handlers"/></mod:current>
+			</mod:config>
+		</mod:BreadCrumb>
+
+		<dfn class="sectionblock">
+			In Sage, Text handlers are registered delegate that are invoked during the
+			<a href="url:link(xml-flow-copy-tree)">contextualization step</a> when tree processing matches the registered
+			text variable in either text nodes or attribute values.
+		</dfn>
+
+		<blockquote>
+			<p>
+				As each element, attribute and text node in an XML document are processed, their text is sought
+				for placeholders for registered variables and the matches are replaces by invoking their corresponding
+				Text handler delegate.
+			</p>
+
+			<p>
+				A valid placeholder is both:
+				<code class="important">${variable}</code> and <code class="important">{variable}</code>
+			</p>
+			<p>
+				To escape a registered variable name, use double quotes around the variable name:
+				<code class="important">{{assetpath}}</code>
+			</p>
+			<p>
+				The variable names are case-insensitive.
+			</p>
+
+			<h6 class="caption">Text handler signature</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							XmlNode|SageContext
+						</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						delegate XmlNode ProcessText(XmlNode node, SageContext context);
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">TextHandler delegate implementation and registration</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							TextHandler|SageContext|XmlNode
+						</mod:group>
+						<mod:group name="enum">
+							XmlNodeType
+						</mod:group>
+						<mod:group name="value">
+							Element
+						</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						[TextHandler("assetpath", "sharedassetpath", "modulepath")]
+						internal static string ResolveVariable(string variable, SageContext context)
+						{
+							//// ...
+						}
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+		</blockquote>
+
+	</body>
+</html>

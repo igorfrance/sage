@@ -32,7 +32,7 @@ namespace Sage.ResourceManagement
 	/// the included files.
 	/// </summary>
 	[UrlResolver(Scheme = CodeFileUnmergeResolver.Scheme)]
-	public class CodeFileUnmergeResolver : ISageXmlUrlResolver
+	public class CodeFileUnmergeResolver : IUrlResolver
 	{
 		/// <summary>
 		/// The scheme associated with this resolver.

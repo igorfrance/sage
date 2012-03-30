@@ -68,11 +68,16 @@
 	<xsl:template match="mod:RelatedArticles" mode="display-children">
 		<xsl:param name="currentLink"/>
 		<xsl:param name="config" select="mod:config"/>
+		<xsl:variable name="size" select="basic:isnull($config/mod:header/text(), '3')"/>
+		<xsl:variable name="class" select="basic:isnull($config/mod:class/text(), 'section')"/>
 		<xsl:variable name="children" select="$currentLink/parent::node()/xhtml:ul/xhtml:li/xhtml:a"/>
 		<div class="children">
-			<h3 class="section">
+			<xsl:element name="{concat('h', $size)}">
+				<xsl:attribute name="class">
+					<xsl:value-of select="$class"/>
+				</xsl:attribute>
 				<xsl:value-of select="basic:isnull($config/mod:title/text(), 'Further reading:')"/>
-			</h3>
+			</xsl:element>
 			<ul>
 				<xsl:for-each select="$children">
 					<li>

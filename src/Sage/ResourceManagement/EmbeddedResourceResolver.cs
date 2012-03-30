@@ -28,7 +28,7 @@ namespace Sage.ResourceManagement
 	/// Implements a resolver that can be used with embedded resources.
 	/// </summary>
 	[UrlResolver(Scheme = EmbeddedResourceResolver.Scheme)]
-	internal class EmbeddedResourceResolver : ISageXmlUrlResolver
+	internal class EmbeddedResourceResolver : IUrlResolver
 	{
 		public const string Scheme = "sageresx";
 

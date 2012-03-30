@@ -206,8 +206,8 @@ namespace Sage.Modules
 			return string.Format("{0} ({1}) ({2})", this.Name, string.Join(",", this.TagNames), this.Type);
 		}
 
-		[SageResourceProvider("modules.xslt")]
-		internal static CacheableXmlDocument GetModulesXslt(SageContext context, string resourceUri)
+		[XmlProvider("modules.xslt")]
+		internal static CacheableXmlDocument CombineModuleXslt(SageContext context, string resourceUri)
 		{
 			CacheableXmlDocument resultDoc = new CacheableXmlDocument();
 			resultDoc.LoadXml(DefaultXslt);
@@ -221,7 +221,7 @@ namespace Sage.Modules
 				}
 			}
 
-			XsltTransform.ExcludeNamespacesPrefixResults(resultDoc);
+			XsltTransform.OmitNamespacePrefixResults(resultDoc);
 			return resultDoc;
 		}
 

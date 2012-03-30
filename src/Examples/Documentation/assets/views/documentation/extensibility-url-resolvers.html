@@ -7,11 +7,11 @@
 
 	<head>
 		<sage:basehref/>
-		<title>URL Resolvers</title>
+		<title>URL resolvers</title>
 	</head>
 	<body>
 
-		<h1>URL Resolvers</h1>
+		<h1>URL resolvers</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -19,6 +19,79 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<p class="sectionblock">
+			In Sage, URL resolvers are implementations of <code>IUrlResolver</code> which, when decorated with
+			<code>UrlResolverAttribute</code> register as handlers for a specified URI scheme.
+		</p>
+
+		<blockquote>
+			<p>
+				Any read of XML documents through public methods of <code>Sage.Resources.ResourceManager</code>
+				utilizes the registered URL resolvers and will invoke the approriate one whenever a URI using it's
+				corresponding scheme is encountered.
+			</p>
+
+			<h6 class="caption">IUrlResolver implementation</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							EmbeddedResourceResolver|SageContext|Stream|EntityResult|UrlResolver
+							ArgumentException
+						</mod:group>
+						<mod:group name="delegate">XmlProvider</mod:group>
+						<mod:group name="interface">IUrlResolver</mod:group>
+						<mod:group name="constant">Scheme</mod:group>
+					</mod:keywords>
+					<mod:code><![CDATA[
+
+						/// <summary>
+						/// Implements a resolver that can be used with embedded resources.
+						/// </summary>
+						[UrlResolver(Scheme = EmbeddedResourceResolver.Scheme)]
+						internal class EmbeddedResourceResolver : IUrlResolver
+						{
+							public const string Scheme = "sageresx";
+
+							public EntityResult GetEntity(UrlResolver parent, SageContext context, string uri)
+							{
+								Stream reader = GetStreamResourceReader(parent, context, uri);
+								if (reader == null)
+									throw new ArgumentException(string.Format("The uri '{0}' could not be resolved", uri));
+
+								return new EntityResult { Entity = reader };
+							}
+
+							//// ......
+						}
+
+					]]></mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">Using the scheme for which the URL resolver is registered</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							XmlDocument|SageContext|HttpContext
+						</mod:group>
+						<mod:group name="delegate">XmlProvider</mod:group>
+						<mod:group name="interface">IUrlResolver</mod:group>
+						<mod:group name="constant">Scheme</mod:group>
+					</mod:keywords>
+					<mod:code><![CDATA[
+
+						SageContext context = new SageContext(System.Web.HttpContext.Current);
+						XmlDocument myDocument = context.Resources.LoadXml("sageresx://sage/resources/schemas/projectconfiguration.xsd");
+
+					]]></mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+		</blockquote>
 
 	</body>
 </html>

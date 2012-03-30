@@ -173,36 +173,41 @@
 					<a href="url:link(extensibility)">Extensibility</a>
 					<ul>
 						<li>
-							<a href="url:link(extensibility-extensions)">Extensions</a>
-						</li>
-						<li>
-							<a href="url:link(extensibility-handlers)">Node and text handlers</a>
-						</li>
-						<li>
-							<a href="url:link(extensibility-xml-filters)">View XML filters</a>
-						</li>
-						<li>
-							<a href="url:link(extensibility-resource-providers)">Resource providers</a>
-						</li>
-						<li>
-							<a href="url:link(extensibility-url-resolvers)">URL resolvers</a>
-						</li>
-						<li>
-							<a href="url:link(extensibility-xslt-extensions)">XSLT extension objects</a>
+							<a href="url:link(extensibility-extension-points)">Extension points</a>
 							<ul>
 								<li>
-									<a href="url:link(xslt-extensions-basic)">Basic</a>
+									<a href="url:link(extensibility-node-handlers)">Node handlers</a>
 								</li>
 								<li>
-									<a href="url:link(xslt-extensions-io)">IO</a>
+									<a href="url:link(extensibility-text-handlers)">Text handlers</a>
 								</li>
 								<li>
-									<a href="url:link(xslt-extensions-set)">Set</a>
+									<a href="url:link(extensibility-xml-filters)">View XML filters</a>
 								</li>
 								<li>
-									<a href="url:link(xslt-extensions-string)">String</a>
+									<a href="url:link(extensibility-xml-providers)">XML providers</a>
+								</li>
+								<li>
+									<a href="url:link(extensibility-url-resolvers)">URL resolvers</a>
+								</li>
+								<li>
+									<a href="url:link(extensibility-xslt-extensions)">XSLT extension objects</a>
+									<ul>
+										<li>
+											<a href="url:link(xslt-extensions-basic)">Basic</a>
+										</li>
+										<li>
+											<a href="url:link(xslt-extensions-set)">Set</a>
+										</li>
+										<li>
+											<a href="url:link(xslt-extensions-string)">String</a>
+										</li>
+									</ul>
 								</li>
 							</ul>
+						</li>
+						<li>
+							<a href="url:link(extensibility-extensions)">Extensions projects</a>
 						</li>
 					</ul>
 				</li>

@@ -91,7 +91,7 @@ namespace Sage.Views
 				if (ex is SageHelpException)
 					throw;
 
-				throw new SageHelpException(new ProblemInfo(ProblemType.ModuleProcessingError), ex);
+				throw new SageHelpException(new ProblemInfo(ProblemType.ViewProcessingError), ex);
 			}
 
 			template.Transform(requestXml, textWriter, controller.Context);

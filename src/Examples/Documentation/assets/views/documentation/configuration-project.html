@@ -19,6 +19,63 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<p>
+			The main project configuration file, <code>Project.config</code>, contains many settings that control how the
+			application behaves during runtime.
+		</p>
+
+		<h3 class="section">Configuration files</h3>
+
+		<p>
+			There are three types of different project configuration files, with unique file and element names. The
+			structure of these files is exactly the same (with the exception for extension configuration, which provides
+			one additional element), but the usage and application is different.
+		</p>
+
+		<blockquote>
+
+			<h4 class="section">Project.config</h4>
+
+			<p>
+				This is the main project configuration file that is specific to the current project. Any values not specified
+				in this file will be used from system configuration file, if it exists. When a project initializes
+			</p>
+
+			<h4 class="section">System.config</h4>
+
+			<p>
+				This is another project configuration file, containing the default values. This configuration file is provided
+				by Sage, and serves to provide defaults. This approach enables specific project configurations to be smaller,
+				freeing them from having to specify everything explicitly.
+			</p>
+
+			<h4 class="section">Extension.config</h4>
+
+			<p>
+				The extension configuration file is actually a regular project configuration file that is modified and packed
+				as <code>Extension.config</code> info the deliverable archive when an
+				<a href="url:link(extensibility-extensions)">extension project</a> is compiled into an
+				extension. One additional element that an extension project's configuration file contains is the
+				<a href="url:self(?package=2)">package element</a>, that specifies how the extension should be packed into the
+				archive.
+			</p>
+
+		</blockquote>
+
+		<h3 class="section">Configuration elements</h3>
+
+		<p>
+			The following elements appear in any order within <code>project</code>, <code>extension</code> or <code>system</code>
+			configuration files.
+		</p>
+
+		<blockquote>
+			<ul class="separate">
+				<li>
+					<h5 class="casual">project | extension | system</h5>
+				</li>
+			</ul>
+		</blockquote>
 
 	</body>
 </html>

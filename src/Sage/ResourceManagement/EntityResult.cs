@@ -20,7 +20,7 @@ namespace Sage.ResourceManagement
 	using System.Xml;
 
 	/// <summary>
-	/// Provides the result of calling <see cref="ISageXmlUrlResolver.GetEntity"/> on a give <c>uri</c>.
+	/// Provides the result of calling <see cref="IUrlResolver.GetEntity"/> on a give <c>uri</c>.
 	/// </summary>
 	public class EntityResult
 	{

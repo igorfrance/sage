@@ -29,6 +29,9 @@ namespace Sage.Build.Utilities
 	using log4net;
 	using Sage.Configuration;
 
+	//// TODO: Compile any xincluded project.config resources into a single file prior to packaging it
+	//// TODO: Issue a warning if the bin directory contains something other than *.dlls
+
 	internal class ExtensionBuilder : IUtility
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionBuilder).FullName);
@@ -77,17 +80,17 @@ namespace Sage.Build.Utilities
 
 		public void Run()
 		{
-			this.sourcePath = arguments["source"];
+			this.sourcePath = this.arguments["source"];
 			if (!Path.IsPathRooted(this.sourcePath))
 				this.sourcePath = Path.Combine(Directory.GetCurrentDirectory(), this.sourcePath);
 
 			extensionName = Path.GetFileNameWithoutExtension(this.sourcePath);
-			string configSourcePath = Path.Combine(this.sourcePath, "Project.config");
-			string systemConfigPath = Path.Combine(Program.ApplicationPath, "System.config");
-			string configTargetPath = Path.Combine(Program.ApplicationPath, "Extension.config");
+			string configSourcePath = Path.Combine(this.sourcePath, ProjectConfiguration.ProjectConfigName);
+			string systemConfigPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.SystemConfigName);
+			string configTargetPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.ExtensionConfigName);
 
-			string targetPath = arguments["target"] ??
-				Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(extensionName, "zip"));
+			string targetPath = this.arguments["target"] ??
+				Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(this.extensionName, "zip"));
 
 			if (!Path.IsPathRooted(targetPath))
 				targetPath = Path.Combine(Directory.GetCurrentDirectory(), targetPath);
@@ -117,7 +120,7 @@ namespace Sage.Build.Utilities
 				targetPath = Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(config.Name, "zip"));
 			}
 
-			log.InfoFormat("Building extension '{0}'.", extensionName);
+			log.InfoFormat("Building extension '{0}'.", this.extensionName);
 			log.DebugFormat("     (source: {0})", this.sourcePath);
 			log.DebugFormat("     (target: {0})", targetPath);
 
@@ -140,7 +143,7 @@ namespace Sage.Build.Utilities
 				foreach (string file in config.Package.Assets.GetFiles(context))
 				{
 					string childPath = file.ReplaceAll(assetSourcePath.EscapeMeta(), string.Empty).Trim('/', '\\');
-					PackFile(zipfile, file, "assets/" + childPath);
+					this.PackFile(zipfile, file, "assets/" + childPath);
 				}
 
 				// binaries
@@ -148,19 +151,19 @@ namespace Sage.Build.Utilities
 				foreach (string file in config.Package.Binaries.GetFiles(context))
 				{
 					string childPath = file.ReplaceAll(binarySourcePath.EscapeMeta(), string.Empty).Trim('/', '\\');
-					PackFile(zipfile, file, "bin/" + childPath);
+					this.PackFile(zipfile, file, "bin/" + childPath);
 				}
 
 				// libraries, modules, links, metaviews, routes
-				CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:view", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Links, "p:links", "p:link", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
+				this.CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:view", configRoot, extensionRoot);
+				this.CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
+				this.CopyConfiguration(config.Package.Links, "p:links", "p:link", configRoot, extensionRoot);
+				this.CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
+				this.CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
 				extensionConfig.Save(configTargetPath);
 
-				PackFile(zipfile, configTargetPath, "Extension.config");
+				this.PackFile(zipfile, configTargetPath, ProjectConfiguration.ExtensionConfigName);
 
 				zipfile.IsStreamOwner = true;
 				zipfile.Finish();

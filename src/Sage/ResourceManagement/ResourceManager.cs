@@ -36,8 +36,8 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class ResourceManager
 	{
-		private static readonly Dictionary<string, ProcessNode> nodeHandlerRegistry = new Dictionary<string, ProcessNode>();
-		private static readonly Dictionary<string, ProcessText> textHandlerRegistry = new Dictionary<string, ProcessText>();
+		private static readonly Dictionary<string, NodeHandler> nodeHandlerRegistry = new Dictionary<string, NodeHandler>();
+		private static readonly Dictionary<string, TextHandler> textHandlerRegistry = new Dictionary<string, TextHandler>();
 
 		private const string MissingPhrasePlaceholder = "{{{0}}}";
 		private const BindingFlags AttributeBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
@@ -61,13 +61,13 @@ namespace Sage.ResourceManagement
 					{
 						foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
 						{
-							ProcessNode del = (ProcessNode) Delegate.CreateDelegate(typeof(ProcessNode), methodInfo);
+							NodeHandler del = (NodeHandler) Delegate.CreateDelegate(typeof(NodeHandler), methodInfo);
 							RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, del);
 						}
 
 						foreach (TextHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextHandlerAttribute), false))
 						{
-							ProcessText del = (ProcessText) Delegate.CreateDelegate(typeof(ProcessText), methodInfo);
+							TextHandler del = (TextHandler) Delegate.CreateDelegate(typeof(TextHandler), methodInfo);
 							foreach (string variable in attrib.Variables)
 							{
 								RegisterTextHandler(variable, del);
@@ -106,7 +106,7 @@ namespace Sage.ResourceManagement
 		/// <param name="nodeName">The name of the node for wihch the handler is being registered.</param>
 		/// <param name="nodeNamespace">The namespace of the node for wihch the handler is being registered.</param>
 		/// <param name="handler">The method that will will handle the node.</param>
-		public static void RegisterNodeHandler(XmlNodeType nodeType, string nodeName, string nodeNamespace, ProcessNode handler)
+		public static void RegisterNodeHandler(XmlNodeType nodeType, string nodeName, string nodeNamespace, NodeHandler handler)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(nodeName));
 			Contract.Requires<ArgumentNullException>(handler != null);
@@ -132,7 +132,7 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		/// <param name="variableName">Name of the variable.</param>
 		/// <param name="handler">The handler.</param>
-		public static void RegisterTextHandler(string variableName, ProcessText handler)
+		public static void RegisterTextHandler(string variableName, TextHandler handler)
 		{
 			if (string.IsNullOrEmpty(variableName))
 				throw new ArgumentNullException("variableName");
@@ -154,7 +154,7 @@ namespace Sage.ResourceManagement
 				textHandlerRegistry.Add(variableName, handler);
 			}
 
-			textReplaceExpression = new Regex("\\$?(?<!{){(" + string.Join("|", textHandlerRegistry.Keys.ToArray()) + ")}",
+			textReplaceExpression = new Regex(@"\$?(\{)?{(" + string.Join("|", textHandlerRegistry.Keys.ToArray()) + @")}(\})?",
 				RegexOptions.IgnoreCase);
 		}
 
@@ -405,16 +405,19 @@ namespace Sage.ResourceManagement
 			{
 				value = textReplaceExpression.Replace(value, delegate(Match m)
 				{
-					string varName = m.Groups[1].Value.ToLower();
+					bool isEscaped = m.Groups[1].Value == "{";
+					string varName = m.Groups[2].Value.ToLower();
+					if (isEscaped)
+						return string.Concat("{", varName, "}");
+
 					return textHandlerRegistry[varName](varName, context);
 				});
 			}
 
-			value = escapeCleanupExpression.Replace(value, "$1");
 			return context.ProcessFunctions(value);
 		}
 
-		internal static ProcessNode GetNodeHandler(XmlNode node)
+		internal static NodeHandler GetNodeHandler(XmlNode node)
 		{
 			string key = ResourceManager.QualifyName(node);
 			if (nodeHandlerRegistry.ContainsKey(key))

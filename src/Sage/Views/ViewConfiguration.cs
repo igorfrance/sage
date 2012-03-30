@@ -160,29 +160,40 @@ namespace Sage.Views
 		/// <returns>
 		/// An object that contains the result of processing this configuration.
 		/// </returns>
-		public ViewInput ExpandConfiguration()
+		public ViewInput Process()
 		{
 			ViewInput input = new ViewInput(this, configElement);
 
 			if (!string.IsNullOrWhiteSpace(ModuleSelectXPath))
 			{
 				XmlNodeList moduleNodes = input.ConfigNode.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
+
 				foreach (XmlElement moduleElement in moduleNodes)
 				{
 					IModule module = this.Controller.CreateModule(moduleElement);
-					ModuleResult result = module.ProcessElement(moduleElement, this);
-
-					if (result == null)
+					ModuleResult result = null;
+					try
 					{
-						moduleElement.ParentNode.RemoveChild(moduleElement);
+						result = module.ProcessElement(moduleElement, this);
 					}
-					else
+					catch (Exception ex)
 					{
-						input.AddModuleResult(moduleElement.LocalName, result);
-						if (result.ResultElement != null)
+						log.ErrorFormat("Error proceesing module element {0}: {1}", moduleElement.Name, ex.Message);
+					}
+					finally
+					{
+						if (result == null)
 						{
-							XmlNode newElement = input.ConfigNode.OwnerDocument.ImportNode(result.ResultElement, true);
-							moduleElement.ParentNode.ReplaceChild(newElement, moduleElement);
+							moduleElement.ParentNode.RemoveChild(moduleElement);
+						}
+						else
+						{
+							input.AddModuleResult(moduleElement.LocalName, result);
+							if (result.ResultElement != null)
+							{
+								XmlNode newElement = input.ConfigNode.OwnerDocument.ImportNode(result.ResultElement, true);
+								moduleElement.ParentNode.ReplaceChild(newElement, moduleElement);
+							}
 						}
 					}
 				}

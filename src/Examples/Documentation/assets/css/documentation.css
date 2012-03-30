@@ -3,10 +3,13 @@
 body
 	{ background: #fff; color: #323232; font-size: 14px; font-family: Century Gothic, Verdana, Sans-Serif; }
 a,
+a code,
 a:visited
 	{ color: #0046b0; text-decoration: none; text-shadow: 1px 1px 1px #bbb; }
 a:hover
 	{ color: #336600; text-decoration: underline; }
+a:hover code
+	{ color: #336600; }
 
 br.spacer
 	{ margin-bottom: 60px; }
@@ -22,15 +25,15 @@ hr.separator
 	{ margin: 20px 0; }
 
 blockquote
-	{ margin-left: 30px; padding-left: 5px; border-left: 4px solid #b6b6b6; }
+	{ margin-left: 30px; }
 blockquote ul
 	{ padding-left: 0; }
 blockquote ul li
 	{ padding-left: 0; background: none; }
 blockquote.casual
 	{ border-left: 1px solid #b6b6b6; }
-blockquote.invisible
-	{ border-left: 0; }
+blockquote.accent
+	{ padding-left: 5px; border-left: 4px solid #b6b6b6; }
 
 h1
 	{ color: #54596F; font-size: 200%; font-weight: normal; margin-bottom: 40px; text-shadow: 1px 1px 3px #666; }
@@ -80,6 +83,9 @@ h6.invisible
 h6.discrete
 	{ margin: 0; padding: 0; border: 0; font-size: 110%; font-weight: normal; font-style: italic; color: #300; }
 
+label
+	{ font-weight: bold; }
+
 p
 	{ margin-top: 0; margin-bottom: 15px; }
 p.small
@@ -90,19 +96,21 @@ li > h5
 div.container
 	{ overflow: hidden; }
 dfn
-	{ color: #93a74b; font-style: italic; }
+	{ font-size: 120%; font-style: normal; display: block; }
 code
 	{ white-space: nowrap; color: #000; font-size: 110%; }
 code.example
 	{ display: block; margin: 10px 0 10px  40px; }
+code.important
+	{ display: inline-block; padding: 2px; background: #efefef; border: 1px solid #ccc; }
 code.principal
 	{ display: inline-block; margin: 10px 0; padding: 5px; background: #efefef; border: 1px solid #ccc; }
 dl
 	{}
 dt
-	{ margin-left: 20px; font-weight: bold; }
+	{ margin-left: 20px; font-weight: bold; font-style: italic; font-size: 90%; }
 dd
-	{ margin-left: 40px; margin-bottom: 20px; }
+	{ margin-left: 40px; margin-bottom: 5px; }
 
 dl dl
 	{ margin-top: 10px; font-size: 85%; }
@@ -123,9 +131,8 @@ ul, ol
 */
 ul, ol
 	{ overflow: hidden; padding-left: 20px; }
-
 ul > li
-	{	list-style-type: none; margin: 0; background: url(../images/bullet.png) no-repeat 0 7px; padding-left: 12px; }
+	{	list-style-type: none; margin: 0; }
 ul.clear li
 	{ background-image: none; padding-left: 0; }
 ul.separate > li,
@@ -137,6 +144,10 @@ ol.underlined > li
 ul.separatesmall > li,
 ol.separatesmall > li
 	{ margin-bottom: 10px; }
+
+ul.bulleted > li
+	{	list-style-type: none; margin: 0; background: url(../images/bullet.png) no-repeat 0 7px; }
+
 
 ul.root
 	{ padding-left: 0; }
@@ -176,7 +187,7 @@ table.definition th
 .section
 	{ margin-top: 30px; }
 .sectionblock
-	{ padding: 15px; background: #dcdfe2; border-radius: 5px; margin-bottom: 20px; }
+	{ padding: 15px; background: #dcdfe2; border-radius: 5px; margin: 20px 0; }
 .sectionblock p
 	{ margin-bottom: 0; }
 .sectionblock p + *

@@ -7,11 +7,11 @@
 
 	<head>
 		<sage:basehref/>
-		<title>XML Filters</title>
+		<title>View XML Filters</title>
 	</head>
 	<body>
 
-		<h1>XML Filters</h1>
+		<h1>View XML Filters</h1>
 
 		<mod:BreadCrumb>
 			<mod:config>
@@ -19,6 +19,90 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
+		<p class="sectionblock">
+			View XML Filters are registered delegate methods that are invoked after the view input document has been fully prepared,
+			allowing them to modify the document in any way before it is transformed with XSLT.
+		</p>
+
+		<blockquote>
+			<p>
+				The last step in preparing the XML document that will be sent off to transformation is to
+				<a href="url:link(xml-flow-expand-modules)">process the view configuration template</a> (typically, the XHTML
+				document) that corresponds to the current view.
+				This is handled by <code>SageController.PrepareViewXml(ViewContext)</code> method. The last step of this method,
+				before returning the view input document, is to invoke any registered <code>ViewXMLFilter</code> delegate methods,
+				giving them the possibility to modify the input document in any way they like.
+			</p>
+
+			<p>
+				This approach makes it possible for Sage projects and extensions to hook in and modify the view input document
+				without having to override the <code>SageController.PrepareViewXml</code> method. It also makes it possible to
+				have multiple filters applied without being concerned about inheritance chains and other similar issues.
+			</p>
+
+			<h6 class="caption">ViewXmlFilter delegate</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							XmlDocument|SageController|ViewContext
+						</mod:group>
+						<mod:group name="delegate">
+							ViewXmlFilter
+						</mod:group>
+					</mod:keywords>
+					<mod:code><![CDATA[
+
+						delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
+
+					]]></mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+			<h6 class="caption">ViewXmlFilter delegate implementation and registration</h6>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>csharp</mod:language>
+					<mod:keywords>
+						<mod:group name="type">
+							XmlDocument|SageController|ViewContext|UserStatistics|GlobalTracking
+							XmlElement|XmlNamespaces
+						</mod:group>
+						<mod:group name="attribute">
+							ViewXmlFilter
+						</mod:group>
+						<mod:group name="enum">
+							XmlNodeType
+						</mod:group>
+						<mod:group name="value">
+							Element
+						</mod:group>
+						<mod:group name="enum">
+							XmlNodeType
+						</mod:group>
+					</mod:keywords>
+					<mod:code>
+
+						[ViewXmlFilter]
+						internal static XmlDocument AppendUserStatistics(SageController controller, ViewContext viewContext, XmlDocument viewXml)
+						{
+							// Get the user statistics from the tracking system, using the current context
+							UserStatistics userStats = GlobalTracking.GetUserStats(controller.Context);
+
+							// Append user statistics as a child element to the current request element
+							XmlElement requestElem = viewXml.SelectSingleNode("/sage:view/sage:request", XmlNamespaces.Manager);
+							requestElem.AppendChild(userStats.ToXml(viewXml));
+
+							// Return the original document with the user statistics appended.
+							return viewXml;
+						}
+
+					</mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+		</blockquote>
 
 	</body>
 </html>
