@@ -33,11 +33,27 @@ namespace Sage.Configuration
 	/// </summary>
 	public class ProjectConfiguration
 	{
-		private const string RewriteOnFile = "Rewrite.ON";
-		private const string SystemConfigName = "System.config";
-		private const string ProjectConfigName = "Project.config";
-		private const string ConfigSchemaPath = "sageresx://sage/resources/schemas/projectconfiguration.xsd";
+		/// <summary>
+		/// Specifies the file name of the system configuration document.
+		/// </summary>
+		public const string SystemConfigName = "System.config";
 
+		/// <summary>
+		/// Specifies the file name of the project configuration document.
+		/// </summary>
+		public const string ProjectConfigName = "Project.config";
+
+		/// <summary>
+		/// Specifies the file name of the extension configuration document.
+		/// </summary>
+		public const string ExtensionConfigName = "Extension.config";
+
+		/// <summary>
+		/// Specifies the path to the configuration schema document.
+		/// </summary>
+		public const string ConfigSchemaPath = "sageresx://sage/resources/schemas/projectconfiguration.xsd";
+
+		internal const string RewriteOnFile = "Rewrite.ON";
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
 
 		private static volatile ProjectConfiguration systemConfig;
@@ -247,6 +263,28 @@ namespace Sage.Configuration
 		/// This value is only applicable for <see cref="ConfigurationType.Extension"/> type projects.
 		/// </remarks>
 		internal ExtensionPackageConfiguration Package { get; private set; }
+
+		/// <summary>
+		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified 
+		/// <paramref name="configStream"/>, optionally using the values from file located at 
+		/// <paramref name="parentConfigPath"/> to initialize values not present in <paramref name="configStream"/>.
+		/// </summary>
+		/// <param name="configStream">The stream to the configuration file to use.</param>
+		/// <param name="parentConfigPath">Optional path to the parent configuration file to use.</param>
+		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
+		public static ProjectConfiguration Create(Stream configStream, string parentConfigPath = null)
+		{
+			Contract.Requires<ArgumentNullException>(configStream != null);
+
+			XmlDocument document = new XmlDocument();
+			document.Load(configStream);
+
+			XmlDocument parentDoc = null;
+			if (parentConfigPath != null)
+				parentDoc = ResourceManager.LoadXmlDocument(parentConfigPath);
+
+			return Create(document, parentDoc);
+		}
 
 		/// <summary>
 		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified 
