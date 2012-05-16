@@ -602,8 +602,7 @@ namespace Kelp.ResourceHandling
 		/// <param name="minify">If set to <c>true</c>, and the current settings indicate that the source code will be minified.</param>
 		protected virtual void Parse(string sourceCode, bool minify)
 		{
-			if (string.IsNullOrEmpty(sourceCode))
-				return;
+			Contract.Requires<ArgumentNullException>(sourceCode != null);
 
 			StringBuilder contents = new StringBuilder();
 			string[] lines = sourceCode.Replace("\r", string.Empty).Split(new[] { '\n' });
