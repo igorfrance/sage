@@ -36,16 +36,15 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class ResourceManager
 	{
-		private static readonly Dictionary<string, NodeHandler> nodeHandlerRegistry = new Dictionary<string, NodeHandler>();
-		private static readonly Dictionary<string, TextHandler> textHandlerRegistry = new Dictionary<string, TextHandler>();
-
 		private const string MissingPhrasePlaceholder = "{{{0}}}";
 		private const BindingFlags AttributeBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
+		private static readonly Dictionary<string, NodeHandler> nodeHandlerRegistry = new Dictionary<string, NodeHandler>();
+		private static readonly Dictionary<string, TextHandler> textHandlerRegistry = new Dictionary<string, TextHandler>();
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceManager).FullName);
-		private static readonly Regex escapeCleanupExpression = new Regex(@"\{({[^}]+})}", RegexOptions.Compiled);
-		private readonly SageContext context;
 		private static Regex textReplaceExpression;
+		private readonly SageContext context;
 
 		static ResourceManager()
 		{
