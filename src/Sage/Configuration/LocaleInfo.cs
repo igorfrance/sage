@@ -17,9 +17,12 @@ namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Xml;
+
+	using Kelp.Extensions;
 
 	using log4net;
 
@@ -46,22 +49,25 @@ namespace Sage.Configuration
 		public LocaleInfo(XmlElement infoElement)
 			: this()
 		{
-			if (infoElement == null)
-				throw new ArgumentNullException("infoElement");
+			Contract.Requires<ArgumentNullException>(infoElement != null);
 
+			XmlElement formatElement = infoElement.SelectSingleElement("p:format", XmlNamespaces.Manager);
 			this.Name = infoElement.GetAttribute("name");
 
 			try
 			{
-				this.culture = new CultureInfo(infoElement["format"].Attributes["culture"].InnerText);
+				this.culture = new CultureInfo(formatElement.GetAttribute("culture"));
 			}
 			catch (ArgumentException)
 			{
-				this.culture = new CultureInfo(DefaultLocale);
+				this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
 			}
 
-			this.shortDateFormat = infoElement["format"].Attributes["shortDate"].InnerText;
-			this.longDateFormat = infoElement["format"].Attributes["longDate"].InnerText;
+			var shortDate = formatElement.GetAttribute("shortDate");
+			var longDate = formatElement.GetAttribute("longDate");
+
+			this.shortDateFormat = string.IsNullOrEmpty(shortDate) ? "d" : shortDate;
+			this.longDateFormat = string.IsNullOrEmpty(longDate) ? "D" : longDate;
 
 			this.DictionaryNames = new List<string>(infoElement.GetAttribute("dictionaryNames")
 				.Replace(" ", string.Empty)
