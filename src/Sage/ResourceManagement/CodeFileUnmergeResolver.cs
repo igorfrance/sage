@@ -88,14 +88,7 @@ namespace Sage.ResourceManagement
 			}
 
 			CodeFile file = CodeFile.Create(sourcePathAbsolute, sourcePathRelative, context.MapPath);
-			if (context.ProjectConfiguration.MergeResources)
-			{
-				XmlElement resourceNode = rootNode.AppendElement(document.CreateElement("kelp:resource", Kelp.XmlNamespaces.KelpNamespace));
-				resourceNode.SetAttribute("src", string.Format(RelativeFilePathInProductionSetup, sourcePath, file.ETag));
-				resourceNode.SetAttribute("type", type);
-				resourceNode.SetAttribute("exists", "true");
-			}
-			else
+			if (context.ProjectConfiguration.IsDebugMode)
 			{
 				try
 				{
@@ -123,6 +116,13 @@ namespace Sage.ResourceManagement
 				{
 					log.ErrorFormat("Could not process the code file includes: " + ex.Message);
 				}
+			}
+			else
+			{
+				XmlElement resourceNode = rootNode.AppendElement(document.CreateElement("kelp:resource", Kelp.XmlNamespaces.KelpNamespace));
+				resourceNode.SetAttribute("src", string.Format(RelativeFilePathInProductionSetup, sourcePath, file.ETag));
+				resourceNode.SetAttribute("type", type);
+				resourceNode.SetAttribute("exists", "true");
 			}
 
 			return new EntityResult { Entity = reader, Dependencies = new List<string>(file.References.Keys) };
