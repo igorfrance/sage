@@ -68,9 +68,9 @@ namespace Sage.Build.Utilities
 		{
 			StringBuilder result = new StringBuilder();
 			result.AppendLine("Packs a sage project into a distributable extension package.\n");
-			result.AppendFormat("Usage: {0} {1} -source:<path>", Program.Name, this.CommandName);
+			result.AppendFormat("Usage: {0} {1} -source:<path> [-name:<name>]", Program.Name, this.CommandName);
 			result.AppendLine("  -source:<path>	 The path to the directory that contains the extension to package.");
-			result.AppendLine("    -name:<path>	 The file name of the extension package that will be created."); 
+			result.AppendLine("    -name:<name>	 The file name of the extension package that will be created."); 
 			result.AppendLine("                  If omitted, an attempt will be made to get that name from the"); 
 			result.AppendLine("                  Project.config in the source directory, if it exists, and finally"); 
 			result.AppendLine("                  if this fails to the name will default to the name of source directory."); 
