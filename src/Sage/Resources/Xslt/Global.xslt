@@ -128,6 +128,12 @@
 		<link type="text/css" rel="stylesheet" href="{@path}" />
 	</xsl:template>
 
+	<xsl:template match="a/@href[starts-with(., '#')]">
+		<xsl:attribute name="{name()}">
+			<xsl:value-of select="concat($request/@url, .)"/>
+		</xsl:attribute>
+	</xsl:template>
+	
 	<xsl:template match="@xml:base | @xml:space"/>
 
 	<xsl:template match="xhtml:*">
