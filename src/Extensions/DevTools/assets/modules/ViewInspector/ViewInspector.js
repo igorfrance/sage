@@ -282,6 +282,7 @@ sage.dev.ViewInspector = function ViewInspector()
 					button.removeClass("disabled");
 				}
 
+				console.log(commandName + " state: " + state);
 				if ((state & buttonState.ACTIVE) != 0)
 				{
 					button.addClass("active");
@@ -655,7 +656,7 @@ sage.dev.ViewInspector = function ViewInspector()
 		if (currentLayout == layoutType.SINGLE)
 			executeCommand("doubleFrame");
 
-		setViewInspectorState({ inspector: defaultInspector });
+		setViewInspectorState({ inspector: viewName });
 
 		loadMetaView(viewName);
 	};
