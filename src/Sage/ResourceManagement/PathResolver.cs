@@ -26,6 +26,7 @@ namespace Sage.ResourceManagement
 	using Kelp.Extensions;
 
 	using Sage.Configuration;
+	using Sage.Modules;
 
 	/// <summary>
 	/// Provides a class that resolves physical file paths based on current category, locale and any fallback scenario 
@@ -33,9 +34,9 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class PathResolver
 	{
+		private static Dictionary<string, string> virtualDirectories;
 		private readonly SageContext context;
 		private readonly ProjectConfiguration config;
-		private static Dictionary<string, string> virtualDirectories;
 		private string viewPath;
 		private string modulePath;
 		private string extensionPath;
@@ -297,7 +298,14 @@ namespace Sage.ResourceManagement
 			if (childPath.StartsWith("~/"))
 				return this.context.MapPath(childPath);
 
-			string templatePath = string.Concat(this.ModulePath, moduleName.Replace("Module", string.Empty), "/", childPath);
+			string currentModulePath = this.ModulePath;
+			ModuleConfiguration moduleConfig = null;
+			if (config.Modules.TryGetValue(moduleName, out moduleConfig))
+			{
+				currentModulePath += moduleConfig.Category.Trim('/') + "/";
+			}
+
+			string templatePath = string.Concat(currentModulePath, moduleName.Replace("Module", string.Empty), "/", childPath);
 			return this.Resolve(templatePath);
 		}
 

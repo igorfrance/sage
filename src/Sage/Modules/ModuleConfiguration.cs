@@ -67,6 +67,7 @@ namespace Sage.Modules
 			Contract.Requires<ArgumentNullException>(configElement != null);
 
 			this.Name = configElement.GetAttribute("name");
+			this.Category = configElement.GetAttribute("category");
 
 			this.TypeName = configElement.GetAttribute("type");
 			this.TagNames = new List<string>();
@@ -108,12 +109,15 @@ namespace Sage.Modules
 				this.Stylesheets.Add(stylesheetNode.GetAttribute("path"));
 			}
 
-			this.AutoLocation = (ModuleAutoLocation) Enum.Parse(typeof(ModuleAutoLocation), 
-				configElement.GetAttribute("auto"), true);
+			this.AutoLocation = (ModuleAutoLocation) Enum.Parse(
+				typeof(ModuleAutoLocation), 
+				configElement.GetAttribute("auto"), 
+				true);
 		}
 
 		private ModuleConfiguration()
 		{
+			this.Category = string.Empty;
 			this.TagNames = new List<string>();
 			this.Stylesheets = new List<string>();
 			this.Dependencies = new List<string>();
@@ -152,9 +156,14 @@ namespace Sage.Modules
 		public List<string> Libraries { get; private set; }
 
 		/// <summary>
-		/// Gets the nameof this module.
+		/// Gets the name of this module.
 		/// </summary>
 		public string Name { get; private set; }
+
+		/// <summary>
+		/// Gets the category of this module.
+		/// </summary>
+		public string Category { get; private set; }
 
 		/// <summary>
 		/// Gets the location where this module should be automatically inserted in, if any.

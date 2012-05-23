@@ -87,46 +87,46 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\modules\DeveloperToolbar\DeveloperToolbar.css" />
-    <Content Include="assets\modules\DeveloperToolbar\DeveloperToolbar.js" />
-    <Content Include="assets\modules\DeveloperToolbar\DeveloperToolbar.xsl" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\circ_loading.gif" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\close.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\devtools.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\error.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\gear.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\log.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\ok.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\unknown.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\warning.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\xml.png" />
-    <Content Include="assets\modules\DeveloperToolbar\icons\xmlx.png" />
-    <Content Include="assets\modules\LogViewer\LogViewer.css" />
-    <Content Include="assets\modules\LogViewer\LogViewer.js" />
-    <Content Include="assets\modules\LogViewer\LogViewer.xsl" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.css" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.js" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xml" />
-    <Content Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xsl" />
-    <Content Include="assets\modules\ViewInspector\images\close.png" />
-    <Content Include="assets\modules\ViewInspector\images\gear.png" />
-    <Content Include="assets\modules\ViewInspector\images\html.png" />
-    <Content Include="assets\modules\ViewInspector\images\info.png" />
-    <Content Include="assets\modules\ViewInspector\images\log.png" />
-    <Content Include="assets\modules\ViewInspector\images\minimize.png" />
-    <Content Include="assets\modules\ViewInspector\images\preloader1.gif" />
-    <Content Include="assets\modules\ViewInspector\images\preloader2.gif" />
-    <Content Include="assets\modules\ViewInspector\images\refresh.png" />
-    <Content Include="assets\modules\ViewInspector\images\restore.png" />
-    <Content Include="assets\modules\ViewInspector\images\xml.png" />
-    <Content Include="assets\modules\ViewInspector\images\xmlx.png" />
-    <Content Include="assets\modules\ViewInspector\ViewInspector.css" />
-    <Content Include="assets\modules\ViewInspector\ViewInspector.js" />
-    <Content Include="assets\modules\ViewInspector\ViewInspector.xsl" />
-    <Content Include="assets\modules\XmlTree\XmlTree.css" />
-    <Content Include="assets\modules\XmlTree\XmlTree.js" />
-    <Content Include="assets\modules\XmlTree\XmlTree.xml" />
-    <Content Include="assets\modules\XmlTree\XmlTree.xsl" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\DeveloperToolbar.css" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\DeveloperToolbar.js" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\DeveloperToolbar.xsl" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\circ_loading.gif" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\close.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\devtools.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\error.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\gear.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\log.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\ok.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\unknown.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\warning.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\xml.png" />
+    <Content Include="assets\modules\dev\DeveloperToolbar\icons\xmlx.png" />
+    <Content Include="assets\modules\dev\LogViewer\LogViewer.css" />
+    <Content Include="assets\modules\dev\LogViewer\LogViewer.js" />
+    <Content Include="assets\modules\dev\LogViewer\LogViewer.xsl" />
+    <Content Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.css" />
+    <Content Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.js" />
+    <Content Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.xml" />
+    <Content Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.xsl" />
+    <Content Include="assets\modules\dev\ViewInspector\images\close.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\gear.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\html.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\info.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\log.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\minimize.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\preloader1.gif" />
+    <Content Include="assets\modules\dev\ViewInspector\images\preloader2.gif" />
+    <Content Include="assets\modules\dev\ViewInspector\images\refresh.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\restore.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\xml.png" />
+    <Content Include="assets\modules\dev\ViewInspector\images\xmlx.png" />
+    <Content Include="assets\modules\dev\ViewInspector\ViewInspector.css" />
+    <Content Include="assets\modules\dev\ViewInspector\ViewInspector.js" />
+    <Content Include="assets\modules\dev\ViewInspector\ViewInspector.xsl" />
+    <Content Include="assets\modules\dev\XmlTree\XmlTree.css" />
+    <Content Include="assets\modules\dev\XmlTree\XmlTree.js" />
+    <Content Include="assets\modules\dev\XmlTree\XmlTree.xml" />
+    <Content Include="assets\modules\dev\XmlTree\XmlTree.xsl" />
     <Content Include="assets\views\dev\inspect.html" />
     <Content Include="assets\views\dev\log.html" />
     <Content Include="assets\views\shared\elements.html" />
@@ -168,13 +168,13 @@
     <Folder Include="assets\scripts\lib\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\modules\SyntaxHighlighter\SyntaxHighlighter.xsd">
+    <None Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="assets\modules\ViewInspector\ViewInspector.xsd">
+    <None Include="assets\modules\dev\ViewInspector\ViewInspector.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="assets\modules\XmlTree\XmlTree.xsd">
+    <None Include="assets\modules\dev\XmlTree\XmlTree.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

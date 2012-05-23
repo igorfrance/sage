@@ -292,6 +292,7 @@
 		</xs:choice>
 		<xs:attribute name="name" use="required" type="xs:Name"/>
 		<xs:attribute name="type" use="optional" type="nonEmptyString"/>
+		<xs:attribute name="category" use="optional" type="validCategory"/>
 		<xs:attribute name="auto" use="optional" default="none">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -391,6 +392,12 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:simpleType name="validCategory">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="^[ \w/]+$"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="nonEmptyString">
 		<xs:restriction base="xs:string">
