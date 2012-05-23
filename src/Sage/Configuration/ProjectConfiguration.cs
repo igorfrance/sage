@@ -58,6 +58,9 @@ namespace Sage.Configuration
 
 		private static volatile ProjectConfiguration systemConfig;
 		private static volatile ProjectConfiguration projectConfig;
+		private static DateTime lastUpdated;
+		private static string projectLoadPath;
+
 		private bool considerAllRequestsAsDevelopers;
 
 		private ProjectConfiguration()
@@ -75,8 +78,7 @@ namespace Sage.Configuration
 			this.SharedCategory = "shared";
 			this.DefaultLocale = "default";
 			this.DefaultCategory = "default";
-			this.AreResourcesPreGenerated = false;
-			this.MergeResources = false;
+			this.AutoGlobalize = true;
 		}
 
 		/// <summary>
@@ -86,6 +88,8 @@ namespace Sage.Configuration
 		{
 			get
 			{
+				ResetIfConfigurationChanged();
+
 				lock (SystemConfigName)
 				{
 					if (projectConfig == null)
@@ -132,12 +136,10 @@ namespace Sage.Configuration
 		public ConfigurationType Type { get; private set; }
 
 		/// <summary>
-		/// Gets a value indicating whether the resources have been pre-generated.
+		/// Gets a value indicating whether Sage should automatically globalize any non-globalized XML resources
+		/// that reference the globalization namespace.
 		/// </summary>
-		/// <remarks>
-		/// If this value is <c>true</c>, resource manager will not attempt to globalize XML resources.
-		/// </remarks>
-		public bool AreResourcesPreGenerated { get; private set; }
+		public bool AutoGlobalize { get; private set; }
 
 		/// <summary>
 		/// Gets the default category to fall back to if the URL doesn't specify a category.
@@ -151,11 +153,6 @@ namespace Sage.Configuration
 		/// Gets the default locale to fall back to if the URL doesn't specify a locale.
 		/// </summary>
 		public string DefaultLocale { get; private set; }
-
-		/// <summary>
-		/// Gets a value indicating whether the resources (script and styles) should be merged.
-		/// </summary>
-		public bool MergeResources { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the current project runs in multi-category mode.
@@ -353,8 +350,17 @@ namespace Sage.Configuration
 			if (projectConfig != null)
 				return;
 
-			string projectConfigPath = Path.Combine(AssemblyPath, ProjectConfigName);
 			string systemConfigPath = Path.Combine(AssemblyPath, SystemConfigName);
+			string projectConfigPath1 = Path.Combine(AssemblyPath, ProjectConfigName);
+			string projectConfigPath2 = Path.Combine(AssemblyPath, "..\\" + ProjectConfigName);
+
+			string projectConfigPath = projectConfigPath1;
+			if (File.Exists(projectConfigPath2))
+			{
+				projectConfigPath = projectConfigPath2;
+				projectLoadPath = projectConfigPath2;
+				lastUpdated = DateTime.Now;
+			}
 
 			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
 				throw new SageHelpException(ProblemType.MissingConfigurationFile);
@@ -418,17 +424,13 @@ namespace Sage.Configuration
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.DefaultCategory = nodeValue;
 
-			nodeValue = configNode.GetAttribute("resourcesPregenerated");
+			nodeValue = configNode.GetAttribute("autoGlobalize");
 			if (!string.IsNullOrEmpty(nodeValue))
-				this.AreResourcesPreGenerated = nodeValue.ContainsAnyOf("yes", "1", "true");
+				this.AutoGlobalize = nodeValue.ContainsAnyOf("yes", "1", "true");
 
 			nodeValue = configNode.GetAttribute("multiCategory");
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.MultiCategory = nodeValue.ContainsAnyOf("yes", "1", "true");
-
-			nodeValue = configNode.GetAttribute("mergeResources");
-			if (!string.IsNullOrEmpty(nodeValue))
-				this.MergeResources = nodeValue.ContainsAnyOf("yes", "1", "true");
 
 			nodeValue = configNode.GetAttribute("debugMode");
 			if (!string.IsNullOrEmpty(nodeValue))
@@ -588,6 +590,21 @@ namespace Sage.Configuration
 
 				this.Modules.Add(name, extensionConfig.Modules[name]);
 			}
+		}
+
+		private static void ResetIfConfigurationChanged()
+		{
+			if (projectLoadPath == null)
+				return;
+
+			if (!File.Exists(projectLoadPath))
+				return;
+
+			DateTime created = File.GetCreationTime(projectLoadPath);
+			DateTime modified = File.GetLastWriteTime(projectLoadPath);
+
+			if (created > lastUpdated || modified > lastUpdated)
+				projectConfig = null;
 		}
 	}
 }
