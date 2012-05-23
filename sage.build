@@ -50,8 +50,8 @@
 			</fileset>
 		</copy>
 		<xmlpoke file="${targetSite}/bin/Project.config" 
-						 xpath="/p:configuration/p:project/@mergeResources" 
-						 value="true">
+						 xpath="/p:configuration/p:project/@debugMode" 
+						 value="false">
 			<namespaces>
 				<namespace prefix="p" uri="http://www.cycle99.com/schemas/sage/configuration/project.xsd"/>
 			</namespaces>
