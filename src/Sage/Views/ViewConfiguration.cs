@@ -34,9 +34,9 @@ namespace Sage.Views
 		internal const string ModuleSelectPattern = ".//mod:{0}[not(ancestor::sage:literal)]";
 		internal const string LibrarySelectXpath = ".//sage:library[@ref][not(ancestor::sage:literal)]";
 
-		private readonly XmlElement configElement;
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewConfiguration).FullName);
 		private static string moduleSelectXPath;
+		private readonly XmlElement configElement;
 
 		private ViewConfiguration(SageController controller, ViewInfo viewInfo)
 		{
