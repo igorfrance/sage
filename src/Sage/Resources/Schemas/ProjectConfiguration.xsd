@@ -26,8 +26,6 @@
 						<xs:element name="View" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="Module" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="Extension" type="config.textelement" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="ViewTemplate" type="config.textelement" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="ViewConfiguration" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="Dictionary" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="SiteMap" type="config.textelement" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultStylesheet" type="config.textelement" minOccurs="0" maxOccurs="1"/>
@@ -179,8 +177,7 @@
 			<xs:any namespace="##other" processContents="skip"/>
 		</xs:choice>
 		<xs:attribute name="name" use="optional" type="xs:Name"/>
-		<xs:attribute name="resourcesPregenerated" use="optional" default="false" type="xs:boolean"/>
-		<xs:attribute name="mergeResources" use="optional" default="false" type="xs:boolean"/>
+		<xs:attribute name="autoGlobalize" use="optional" default="true" type="xs:boolean"/>
 		<xs:attribute name="debugMode" use="optional" default="false" type="xs:boolean"/>
 		<xs:attribute name="defaultLocale" use="optional" type="nonEmptyString"/>
 		<xs:attribute name="defaultCategory" use="optional" type="nonEmptyString"/>
@@ -363,8 +360,8 @@
 
 	<xs:complexType name="config.format">
 		<xs:attribute name="culture" use="required" type="nonEmptyString"/>
-		<xs:attribute name="longDate" use="required" type="nonEmptyString"/>
-		<xs:attribute name="shortDate" use="required" type="nonEmptyString"/>
+		<xs:attribute name="longDate" use="optional" type="nonEmptyString"/>
+		<xs:attribute name="shortDate" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
 	<xs:complexType name="config.ip">

@@ -216,51 +216,6 @@ namespace Sage.ResourceManagement
 		/// <returns>
 		/// The localized XML document that this xml resource represents.
 		/// </returns>
-		/// <remarks>
-		/// <para>If this xml resource is not globalizable (see <see cref="IsGlobalizable"/>) it will be returned as is, without
-		/// localization. If however it <b>is</b> globalizable, several other things are taken into account before deciding to globalize
-		/// it:</para>
-		/// <list type="table">
-		/// <listheader>
-		/// <term>Consider</term>
-		/// <description>Description</description>
-		/// </listheader>
-		/// <item>
-		/// <term><see cref="ProjectConfiguration.AreResourcesPreGenerated"/>?</term>
-		/// <description>If the current <see cref="ProjectConfiguration"/> indicates that the xml resources are pre-generated,
-		/// no work will be done on the resource and the resource will be returned as it. In the production environment, xml
-		/// resources will typically be pre-generated (by running a globalization utility as a part of the build process) and
-		/// hence live, on-the-fly globalization will not be needed.</description>
-		/// </item>
-		/// <item>
-		/// <term><see cref="SageContext.ForceRefresh"/>?</term>
-		/// <description>If the current <see cref="SageContext"/> indicates that the current request wants an unconditional
-		/// refresh of the resource, the resource will be globalized regardless of other factors.</description>
-		/// </item>
-		/// <item>
-		/// <term>Has the resource ever been globalized?</term>
-		/// <description>If this xml resource's has not yet been globalized, it will now be globalized.</description>
-		/// </item>
-		/// <item>
-		/// <term>Has the resource changed?</term>
-		/// <description>If this xml resource's last modification date is later than it's translated version's, it will be
-		/// globalized again.</description>
-		/// </item>
-		/// <item>
-		/// <term>Has one of the dictionaries changed?</term>
-		/// <description>If any one of the translation dictionaries for the current category has been changed after this resource
-		/// has last been globalized, it will be globalized again.</description>
-		/// </item>
-		/// </list>
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">
-		/// If <paramref name="locale"/> is <c>null</c> or empty.
-		/// </exception>
-		/// <exception cref="ArgumentException">
-		/// If the specified <paramref name="locale"/> is not a valid project locale (doesn't exist within current configuration's
-		/// list of <see cref="ProjectConfiguration.Locales"/>, or if the specified <paramref name="locale"/> is not a valid
-		/// locale for the current category (doesn't exist within current category's list of <see cref="CategoryInfo.Locales"/>).
-		/// </exception>
 		public CacheableXmlDocument Load(string locale)
 		{
 			if (string.IsNullOrEmpty(locale))
@@ -278,7 +233,7 @@ namespace Sage.ResourceManagement
 
 			var dependencies = new List<string> { GetGlobalizedName(locale, true) };
 
-			if (!context.ProjectConfiguration.AreResourcesPreGenerated)
+			if (context.ProjectConfiguration.AutoGlobalize)
 			{
 				DictionaryFileCollection dictionaries = Globalizer.GetTranslationDictionaryCollection(context);
 				DateTime? resourceFirstGlobalized = this.GetDateFirstGlobalized(dictionaries.Locales);
