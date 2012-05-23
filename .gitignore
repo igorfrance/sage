@@ -16,9 +16,6 @@ _target
 /src/Examples/Documentation/extensions
 
 /src/Sage.Local.sln.DotSettings
-/src/Examples/Documentation/assets/lib/modules/xmltree
-/src/Examples/Documentation/assets/lib/modules/developertoolbar
-/src/Examples/Documentation/assets/lib/modules/logviewer
-/src/Examples/Documentation/assets/lib/modules/syntaxhighlighter
-/src/Examples/Documentation/assets/lib/modules/viewinspector
 /src/Examples/Documentation/assets/css/dev
+/src/Examples/Documentation/assets/views/dev
+/src/Examples/Documentation/assets/modules/dev
