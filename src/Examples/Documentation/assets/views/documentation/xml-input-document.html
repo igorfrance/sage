@@ -21,97 +21,104 @@
 			</mod:config>
 		</mod:BreadCrumb>
 
-		<p>
-			Even though views are typically written simply as plain XHTML, they are processed and wrapped with additional
-			XML by Sage before they are sent off for the final XSLT transform.
-		</p>
+		<dfn class="sectionblock">
+			The HTML documents you write are wrapped within a standard XML envelope before being served to the nearest XSLT
+			processor for transformation.
+		</dfn>
 
-		<p>
-			For a real-world example of the actual input document XML for this page,
-			<a href="url:self(?view=xmlx)" target="_blank">click here</a>. Once you're on that page, you can use the plus
-			('+') icons to expand any collapsed nodes and drill deeper into the document structure.
-		</p>
+		<blockquote>
+			<p>
+				Even though views are typically written simply as plain XHTML, they are processed and wrapped with additional
+				XML by Sage before they are sent off for the final XSLT transform.
+			</p>
 
-		<p>
-			The following sections describe the individual components of the input document XML.
-		</p>
+			<p>
+				For a real-world example of the actual input document XML for this page,
+				<a href="url:self(?view=xmlx)" target="_blank">click here</a>. Once you're on that page, you can use the plus
+				('+') icons to expand any collapsed nodes and drill deeper into the document structure.
+			</p>
+		</blockquote>
 
-		<h3 class="section">The view context envelope</h3>
+		<mod:PageIndex/>
 
-		<p>
-			Consider this very rudimentary view:
-		</p>
+		<h3 class="section" data-index="yes" data-level="1" id="Example">Example</h3>
 
-		<mod:XmlTree>
-			<mod:data>
-				<sage:literal>
-					<html>
-						<head>
-							<title>Hello</title>
-						</head>
-						<body>
-							<h1>Hello, world!</h1>
-						</body>
-					</html>
-				</sage:literal>
-			</mod:data>
-		</mod:XmlTree>
+		<blockquote>
+			<p>
+				Consider this very rudimentary view:
+			</p>
 
-		<p>
-			Before being sent of to XSLT for the final transform to HTML, the XHTML document from the previous example is
-			wrapped within a <i>context envelope</i>, which structuraly looks like the example below. For brevity,
-			all generated values except for the example above are stripped out. All view context envelope attributes
-			are described in detail in the reference further down on the page.
-		</p>
+			<mod:XmlTree>
+				<mod:data>
+					<sage:literal>
+						<html>
+							<head>
+								<title>Hello</title>
+							</head>
+							<body>
+								<h1>Hello, world!</h1>
+							</body>
+						</html>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:namespaces>yes</mod:namespaces>
-			</mod:config>
-			<mod:data>
-				<sage:literal>
-					<sage:view xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
-						<sage:request>
-							<sage:path/>
-							<sage:address/>
-							<sage:useragent/>
-							<sage:assembly/>
-							<sage:querystring/>
-							<sage:cookies/>
-							<sage:dateTime/>
-						</sage:request>
-						<sage:response>
-							<sage:resources>
-								<sage:head/>
-								<sage:body/>
-							</sage:resources>
-							<sage:model>
-								<html>
-									<head>
-										<title>Hello</title>
-									</head>
-									<body>
-										<h1>Hello, world!</h1>
-									</body>
-								</html>
-							</sage:model>
-						</sage:response>
-					</sage:view>
-				</sage:literal>
-			</mod:data>
-		</mod:XmlTree>
+			<p>
+				Before being sent of to XSLT for the final transform to HTML, the XHTML document from the previous example is
+				wrapped within a <i>context envelope</i>, which structuraly looks like the example below. For brevity,
+				all generated values except for the example above are stripped out. All view context envelope attributes
+				are described in detail in the reference further down on the page.
+			</p>
 
-		<h3 class="section">Input document elements</h3>
+			<mod:XmlTree>
+				<mod:config>
+					<mod:namespaces>yes</mod:namespaces>
+				</mod:config>
+				<mod:data>
+					<sage:literal>
+						<sage:view xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
+							<sage:request>
+								<sage:path/>
+								<sage:address/>
+								<sage:useragent/>
+								<sage:assembly/>
+								<sage:querystring/>
+								<sage:cookies/>
+								<sage:dateTime/>
+							</sage:request>
+							<sage:response>
+								<sage:resources>
+									<sage:head/>
+									<sage:body/>
+								</sage:resources>
+								<sage:model>
+									<html>
+										<head>
+											<title>Hello</title>
+										</head>
+										<body>
+											<h1>Hello, world!</h1>
+										</body>
+									</html>
+								</sage:model>
+							</sage:response>
+						</sage:view>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+		</blockquote>
+
+		<h3 class="section" data-index="yes" data-level="1" id="Elements">Elements</h3>
 
 		<ul class="root separate">
 			<li>
-				<div class="sectionblock">
-					<h5 class="casual" id="sage:view">sage:view</h5>
+				<div class="sectionblock first">
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:view">sage:view</h5>
 					<p>
 						The root element of the view.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -148,12 +155,12 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:request">sage:request</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:request">sage:request</h5>
 					<p>
 						Contains information about the  current request.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -175,47 +182,47 @@
 					<ul class="casual separatesmall">
 						<li>
 							<h6 class="casual">@method</h6>
-							<span>The current HTTP method; typically GET or POST.</span>
+							<div class="indent">The current HTTP method; typically GET or POST.</div>
 						</li>
 						<li>
 							<h6 class="casual">@localAddress</h6>
-							<span>The IP address of the local server.</span>
+							<div class="indent">The IP address of the local server.</div>
 						</li>
 						<li>
 							<h6 class="casual">@remoteAddress</h6>
-							<span>The IP address of the remote client.</span>
+							<div class="indent">The IP address of the remote client.</div>
 						</li>
 						<li>
 							<h6 class="casual">@category</h6>
-							<span>The name of the current category</span>
+							<div class="indent">The name of the current category</div>
 						</li>
 						<li>
 							<h6 class="casual">@locale</h6>
-							<span>The name of the current locale</span>
+							<div class="indent">The name of the current locale</div>
 						</li>
 						<li>
 							<h6 class="casual">@thread</h6>
-							<span>The name given to the thread of the request, used to identify this request's log messages in the main
-							log file.</span>
+							<div class="indent">The name given to the thread of the request, used to identify this request's log messages in the main
+							log file.</div>
 						</li>
 						<li>
 							<h6 class="casual">@developer</h6>
-							<span>
+							<div class="indent">
 								Indicates whether the user making this request is considered a developer. Developers are granted a few
 								privileges without having to log on. Developers are selected on the basis of the IP address, this is configured
 								in the <a href="url:link(configuration-project)">project configuration file</a>. Possible values of this attribute
 								are zero (0) and one (1).
-							</span>
+							</div>
 						</li>
 						<li>
 							<h6 class="casual">@debug</h6>
-							<span>
+							<div class="indent">
 								Indicates whether the current project is running in debug mode. When running in debug mode, modules can
 								emit debugging information inline to aid with problem fixing. When not in debug mode, errors are typically
 								caught and logged without showing the error to the end user. This value is configured
 								in the <a href="url:link(configuration-project)">project configuration file</a>. Possible values of this attribute
 								are zero (0) and one (1).
-							</span>
+							</div>
 						</li>
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
@@ -241,12 +248,12 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:path">sage:path</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:path">sage:path</h5>
 					<p>
 						Provides the current paths that might be useful for the frontend.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -258,21 +265,21 @@
 					<ul class="casual">
 						<li>
 							<h6 class="casual">@applicationPath</h6>
-							<span>The current application path, for instance; <i>/myapp/</i>.</span>
+							<div class="indent">The current application path, for instance; <i>/myapp/</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@assetPath</h6>
-							<span>The path to the assets, taking the current category into account (if running a multi-category project),
-							for instance; <i>/myapp/assets/</i>, or <i>/myapp/assets/category1/</i>.</span>
+							<div class="indent">The path to the assets, taking the current category into account (if running a multi-category project),
+							for instance; <i>/myapp/assets/</i>, or <i>/myapp/assets/category1/</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@sharedAssetPath</h6>
-							<span>The path to the shared assets, applicable in multi-category scenarios,
-							for instance; <i>/myapp/assets/shared/</i>.</span>
+							<div class="indent">The path to the shared assets, applicable in multi-category scenarios,
+							for instance; <i>/myapp/assets/shared/</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@modulePath</h6>
-							<span>The modules directory path, for instance; <i>/myapp/assets/lib/modules/</i>.</span>
+							<div class="indent">The modules directory path, for instance; <i>/myapp/assets/lib/modules/</i>.</div>
 						</li>
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
@@ -291,12 +298,12 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:address">sage:address</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:address">sage:address</h5>
 					<p>
 						Provides information about the current URL and its constituent parts.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -312,41 +319,41 @@
 					<ul class="casual">
 						<li>
 							<h6 class="casual">@basehref</h6>
-							<span>Fully qualified base URL for the current application, for instance;
-							<i>https://www.myserver.com/myapp/</i></span>
+							<div class="indent">Fully qualified base URL for the current application, for instance;
+							<i>https://www.myserver.com/myapp/</i></div>
 						</li>
 						<li>
 							<h6 class="casual">@url</h6>
-							<span>The current, visible URL of the request, for instance;
+							<div class="indent">The current, visible URL of the request, for instance;
 							<i>https://www.myserver.com/myapp/pages/mycoolpage.html?show=everything</i>
-							</span>
+							</div>
 						</li>
 						<li>
 							<h6 class="casual">@referrer</h6>
-							<span>The URL referrer string, if any.</span>
+							<div class="indent">The URL referrer string, if any.</div>
 						</li>
 						<li>
 							<h6 class="casual">@serverName</h6>
-							<span>The name of the current server, for instance; <i>www.myserver.com</i>.</span>
+							<div class="indent">The name of the current server, for instance; <i>www.myserver.com</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@serverNameFull</h6>
-							<span>The name of the current server, prefixed with the current protocol, with server port number
-							added (if other than 80 for http and 443 for https); <i>https://www.myserver.com:444</i>.</span>
+							<div class="indent">The name of the current server, prefixed with the current protocol, with server port number
+							added (if other than 80 for http and 443 for https); <i>https://www.myserver.com:444</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@scriptName</h6>
-							<span>The local part of the current URL; <i>/myapp/pages/mycoolpage.html</i>.</span>
+							<div class="indent">The local part of the current URL; <i>/myapp/pages/mycoolpage.html</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@scriptNameFull</h6>
-							<span>The local part of the current URL, with the quesry string included;
-							<i>/myapp/pages/mycoolpage.html?show=everything</i>.</span>
+							<div class="indent">The local part of the current URL, with the quesry string included;
+							<i>/myapp/pages/mycoolpage.html?show=everything</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@querystring</h6>
-							<span>Only the querystring part of the URL, for instance;
-							<i>show=everything&amp;page=45&amp;order=desc</i></span>
+							<div class="indent">Only the querystring part of the URL, for instance;
+							<i>show=everything&amp;page=45&amp;order=desc</i></div>
 						</li>
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
@@ -365,12 +372,12 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:useragent">sage:useragent</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:useragent">sage:useragent</h5>
 					<p>
 						Provides information about the current user agent.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -383,39 +390,39 @@
 					<ul class="casual">
 						<li>
 							<h6 class="casual">@id</h6>
-							<span>The user agent ID. This is a copy of the value of <a href="#">HttpBrowserCapabilities.Type</a>
+							<div class="indent">The user agent ID. This is a copy of the value of <a href="#">HttpBrowserCapabilities.Type</a>
 							property, or in other words; the name and major (integer) version number of the browser. Examples:
 							<i>firefox11</i>, <i>chrome17</i> or <i>ie9</i>.
-							</span>
+							</div>
 						</li>
 						<li>
 							<h6 class="casual">@name</h6>
-							<span>The name of the user agent. Examples: <i>IE</i>, <i>Chrome</i> or <i>Firefox</i>.</span>
+							<div class="indent">The name of the user agent. Examples: <i>IE</i>, <i>Chrome</i> or <i>Firefox</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@version</h6>
-							<span>The version string of the user agent, for instance; <i>11.0</i>.</span>
+							<div class="indent">The version string of the user agent, for instance; <i>11.0</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@version.major</h6>
-							<span>The <i>major</i> part of the user agent version, for instance; <i>11</i>.</span>
+							<div class="indent">The <i>major</i> part of the user agent version, for instance; <i>11</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@version.minor</h6>
-							<span>The <i>minor</i> part of the user agent version, for instance; <i>0</i>.</span>
+							<div class="indent">The <i>minor</i> part of the user agent version, for instance; <i>0</i>.</div>
 						</li>
 						<li>
 							<h6 class="casual">@isCrawler</h6>
-							<span>If the user agent string indicates that the current user agent is a crawler (<i>Googlebot</i>,
+							<div class="indent">If the user agent string indicates that the current user agent is a crawler (<i>Googlebot</i>,
 							<i>YahooSeeker</i>, etc), this attribute's value will be <code>1</code>; otherwise it will be <code>0</code>.
-							</span>
+							</div>
 						</li>
 						<li>
 							<h6 class="casual">@value</h6>
-							<span>
+							<div class="indent">
 								The raw user agent string, for instance;
 								<i>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0</i>
-							</span>
+							</div>
 						</li>
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
@@ -434,12 +441,12 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:assembly">sage:assembly</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:assembly">sage:assembly</h5>
 					<p>
 						Provides the current assembly version to the frontend.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -470,7 +477,7 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:querystring">sage:querystring</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:querystring">sage:querystring</h5>
 					<p>
 						This element provides read access to all POSTed form values contained in the request, in the form of attributes,
 						where each value's name is the name of the attribute, and the attribute value is the posted value.
@@ -478,7 +485,7 @@
 						If there are no posted values at the time of the request, the element will have no attributes.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -493,8 +500,8 @@
 						</li>
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
-					<ul class="others">
-						<li>
+					<ul class="casual">
+						<li class="others">
 							<a href="url:self(#sage:request)">sage:request</a>
 						</li>
 					</ul>
@@ -508,7 +515,7 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:form">sage:form</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:form">sage:form</h5>
 					<p>
 						This element provides read access to all POSTed form values contained in the request, in the form of attributes,
 						where each value's name is the name of the attribute, and the attribute value is the posted value.
@@ -516,7 +523,7 @@
 						If there are no posted values at the time of the request, the element will have no attributes.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -546,14 +553,14 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:cookies">sage:cookies</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:cookies">sage:cookies</h5>
 					<p>
 						This element provides read access to all cookies applicable for the request, in the form of attributes,
 						where each cookie's name is the name of the attribute, and the attribute value is the value of that cookie.
 						If there are no applicable cookies at the time of the request, the element will have no attributes.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -583,14 +590,14 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:dateTime">sage:dateTime</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:dateTime">sage:dateTime</h5>
 					<p>
 						Contains attributes that describe the current date and time. By adding this element, these values become
 						available to XSLT for further processing based on date and/or time, without having to resort to extension
 						methods (as XSLT 1.0 has no built-in support for working with dates).
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -602,35 +609,35 @@
 					<ul class="casual">
 						<li>
 							<h6 class="casual">@date</h6>
-							<span>Contains the current date at the moment of the request, in the fixed format of <code>dd-MM-yyyy</code></span>
+							<div class="indent">Contains the current date at the moment of the request, in the fixed format of <code>dd-MM-yyyy</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@time</h6>
-							<span>Contains the current date at the moment of the request, in the fixed format of <code>hh:mm:ss</code></span>
+							<div class="indent">Contains the current date at the moment of the request, in the fixed format of <code>hh:mm:ss</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@day</h6>
-							<span>Contains the current date at the moment of the request, in the fixed format of <code>dd</code></span>
+							<div class="indent">Contains the current date at the moment of the request, in the fixed format of <code>dd</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@month</h6>
-							<span>Contains the current month at the moment of the request, in the fixed format of <code>MM</code></span>
+							<div class="indent">Contains the current month at the moment of the request, in the fixed format of <code>MM</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@year</h6>
-							<span>Contains the current year at the moment of the request, in the fixed format of <code>yyyy</code></span>
+							<div class="indent">Contains the current year at the moment of the request, in the fixed format of <code>yyyy</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@hour</h6>
-							<span>Contains the current hour at the moment of the request, in the fixed format of <code>hh</code></span>
+							<div class="indent">Contains the current hour at the moment of the request, in the fixed format of <code>hh</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@minute</h6>
-							<span>Contains the current minute at the moment of the request, in the fixed format of <code>mm</code></span>
+							<div class="indent">Contains the current minute at the moment of the request, in the fixed format of <code>mm</code></div>
 						</li>
 						<li>
 							<h6 class="casual">@second</h6>
-							<span>Contains the current second at the moment of the request, in the fixed format of <code>ss</code></span>
+							<div class="indent">Contains the current second at the moment of the request, in the fixed format of <code>ss</code></div>
 						</li>
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
@@ -649,14 +656,14 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:response">sage:response</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:response">sage:response</h5>
 					<p>
 						Contains the response data for the current view; the view template (within <a href="url:self(#sage:model)">sage:model</a>
 						element) and the resources used by the view template (within <a href="url:self(#sage:resources)">sage:resources</a>
 						element.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -684,13 +691,13 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:resources">sage:resources</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:resources">sage:resources</h5>
 					<p>
 						This element is container for all resources reference by the view's modules and/or libraries. If there are
 						no data, head or body resources, this element will not be present.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -720,14 +727,14 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:data">sage:data</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:data">sage:data</h5>
 					<p>
 						Contains the module and/or library document resources that should be loaded within this element, and hence be
 						made available to XSLT processing (typically by the module that references it). If there are no data resources
 						on the current view, this element will not be present.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -753,7 +760,7 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:head">sage:head</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:head">sage:head</h5>
 					<p>
 						Contains the module and/or library resources, such as scripts and styles referenced by the view or the
 						modules contained on it, that should be loaded within the head of the HTML page. If there are no head resources
@@ -764,7 +771,7 @@
 						shortcut icons (<code>rel=icon</code>).
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -796,14 +803,14 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:body">sage:body</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:body">sage:body</h5>
 					<p>
 						Contains the module and/or library resources, such as scripts and styles referenced by the view or the
 						modules contained on it, that should be loaded within the body of the HTML page. If there are no body resources
 						on the current view, this element will not be present.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -834,13 +841,13 @@
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" id="sage:model">sage:model</h5>
+					<h5 class="casual" data-index="yes" data-level="2" id="sage:model">sage:model</h5>
 					<p>
 						Holds the X(HT)ML view configuration document that was used; typically, the XHTML file that represents the
 						current view.
 					</p>
 				</div>
-				<blockquote class="casual">
+				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
@@ -865,7 +872,6 @@
 				</blockquote>
 			</li>
 		</ul>
-
 
 		<br class="spacer"/>
 

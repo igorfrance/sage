@@ -16,14 +16,21 @@
 
 		<mod:BreadCrumb>
 			<mod:config>
-				<mod:current><sage:url ref="sage-obtaining"/></mod:current>
+				<mod:current>
+					<sage:url ref="sage-obtaining"/>
+				</mod:current>
 			</mod:config>
 		</mod:BreadCrumb>
 
 		<h3 class="section">Source code</h3>
 		<p>
-			Sage sources can be downloaded from it's <a href="https://github.com/igorfrance/Sage" target="_top">homepage on github</a> using:
-			<dfn>git@github.com:igorfrance/Sage.git</dfn>
+			Sage sources can be downloaded <a href="https://github.com/igorfrance/Sage" target="_top">from  github</a> using:
+		</p>
+
+		<code class="principal">git clone --recurse-submodules https://&lt;git-user-name&gt;/igorfrance/Sage.git ./sage</code>
+
+		<p>
+			Make sure to clone the submodules too, by using the <code>--recurse-submodules</code> option.
 		</p>
 
 		<h3 class="section">Binaries</h3>
