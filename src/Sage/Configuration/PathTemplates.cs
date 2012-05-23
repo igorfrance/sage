@@ -30,11 +30,9 @@ namespace Sage.Configuration
 		{
 			// initialize with default values.
 			this.View = "{assetpath}/views/";
-			this.Module = "{assetpath}/modules/";
-			this.Extension = "{assetpath}/extensions/";
+			this.Module = "{assetpath}/lib/modules/";
+			this.Extension = "~/extensions/";
 			this.CategoryConfiguration = "{assetpath}/configuration/Category.config";
-			this.ViewConfiguration = "{assetpath}/views/{controller}/{action}.xml";
-			this.ViewTemplate = "{assetpath}/views/{controller}/{action}";
 			this.DefaultStylesheet = "{assetpath}/views/xslt/default.xsl";
 			this.Dictionary = "{assetpath}/configuration/dictionary/{locale}.xml";
 			this.SiteMap = "{assetpath}/configuration/sitemap.xml";
@@ -67,16 +65,6 @@ namespace Sage.Configuration
 		/// Gets the template for constructing paths to plugin directories.
 		/// </summary>
 		public string Extension { get; private set; }
-
-		/// <summary>
-		/// Gets the template for constucting paths to view configuration files.
-		/// </summary>
-		public string ViewConfiguration { get; private set; }
-
-		/// <summary>
-		/// Gets the template for constucting paths to view template files.
-		/// </summary>
-		public string ViewTemplate { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constucting paths to language dictionaries.
@@ -136,14 +124,6 @@ namespace Sage.Configuration
 			testNode = configElement.SelectSingleNode("p:CategoryConfiguration", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
 				this.CategoryConfiguration = testValue;
-
-			testNode = configElement.SelectSingleNode("p:ViewConfiguration", nm);
-			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.ViewConfiguration = testValue;
-
-			testNode = configElement.SelectSingleNode("p:ViewTemplate", nm);
-			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
-				this.ViewTemplate = testValue.TrimEnd('/') + "/";
 
 			testNode = configElement.SelectSingleNode("p:DefaultStylesheet", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
