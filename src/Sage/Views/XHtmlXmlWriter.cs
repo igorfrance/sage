@@ -27,7 +27,7 @@ namespace Sage.Views
 		/// <summary>
 		/// Array of elements that don't require a closing tag
 		/// </summary>
-		private readonly string[] collapsibleElements = new[] { "base", "meta", "link", "br", "input", "area", "frame", "param", "img" };
+		private readonly string[] collapsibleElements = new[] { "base", "col", "meta", "link", "br", "input", "area", "frame", "param", "img" };
 		private string lastStartElement;
 
 		/// <summary>
