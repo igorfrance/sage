@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mod:SyntaxHighlighter xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
+	<mod:defaults>
+		<mod:definitions>
+			<mod:xmllanguage name="xml"/>
+			<mod:xmllanguage name="xslt">
+				<mod:elements>
+					<mod:group name="xslt">
+						xsl:apply-imports|xsl:apply-templates |xsl:attribute|xsl:attribute-set|xsl:call-template
+						xsl:choose|xsl:comment|xsl:copy|xsl:copy-of|xsl:decimal-format|xsl:element|xsl:fallback
+						xsl:for-each|xsl:if|xsl:import|xsl:include|xsl:key|xsl:locale|xsl:message|xsl:namespace-alias
+						xsl:number|xsl:otherwise|xsl:output|xsl:param|xsl:preserve-space|xsl:processing-instruction
+						xsl:sort|xsl:strip-space|xsl:stylesheet|xsl:template|xsl:text|xsl:transform|xsl:use-attribute-sets
+						xsl:value-of|xsl:variable|xsl:when|xsl:with-param
+					</mod:group>
+				</mod:elements>
+				<mod:attributes>
+					<mod:group name="xslt">
+						case-order |cdata-section-elements|count |data-type |decimal-separator|digit |disable-output-escaping
+						doctype-public|doctype-system|elements|encoding|exclude-result-prefixes|extension-element-prefixes
+						format|from|grouping-separator|grouping-size|href|id|indent|infinity|lang|letter-value|level
+						match|media-type|method|minus-sign|mode|name|namespace|NaN|omit-xml-declaration|order|pattern-separator
+						percent|per-mille|priority|result-prefix|section-elements|select|standalone|stylesheet-prefix
+						terminate|test|use|use-attribute-sets|value|version|xml-declaration|xml:space|xmlns:xsl|zero-digit
+					</mod:group>
+				</mod:attributes>
+			</mod:xmllanguage>
+			<mod:language name="javascript">
+				<mod:escape>\</mod:escape>
+				<mod:regexp>/ /</mod:regexp>
+				<mod:comments>
+					<mod:comment>/* */</mod:comment>
+					<mod:linecomment>//</mod:linecomment>
+				</mod:comments>
+				<mod:quotes>
+					<mod:quote>"</mod:quote>
+					<mod:quote>'</mod:quote>
+				</mod:quotes>
+				<mod:keywords>
+					<mod:group name="keyword">
+						abstract|boolean|break|byte|case|catch|char|class|const|continue|default|delete|do|double|else
+						extends|false|final|finally|float|for|function|goto|if|implements|import|in|instanceof|int
+						interface|long|native|new|null|package|private|protected|public|return|short|static|super|switch
+						synchronized|this|throw|throws|transient|true|try|typeof|var|void|while|with
+					</mod:group>
+					<mod:group name="keyword1">
+						ActiveXObject|window|document|implementation|arguments|Array|Boolean|Date|Enumerator|Error
+						forms|Frame|frames|Function|Number|Math|Object|RegExp|String|Type|VBArray|XMLHttpRequest
+					</mod:group>
+					<mod:group name="keyword2">
+						abort|abs|acos|addEventListener|appendChild|appendData|apply|asin|atan|atan2|atEnd|attachEvent
+						blur|call|ceil|charAt|charCodeAt|click|cloneNode|clearInterval|clearTimeout|compile|concat
+						cos|createAttribute|createAttributeNS|createCDATASection|createComment|createDocument
+						createDocumentFragment|createDocumentType|createElement|createElementNS|createEntityReference
+						createProcessingInstruction|createTextNode|decodeURI|decodeURIComponent|deleteData|detachEvent
+						dimensions|dispatchEvent|encodeURI|encodeURIComponent|escape|eval|exec|exp|fixed|floor|focus
+						fromCharCode|getAllResponseHeaders|getAttribute|getAttributeNode|getAttributeNodeNS|getAttributeNS
+						getComputedStyle|getDate|getDay|getElementById|getElementsByName|getElementsByTagName|getElementsByTagNameNS
+						getFullYear|getHours|getItem|getMilliseconds|getMinutes|getMonth|getNamedItem|getNamedItemNS
+						getResponseHeader|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear
+						getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|getVarDate|getYear|hasAttribute
+						hasAttributeNS|hasAttributes|hasChildNodes|hasFeature|hasOwnProperty|importNode|indexOf|insertBefore
+						insertData|isFinite|isNaN|isPrototypeOf|isSupported|item|join|lastIndexOf|lbound|localeCompare|log|match
+						max|min|moveFirst|moveNext|normalize|open|parse|parseFloat|parseInt|pop|pow|push|random|removeAttribute
+						removeAttributeNode|removeAttributeNS|removeChild|removeEventListener|removeNamedItem|removeNamedItemNS
+						replace|replaceChild|replaceData|reverse|round|scrollIntoView|search|send|sendAsBinary|setInterval
+						setTimeout|setAttribute|setAttributeNode|setAttributeNodeNS|setAttributeNS|setDate|setFullYear|setHours
+						setMilliseconds|setMinutes|setMonth|setNamedItem|setNamedItemNS|setRequestHeader|setSeconds|setTime
+						setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|setYear
+						shift|sin|slice|sort|splice|split|splitText|sqrt|substr|substring|substringData|supports|tan|test|toArray
+						toDateString|toExponential|toFixed|toGMTString|toLocaleDateString|tolocaleLowerCase|toLocaleString
+						toLocaleTimeString|tolocaleUpperCase|toLowerCase|toPrecision|toString|toUpperCase|toUTCString|ubound
+						unescape|unshift|UTC|valueOf
+					</mod:group>
+					<mod:group name="keyword3">
+						$1|$2|$3|$4|$5|$6|$7|$8|$9|arguments|attributes|callee|caller|childNodes|className|clientWidth|clientHeight
+						dir|constructor|data|description|documentElement|domain|E|firstChild|global|id|ignoreCase|implementation
+						index|Infinity|input|innerHTML|lang|lastChild|lastIndex|lastMatch|lastParen|leftContext|length|LN10|LN2
+						localName|location|LOG10E|LOG2E|MAX_VALUE|message|MIN_VALUE|multiline|name|namespaceURI|namespaceURI|NaN
+						NEGATIVE_INFINITY|nextSibling|nodeName|nodeType|nodeValue|number|offsetLeft|offsetTop|offsetParent|offsetWidth
+						offsetHeight|ownerDocument|parentNode|PI|POSITIVE_INFINITY|prefix|previousSibling|AbsolutePath|propertyIsEnumerable
+						prototype|readyState|rightContext|scrollLeft|scrollTop|scrollHeight|scrollWidth|style|source|SQRT1_2|SQRT2
+						tabIndex|tagName|target|title|undefined|value
+					</mod:group>
+				</mod:keywords>
+			</mod:language>
+			<mod:language name="css">
+				<mod:comments>
+					<mod:comment>/* */</mod:comment>
+				</mod:comments>
+				<mod:quotes>
+					<mod:quote>"</mod:quote>
+					<mod:quote>'</mod:quote>
+				</mod:quotes>
+				<mod:keywords>
+					<mod:group name="keyword">
+						ascent|azimuth|background|background-attachment|background-color|background-image|background-position
+						background-repeat|baseline|bbox|border|border-collapse|border-color|border-spacing|border-style|border-top
+						border-right|border-bottom|border-left|border-top-color|border-right-color|border-bottom-color
+						border-left-color|border-top-style|border-right-style|border-bottom-style|border-left-style|border-top-width
+						border-right-width|border-bottom-width|border-left-width|border-width|bottom|cap-height|caption-side|centerline
+						clear|clip|color|content|counter-increment|counter-reset|cue|cue-after|cue-before|cursor|definition-src
+						descent|direction|display|elevation|empty-cells|float|font|font-family|font-size|font-size-adjust|font-stretch
+						font-style|font-variant|font-weight|height|left|letter-spacing|line-height|list-style|list-style-image
+						list-style-position|list-style-type|margin|margin-top|margin-right|margin-bottom|margin-left|marker-offset
+						marks|mathline|max-height|max-width|min-height|min-width|orphans|outline|outline-color|outline-style
+						outline-width|overflow|padding|padding-top|padding-right|padding-bottom|padding-left|page|page-break-after
+						page-break-before|page-break-inside|panose-1|pause|pause-after|pause-before|pitch|pitch-range|play-during
+						position|quotes|richness|right|size|slope|src|speak|speak-header|speak-numeral|speak-punctuation|speech-rate
+						stemh|stemv|stress|table-layout|text-align|text-decoration|text-indent|text-shadow|text-transform|top
+						unicode-bidi|unicode-range|units-per-em|vertical-align|visibility|voice-family|volume|white-space|widows|width
+						widths|word-spacing|x-height|z-index|filter|opacity
+					</mod:group>
+					<mod:group name="keyword1">
+						above|absolute|ActiveBorder|ActiveCaption|all|always|AppWorkspace|aqua|armenian|attr|aural|auto|avoid|Background
+						baseline|behind|below|bidi-override|black|blink|block|blue|bold|bolder|both|bottom|braille|ButtonFace
+						ButtonHighlight|ButtonShadow|ButtonText|capitalize|caption|CaptionText|center|center-left|center-right
+						circle|cjk-ideographic|close-quote|code|collapse|compact|condensed|continuous|counter|counters|crop|cross
+						crosshair|cursive|dashed|decimal|decimal-leading-zero|default|digits|disc|dotted|double|embed|embossed|e-resize
+						expanded|extra-condensed|extra-expanded|fantasy|far-left|far-right|fast|faster|fixed|format|fuchsia|georgian
+						gray|GrayText|green|groove|handheld|hebrew|help|hidden|hide|high|higher|Highlight|HighlightText|hiragana
+						hiragana-iroha|icon|InactiveBorder|InactiveCaption|InactiveCaptionText|InfoBackground|InfoText|inline
+						inline-table|inset|inside|invert|italic|justify|katakana|katakana-iroha|landscape|large|larger|left|left-side
+						leftwards|level|lighter|lime|line-through|list-item|local|loud|low|lower|lower-alpha|lowercase|lower-greek
+						lower-latin|lower-roman|ltr|marker|maroon|medium|Menu|MenuText|message-box|middle|mix|monospace|move|narrower
+						navy|ne-resize|no-close-quote|none|no-open-quote|no-repeat|normal|nowrap|n-resize|nw-resize|oblique|olive|once
+						open-quote|outset|outside|overline|pointer|portrait|pre|print|projection|purple|red|relative|repeat|repeat-x
+						repeat-y|rgb|ridge|right|right-side|rightwards|rtl|run-in|sans-serif|screen|scroll|Scrollbar|semi-condensed
+						semi-expanded|separate|se-resize|serif|show|silent|silver|slow|slower|small|small-caps|small-caption|smaller
+						soft|solid|speech|spell-out|square|s-resize|static|status-bar|sub|super|sw-resize|table|table-caption|table-cell
+						table-column|table-column-group|table-footer-group|table-header-group|table-row|table-row-group|teal|text
+						text-bottom|text-top|thick|thin|ThreeDDarkShadow|ThreeDFace|ThreeDHighlight|ThreeDLightShadow
+						ThreeDShadow|top|transparent|tty|tv|ultra-condensed|ultra-expanded|underline|upper-alpha|uppercase|upper-latin
+						upper-roman|url|visible|wait|white|wider|Window|WindowFrame|WindowText|w-resize|x-fast|x-high|x-large
+						x-loud|x-low|x-slow|x-small|x-soft|xx-large|xx-small|yellow
+					</mod:group>
+					<mod:group name="special1" treatAsWord="false">!important</mod:group>
+					<mod:group name="special2" treatAsWord="false">#[0-9a-fA-F]{3,6}</mod:group>
+				</mod:keywords>
+			</mod:language>
+			<mod:language name="csharp">
+				<mod:escape>\</mod:escape>
+				<mod:comments>
+					<mod:comment>/* */</mod:comment>
+					<mod:linecomment>//</mod:linecomment>
+				</mod:comments>
+				<mod:quotes>
+					<mod:quote>"</mod:quote>
+					<mod:quote>'</mod:quote>
+				</mod:quotes>
+				<mod:keywords>
+					<mod:group name="preprocessor">
+						#define|#elif|#else|#endif|#endregion|#error|#if|#line|#region|#undef|#pragma|#warning
+					</mod:group>
+					<mod:group name="keyword">
+						abstract|add|alias|as|ascending|base|bool|break|byte|case|catch|char|checked|class|
+						const|continue|decimal|default|delegate|descending|do|double|dynamic|else|enum|event|
+						explicit|extern|false|finally|fixed|float|for|foreach|from|get|global|goto|group|if|
+						implicit|in|int|interface|internal|into|is|join|let|lock|long|namespace|new|null|object|
+						operator|orderby|out|override|params|partial|private|protected|public|readonly|ref|remove|
+						return|sbyte|sealed|select|set|short|sizeof|stackalloc|static|string|struct|switch|this|
+						throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|value|var|virtual|void|
+						volatile|where|while|yield|
+					</mod:group>
+				</mod:keywords>
+			</mod:language>
+		</mod:definitions>
+	</mod:defaults>
+</mod:SyntaxHighlighter>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<mod:XmlTree xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
+	<mod:config>
+		<mod:expandLevels>3</mod:expandLevels>
+	</mod:config>
+	<mod:data>
+		XML HERE
+	</mod:data>
+</mod:XmlTree>
