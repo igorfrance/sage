@@ -19,6 +19,8 @@ namespace Sage.XsltExtensions
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
 
+	using Kelp.Extensions;
+
 	using log4net;
 	using Sage.Extensibility;
 
@@ -122,10 +124,12 @@ namespace Sage.XsltExtensions
 			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(expression))
 				return value;
 
+			replacement = unquoteReplacement(replacement);
+
 			try
 			{
 				Regex expr = new Regex(expression);
-				return expr.Replace(value, replacement ?? string.Empty);
+				return expr.Replace(value, replacement);
 			}
 			catch (Exception ex)
 			{
@@ -173,6 +177,15 @@ namespace Sage.XsltExtensions
 				return false;
 
 			return subject.Contains(value);
+		}
+
+		private string unquoteReplacement(string replacement)
+		{
+			return replacement
+				.Replace("\\n", "\n")
+				.Replace("\\r", "\r")
+				.Replace("\\t", "\t")
+				.Replace("\\s", " ");
 		}
 	}
 }
