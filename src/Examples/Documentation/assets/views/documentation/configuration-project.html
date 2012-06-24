@@ -27,7 +27,7 @@
 		<blockquote>
 			<p>
 				The main project configuration file, <code>Project.config</code>, contains many settings that control how the
-				application behaves during runtime. <a href="url(sage-namespaces-xinclude)">X-Includes</a> are supported in the configuration file. Depending on usage, this project configuration file may also appear as <code>System.config</code> or <code>Extension.config</code>.
+				application behaves during runtime. <a href="url:link(sage-namespaces-xinclude)">X-Includes</a> are supported in the configuration file. Depending on usage, this project configuration file may also appear as <code>System.config</code> or <code>Extension.config</code>.
 			</p>
 			<p>
 				<code>System.config</code> is typically provided with Sage and contains default values that Sage will use in case the same property is not defined in the current project's own configuration file. The purpose of this file
@@ -56,7 +56,7 @@
 						<mod:data>
 							<sage:literal>
 								<configuration xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
-									<!-- ... -->
+									<!-- the rest of configuration goes here -->
 								</configuration>
 							</sage:literal>
 						</mod:data>
@@ -107,8 +107,8 @@
 						<li>
 							<h6 class="casual">@autoGlobalize</h6>
 							<div class="indent">Controls weather Sage will automatically
-							<a href="url(internationalization-globalization)">globalize</a> XML files that reference the
-							<a href="url(sage-namespaces)">internationalization</a>. Possible
+							<a href="url:link(sage-namespaces)">internationalize</a> XML files that reference the
+							<a href="url:link(sage-namespaces-internationalization)">internationalization namespace</a>. Possible
 							values are <code>true</code> or <code>false</code>.</div>
 						</li>
 						<li>
@@ -171,30 +171,29 @@
 							<sage:literal>
 								<paths>
 									<AssetPath>~/assets</AssetPath>
-									<!--
-									For a multi-category project, resource path might look like this:
-									<AssetPath>~/assets/{category}</AssetPath>
-									-->
-									<View>{assetpath}/views/</View>
-									<Module>{assetpath}/lib/modules/</Module>
+									<View>{{assetpath}}/views/</View>
+									<Module>{{assetpath}}/lib/modules/</Module>
 									<Extension>~/extensions/</Extension>
-									<Dictionary>{assetpath}/configuration/dictionary/{locale}.xml</Dictionary>
+									<Dictionary>{{assetpath}}/configuration/dictionary/{{locale}}.xml</Dictionary>
 									<SiteMap>~/Sitemap.config</SiteMap>
-									<DefaultStylesheet>{assetpath}/xslt/default.xslt</DefaultStylesheet>
-									<CategoryConfiguration>{assetpath}/configuration/Category.config</CategoryConfiguration>
+									<DefaultStylesheet>{{assetpath}}/xslt/default.xslt</DefaultStylesheet>
+									<CategoryConfiguration>{{assetpath}}/configuration/Category.config</CategoryConfiguration>
 									<GlobalizedDirectory>_target/</GlobalizedDirectory>
 									<GlobalizedDirectoryForNonFileResources>~/_target/</GlobalizedDirectoryForNonFileResources>
 								</paths>
 							</sage:literal>
 						</mod:data>
 					</mod:XmlTree>
-					<h6 class="tiny">Elements</h6>
+					<h6 class="tiny">Child elements</h6>
 					<blockquote>
 						<ul class="properties">
 							<li>
 								<h5 class="casual">AssetPath</h5>
 								<dfn>Specifies the path to project assets.</dfn>
 								<code class="example">default: ~/assets</code>
+								<br/>
+								<dfn>For a multi-category project, resource path might look like this:</dfn>
+								<code class="example">~/assets/{{category}}</code>
 							</li>
 							<li>
 								<h5 class="casual">View</h5>
@@ -238,283 +237,383 @@
 							</li>
 						</ul>
 					</blockquote>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#configuration)">configuration</a></li>
+					</ul>
 				</blockquote>
 			</li>
 			<li>
 				<div class="sectionblock">
-					<h5 class="casual" data-index="yes" data-level="4" id="libraries">libraries</h5>
-					<p>Element description</p>
+					<h5 class="casual" data-index="yes" data-level="4" data-text="libraries" id="libraries">libraries/library</h5>
+					<p>
+						Defines a reusable resource library that can be used throughout the project
+					</p>
 				</div>
 				<blockquote>
+					<h6 class="tiny">Example</h6>
 					<mod:XmlTree>
+						<mod:config>
+						</mod:config>
 						<mod:data>
 							<sage:literal>
-								<code>example</code>
+								<library name="global">
+									<resources>
+										<resource type="icon" location="head" path="/favicon.ico"/>
+										<resource type="style" location="head" path="{{assetpath}}/css/documentation.css"/>
+										<resource type="style" location="head" path="{{assetpath}}/css/documentation-ie.css" limitTo="ie"/>
+										<resource type="script" location="head" path="kelp://{{assetpath}}/scripts/lib/aeon/aeon.js"/>
+										<resource type="document" location="data" path="{{assetpath}}/configuration/navigation.xml"/>
+									</resources>
+									<include>
+										<always/>
+									</include>
+								</library>
 							</sage:literal>
 						</mod:data>
 					</mod:XmlTree>
 					<h6 class="tiny">Attributes</h6>
 					<ul class="casual">
 						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
+							<h6 class="casual">@name</h6>
+							<div class="indent">Specifies the name of the library.</div>
 						</li>
 					</ul>
-					<h6 class="tiny">Parent elements</h6>
-					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
 					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
+					<ul class="properties">
+						<li>
+							<div class="sectionblock">
+								<h5 class="casual">resources/resource</h5>
+								<dfn>Specifies the resources this library consists of. Whenever the library is used, it's resources will be added to the page, as defined with this element.</dfn>
+							</div>
+							<blockquote>
+								<h6 class="tiny">Example</h6>
+								<mod:XmlTree>
+									<mod:data>
+										<sage:literal>
+											<resources>
+												<resource type="script" location="head" path="kelp://{{assetpath}}/scripts/lib/aeon/aeon.js"/>
+											</resources>
+										</sage:literal>
+									</mod:data>
+								</mod:XmlTree>
+								<h6 class="tiny">Attributes</h6>
+								<ul class="casual">
+									<li>
+										<h6 class="casual">@type</h6>
+										<dfn class="indent">
+											Specifies the resource type. Possible values are: <code>script</code>, <code>style</code>, <code>document</code> and <code>icon</code>.
+											<mod:ExpandSection>
+												<mod:config>
+													<mod:class>moreinfo</mod:class>
+													<mod:state>collapsed</mod:state>
+												</mod:config>
+												<mod:data>
+													<header>
+														<span class="expand">More</span>
+														<span class="collapse">Less</span>
+													</header>
+													<details>
+														<table class="definition">
+															<col width="100"/>
+															<col/>
+															<thead>
+																<tr>
+																	<th>Type</th>
+																	<th>Description</th>
+																</tr>
+															</thead>
+															<tr>
+																<th>script</th>
+																<td>
+																	Specifies a client-side JavaScript resource. For <code>script</code> resources <code>@location</code> may be either <code>head</code> or <code>body</code>.
+																</td>
+															</tr>
+															<tr>
+																<th>style</th>
+																<td>
+																	Specifies a client-side CSS resource. For <code>style</code> resources <code>@location</code> may be either <code>head</code> or <code>body</code>.
+																</td>
+															</tr>
+															<tr>
+																<th>document</th>
+																<td>
+																	Specifies a server-side XML resource. For <code>document</code> resources <code>@location</code> may only be <code>data</code>.
+																</td>
+															</tr>
+															<tr>
+																<th>icon</th>
+																<td>
+																	Specifies the website favorites icon. For <code>icon</code> resources <code>@location</code> may only be <code>head</code>.
+																</td>
+															</tr>
+														</table>
+													</details>
+												</mod:data>
+											</mod:ExpandSection>
+										</dfn>
+									</li>
+									<li>
+										<h6 class="casual">@name</h6>
+										<dfn class="indent">Specifies the resource name.
+											This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="url:link(xml-input-document)">input document</a>, and is assigned this value as its <a href="url:link(xml-input-document, #sage:resourceName)">sage:resourceName</a> attribute.
+										</dfn>
+									</li>
+									<li>
+										<h6 class="casual">@location</h6>
+										<dfn class="indent">Specifies the location in which to include the resource. Possible values are: <code>head</code>, <code>body</code> and <code>data</code>.
+											<mod:ExpandSection>
+												<mod:config>
+													<mod:class>moreinfo</mod:class>
+													<mod:state>collapsed</mod:state>
+												</mod:config>
+												<mod:data>
+													<header>
+														<span class="expand">More</span>
+														<span class="collapse">Less</span>
+													</header>
+													<details>
+														<table class="definition">
+															<col width="100"/>
+															<col/>
+															<thead>
+																<tr>
+																	<th>Type</th>
+																	<th>Description</th>
+																</tr>
+															</thead>
+															<tr>
+																<th>head</th>
+																<td>
+																	Indicates that the resource should be included within the head of the document.
+																</td>
+															</tr>
+															<tr>
+																<th>body</th>
+																<td>
+																	Indicates that the resource should be included within the body of the document. The
+																	resource (a <code>&lt;script/&gt;</code> or a <code>&lt;style/&gt;</code> tag) will
+																	be included just before the closing <code>&lt;/body&gt;</code> tag.
+																</td>
+															</tr>
+															<tr>
+																<th>data</th>
+																<td>
+																	Indicates the the resource should be included as a child element of the request's input XML document. Applicable to <code>document</code> type resources.
+																</td>
+															</tr>
+														</table>
+													</details>
+												</mod:data>
+											</mod:ExpandSection>
+										</dfn>
+									</li>
+									<li>
+										<h6 class="casual">@path</h6>
+										<dfn class="indent">Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="url:link(resource-processing-kelp)">kelp:// URL scheme</a> in the resource path.</dfn>
+									</li>
+									<li>
+										<h6 class="casual">@limitTo</h6>
+										<p class="indent">Comma-separated list of user agent id's to which the resource library applies. For instance, <code>ie6,ie7,chrome5,firefox7,opera10,safari4</code>.</p>
+									</li>
+								</ul>
+								<h6 class="tiny">Parent elements</h6>
+								<ul class="casual">
+									<li class="others"><a href="url:self(#library)">library</a></li>
+								</ul>
+							</blockquote>
+						</li>
+						<li>
+							<div class="sectionblock">
+								<h5 class="casual">dependencies/library</h5>
+								<dfn>Specifies libraries that this library depends on. Whenever the library is used, before it's own resources are added to the page, the resources of the dependency library will be added too.</dfn>
+							</div>
+							<blockquote>
+								<h6 class="tiny">Example</h6>
+								<mod:XmlTree>
+									<mod:data>
+										<sage:literal>
+											<dependencies>
+												<library ref="aeon"/>
+											</dependencies>
+										</sage:literal>
+									</mod:data>
+								</mod:XmlTree>
+								<h6 class="tiny">Attributes</h6>
+								<ul class="casual">
+									<li>
+										<h6 class="casual">@ref</h6>
+										<dfn class="indent">Specifies the name of the library this that library depends on.</dfn>
+									</li>
+								</ul>
+								<h6 class="tiny">Parent elements</h6>
+								<ul class="casual">
+									<li class="others"><a href="url:self(#library)">library</a></li>
+								</ul>
+							</blockquote>
+						</li>
+						<li>
+							<div class="sectionblock">
+								<h5 class="casual">include/path</h5>
+								<dfn>Defines a (part of a) URL path for which the library should automatically be included. Multiple path elements can be used to provide various paths.</dfn>
+							</div>
+							<blockquote>
+								<h6 class="tiny">Example</h6>
+								<mod:XmlTree>
+									<mod:data>
+										<sage:literal>
+											<include>
+												<path>customer/registration</path>
+												<path>customer/\d+</path>
+											</include>
+										</sage:literal>
+									</mod:data>
+								</mod:XmlTree>
+								<h6 class="tiny">Remarks</h6>
+								<p class="indent">
+									The text content of this element is evaluated as a regular expression.
+								</p>
+								<h6 class="tiny">Parent elements</h6>
+								<ul class="casual">
+									<li class="others"><a href="url:self(#library)">library</a></li>
+								</ul>
+							</blockquote>
+						</li>
+						<li>
+							<div class="sectionblock">
+								<h5 class="casual">include/always</h5>
+								<dfn>Indicates that the library should always be included, with every request. If this element appears, any sibling <code>path</code> elements are ignored and the library is included, always.</dfn>
+							</div>
+							<blockquote>
+								<h6 class="tiny">Example</h6>
+								<mod:XmlTree>
+									<mod:data>
+										<sage:literal>
+											<include>
+												<always/>
+											</include>
+										</sage:literal>
+									</mod:data>
+								</mod:XmlTree>
+								<h6 class="tiny">Parent elements</h6>
+								<ul class="casual">
+									<li class="others"><a href="url:self(#library)">library</a></li>
+								</ul>
+							</blockquote>
 						</li>
 					</ul>
 				</blockquote>
 			</li>
 			<li>
-				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="metaViews">metaViews</h5>
+				<div class="sectionblock">
+					<h5 class="casual" data-index="yes" data-text="meta views" data-level="4" id="metaView">metaViews/metaView</h5>
 					<p>
-						The root element of the view.
+						Defines a meta view
+					</p>
+				</div>
+				<blockquote>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#metaViews)">metaViews</a></li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" data-index="yes" data-level="4" id="module">modules/module</h5>
+					<p>
+						Defines a module
 					</p>
 				</div>
 				<blockquote>
 					<mod:XmlTree>
 						<mod:data>
 							<sage:literal>
-								<code>example</code>
+								<module name="Navigation" category="documentation">
+									<stylesheets>
+										<stylesheet path="navigation.xsl"/>
+									</stylesheets>
+									<resources>
+										<resource type="script" path="navigation.js" location="body"/>
+										<resource type="style" path="navigation.css" location="head"/>
+									</resources>
+								</module>
 							</sage:literal>
 						</mod:data>
 					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others">None</li>
+						<li class="others"><a href="url:self(#modules)">modules</a></li>
 					</ul>
-					<h6 class="tiny">Child elements</h6>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" data-index="yes" data-text="links" data-level="4" id="link">links/link</h5>
+					<p>
+						Defines a link
+					</p>
+				</div>
+				<blockquote>
+					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
+						<li class="others"><a href="url:self(#links)">link</a></li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" data-index="yes" data-text="routes" data-level="4" id="route">routing/route</h5>
+					<p>
+						Defines a route
+					</p>
+				</div>
+				<blockquote>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#route)">routing</a></li>
+					</ul>
+				</blockquote>
+			</li>
+			<li>
+				<div class="sectionblock">
+					<h5 class="casual" data-index="yes" data-text="modules" data-level="4" id="category">categories/category</h5>
+					<p>
+						Defines a category
+					</p>
+				</div>
+				<blockquote>
+					<h6 class="tiny">Parent elements</h6>
+					<ul class="casual">
+						<li class="others"><a href="url:self(#category)">category</a></li>
 					</ul>
 				</blockquote>
 			</li>
 			<li>
 				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="modules">modules</h5>
+					<h5 class="casual" data-index="yes" data-text="globalization" data-level="4" id="globalization">globalization/locale</h5>
 					<p>
-						The root element of the view.
+						Defines a locale
 					</p>
 				</div>
 				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<code>example</code>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
-					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
+						<li class="others"><a href="url:self(#globalization)">globalization</a></li>
 					</ul>
 				</blockquote>
 			</li>
 			<li>
 				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="links">links</h5>
+					<h5 class="casual" data-index="yes" data-text="developer ip addresses" data-level="4" id="developers">developers/ip</h5>
 					<p>
-						The root element of the view.
+						Defines a ip
 					</p>
 				</div>
 				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<code>example</code>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
-					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
-					</ul>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="routing">routing</h5>
-					<p>
-						The root element of the view.
-					</p>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<code>example</code>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
-					<h6 class="tiny">Parent elements</h6>
-					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
-					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
-					</ul>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="categories">categories</h5>
-					<p>
-						The root element of the view.
-					</p>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<code>example</code>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
-					<h6 class="tiny">Parent elements</h6>
-					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
-					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
-					</ul>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="globalization">globalization</h5>
-					<p>
-						The root element of the view.
-					</p>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<code>example</code>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
-					<h6 class="tiny">Parent elements</h6>
-					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
-					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
-					</ul>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock first">
-					<h5 class="casual" data-index="yes" data-level="4" id="developers">developers</h5>
-					<p>
-						The root element of the view.
-					</p>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<code>example</code>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@attr1</h6>
-							<span class="indent">Descripton</span>
-						</li>
-					</ul>
-					<h6 class="tiny">Parent elements</h6>
-					<ul class="casual">
-						<li class="others">None</li>
-					</ul>
-					<h6 class="tiny">Child elements</h6>
-					<ul class="casual">
-						<li class="others">
-							<a href="url:self(#sage:request)">sage:request</a>,
-							<a href="url:self(#sage:response)">sage:response</a>.
-						</li>
+						<li class="others"><a href="url:self(#developers)">developers</a></li>
 					</ul>
 				</blockquote>
 			</li>

@@ -21,8 +21,6 @@ namespace Sage.ResourceManagement
 	using System.Linq;
 	using System.Xml;
 
-	using Kelp.Extensions;
-
 	/// <summary>
 	/// Represents a file resource for use with Sage.
 	/// </summary>
@@ -37,6 +35,7 @@ namespace Sage.ResourceManagement
 			Contract.Requires<ArgumentNullException>(configElement != null);
 
 			this.Path = configElement.GetAttribute("path");
+			this.Name = configElement.GetAttribute("name");
 			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), configElement.GetAttribute("type"), true);
 			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), configElement.GetAttribute("location"), true);
 			this.LimitTo = new List<string>();
@@ -62,6 +61,11 @@ namespace Sage.ResourceManagement
 		/// Gets or sets the path of this resource.
 		/// </summary>
 		public string Path { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets the optional name of this resource.
+		/// </summary>
+		public string Name { get; protected set; }
 
 		/// <summary>
 		/// Gets or sets the list of user agent id's that this resource should be limited to.
@@ -178,6 +182,8 @@ namespace Sage.ResourceManagement
 				XmlDocument document = context.Resources.LoadXml(documentPath);
 
 				result = (XmlElement) ownerDocument.ImportNode(document.DocumentElement, true);
+				if (!string.IsNullOrWhiteSpace(this.Name))
+					result.OwnerDocument.DocumentElement.SetAttribute("sage:resourceName", XmlNamespaces.SageNamespace, this.Name);
 			}
 
 			return result;

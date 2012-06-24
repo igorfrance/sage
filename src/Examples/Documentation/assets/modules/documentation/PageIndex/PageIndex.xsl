@@ -5,9 +5,10 @@
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:basic="http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd"
 	xmlns:string="http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd"
+	xmlns:set="http://www.cycle99.com/schemas/sage/xslt/extensions/set.xsd"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	xmlns="http://www.w3.org/1999/xhtml"
-	exclude-result-prefixes="xhtml mod sage basic string">
+	exclude-result-prefixes="xhtml mod sage basic string set">
 
 	<xsl:template match="mod:PageIndex">
 		<xsl:param name="config" select="mod:config"/>
@@ -25,7 +26,14 @@
 								</xsl:variable>
 								<li class="level{basic:isnull(@data-level, 1)}">
 									<a href="{concat($request/sage:address/@url, '#', $headerid)}">
-										<xsl:apply-templates select="node()"/>
+										<xsl:choose>
+											<xsl:when test="@data-text">
+												<xsl:value-of select="@data-text"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:apply-templates select="node()"/>
+											</xsl:otherwise>
+										</xsl:choose>
 									</a>
 								</li>
 							</xsl:for-each>

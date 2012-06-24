@@ -85,7 +85,7 @@ namespace Sage.Modules
 				}
 			}
 
-			var dependencyNodes = configElement.SelectNodes("p:dependencies/p:dependency", XmlNamespaces.Manager);
+			var dependencyNodes = configElement.SelectNodes("p:dependencies/p:module", XmlNamespaces.Manager);
 			foreach (XmlElement dependencyNode in dependencyNodes)
 			{
 				this.Dependencies.Add(dependencyNode.GetAttribute("ref"));
@@ -253,6 +253,23 @@ namespace Sage.Modules
 				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
 
 			return resultNode;
+		}
+
+		/// <summary>
+		/// Gets the element with module's defaults, if one is provided in the module's resource directory.
+		/// </summary>
+		/// <param name="context">The context under which the code is executing.</param>
+		/// <returns>The element with module's defaults, if one is provided in the module's resource directory.</returns>
+		internal XmlElement GetDefault(SageContext context)
+		{
+			string documentPath = context.Path.GetModulePath(this.Name, this.Name + ".xml");
+			if (File.Exists(documentPath))
+			{
+				XmlDocument document = context.Resources.LoadXml(documentPath);
+				return document.SelectSingleElement(string.Format("/mod:{0}", this.Name), XmlNamespaces.Manager);
+			}
+
+			return null;
 		}
 
 		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)

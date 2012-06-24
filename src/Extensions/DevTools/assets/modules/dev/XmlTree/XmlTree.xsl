@@ -65,7 +65,7 @@
 			<span class="switch_space">
 				<xsl:text>&#160;</xsl:text>
 			</span>
-			<span class="markup">
+			<span class="markup open">
 				<xsl:text>&lt;</xsl:text>
 			</span>
 			<span>
@@ -76,7 +76,7 @@
 			<xsl:apply-templates select="." mode="xnamespace">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
-			<span class="markup">
+			<span class="markup close">
 				<xsl:text>/></xsl:text>
 			</span>
 		</div>
@@ -89,7 +89,7 @@
 			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
-			<span class="markup">
+			<span class="markup open">
 				<xsl:text>&lt;</xsl:text>
 			</span>
 			<span>
@@ -100,7 +100,7 @@
 			<xsl:apply-templates select="." mode="xnamespace">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
-			<span class="markup">
+			<span class="markup close">
 				<xsl:text>&gt;</xsl:text>
 			</span>
 			<div class="children">
@@ -113,14 +113,14 @@
 			</div>
 			<div class="close">
 				<span class="switch_space">&#160;</span>
-				<span class="markup">
+				<span class="markup open">
 					<xsl:text>&lt;/</xsl:text>
 				</span>
 				<span>
 					<xsl:apply-templates select="." mode="xmltree-class"/>
 					<xsl:value-of select="name()"/>
 				</span>
-				<span class="markup">
+				<span class="markup close">
 					<xsl:text>&gt;</xsl:text>
 				</span>
 			</div>
@@ -134,7 +134,7 @@
 			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
-			<span class="markup"><xsl:text>&lt;</xsl:text></span>
+			<span class="markup open"><xsl:text>&lt;</xsl:text></span>
 			<span>
 				<xsl:apply-templates select="." mode="xmltree-class"/>
 				<xsl:value-of select="name()"/>
@@ -241,7 +241,7 @@
 	<xsl:template match="comment()" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<xsl:variable name="collapsible" select="string-length(.) > 110"/>
-		<div class="comment">
+		<div class="comment{basic:iif($collapsible, ' collapsible', '')}">
 			<xsl:choose>
 				<xsl:when test="$collapsible">
 					<xsl:apply-templates select="." mode="xswitch">
@@ -252,29 +252,29 @@
 					<span class="switch_space">&#160;</span>
 				</xsl:otherwise>
 			</xsl:choose>
-			<span class="markup">&lt;&#33;&#45;&#45;</span>
-			<pre><xsl:value-of select="."/></pre>
-			<span class="markup">&#45;&#45;&gt;</span>
+			<span class="markup open">&lt;&#33;&#45;&#45;</span>
+			<pre><xsl:value-of select="string:replace(string:trim(.), '^[\s\t]+', '', 2)"/></pre>
+			<span class="markup close">&#45;&#45;&gt;</span>
 		</div>
 	</xsl:template>
 
 	<xsl:template match="processing-instruction()" mode="xmltree">
 		<div class="element">
 			<span class="switch_space">&#160;</span>
-			<span class="markup">&lt;?</span>
+			<span class="markup open">&lt;?</span>
 			<span class="pi">
 				<xsl:value-of select="name(.)"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="."/>
 			</span>
-			<span class="markup">?></span>
+			<span class="markup close">?></span>
 		</div>
 	</xsl:template>
 
 	<xsl:template match="processing-instruction('xml')" mode="xmltree">
 		<div class="element">
 			<span class="switch_space">&#160;</span>
-			<span class="markup">&lt;?</span>
+			<span class="markup open">&lt;?</span>
 			<span class="pi">
 				<xsl:text>xml </xsl:text>
 				<xsl:for-each select="@*">
@@ -284,7 +284,7 @@
 					<xsl:text>" </xsl:text>
 				</xsl:for-each>
 			</span>
-			<span class="markup">?></span>
+			<span class="markup close">?></span>
 		</div>
 	</xsl:template>
 

@@ -35,6 +35,17 @@ namespace Sage.XsltExtensions
 		private static readonly XPathNavigator empty = document.CreateNavigator();
 
 		/// <summary>
+		/// Returns <paramref name="nodeset1"/> if it is not empty, otherwise <paramref name="nodeset2"/>.
+		/// </summary>
+		/// <param name="nodeset1">The primary selection.</param>
+		/// <param name="nodeset2">The secondary selection.</param>
+		/// <returns><paramref name="nodeset1"/> if it is not empty, otherwise <paramref name="nodeset2"/></returns>
+		public XPathNodeIterator either(XPathNodeIterator nodeset1, XPathNodeIterator nodeset2)
+		{
+			return nodeset1.Count != 0 ? nodeset1.Clone() : nodeset2.Clone();
+		}
+
+		/// <summary>
 		/// Selects nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
 		/// </summary>
 		/// <param name="nodeset">The nodeset that contains the nodes to filter.</param>

@@ -43,47 +43,7 @@
 			<xs:element name="libraries" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="library" minOccurs="0" maxOccurs="unbounded">
-							<xs:complexType>
-								<xs:choice minOccurs="0" maxOccurs="3">
-									<xs:element name="resources" minOccurs="1" maxOccurs="1">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="config.resource"/>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-									<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="library" minOccurs="1" maxOccurs="unbounded">
-													<xs:complexType>
-														<xs:attribute name="ref" use="required"/>
-													</xs:complexType>
-												</xs:element>
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-									<xs:element name="include" minOccurs="0" maxOccurs="1">
-										<xs:complexType>
-											<xs:choice>
-												<xs:sequence minOccurs="0" maxOccurs="1">
-													<xs:element name="always" minOccurs="0" maxOccurs="1"/>
-												</xs:sequence>
-												<xs:sequence minOccurs="0" maxOccurs="1">
-													<xs:element name="path" minOccurs="0" maxOccurs="unbounded">
-														<xs:complexType mixed="true">
-															<xs:attribute name="compare" type="compareType" use="optional" default="wildcard"/>
-														</xs:complexType>
-													</xs:element>
-												</xs:sequence>
-											</xs:choice>
-										</xs:complexType>
-									</xs:element>
-								</xs:choice>
-								<xs:attribute name="name" use="required"/>
-							</xs:complexType>
-						</xs:element>
+						<xs:element name="library" minOccurs="0" maxOccurs="unbounded" type="config.library"/>
 					</xs:sequence>
 				</xs:complexType>
 				<xs:unique name="uniqueLibraryName">
@@ -108,10 +68,14 @@
 						<xs:element name="module" type="config.module" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
-				<xs:unique name="uniqueModuleName">
+				<xs:key name="moduleName">
 					<xs:selector xpath="p:module"/>
 					<xs:field xpath="@name"/>
-				</xs:unique>
+				</xs:key>
+				<xs:keyref name="moduleRef" refer="moduleName">
+					<xs:selector xpath="module/dependencies/module"/>
+					<xs:field xpath="@ref"/>
+				</xs:keyref>
 			</xs:element>
 			<xs:element name="links" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -304,6 +268,44 @@
 		</xs:attribute>
 	</xs:complexType>
 
+	<xs:complexType name="config.library">
+		<xs:choice minOccurs="0" maxOccurs="3">
+			<xs:element name="resources" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="config.resource"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="library" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="ref" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="include" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:choice>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="always" minOccurs="0" maxOccurs="1"/>
+						</xs:sequence>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="path" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType mixed="true"/>
+							</xs:element>
+						</xs:sequence>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="name" use="required"/>
+	</xs:complexType>
+	
 	<xs:complexType name="config.link">
 		<xs:attribute name="name" use="required">
 			<xs:simpleType>
@@ -317,6 +319,7 @@
 
 	<xs:complexType name="config.resource">
 		<xs:attribute name="type" type="p:resourceType" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="optional"/>
 		<xs:attribute name="location" type="p:resourceLocation" use="required"/>
 		<xs:attribute name="path" type="xs:string" use="required"/>
 		<xs:attribute name="limitTo" type="xs:string" use="optional"/>
@@ -434,14 +437,6 @@
 			<xs:enumeration value="style"/>
 			<xs:enumeration value="document"/>
 			<xs:enumeration value="icon"/>
-		</xs:restriction>
-	</xs:simpleType>
-
-	<xs:simpleType name="compareType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="regex"/>
-			<xs:enumeration value="wildcard"/>
-			<xs:enumeration value="literal"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

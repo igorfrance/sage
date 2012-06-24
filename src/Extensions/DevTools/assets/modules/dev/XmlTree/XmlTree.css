@@ -53,6 +53,12 @@
 	{ overflow: hidden; }
 .xmltree.wrap .element .children
 	{ overflow: hidden; }
+.xmltree.wrap .closed > .children,
+.xmltree.wrap .closed > pre,
+.xmltree.wrap .closed > .text
+	{ display: none; }
+
+
 .xmltree.wrap .element.ce > .children
 	{ clear: left; }
 .xmltree.namespaces .nsattrib
@@ -75,6 +81,17 @@
 	{ color: #A7A7A7; }
 .xmltree .comment .markup
 	{ color: #888888; }
+.xmltree .comment .markup.open
+	{ margin-right: 10px;  }
+.xmltree .comment .markup.close
+	{ margin-left: 10px;  }
+.xmltree .comment.collapsible pre
+	{ clear: left;   }
+.xmltree .comment.collapsible .close
+	{ clear: left;   }
+.xmltree .comment.collapsible.closed .close
+	{ clear: none; margin-left: 5px;  }
+
 .xmltree .text,
 .xmltree .attrValue
 	{ color: #323232; }

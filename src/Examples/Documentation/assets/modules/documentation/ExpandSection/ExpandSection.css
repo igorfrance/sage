@@ -1,0 +1,14 @@
+section.expand
+	{ }
+section.expand > header
+	{ cursor: pointer; }
+section.expand > header span.collapse
+	{ display: inline; }
+section.expand.collapsed > header span.collapse
+	{ display: none; }
+section.expand > header span.expand
+	{ display: none; }
+section.expand.collapsed > header span.expand
+	{ display: inline; }
+section.expand.collapsed details
+	{ display: none; }

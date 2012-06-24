@@ -1,7 +1,7 @@
 ﻿@import url(gradients.css);
 
 body
-	{ background: #fff; color: #323232; font-size: 14px; font-family: Century Gothic, Verdana, Sans-Serif; }
+	{ background: #fff; color: #4f4f4f; font-size: 14px; font-family: Century Gothic, Verdana, Sans-Serif; }
 a,
 a code,
 a:visited
@@ -85,6 +85,8 @@ h6.discrete
 
 label
 	{ font-weight: bold; }
+label.casual
+	{ color: #888; }
 
 p
 	{ margin-top: 0; margin-bottom: 15px; }
@@ -98,7 +100,7 @@ div.container
 dfn
 	{ font-size: 120%; font-style: normal; display: block; }
 code
-	{ white-space: nowrap; color: #000; font-size: 110%; }
+	{ white-space: nowrap; color: #000; font-size: 95%; font-family: Consolas, Courier; }
 code.example
 	{ display: block; margin: 10px 0 10px  40px; }
 code.important
@@ -189,9 +191,18 @@ table caption
 	{ text-align: left; font-size: 85%; border-bottom: 1px solid #ccc; }
 table.indent
 	{ margin-bottom: 40px; }
-table.definition th
-	{ padding-right: 10px; min-width: 160px; }
-table.definition th.right
+table.definition
+	{ background: #fff; table-layout: fixed; width: 100%; border-collapse: collapse; }
+table.definition th,
+table.definition td
+	{ border: 1px solid #ccc; }
+table.definition td
+	{ padding: 2px 1px; }
+table.definition thead th
+	{ background: #ccc; padding: 5px 2px 0 0; }
+table.definition tbody th
+	{ text-align: right; padding-right: 10px; min-width: 160px; color: #666;  }
+table.definition tbody th.right
 	{ text-align: right; }
 
 .section
@@ -200,6 +211,8 @@ table.definition th.right
 	{ padding: 15px; background: #ededed; border-radius: 5px; margin: 20px 0; }
 .sectionblock.first
 	{ margin-top: 0; }
+.sectionblock h5
+	{ margin-left: 0 !important; }
 .sectionblock p
 	{ margin-bottom: 0; }
 .sectionblock p + *
@@ -316,13 +329,13 @@ table.definition th.right
  */
 ul.properties
 	{}
-ul.properties li
+ul.properties > li
 	{ padding-left: 16px; margin-bottom: 16px; }
-ul.properties li h5
+ul.properties > li h5
 	{ margin-left: -16px; }
-ul.properties li dfn
-	{ font-size: 100%; }
-ul.properties li code.example
+ul.properties > li dfn
+	{ font-size: 100%; margin-bottom: 5px;}
+ul.properties > li code.example
 	{ margin: 0; }
 
 /**
@@ -402,3 +415,20 @@ html.dashboard .view-inspector .contenttoolbar {
 .xmltree + *
 	{ margin-top: 20px; }
 
+/**
+ * ExpandSection
+ */
+section.moreinfo
+	{ margin-bottom: 20px; }
+section.moreinfo.collapsed
+	{ display: inline; background: none; margin: 0; padding: 0; border: 0; }
+section.moreinfo > header
+	{ display: block; overflow: hidden; border-bottom: 1px solid #ccc; margin-bottom: 5px; }
+section.moreinfo > header span
+	{ color: #0046b0; text-decoration: underline; }
+section.moreinfo.collapsed > header
+	{ display: inline; border-bottom: none; }
+section.moreinfo > details
+	{ display: block; }
+section.moreinfo > header span.collapse
+	{ float: right; }

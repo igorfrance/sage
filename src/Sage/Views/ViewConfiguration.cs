@@ -20,6 +20,8 @@ namespace Sage.Views
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
+	using Kelp.Extensions;
+
 	using log4net;
 	using Sage.Configuration;
 	using Sage.Controllers;
@@ -170,6 +172,16 @@ namespace Sage.Views
 
 				foreach (XmlElement moduleElement in moduleNodes)
 				{
+					string moduleName = moduleElement.LocalName;
+
+					ModuleConfiguration moduleConfig = null;
+					if (Context.ProjectConfiguration.Modules.TryGetValue(moduleName, out moduleConfig))
+					{
+						XmlElement moduleDefaults = moduleConfig.GetDefault(this.Context);
+						if (moduleDefaults != null)
+							this.SynchronizeElements(moduleElement, moduleDefaults);
+					}
+
 					IModule module = this.Controller.CreateModule(moduleElement);
 					ModuleResult result = null;
 					try
@@ -188,7 +200,7 @@ namespace Sage.Views
 						}
 						else
 						{
-							input.AddModuleResult(moduleElement.LocalName, result);
+							input.AddModuleResult(moduleName, result);
 							if (result.ResultElement != null)
 							{
 								XmlNode newElement = input.ConfigNode.OwnerDocument.ImportNode(result.ResultElement, true);
@@ -214,6 +226,30 @@ namespace Sage.Views
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Controller.ControllerName);
+		}
+
+		private void SynchronizeElements(XmlElement targetElement, XmlElement sourceElement)
+		{
+			foreach (XmlAttribute attr in sourceElement.Attributes)
+			{
+				if (targetElement.Attributes[attr.Name] == null)
+					targetElement.SetAttribute(attr.Name, attr.Value);
+			}
+
+			foreach (XmlElement sourceChild in sourceElement.SelectNodes("*"))
+			{
+				XmlNamespaceManager nm = new XmlNamespaceManager(new NameTable());
+				nm.AddNamespace("temp", sourceElement.NamespaceURI);
+
+				XmlElement targetChild = targetElement.SelectSingleElement(string.Format("temp:{0}", sourceChild.LocalName), nm);
+				if (targetChild == null)
+				{
+					targetChild = targetElement.OwnerDocument.CreateElement(sourceChild.Name, sourceChild.NamespaceURI);
+					targetElement.AppendElement(targetElement.OwnerDocument.ImportNode(sourceChild, true));
+				}
+
+				this.SynchronizeElements(targetChild, sourceChild);
+			}
 		}
 	}
 }

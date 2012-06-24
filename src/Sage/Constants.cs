@@ -39,27 +39,6 @@ namespace Sage
 	}
 
 	/// <summary>
-	/// Defines the compare types.
-	/// </summary>
-	public enum CompareType
-	{
-		/// <summary>
-		/// Signifies a wildcard comparison type.
-		/// </summary>
-		Wildcard,
-
-		/// <summary>
-		/// Signifies a regular expression comparison type.
-		/// </summary>
-		Regexp,
-
-		/// <summary>
-		/// Signifies a literal comparison type
-		/// </summary>
-		Literal,
-	}
-
-	/// <summary>
 	/// Defines configuration types.
 	/// </summary>
 	public enum ConfigurationType

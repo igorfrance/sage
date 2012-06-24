@@ -121,14 +121,31 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string replace(string value, string expression, string replacement)
 		{
+			return replace(value, expression, replacement, (int) RegexOptions.IgnoreCase);
+		}
+
+		/// <summary>
+		/// Searched the specified <paramref name="value"/> for <paramref name="expression"/> and replaces it with
+		/// specified <paramref name="replacement"/>.
+		/// </summary>
+		/// <param name="value">The string to replace.</param>
+		/// <param name="expression">The expression to look for.</param>
+		/// <param name="replacement">The replacement string to substitute with.</param>
+		/// <param name="regexOptions">The regex options to use.</param>
+		/// <returns>
+		/// The processed version of speciried <paramref name="value"/>.
+		/// </returns>
+		public string replace(string value, string expression, string replacement, int regexOptions)
+		{
 			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(expression))
 				return value;
 
 			replacement = unquoteReplacement(replacement);
 
+			RegexOptions options = (RegexOptions) regexOptions;
 			try
 			{
-				Regex expr = new Regex(expression);
+				Regex expr = new Regex(expression, options);
 				return expr.Replace(value, replacement);
 			}
 			catch (Exception ex)
@@ -177,6 +194,75 @@ namespace Sage.XsltExtensions
 				return false;
 
 			return subject.Contains(value);
+		}
+
+		/// <summary>
+		/// Returns a value indicating whether the specified <paramref name="subject"/> contains any one of the
+		/// specified <paramref name="values"/> (split on comma and space).
+		/// </summary>
+		/// <param name="subject">The string to search.</param>
+		/// <param name="values">The list of values (comma or space-separated) to look for.</param>
+		/// <returns>
+		/// <c>true</c> if any one of the specified <paramref name="values"/> exist in the specified 
+		/// <paramref name="subject"/>; otherwise, <c>false</c>.
+		/// </returns>
+		public bool containsAny(string subject, string values)
+		{
+			if (string.IsNullOrEmpty(subject) || string.IsNullOrEmpty(values))
+				return false;
+
+			string[] vs = values.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			return subject.ContainsAnyOf(vs);
+		}
+
+		/// <summary>
+		/// Trims the specified subject string.
+		/// </summary>
+		/// <param name="subject">The subject.</param>
+		/// <returns>The trimmed subject string</returns>
+		public string trim(string subject)
+		{
+			if (string.IsNullOrEmpty(subject))
+				return subject;
+
+			return subject.Trim();
+		}
+
+		/// <summary>
+		/// Trims the specified <paramref name="chars"/> from the specified <paramref name="subject"/> string.
+		/// </summary>
+		/// <param name="subject">The subject to trim from.</param>
+		/// <param name="chars">The chars to trim.</param>
+		/// <returns>
+		/// The trimmed subject string
+		/// </returns>
+		public string trim(string subject, string chars)
+		{
+			if (string.IsNullOrEmpty(subject) || string.IsNullOrWhiteSpace(chars))
+				return subject;
+
+			return subject.Trim(chars.ToCharArray());
+		}
+
+		/// <summary>
+		/// Trims all specified <paramref name="chars"/> from the specified <paramref name="subject"/> string,
+		/// using the <paramref name="separator"/> to split the <paramref name="chars"/>.
+		/// </summary>
+		/// <param name="subject">The subject to trim from.</param>
+		/// <param name="chars">The chars to trim.</param>
+		/// <param name="separator">The separator.</param>
+		/// <returns>
+		/// The trimmed subject string
+		/// </returns>
+		public string trim(string subject, string chars, string separator)
+		{
+			if (string.IsNullOrEmpty(subject) || string.IsNullOrWhiteSpace(chars) || string.IsNullOrWhiteSpace(separator))
+				return subject;
+
+			foreach (var segment in chars.Split(separator.ToCharArray()))
+				subject = subject.Trim(segment.ToCharArray());
+
+			return subject;
 		}
 
 		private string unquoteReplacement(string replacement)

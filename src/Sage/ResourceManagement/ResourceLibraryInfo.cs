@@ -21,12 +21,15 @@ namespace Sage.ResourceManagement
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
+	using log4net;
+
 	/// <summary>
 	/// Provides configuration information about Sage resource libraries.
 	/// </summary>
 	public class ResourceLibraryInfo
 	{
-		private Dictionary<string, PathComparer> includePaths = new Dictionary<string, PathComparer>();
+		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceLibraryInfo).FullName);
+		private readonly List<Regex> includePaths;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ResourceLibraryInfo"/> class.
@@ -41,7 +44,7 @@ namespace Sage.ResourceManagement
 			this.Name = configElem.GetAttribute("name");
 			this.Resources = new List<Resource>();
 			this.Dependencies = new List<string>();
-			this.includePaths = new Dictionary<string, PathComparer>();
+			this.includePaths = new List<Regex>();
 
 			foreach (XmlElement resourceElem in configElem.SelectNodes("p:resources/p:resource", nm))
 				this.Resources.Add(new Resource(resourceElem));
@@ -56,37 +59,20 @@ namespace Sage.ResourceManagement
 
 				if (childElem.LocalName == "path")
 				{
-					string path = childElem.InnerText.Trim();
-					string compare = childElem.GetAttribute("compare");
-
-					CompareType compareType;
-					PathComparer comparer = this.UrlContains;
-					Enum.TryParse(compare, out compareType);
-
-					if (compareType == CompareType.Wildcard)
+					string matchText = childElem.InnerText.Trim();
+					try
 					{
-						if (path.StartsWith("*") && path.EndsWith("*"))
-							comparer = this.UrlContains;
-						if (path.StartsWith("*"))
-							comparer = this.UrlEndsWith;
-						if (path.EndsWith("*"))
-							comparer = this.UrlStartsWith;
+						Regex matchExpr = new Regex(matchText);
+						this.includePaths.Add(matchExpr);
 					}
-					else if (compareType == CompareType.Regexp)
+					catch (Exception ex)
 					{
-						comparer = this.UrlMatches;
+						log.ErrorFormat("Error using '{0}' as library include path regex: {1}", matchText, ex.Message);
+						throw;
 					}
-					else
-					{
-						comparer = this.UrlEquals;
-					}
-
-					this.includePaths.Add(path, comparer);
 				}
 			}
 		}
-
-		private delegate bool PathComparer(string url, string search);
 
 		/// <summary>
 		/// Gets the name of this resource library.
@@ -119,39 +105,13 @@ namespace Sage.ResourceManagement
 			if (this.IncludeAlways)
 				return true;
 
-			foreach (string search in this.includePaths.Keys)
+			foreach (Regex test in this.includePaths)
 			{
-				PathComparer pathValid = this.includePaths[search];
-				if (pathValid(url, search))
+				if (test.IsMatch(url))
 					return true;
 			}
 
 			return false;
-		}
-
-		private bool UrlMatches(string url, string search)
-		{
-			return new Regex(search).Match(url).Success;
-		}
-
-		private bool UrlEquals(string url, string search)
-		{
-			return url == search;
-		}
-
-		private bool UrlContains(string url, string search)
-		{
-			return url.Contains(search);
-		}
-
-		private bool UrlStartsWith(string url, string search)
-		{
-			return url.StartsWith(search);
-		}
-
-		private bool UrlEndsWith(string url, string search)
-		{
-			return url.EndsWith(search);
 		}
 	}
 }

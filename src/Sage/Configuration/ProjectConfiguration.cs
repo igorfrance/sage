@@ -405,8 +405,6 @@ namespace Sage.Configuration
 
 			this.Type = (ConfigurationType) Enum.Parse(typeof(ConfigurationType), configNode.Name, true);
 			this.ConfigurationElement = configNode;
-			this.Categories = new Dictionary<string, CategoryInfo>();
-			this.Locales = new Dictionary<string, LocaleInfo>();
 
 			string nodeValue = configNode.GetAttribute("name");
 			if (!string.IsNullOrEmpty(nodeValue))
@@ -459,10 +457,7 @@ namespace Sage.Configuration
 			foreach (XmlElement linkNode in configNode.SelectNodes("p:links/p:link", nm))
 			{
 				LinkInfo linkInfo = new LinkInfo(linkNode);
-				if (this.Links.ContainsKey(linkInfo.Name))
-					this.Links[linkInfo.Name] = linkInfo;
-				else
-					this.Links.Add(linkInfo.Name, linkInfo);
+				this.Links[linkInfo.Name] = linkInfo;
 			}
 
 			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
@@ -481,10 +476,7 @@ namespace Sage.Configuration
 			{
 				var name = locale.GetAttribute("name");
 				var info = new LocaleInfo(locale);
-				if (this.Locales.ContainsKey(name))
-					this.Locales[name] = info;
-				else
-					this.Locales.Add(name, info);
+				this.Locales[name] = info;
 			}
 
 			if (this.MultiCategory)
@@ -492,26 +484,19 @@ namespace Sage.Configuration
 				foreach (XmlElement category in configNode.SelectNodes("p:categories/p:category", nm))
 				{
 					var info = new CategoryInfo(category, this.Locales);
-					this.Categories.Add(info.Name, info);
-					if (this.Categories.ContainsKey(info.Name))
-						this.Categories[info.Name] = info;
-					else
-						this.Categories.Add(info.Name, info);
+					this.Categories[info.Name] = info;
 				}
 			}
 			else
 			{
-				this.Categories.Add(this.DefaultCategory, new CategoryInfo(this.DefaultCategory, this.Locales));
+				this.Categories[this.DefaultCategory] = new CategoryInfo(this.DefaultCategory, this.Locales);
 			}
 
 			foreach (XmlElement viewNode in configNode.SelectNodes("p:metaViews/p:view", nm))
 			{
 				var name = viewNode.GetAttribute("name");
 				var info = new MetaViewInfo(viewNode);
-				if (this.MetaViews.ContainsKey(name))
-					this.MetaViews[name] = info;
-				else
-					this.MetaViews.Add(name, info);
+				this.MetaViews[name] = info;
 			}
 
 			foreach (XmlElement elem in configNode.SelectNodes("p:developers/p:ip", nm))
