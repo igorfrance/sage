@@ -55,6 +55,7 @@ namespace Sage.Configuration
 
 		internal const string RewriteOnFile = "Rewrite.ON";
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
+		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 
 		private static volatile ProjectConfiguration systemConfig;
 		private static volatile ProjectConfiguration projectConfig;
@@ -381,6 +382,8 @@ namespace Sage.Configuration
 
 			if (projectConfig.MultiCategory && projectConfig.Categories.Count == 0)
 				throw new SageHelpException(ProblemType.ConfigurationMissingCategories);
+
+			projectConfig.MergeRegisteredExtensions();
 		}
 
 		internal void Parse(string configPath)
@@ -521,6 +524,14 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(extensionConfig.Name));
 
 			string extensionName = extensionConfig.Name;
+
+			ProjectConfiguration.extensions[extensionName] = extensionConfig;
+			this.MergeExtension(extensionConfig);
+		}
+
+		private void MergeExtension(ProjectConfiguration extensionConfig)
+		{
+			string extensionName = extensionConfig.Name;
 			foreach (string name in extensionConfig.Routing.Keys)
 			{
 				if (this.Routing.ContainsKey(name))
@@ -575,6 +586,12 @@ namespace Sage.Configuration
 
 				this.Modules.Add(name, extensionConfig.Modules[name]);
 			}
+		}
+
+		private void MergeRegisteredExtensions()
+		{
+			foreach (ProjectConfiguration config in ProjectConfiguration.extensions.Values)
+				this.MergeExtension(config);
 		}
 
 		private static void ResetIfConfigurationChanged()

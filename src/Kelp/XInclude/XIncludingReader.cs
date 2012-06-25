@@ -12,6 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Original source for XPointer released under BSD licence, hence the disclaimer:
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 namespace Kelp.XInclude
 {
@@ -38,13 +53,13 @@ namespace Kelp.XInclude
 	/// </remarks>
 	public class XIncludingReader : XmlReader, IXmlLineInfo
 	{
+		private static IDictionary<string, WeakReference> cache;
+
 		// XInclude keywords
 		private readonly XIncludeKeywords keywords;
 		private readonly XmlNameTable nameTable;
 		private readonly Stack<XmlReader> readers;
 		private readonly Uri topBaseUri;
-
-		private static IDictionary<string, WeakReference> cache;
 
 		private bool differentLang;
 		private bool gotElement;
@@ -60,7 +75,7 @@ namespace Kelp.XInclude
 		private XIncludingReaderState state;
 
 		/// <summary>
-		/// Creates new instance of <c>XIncludingReader</c> class with
+		/// Initializes a new instance of the <see cref="XIncludingReader"/> class with
 		/// specified underlying <c>XmlReader</c> reader.
 		/// </summary>
 		/// <param name="reader">Underlying reader to read from</param>        
@@ -1480,9 +1495,6 @@ namespace Kelp.XInclude
 			return this.Read();
 		}
 
-		/// <summary>
-		/// Processes xi:include element.
-		/// </summary>		
 		private bool ProcessIncludeElement()
 		{
 			string href = this.reader.GetAttribute(this.keywords.Href);

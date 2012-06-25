@@ -33,11 +33,11 @@ namespace Sage.Views.Meta
 		private readonly IView wrapped;
 		private readonly MetaViewInfo viewInfo;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MetaView"/> class.
-        /// </summary>
-        /// <param name="viewInfo">The view info.</param>
-        /// <param name="wrapped">The wrapped.</param>
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MetaView"/> class.
+		/// </summary>
+		/// <param name="viewInfo">The view info.</param>
+		/// <param name="wrapped">The wrapped.</param>
 		protected MetaView(MetaViewInfo viewInfo, IView wrapped)
 		{
 			Contract.Requires<ArgumentNullException>(viewInfo != null);
@@ -114,10 +114,10 @@ namespace Sage.Views.Meta
 			wrapped.Render(viewContext, writer);
 		}
 
-        /// <summary>
-        /// Disables the caching.
-        /// </summary>
-        /// <param name="viewContext">The view context.</param>
+		/// <summary>
+		/// Disables the caching.
+		/// </summary>
+		/// <param name="viewContext">The view context.</param>
 		protected void DisableCaching(ViewContext viewContext)
 		{
 			viewContext.HttpContext.Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);

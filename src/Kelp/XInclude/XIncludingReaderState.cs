@@ -12,34 +12,71 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Original source for XPointer released under BSD licence, hence the disclaimer:
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 namespace Kelp.XInclude
 {
-	internal struct FallbackState
-	{
-		//Fallback is being processed
-		public bool Fallbacking;
-		//xi:fallback element depth
-		public int FallbackDepth;
-		//Fallback processed flag
-		public bool FallbackProcessed;
-	}
-
 	/// <summary>
 	/// XIncludingReader state machine.    
 	/// </summary>
 	/// <author>Oleg Tkachenko, http://www.xmllab.net</author>
 	internal enum XIncludingReaderState
 	{
-		//Default state
+		/// <summary>
+		/// Default state
+		/// </summary>
 		Default,
-		//xml:base attribute is being exposed
+		
+		/// <summary>
+		/// xml:base attribute is being exposed
+		/// </summary>
 		ExposingXmlBaseAttr,
-		//xml:base attribute value is being exposed
+		
+		/// <summary>
+		/// xml:base attribute value is being exposed
+		/// </summary>
 		ExposingXmlBaseAttrValue,
-		//xml:lang attribute is being exposed
+		
+		/// <summary>
+		/// xml:lang attribute is being exposed
+		/// </summary>
 		ExposingXmlLangAttr,
-		//xml:lang attribute value is being exposed
+		
+		/// <summary>
+		/// xml:lang attribute value is being exposed
+		/// </summary>
 		ExposingXmlLangAttrValue
+	}
+
+	internal struct FallbackState
+	{
+		/// <summary>
+		/// Indicates that the fallback is being processed
+		/// </summary>
+		public bool Fallbacking;
+
+		/// <summary>
+		/// xi:fallback element depth
+		/// </summary>
+		public int FallbackDepth;
+
+		/// <summary>
+		/// Fallback processed flag
+		/// </summary>
+		public bool FallbackProcessed;
 	}
 }

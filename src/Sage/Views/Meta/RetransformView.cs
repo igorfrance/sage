@@ -72,7 +72,7 @@ namespace Sage.Views.Meta
 					XmlDocument viewXml = new XmlDocument();
 					viewXml.Load(reader);
 
-					processor.Transform(viewXml, writer, controller.Context);
+					this.processor.Transform(viewXml, writer, controller.Context);
 				}
 
 				this.DisableCaching(viewContext);

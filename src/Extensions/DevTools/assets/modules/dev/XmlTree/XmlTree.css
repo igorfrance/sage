@@ -116,7 +116,7 @@
 	{ color: #888888; }
 .xmltree.highlight .text,
 .xmltree.highlight .attrValue
-	{ color: #cfcfcf; }
+	{ color: #A7A6AA; }
 .xmltree.highlight .markup,
 .xmltree.highlight .pi,
 .xmltree.highlight .ns,
@@ -124,11 +124,11 @@
 .xmltree.highlight .nsattrib .attrValue,
 .xmltree.highlight .nsattrib a,
 .xmltree.highlight .nsattrib a:visited
-	{ color: #8484ff; }
+	{ color: #A3B1FF; }
 .xmltree.highlight .switch,
 .xmltree.highlight .nodeName,
 .xmltree.highlight .attrName
-	{ color: #ffb0b0; }
+	{ color: #F4AE99; }
 
 
 .xmltree.highlight .highlighted > .switch,
@@ -136,7 +136,7 @@
 .xmltree.highlight .highlighted > .attribute .attrName,
 .xmltree.highlight .highlighted > .children > .close .nodeName,
 .xmltree.highlight .highlighted > .attrName
-	{ color: #CC0000 !important; font-weight: bold; }
+	{ color: #CC0000 !important; }
 .xmltree.highlight .highlighted > .markup,
 .xmltree.highlight .highlighted > .children > .close .markup,
 .xmltree.highlight .highlighted > .attribute .markup,

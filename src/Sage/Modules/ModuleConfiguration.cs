@@ -91,16 +91,16 @@ namespace Sage.Modules
 				this.Dependencies.Add(dependencyNode.GetAttribute("ref"));
 			}
 
+			var libraryNodes = configElement.SelectNodes("p:dependencies/p:library", XmlNamespaces.Manager);
+			foreach (XmlElement libraryNode in libraryNodes)
+			{
+				this.Libraries.Add(libraryNode.GetAttribute("ref"));
+			}
+
 			var resourceNodes = configElement.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
 			foreach (XmlElement scriptNode in resourceNodes)
 			{
 				this.resources.Add(new ModuleResource(scriptNode, this.Name));
-			}
-
-			var libraryNodes = configElement.SelectNodes("p:resources/p:library", XmlNamespaces.Manager);
-			foreach (XmlElement libraryNode in libraryNodes)
-			{
-				this.Libraries.Add(libraryNode.GetAttribute("ref"));
 			}
 
 			var stylesheetNodes = configElement.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);

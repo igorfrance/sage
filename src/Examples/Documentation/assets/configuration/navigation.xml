@@ -215,16 +215,13 @@
 					<a href="url:link(configuration)">Configuration</a>
 					<ul>
 						<li>
+							<a href="url:link(configuration-web)">Application</a>
+						</li>
+						<li>
 							<a href="url:link(configuration-project)">Project</a>
 						</li>
 						<li>
-							<a href="url:link(configuration-rewriters)">Rewriters</a>
-						</li>
-						<li>
-							<a href="url:link(configuration-handlers)">Handlers</a>
-						</li>
-						<li>
-							<a href="url:link(configuration-compression)">Compression</a>
+							<a href="url:link(configuration-category)">Category</a>
 						</li>
 					</ul>
 				</li>

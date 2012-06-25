@@ -43,9 +43,10 @@ namespace Sage.ResourceManagement
 		/// The scheme associated with this resolver;
 		/// </summary>
 		public const string Scheme = "sageres";
+		private const BindingFlags AttributeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageResourceResolver).FullName);
 		private static readonly Dictionary<string, XmlProvider> providers;
-		private const BindingFlags AttributeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
 		static SageResourceResolver()
 		{
