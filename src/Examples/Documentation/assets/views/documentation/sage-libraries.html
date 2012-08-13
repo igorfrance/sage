@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>External libraries</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-libraries"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-libraries"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>External libraries</span>
+				</header>
+				<details>
 		<p>
 			Sage uses a number of free and/or open source libraries, which are listed on this page.
 		</p>
@@ -96,5 +99,9 @@
 			</li>
 		</ul>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

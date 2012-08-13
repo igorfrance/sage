@@ -20,13 +20,16 @@ namespace Sage.Configuration
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
-	using System.Reflection;
+	using System.Web.Routing;
 	using System.Xml;
 
 	using Kelp.Extensions;
+
 	using log4net;
+	using Sage.Extensibility;
 	using Sage.Modules;
 	using Sage.ResourceManagement;
+	using Sage.Routing;
 
 	/// <summary>
 	/// Provides a configuration container for all configurable properties of this project.
@@ -53,25 +56,18 @@ namespace Sage.Configuration
 		/// </summary>
 		public const string ConfigSchemaPath = "sageresx://sage/resources/schemas/projectconfiguration.xsd";
 
-		internal const string RewriteOnFile = "Rewrite.ON";
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
 		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 
-		private static volatile ProjectConfiguration systemConfig;
-		private static volatile ProjectConfiguration projectConfig;
-		private static DateTime lastUpdated;
-		private static string projectLoadPath;
-
-		private bool considerAllRequestsAsDevelopers;
+		private readonly List<XmlElement> customElements;
 
 		private ProjectConfiguration()
 		{
+			this.AssetPath = "~/assets";
 			this.Modules = new Dictionary<string, ModuleConfiguration>();
-			this.Categories = new Dictionary<string, CategoryInfo>();
-			this.Locales = new Dictionary<string, LocaleInfo>();
 			this.MetaViews = new MetaViewDictionary();
-			this.DeveloperIps = new List<IpAddress>();
-			this.Links = new Dictionary<string, LinkInfo>();
+			this.Environment = new EnvironmentConfiguration();
+			this.Linking = new LinkingConfiguration();
 			this.Routing = new RoutingConfiguration();
 			this.PathTemplates = new PathTemplates();
 			this.ResourceLibraries = new Dictionary<string, ResourceLibraryInfo>();
@@ -79,52 +75,21 @@ namespace Sage.Configuration
 			this.SharedCategory = "shared";
 			this.DefaultLocale = "default";
 			this.DefaultCategory = "default";
-			this.AutoGlobalize = true;
+			this.AutoInternationalize = true;
+			this.ValidationResult = new ValidationResult();
+			this.Dependencies = new List<string>();
+
+			this.Locales = new Dictionary<string, LocaleInfo>();
+			this.Categories = new Dictionary<string, CategoryInfo>();
+			this.Categories[this.DefaultCategory] = new CategoryInfo(this.DefaultCategory);
+
+			this.customElements = new List<XmlElement>();
 		}
 
 		/// <summary>
-		/// Gets the current global <see cref="ProjectConfiguration"/>.
+		/// Occurs when the project configuration is changed.
 		/// </summary>
-		public static ProjectConfiguration Current
-		{
-			get
-			{
-				ResetIfConfigurationChanged();
-
-				lock (SystemConfigName)
-				{
-					if (projectConfig == null)
-					{
-						lock (ProjectConfigName)
-						{
-							Initialize();
-						}
-					}
-				}
-
-				return projectConfig;
-			}
-		}
-
-		/// <summary>
-		/// Gets the physical path of the currently executing assembly.
-		/// </summary>
-		public static string AssemblyPath
-		{
-			get
-			{
-				return Path.GetDirectoryName(
-					Assembly.GetExecutingAssembly()
-						.CodeBase
-						.Replace("file:///", string.Empty)
-						.Replace("/", "\\"));
-			}
-		}
-
-		/// <summary>
-		/// Gets the XMLconfiguration element that was used for initialization of this instance.
-		/// </summary>
-		public XmlElement ConfigurationElement { get; private set; }
+		public event EventHandler Changed;
 
 		/// <summary>
 		/// Gets the name of this project.
@@ -132,33 +97,25 @@ namespace Sage.Configuration
 		public string Name { get; private set; }
 
 		/// <summary>
-		/// Gets the type of project configuration.
+		/// Gets a value indicating whether Sage should automatically globalize any non-globalized XML resources
+		/// that reference the internationalization namespace.
 		/// </summary>
-		public ConfigurationType Type { get; private set; }
+		public bool AutoInternationalize { get; private set; }
 
 		/// <summary>
-		/// Gets a value indicating whether Sage should automatically globalize any non-globalized XML resources
-		/// that reference the globalization namespace.
+		/// Gets the environment configuration.
 		/// </summary>
-		public bool AutoGlobalize { get; private set; }
+		public EnvironmentConfiguration Environment { get; private set; }
 
 		/// <summary>
 		/// Gets the default category to fall back to if the URL doesn't specify a category.
 		/// </summary>
-		/// <remarks>
-		/// This value is only applicable in project is <see cref="MultiCategory"/>.
-		/// </remarks>
 		public string DefaultCategory { get; private set; }
 
 		/// <summary>
 		/// Gets the default locale to fall back to if the URL doesn't specify a locale.
 		/// </summary>
 		public string DefaultLocale { get; private set; }
-
-		/// <summary>
-		/// Gets a value indicating whether the current project runs in multi-category mode.
-		/// </summary>
-		public bool MultiCategory { get; private set; }
 
 		/// <summary>
 		/// Gets the path templates for various system-required files.
@@ -178,38 +135,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the name of the category that is shared (common) with other categories.
 		/// </summary>
-		/// <remarks>
-		/// This value is only applicable in project is <see cref="MultiCategory"/>.
-		/// </remarks>
 		public string SharedCategory { get; private set; }
-
-		/// <summary>
-		/// Gets the URL prefix to use if <see cref="UrlRewritingOn"/> is <c>true</c>.
-		/// </summary>
-		/// <remarks>
-		/// This value will typically contain placeholders for category and locale, for instance 
-		/// <c>{locale}/{category}/</c>
-		/// </remarks>
-		public string UrlRewritePrefix { get; private set; }
-
-		/// <summary>
-		/// Gets a value indicating whether URL rewriting is on.
-		/// </summary>
-		/// <remarks>
-		/// If this value is <c>true</c>, a rewriting prefix (as specified with <see cref="UrlRewritePrefix"/>)
-		/// will be prepended when generating links.
-		/// </remarks>
-		/// <seealso cref="UrlGenerator"/>
-		public bool UrlRewritingOn
-		{
-			get
-			{
-				if (PathResolver.ApplicationPhysicalPath != null)
-					return File.Exists(Path.Combine(PathResolver.ApplicationPhysicalPath, RewriteOnFile));
-
-				return false;
-			}
-		}
 
 		/// <summary>
 		/// Gets a value indicating whether the current project has been configured for debugging.
@@ -224,20 +150,12 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the list of categories available within this project.
 		/// </summary>
-		/// <remarks>
-		/// This value is only applicable in project is <see cref="MultiCategory"/>.
-		/// </remarks>
 		public Dictionary<string, CategoryInfo> Categories { get; private set; }
 
 		/// <summary>
-		/// Gets the list of IP addresses or address ranges to be considered as developers.
+		/// Gets the linking configuration.
 		/// </summary>
-		public List<IpAddress> DeveloperIps { get; private set; }
-
-		/// <summary>
-		/// Gets the dictionary of links
-		/// </summary>
-		public Dictionary<string, LinkInfo> Links { get; private set; }
+		public LinkingConfiguration Linking { get; private set; }
 
 		/// <summary>
 		/// Gets the dictionary of defined locales.
@@ -254,13 +172,36 @@ namespace Sage.Configuration
 		/// </summary>
 		public Dictionary<string, ModuleConfiguration> Modules { get; private set; }
 
+		internal List<string> Dependencies
+		{
+			get;
+			private set;
+		}
+
+		internal ValidationResult ValidationResult { get; set; }
+
+		/// <summary>
+		/// Gets the element that contains the definition of project-global internationalization variables. Used with
+		/// internationalization.
+		/// </summary>
+		internal XmlNode Variables { get; private set; }
+
 		/// <summary>
 		/// Gets the extension package configuration for packing this project as an extension.
 		/// </summary>
 		/// <remarks>
 		/// This value is only applicable for <see cref="ConfigurationType.Extension"/> type projects.
 		/// </remarks>
-		internal ExtensionPackageConfiguration Package { get; private set; }
+		internal PackageConfiguration Package { get; private set; }
+
+		/// <summary>
+		/// Creates a <see cref="ProjectConfiguration"/> instance with all settings initialized to their defaults.
+		/// </summary>
+		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
+		public static ProjectConfiguration Create()
+		{
+			return new ProjectConfiguration();
+		}
 
 		/// <summary>
 		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified 
@@ -275,6 +216,7 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentNullException>(configStream != null);
 
 			XmlDocument document = new XmlDocument();
+			document.PreserveWhitespace = true;
 			document.Load(configStream);
 
 			XmlDocument parentDoc = null;
@@ -318,96 +260,163 @@ namespace Sage.Configuration
 
 			var result = new ProjectConfiguration();
 			if (parentConfigDoc != null)
-				result.Parse(parentConfigDoc);
+				result.Parse(parentConfigDoc.DocumentElement);
 
-			result.Parse(configDoc);
+			result.Parse(configDoc.DocumentElement);
 			return result;
 		}
 
 		/// <summary>
-		/// Determines whether the specified <paramref name="clientIpAddress"/> is configured to be treated as a developer.
+		/// Generates an XML element that represents this instance.
 		/// </summary>
-		/// <param name="clientIpAddress">The client IP address to test.</param>
-		/// <returns>
-		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured to be treated as a developer; 
-		/// otherwise, <c>false</c>.
-		/// </returns>
-		public bool IsDeveloperIp(string clientIpAddress)
+		/// <param name="ownerDoc">The document to use to create the element with.</param>
+		/// <returns>The element that represents this instance.</returns>
+		public XmlElement ToXml(XmlDocument ownerDoc)
 		{
-			if (considerAllRequestsAsDevelopers)
-				return true;
+			Contract.Requires<ArgumentNullException>(ownerDoc != null);
 
-			return this.DeveloperIps.Count(a => a.Matches(clientIpAddress)) != 0;
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+			XmlElement result = ownerDoc.CreateElement("project", Ns);
+
+			if (!string.IsNullOrWhiteSpace(this.Name))
+				result.SetAttribute("name", this.Name);
+
+			if (!string.IsNullOrWhiteSpace(this.SharedCategory))
+				result.SetAttribute("sharedCategory", this.SharedCategory);
+
+			if (!string.IsNullOrWhiteSpace(this.DefaultLocale))
+				result.SetAttribute("defaultLocale", this.DefaultLocale);
+
+			if (!string.IsNullOrWhiteSpace(this.DefaultCategory))
+				result.SetAttribute("defaultCategory", this.DefaultCategory);
+
+			result.SetAttribute("autoInternationalize", this.AutoInternationalize ? "1" : "0");
+			result.SetAttribute("debugMode", this.IsDebugMode ? "1" : "0");
+
+			result.AppendChild(this.PathTemplates.ToXml(ownerDoc));
+			result.AppendChild(this.Routing.ToXml(ownerDoc));
+			result.AppendChild(this.Linking.ToXml(ownerDoc));
+			result.AppendChild(this.Environment.ToXml(ownerDoc));
+
+			if (this.Modules.Count != 0)
+			{
+				XmlNode target = result.AppendChild(ownerDoc.CreateElement("modules", Ns));
+				foreach (ModuleConfiguration module in this.Modules.Values)
+					target.AppendChild(module.ToXml(ownerDoc));
+			}
+
+			if (this.ResourceLibraries.Count != 0)
+			{
+				XmlNode target = result.AppendChild(ownerDoc.CreateElement("libraries", Ns));
+				foreach (ResourceLibraryInfo library in this.ResourceLibraries.Values)
+					target.AppendChild(library.ToXml(ownerDoc));
+			}
+
+			if (this.Locales.Count != 0)
+			{
+				XmlNode target = result.AppendChild(ownerDoc.CreateElement("internationalization", Ns));
+				foreach (LocaleInfo locale in this.Locales.Values)
+					target.AppendChild(locale.ToXml(ownerDoc));
+			}
+
+			if (this.Categories.Count != 0)
+			{
+				XmlNode target = result.AppendChild(ownerDoc.CreateElement("categories", Ns));
+				foreach (CategoryInfo category in this.Categories.Values)
+					target.AppendChild(category.ToXml(ownerDoc));
+			}
+
+			if (this.MetaViews.Count != 0)
+			{
+				XmlNode target = result.AppendChild(ownerDoc.CreateElement("metaViews", Ns));
+				foreach (MetaViewInfo metaViewInfo in this.MetaViews.Values)
+					target.AppendChild(metaViewInfo.ToXml(ownerDoc));
+			}
+
+			foreach (XmlElement custom in this.customElements)
+				result.AppendChild(ownerDoc.ImportNode(custom, true));
+
+			return result;
 		}
 
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("{0} ({1})", this.Name, this.Type);
+			return string.Format("Project {0}", this.Name);
 		}
 
-		internal static void Initialize()
+		internal void RegisterRoutes()
 		{
-			if (projectConfig != null)
-				return;
-
-			string systemConfigPath = Path.Combine(AssemblyPath, SystemConfigName);
-			string projectConfigPath1 = Path.Combine(AssemblyPath, ProjectConfigName);
-			string projectConfigPath2 = Path.Combine(AssemblyPath, "..\\" + ProjectConfigName);
-
-			string projectConfigPath = projectConfigPath1;
-			if (File.Exists(projectConfigPath2))
+			foreach (RouteInfo route in this.Routing.Values)
 			{
-				projectConfigPath = projectConfigPath2;
-				projectLoadPath = projectConfigPath2;
-				lastUpdated = DateTime.Now;
+				string[] namespaces = new[] { route.Namespace ?? this.Routing.DefaultNamespace };
+				RouteTable.Routes.MapRouteLowercase(route.Name, route.Path,
+					route.Defaults,
+					route.Constraints,
+					namespaces);
+
+				log.DebugFormat("Automatically registering route '{0}' to {1}.{2}",
+					route.Path,
+					route.Controller,
+					route.Action);
 			}
-
-			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
-				throw new SageHelpException(ProblemType.MissingConfigurationFile);
-		
-			systemConfig = new ProjectConfiguration();
-			if (File.Exists(systemConfigPath))
-				systemConfig.Parse(systemConfigPath);
-
-			projectConfig = new ProjectConfiguration();
-			if (File.Exists(systemConfigPath))
-				projectConfig.Parse(systemConfigPath);
-
-			if (File.Exists(projectConfigPath))
-				projectConfig.Parse(projectConfigPath);
-
-			if (projectConfig.Locales.Count == 0)
-				throw new SageHelpException(ProblemType.ConfigurationMissingLocales);
-
-			if (projectConfig.MultiCategory && projectConfig.Categories.Count == 0)
-				throw new SageHelpException(ProblemType.ConfigurationMissingCategories);
-
-			projectConfig.MergeRegisteredExtensions();
 		}
 
 		internal void Parse(string configPath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
 
-			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
-			this.Parse(document);
+			if (!this.ValidationResult.Success)
+				return;
+
+			CacheableXmlDocument document = ResourceManager.LoadXmlDocument(configPath);
+			this.Parse(document.DocumentElement);
+			this.ValidationResult.SourceFile = configPath;
+			this.Dependencies.AddRange(document.Dependencies.Where(d => !this.Dependencies.Contains(d)));
 		}
 
-		internal void Parse(XmlDocument configDoc)
+		internal void Parse(XmlElement configNode)
 		{
-			Contract.Requires<ArgumentNullException>(configDoc != null);
+			Contract.Requires<ArgumentNullException>(configNode != null);
 
-			ResourceManager.ValidateDocument(configDoc, ConfigSchemaPath);
+			this.ValidationResult = ResourceManager.ValidateElement(configNode, ConfigSchemaPath);
+			if (!this.ValidationResult.Success)
+				return;
+
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 
-			XmlElement configNode = configDoc.SelectSingleElement("/p:configuration/*", nm);
+			foreach (XmlElement child in configNode.SelectNodes(
+				string.Format("*[namespace-uri() != '{0}']", XmlNamespaces.ProjectConfigurationNamespace)))
+			{
+				this.customElements.Add(child);
+			}
+
+			XmlNode variablesNode = configNode.SelectSingleNode("p:variables", nm);
+			if (variablesNode != null)
+			{
+				if (this.Variables != null)
+				{
+					foreach (XmlElement variableNode in variablesNode.SelectNodes("*"))
+					{
+						var importReady = this.Variables.OwnerDocument.ImportNode(variableNode, true);
+						var id = variableNode.GetAttribute("id");
+						var current = this.Variables.SelectSingleNode(
+							string.Format("intl:variable[@id='{0}']", id), nm);
+
+						if (current != null)
+							this.Variables.ReplaceChild(importReady, current);
+						else
+							this.Variables.AppendChild(importReady);
+					}
+				}
+				else
+				{
+					this.Variables = variablesNode;
+				}
+			}
 
 			XmlElement routingNode = configNode.SelectSingleElement("p:routing", nm);
 			XmlElement pathsNode = configNode.SelectSingleElement("p:paths", nm);
-
-			this.Type = (ConfigurationType) Enum.Parse(typeof(ConfigurationType), configNode.Name, true);
-			this.ConfigurationElement = configNode;
 
 			string nodeValue = configNode.GetAttribute("name");
 			if (!string.IsNullOrEmpty(nodeValue))
@@ -425,13 +434,9 @@ namespace Sage.Configuration
 			if (!string.IsNullOrEmpty(nodeValue))
 				this.DefaultCategory = nodeValue;
 
-			nodeValue = configNode.GetAttribute("autoGlobalize");
+			nodeValue = configNode.GetAttribute("autoInternationalize");
 			if (!string.IsNullOrEmpty(nodeValue))
-				this.AutoGlobalize = nodeValue.ContainsAnyOf("yes", "1", "true");
-
-			nodeValue = configNode.GetAttribute("multiCategory");
-			if (!string.IsNullOrEmpty(nodeValue))
-				this.MultiCategory = nodeValue.ContainsAnyOf("yes", "1", "true");
+				this.AutoInternationalize = nodeValue.ContainsAnyOf("yes", "1", "true");
 
 			nodeValue = configNode.GetAttribute("debugMode");
 			if (!string.IsNullOrEmpty(nodeValue))
@@ -451,17 +456,15 @@ namespace Sage.Configuration
 			}
 
 			if (routingNode != null)
-				this.Routing.ParseConfiguration(routingNode);
+				this.Routing.Parse(routingNode);
 
-			XmlElement linksNode = configNode.SelectSingleElement("p:links", nm);
-			if (linksNode != null)
-				this.UrlRewritePrefix = linksNode.GetAttribute("rewritePrefix");
+			XmlElement linkingNode = configNode.SelectSingleElement("p:linking", nm);
+			if (linkingNode != null)
+				this.Linking.Parse(linkingNode);
 
-			foreach (XmlElement linkNode in configNode.SelectNodes("p:links/p:link", nm))
-			{
-				LinkInfo linkInfo = new LinkInfo(linkNode);
-				this.Links[linkInfo.Name] = linkInfo;
-			}
+			XmlElement environmentNode = configNode.SelectSingleElement("p:environment", nm);
+			if (environmentNode != null)
+				this.Environment.Parse(environmentNode);
 
 			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
 			{
@@ -475,52 +478,54 @@ namespace Sage.Configuration
 				this.ResourceLibraries.Add(info.Name, info);
 			}
 
-			foreach (XmlElement locale in configNode.SelectNodes("p:globalization/p:locale", nm))
+			var localeNodes = configNode.SelectNodes("p:internationalization/p:locale", nm);
+			if (localeNodes.Count != 0)
 			{
-				var name = locale.GetAttribute("name");
-				var info = new LocaleInfo(locale);
-				this.Locales[name] = info;
-			}
-
-			if (this.MultiCategory)
-			{
-				foreach (XmlElement category in configNode.SelectNodes("p:categories/p:category", nm))
+				this.Locales = new Dictionary<string, LocaleInfo>();
+				this.Categories[this.DefaultCategory].Locales.Clear();
+				foreach (XmlElement locale in localeNodes)
 				{
-					var info = new CategoryInfo(category, this.Locales);
-					this.Categories[info.Name] = info;
+					var name = locale.GetAttribute("name");
+					var info = new LocaleInfo(locale);
+					this.Locales[name] = info;
+					this.Categories[this.DefaultCategory].Locales.Add(name);
 				}
 			}
-			else
+
+			var categoryNodes = configNode.SelectNodes("p:categories/p:category", nm);
+			if (categoryNodes.Count != 0)
 			{
-				this.Categories[this.DefaultCategory] = new CategoryInfo(this.DefaultCategory, this.Locales);
+				this.Categories.Clear();
+				foreach (XmlElement categoryElement in categoryNodes)
+				{
+					var category = new CategoryInfo(categoryElement);
+					this.Categories[category.Name] = category;
+
+					var undefinedLocales = category.Locales.Where(name => !this.Locales.ContainsKey(name)).ToList();
+					if (undefinedLocales.Count != 0)
+					{
+						log.ErrorFormat("Category '{0}' is configured to use these unsupported locales: {1}.",
+							category.Name, string.Join(",", undefinedLocales));
+					}
+				}
 			}
 
-			foreach (XmlElement viewNode in configNode.SelectNodes("p:metaViews/p:view", nm))
+			foreach (XmlElement viewNode in configNode.SelectNodes("p:metaViews/p:metaView", nm))
 			{
 				var name = viewNode.GetAttribute("name");
 				var info = new MetaViewInfo(viewNode);
 				this.MetaViews[name] = info;
 			}
 
-			foreach (XmlElement elem in configNode.SelectNodes("p:developers/p:ip", nm))
-			{
-				if (elem.GetAttribute("address") == "*")
-				{
-					this.considerAllRequestsAsDevelopers = true;
-					break;
-				}
+			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));
 
-				IpAddress address = new IpAddress(elem);
-				this.DeveloperIps.Add(address);
-			}
-
-			this.Package = new ExtensionPackageConfiguration(configNode.SelectSingleNode("p:package", nm));
+			if (this.Changed != null)
+				this.Changed(this, EventArgs.Empty);
 		}
 
 		internal void RegisterExtension(ProjectConfiguration extensionConfig)
 		{
 			Contract.Requires<ArgumentNullException>(extensionConfig != null);
-			Contract.Requires<ArgumentException>(extensionConfig.Type == ConfigurationType.Extension);
 			Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(extensionConfig.Name));
 
 			string extensionName = extensionConfig.Name;
@@ -543,15 +548,26 @@ namespace Sage.Configuration
 				this.Routing.Add(name, extensionConfig.Routing[name]);
 			}
 
-			foreach (string name in extensionConfig.Links.Keys)
+			foreach (KeyValuePair<string, string> link in extensionConfig.Linking.Links)
 			{
-				if (this.Links.ContainsKey(name))
+				if (this.Linking.Links.ContainsKey(link.Key))
 				{
-					log.WarnFormat("Skipped registering link '{0}' from extension '{1}' because a link with the same name already exists.", name, extensionName);
+					log.WarnFormat("Skipped registering link '{0}' from extension '{1}' because a link with the same name already exists.", link.Key, extensionName);
 					continue;
 				}
 
-				this.Links.Add(name, extensionConfig.Links[name]);
+				this.Linking.AddLink(link.Key, link.Value);
+			}
+
+			foreach (KeyValuePair<string, string> format in extensionConfig.Linking.Formats)
+			{
+				if (this.Linking.Formats.ContainsKey(format.Key))
+				{
+					log.WarnFormat("Skipped registering format '{0}' from extension '{1}' because a link with the same name already exists.", format.Key, extensionName);
+					continue;
+				}
+
+				this.Linking.AddFormat(format.Key, format.Value);
 			}
 
 			foreach (string name in extensionConfig.ResourceLibraries.Keys)
@@ -586,27 +602,6 @@ namespace Sage.Configuration
 
 				this.Modules.Add(name, extensionConfig.Modules[name]);
 			}
-		}
-
-		private void MergeRegisteredExtensions()
-		{
-			foreach (ProjectConfiguration config in ProjectConfiguration.extensions.Values)
-				this.MergeExtension(config);
-		}
-
-		private static void ResetIfConfigurationChanged()
-		{
-			if (projectLoadPath == null)
-				return;
-
-			if (!File.Exists(projectLoadPath))
-				return;
-
-			DateTime created = File.GetCreationTime(projectLoadPath);
-			DateTime modified = File.GetLastWriteTime(projectLoadPath);
-
-			if (created > lastUpdated || modified > lastUpdated)
-				projectConfig = null;
 		}
 	}
 }

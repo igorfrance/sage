@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>Xml providers</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="extensibility-xml-providers"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="extensibility-xml-providers"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Xml providers</span>
+				</header>
+				<details>
 		<p class="sectionblock">
 			In Sage, XML Providers are methods that populate and return a <code>CacheableXmlDocument</code> when a name for
 			which they are registered is requested through the
@@ -113,5 +116,9 @@
 
 		</blockquote>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

@@ -11,44 +11,54 @@
 	</head>
 	<body>
 
-		<h1>Building Sage</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-building"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Building Sage</span>
+				</header>
+				<details>
+					<summary>
+						<dfn>Sage can be built from command line, as well from Visual Studio.</dfn>
+					</summary>
+					<h3 class="section">Using Visual Studio</h3>
+					<p>
+						Requirements:
+					</p>
+					<ul>
+						<li>Visual Studio 2010 or higher</li>
+						<li>ASP.NET MVC 2 or higher</li>
+						<li>Microsoft Code Contracts</li>
+					</ul>
+					<p>
+						To build the project using Visual Studio, <a href="url:link(sage-obtaining)">obtain the source code</a>,
+						open the solution at <code>src/Sage.sln</code> and build it.
+					</p>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-building"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<h3 class="section">Using the command line</h3>
+					<p>
+						Requirements:
+					</p>
+					<ul>
+						<li>.NET framework SDK 4.0</li>
+						<li>Visual Studio 2010 web application build targets</li>
+						<li>ASP.NET MVC 2 or higher</li>
+						<li>Microsoft Code Contracts</li>
+						<li>Nant with Nant Contrib</li>
+					</ul>
+					<p>
+						To build the project from command line, <a href="url:link(sage-obtaining)">obtain the source code</a>,
+						and from the Sage root project directory execute: <code class="example">nant -buildfile:sage.build</code>
+						This will build the same artifacts that the <a href="url:link(sage-obtaining)">Sage build server produces</a>.
+					</p>
 
-		<h3 class="section">Using Visual Studio 2010</h3>
-		<p>
-			Requirements:
-		</p>
-		<ul>
-			<li>Visual Studio 2010</li>
-			<li>ASP.NET MVC 2 or higher</li>
-			<li>Microsoft Code Contracts</li>
-		</ul>
-		<p>
-			To build the project using Visual Studio, <a href="url:link(sage-obtaining)">obtain the source code</a>,
-			open the solution at <code>src/Sage.sln</code> and build it.
-		</p>
 
-		<h3 class="section">From the command line</h3>
-		<p>
-			Requirements:
-		</p>
-		<ul>
-			<li>.NET framework SDK 4.0</li>
-			<li><dfn title="Expand on this">Visual Studio 2010 web application build targets</dfn></li>
-			<li>ASP.NET MVC 2 or higher</li>
-			<li>Microsoft Code Contracts</li>
-			<li>Nant with Nant Contribb</li>
-		</ul>
-		<p>
-			To build the project from command line, <a href="url:link(sage-obtaining)">obtain the source code</a>,
-			and from the Sage root project directory execute: <code class="example">nant -buildfile:sage.build</code>
-			This will build the same artifacts that the <a href="url:link(sage-obtaining)">Sage build server produces</a>.
-		</p>
-
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

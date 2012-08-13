@@ -35,27 +35,6 @@ namespace Sage.Routing
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlRoutingUtility).FullName);
 
-		internal static void RegisterRoutesFromRoutingConfiguration(ProjectConfiguration config)
-		{
-			foreach (RouteInfo route in config.Routing.Values)
-			{
-				var controllerName = route.Controller.EndsWith("Controller")
-					? route.Controller.Substring(0, route.Controller.LastIndexOf("Controller"))
-					: route.Controller;
-
-				string[] namespaces = new[] { route.Namespace ?? config.Routing.DefaultNamespace };
-				RouteTable.Routes.MapRouteLowercase(route.Name, route.Path,
-					new { controller = controllerName, action = route.Action }, 
-					null, 
-					namespaces);
-
-				log.DebugFormat("Automatically registering route '{0}' to {1}.{2}",
-					route.Path,
-					route.Controller,
-					route.Action);
-			}
-		}
-
 		/// <summary>
 		/// Uses reflection to enumerate through Controller classes in the assembly and registers a route for each method declaring a <see cref="UrlRouteAttribute"/>.
 		/// </summary>
@@ -63,7 +42,7 @@ namespace Sage.Routing
 		internal static void RegisterRoutesToMethodsWithAttributes(Assembly[] assemblies)
 		{
 			List<MapRouteParams> routeParams = GetRouteParamsFromAttributes(
-				Application.RelevantAssemblies.ToArray());
+				Project.RelevantAssemblies.ToArray());
 
 			routeParams.Sort((a, b) => a.Order.CompareTo(b.Order));
 			foreach (MapRouteParams rd in routeParams)

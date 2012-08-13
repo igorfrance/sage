@@ -11,6 +11,10 @@
 	exclude-result-prefixes="x set site mod sage">
 
 	<xsl:template match="mod:BreadCrumb">
+		<xsl:apply-templates select="." mode="mod:BreadCrumb"/>
+	</xsl:template>
+
+	<xsl:template match="*" mode="mod:BreadCrumb">
 		<xsl:variable name="currentHref" select="normalize-space(mod:config/mod:current/text())"/>
 		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/sage:data/site:navigation"/>
 		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>

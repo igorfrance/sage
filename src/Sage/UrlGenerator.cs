@@ -16,6 +16,7 @@
 namespace Sage
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
@@ -35,7 +36,6 @@ namespace Sage
 	/// </summary>
 	public class UrlGenerator
 	{
-		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'[\w\.:$\-]*)=(?'AttribValue'.*)$", RegexOptions.Compiled);
 		private static readonly Regex linkPlaceholder = new Regex(@"(?!>^|[^{])\{([^{}]+)\}(?!\})");
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlGenerator).FullName);
@@ -48,7 +48,6 @@ namespace Sage
 		public UrlGenerator(SageContext context)
 		{
 			this.context = context;
-			this.RewritingOn = !string.IsNullOrEmpty(context.ProjectConfiguration.UrlRewritePrefix);
 		}
 
 		/// <summary>
@@ -59,38 +58,6 @@ namespace Sage
 			get
 			{
 				return this.context;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether URL rewriting is on.
-		/// </summary>
-		/// <value><c>true</c> if URL rewriting is on; otherwise, <c>false</c>.</value>
-		/// <remarks>
-		/// If no RewritingOn hasn't been set prior to getting the value, The setting is taken from the Project.Config
-		/// </remarks>
-		public bool RewritingOn { get; private set; }
-
-		/// <summary>
-		/// Gets the current rewrite prefix of the url, if any.
-		/// </summary>
-		/// <value>
-		/// The rewrite prefix pattern is configured in the sage project configuration file 
-		/// (see <see cref="ProjectConfiguration.UrlRewritePrefix"/>). This property returns that configuration value, with 
-		/// the placeholders '{category}' and '{locale}' substituted with the values from the current <see cref="SageContext"/>.
-		/// <para>
-		/// Typically, this will be the <c>gums-r-us/uk</c> part from the <c>http://www.chew.com/gums-r-us/uk/products/chewymango</c>.
-		/// </para>
-		/// </value>
-		public string RewritePrefix
-		{
-			get
-			{
-				if (!this.RewritingOn)
-					return context.ProjectConfiguration.UrlRewritePrefix.Replace(
-						"{category}", context.Category).Replace("{locale}", context.Locale);
-
-				return string.Empty;
 			}
 		}
 
@@ -113,21 +80,6 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the complete prefix of the url, combining <see cref="ServerPrefix"/> and <see cref="RewritePrefix"/>.
-		/// </summary>
-		/// <value>
-		/// This will be the <c>http://www.chew.com/gums-r-us/uk/</c> part from the 
-		/// <c>http://www.chew.com/gums-r-us/uk/products/chewymango</c>.
-		/// </value>
-		public string UrlPrefix
-		{
-			get
-			{
-				return string.Concat(ServerPrefix.TrimEnd('/'), "/", RewritePrefix.TrimStart('/'));
-			}
-		}
-
-		/// <summary>
 		/// Gets the full url of the current request (taking any rewriting into account).
 		/// </summary>
 		/// <returns></returns>
@@ -138,6 +90,22 @@ namespace Sage
 				string pathAndQuery = context.Request.ServerVariables["HTTP_X_REWRITE_URL"] ?? context.Request.RawUrl;
 				return string.Concat(ServerPrefix, pathAndQuery);
 			}
+		}
+
+		/// <summary>
+		/// Gets the dictionary of links.
+		/// </summary>
+		internal ReadOnlyDictionary<string, string> Links
+		{
+			get { return this.Context.ProjectConfiguration.Linking.Links; }
+		}
+
+		/// <summary>
+		/// Gets the dictionary of formmat strings.
+		/// </summary>
+		internal ReadOnlyDictionary<string, string> Formats
+		{
+			get { return this.Context.ProjectConfiguration.Linking.Formats; }
 		}
 
 		/// <summary>
@@ -323,10 +291,10 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Returns the specified <paramref name="url"/> with the current <see cref="RewritePrefix"/> (if any) pre-pended to it.
+		/// Returns the specified <paramref name="url"/> with the current <see cref="ServerPrefix"/> (if any) pre-pended to it.
 		/// </summary>
 		/// <param name="url">The URL to process.</param>
-		/// <returns>The specified <paramref name="url"/> with the current <see cref="RewritePrefix"/> (if any) pre-pended to it.</returns>
+		/// <returns>The specified <paramref name="url"/> with the current <see cref="ServerPrefix"/> (if any) pre-pended to it.</returns>
 		/// <exception cref="ArgumentNullException">
 		/// <paramref name="url"/> is <c>null</c>.
 		/// </exception>
@@ -338,7 +306,7 @@ namespace Sage
 			if (url.Contains("://"))
 				return url;
 
-			return string.Concat(RewritePrefix.TrimEnd('/'), "/", url.TrimStart('/'));
+			return string.Concat(this.ServerPrefix.TrimEnd('/'), "/", url.TrimStart('/'));
 		}
 
 		[NodeHandler(XmlNodeType.Element, "link", XmlNamespaces.SageNamespace)]
@@ -377,29 +345,6 @@ namespace Sage
 			return linkNode;
 		}
 
-		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageAttribute(XmlNode attribNode, SageContext context)
-		{
-			Contract.Requires<ArgumentNullException>(attribNode != null);
-			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return attribNode;
-
-			Match match;
-
-			if ((match = attribSpec.Match(attribNode.InnerText)).Success)
-			{
-				string attribName = match.Groups["AttribName"].Value;
-				string attribValue = match.Groups["AttribValue"].Value;
-
-				XmlAttribute result = attribNode.OwnerDocument.CreateAttribute(attribName);
-				result.InnerText = context.ProcessFunctions(attribValue);
-
-				return result;
-			}
-
-			return attribNode;
-		}
-
 		[NodeHandler(XmlNodeType.Attribute, "href", "")]
 		internal static XmlNode ProcessHrefAttribute(XmlNode attribNode, SageContext context)
 		{
@@ -408,7 +353,7 @@ namespace Sage
 				return attribNode;
 
 			string attribValue = context.ProcessFunctions(attribNode.InnerText);
-			attribNode.InnerText = ResourceManager.ProcessString(attribValue, context);
+			attribNode.InnerText = ResourceManager.ApplyTextHandlers(attribValue, context);
 			return attribNode;
 		}
 
@@ -489,36 +434,20 @@ namespace Sage
 		/// <paramref name="linkName"/>.</exception>
 		internal string FormatAndRewriteUrl(string linkName, NameValueCollection parameters, bool includeActiveQuery)
 		{
-			if (!context.ProjectConfiguration.Links.ContainsKey(linkName))
+			if (!this.Links.ContainsKey(linkName))
 			{
 				log.ErrorFormat("The url configuration doesn't contain a url with name '{0}'", linkName);
 				return string.Format("javascript:alert('Unresolved link: {0}')", linkName);
 			}
 
-			LinkInfo link = context.ProjectConfiguration.Links[linkName];
-			string linkPattern = link.Url;
+			string linkPattern = this.Links[linkName];
 
 			QueryString query = new QueryString(context.Query);
 			QueryString formatValues = new QueryString { { "locale", context.Locale }, { "category", context.Category } };
 			if (parameters != null)
-			{
 				formatValues.Merge(parameters);
-			}
 
-			string resultUrl = linkPlaceholder.Replace(
-				linkPattern,
-				delegate(Match m)
-				{
-					string key = m.Groups[1].Value;
-					string value = formatValues[key];
-					if (key == "rewriteprefix")
-						value = RewritePrefix;
-
-					query.Remove(key);
-					formatValues.Remove(key);
-
-					return value ?? string.Empty;
-				});
+			string resultUrl = this.FormatPattern(linkPattern, formatValues);
 
 			formatValues.Remove("locale");
 			formatValues.Remove("category");
@@ -538,6 +467,28 @@ namespace Sage
 				return string.Concat(ServerPrefix, resultUrl);
 
 			return resultUrl;
+		}
+
+		private string FormatPattern(string pattern, NameValueCollection parameters, params string[] visitedFormats)
+		{
+			List<string> visited = new List<string>(visitedFormats);
+			return linkPlaceholder.Replace(pattern, delegate(Match match)
+			{
+				string key = match.Groups[1].Value;
+				if (this.Formats.ContainsKey(key))
+				{
+					if (visited.Contains(key))
+					{
+						log.ErrorFormat("Skipping processing link format '{0}' the second time because it would cause recursion.", key);
+						return string.Empty;
+					}
+
+					visited.Add(key);
+					return this.FormatPattern(this.Formats[key], parameters, visited.ToArray());
+				}
+
+				return parameters[key] ?? string.Empty;
+			});
 		}
 	}
 }

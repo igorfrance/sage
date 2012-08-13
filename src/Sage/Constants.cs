@@ -65,6 +65,11 @@ namespace Sage
 	public enum ProblemType
 	{
 		/// <summary>
+		/// Represents initial state, no error
+		/// </summary>
+		None = -1,
+
+		/// <summary>
 		/// Represents an unknown error
 		/// </summary>
 		Unknown = 0,
@@ -88,16 +93,6 @@ namespace Sage
 		/// Occurs when the system fails to find any configuration files in a project.
 		/// </summary>
 		MissingConfigurationFile,
-
-		/// <summary>
-		/// Occurs if there are no locales defined in the configuration file.
-		/// </summary>
-		ConfigurationMissingLocales,
-
-		/// <summary>
-		/// Occurs if the project is defined as multi-category, but no categories have been defined.
-		/// </summary>
-		ConfigurationMissingCategories,
 
 		/// <summary>
 		/// Occurs if an exception is raised during the XSLT transform step.
@@ -165,6 +160,20 @@ namespace Sage
 		/// </summary>
 		ViewXmlFilteringError,
 
+		/// <summary>
+		/// Indicates a generic error that occurs during the project initialization phase.
+		/// </summary>
+		ProjectInitializationError,
+
+		/// <summary>
+		/// Indicates an error that occurred while parsing the schema of project configuration file.
+		/// </summary>
+		ProjectSchemaValidationError,
+
+		/// <summary>
+		/// Indicates an error that occurred while parsing the schema of extension configuration file.
+		/// </summary>
+		ExtensionSchemaValidationError,
 	}
 
 	/// <summary>

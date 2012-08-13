@@ -19,6 +19,7 @@
 	<xsl:param name="dictionary"/>
 	<xsl:param name="fallbacks"/>
 	<xsl:param name="globalvariables"/>
+	<xsl:param name="categoryvariables"/>
 
 	<!--
 
@@ -132,6 +133,7 @@
 		<xsl:variable name="variables" select="ancestor::*/intl:variables/intl:variable[@id=current()/@ref]"/>
 		<xsl:variable name="variable" select="$variables[last()]"/>
 		<xsl:variable name="globalvar" select="$globalvariables/intl:variable[@id=current()/@ref]"/>
+		<xsl:variable name="categoryvar" select="$categoryvariables/intl:variable[@id=current()/@ref]"/>
 		<xsl:choose>
 			<xsl:when test="$variable">
 				<xsl:choose>
@@ -140,6 +142,16 @@
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:apply-templates select="$variable" mode="substitute"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="$categoryvar">
+				<xsl:choose>
+					<xsl:when test="$mode = 'diagnose'">
+						<xsl:apply-templates select="$categoryvar" mode="diagnose"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:apply-templates select="$categoryvar" mode="substitute"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
@@ -233,10 +245,14 @@
 		<xsl:variable name="variables" select="ancestor::*/intl:variables/intl:variable[@id=$variableId]"/>
 		<xsl:variable name="variable" select="$variables[last()]"/>
 		<xsl:variable name="globalvar" select="$globalvariables/intl:variable[@id=$variableId]"/>
+		<xsl:variable name="categoryvar" select="$categoryvariables/intl:variable[@id=$variableId]"/>
 		<xsl:variable name="value">
 			<xsl:choose>
 				<xsl:when test="$variable">
 					<xsl:apply-templates select="$variable" mode="substitute"/>
+				</xsl:when>
+				<xsl:when test="$categoryvar">
+					<xsl:apply-templates select="$categoryvar" mode="substitute"/>
 				</xsl:when>
 				<xsl:when test="$globalvar">
 					<xsl:apply-templates select="$globalvar" mode="substitute"/>

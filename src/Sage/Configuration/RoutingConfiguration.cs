@@ -19,10 +19,14 @@ namespace Sage.Configuration
 	using System.Collections.Generic;
 	using System.Xml;
 
+	using Kelp;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
+
 	/// <summary>
 	/// Contains the URL routing configuration settings.
 	/// </summary>
-	public class RoutingConfiguration : Dictionary<string, RouteInfo>
+	public class RoutingConfiguration : Dictionary<string, RouteInfo>, IXmlConvertible
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RoutingConfiguration"/> class.
@@ -37,11 +41,8 @@ namespace Sage.Configuration
 		/// </summary>
 		public string DefaultNamespace { get; private set; }
 
-		/// <summary>
-		/// Parses the routing configuration from the specified configuration element.
-		/// </summary>
-		/// <param name="configElement">The configuration element that defines the routing.</param>
-		public void ParseConfiguration(XmlElement configElement)
+		/// <inheritdoc/>
+		public void Parse(XmlElement configElement)
 		{
 			if (configElement == null)
 				throw new ArgumentNullException("configElement");
@@ -52,6 +53,20 @@ namespace Sage.Configuration
 				RouteInfo route = new RouteInfo(routeNode);
 				this.Add(route.Name, route);
 			}
+		}
+
+		/// <inheritdoc/>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+			XmlElement result = document.CreateElement("routing", Ns);
+
+			foreach (RouteInfo route in this.Values)
+			{
+				result.AppendChild(route.ToXml(document));
+			}
+
+			return result;
 		}
 	}
 }

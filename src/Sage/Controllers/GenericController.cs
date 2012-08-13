@@ -36,19 +36,19 @@ namespace Sage.Controllers
 	public class GenericController : SageController
 	{
 		private ViewInfo genericViewInfo;
-		private string controllerName;
+		private string name;
 
 		/// <summary>
 		/// Gets the name of this controller.
 		/// </summary>
-		public override string ControllerName
+		public override string Name
 		{
 			get
 			{
-				if (controllerName == null)
+				if (this.name == null)
 					return SageController.DefaultController;
 
-				return controllerName;
+				return this.name;
 			}
 		}
 
@@ -59,10 +59,10 @@ namespace Sage.Controllers
 		[Cacheable]
 		public ActionResult Action()
 		{
-			if (genericViewInfo.Exists)
+			if (this.genericViewInfo.Exists)
 			{
-				ViewInput result = this.ProcessView(genericViewInfo);
-				return this.View(genericViewInfo.Action, result);
+				ViewInput result = this.ProcessView(this.genericViewInfo);
+				return this.View(this.genericViewInfo.Action, result);
 			}
 
 			Context.Response.StatusCode = 404;
@@ -80,7 +80,7 @@ namespace Sage.Controllers
 		/// </returns>
 		public override DateTime? GetLastModificationDate(string viewName)
 		{
-			return genericViewInfo.LastModified;
+			return this.genericViewInfo.LastModified;
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace Sage.Controllers
 			var pathParts = childPath.TrimStart('/').Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 			if (pathParts.Length >= 1)
 			{
-				this.controllerName = pathParts[0];
+				this.name = pathParts[0];
 			}
 
 			if (pathParts.Length >= 2)

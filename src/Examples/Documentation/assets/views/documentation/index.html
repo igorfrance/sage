@@ -8,21 +8,37 @@
 	<head>
 		<sage:basehref/>
 		<title>Documentation</title>
-		<style>
-		</style>
 	</head>
 	<body>
 
-		<h1>Documentation</h1>
+		<div class="page">
 
-		<p>
-			Sage is a modular XML/XSLT view engine built on top of ASP.NET MVC. It aims to provide a Swiss army knife tools
-			for web development, and it comes with many common web architecture problems already solved.
-		</p>
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="documentation"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
 
-		<h2>Topics</h2>
+			<section class="content">
+				<header>
+					<span>Documentation</span>
+				</header>
+				<details>
+					<p>
+						Sage is a modular XML/XSLT view engine built on top of ASP.NET MVC. It aims to provide a Swiss army knife tools
+						for web development, and it comes with many common web architecture problems already solved.
+					</p>
 
-		<mod:DocumentationBoxes/>
+					<h2>Topics</h2>
+
+					<mod:DocumentationBoxes/>
+				</details>
+			</section>
+
+		</div>
+
 
 	</body>
 </html>

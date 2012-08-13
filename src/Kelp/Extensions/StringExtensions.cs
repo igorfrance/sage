@@ -203,6 +203,24 @@ namespace Kelp.Extensions
 		}
 
 		/// <summary>
+		/// Replaces the string mathing the specified regular <paramref name="expression"/> string using the specified 
+		/// <paramref name="replacement"/> function to further process the match.
+		/// </summary>
+		/// <param name="subject">The string to replace.</param>
+		/// <param name="expression">The pattern to initialize the regular expression with.</param>
+		/// <param name="replacement">The replacement function.</param>
+		/// <returns>The original string with all substrings matching <paramref name="expression"/> replaced using the specified 
+		/// <paramref name="replacement"/> function to further process the match.</returns>
+		public static string ReplaceAll(this string subject, string expression, MatchEvaluator replacement)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(subject));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(expression));
+			Contract.Requires<ArgumentNullException>(replacement != null);
+
+			return ReplaceAll(subject, new Regex(expression), replacement);
+		}
+
+		/// <summary>
 		/// Replaces the string mathing the specified regular <paramref name="expression"/> with the specified 
 		/// <paramref name="replacement"/> string.
 		/// </summary>
@@ -212,6 +230,24 @@ namespace Kelp.Extensions
 		/// <returns>The original string with all substrings matching <paramref name="expression"/> replaced with
 		/// the specified <paramref name="replacement"/> string.</returns>
 		public static string ReplaceAll(this string subject, Regex expression, string replacement)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(subject));
+			Contract.Requires<ArgumentNullException>(expression != null);
+			Contract.Requires<ArgumentNullException>(replacement != null);
+
+			return expression.Replace(subject, replacement);
+		}
+
+		/// <summary>
+		/// Replaces the string mathing the specified regular <paramref name="expression"/> using the specified 
+		/// <paramref name="replacement"/> function to further process the match.
+		/// </summary>
+		/// <param name="subject">The string to replace.</param>
+		/// <param name="expression">The regular expression to use.</param>
+		/// <param name="replacement">The replacement function.</param>
+		/// <returns>The original string with all substrings matching <paramref name="expression"/> replaced using the specified 
+		/// <paramref name="replacement"/> function to further process the match.</returns>
+		public static string ReplaceAll(this string subject, Regex expression, MatchEvaluator replacement)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(subject));
 			Contract.Requires<ArgumentNullException>(expression != null);
@@ -245,6 +281,7 @@ namespace Kelp.Extensions
 		/// Returns the specified <paramref name="instance"/> with the first letter converted to upper case.
 		/// </summary>
 		/// <param name="instance">The value to process.</param>
+		/// <returns>The original string, with the first letter converted to upper case.</returns>
 		public static string ToUpperCaseFirst(this string instance)
 		{
 			if (string.IsNullOrEmpty(instance))

@@ -23,13 +23,14 @@
 	{ margin-right: 10px; }
 .xmltree pre
 	{ margin: 0px; }
-.xmltree .element.ce .element,
-.xmltree .element.ce .comment
-	{ margin-left: 15px; }
-.xmltree .element.ce > .children > .text
-	{ margin-left: 25px; }
+.xmltree .element > .children
+	{ margin-left: 20px; width: 100%; }
+.xmltree .element.ce > .children
+	{ margin-left: 10px; }
+.xmltree .element > .children > .close
+	{ clear: left; margin-left: -10px; }
 .xmltree .element.ce > .children > .close
-	{ clear: left; }
+	{ clear: left; margin-left: -20px; }
 .xmltree .attrValue
 	{ font-weight: bold;  }
 .xmltree .text
@@ -52,11 +53,15 @@
 .xmltree.wrap .element
 	{ overflow: hidden; }
 .xmltree.wrap .element .children
-	{ overflow: hidden; }
+	{ }
 .xmltree.wrap .closed > .children,
 .xmltree.wrap .closed > pre,
 .xmltree.wrap .closed > .text
 	{ display: none; }
+.xmltree.wrap .element > .children > .close
+	{ clear: none; margin-left: 0px; }
+.xmltree.wrap .element.ce > .children > .close
+	{ clear: none; margin-left: -10px; }
 
 
 .xmltree.wrap .element.ce > .children
@@ -77,7 +82,7 @@
 .xmltree .nsattrib a:visited
 	{ text-decoration: underline; font-weight: normal; }
 
-.xmltree .comment
+.xmltree .comment *
 	{ color: #A7A7A7; }
 .xmltree .comment .markup
 	{ color: #888888; }
@@ -111,12 +116,12 @@
 
 
 .xmltree.highlight .comment
-	{ color: #A7A7A7; }
+	{ color: #aaa; }
 .xmltree.highlight .comment .markup
-	{ color: #888888; }
+	{ color: #aaa; }
 .xmltree.highlight .text,
 .xmltree.highlight .attrValue
-	{ color: #A7A6AA; }
+	{ color: #aaa; }
 .xmltree.highlight .markup,
 .xmltree.highlight .pi,
 .xmltree.highlight .ns,
@@ -124,11 +129,11 @@
 .xmltree.highlight .nsattrib .attrValue,
 .xmltree.highlight .nsattrib a,
 .xmltree.highlight .nsattrib a:visited
-	{ color: #A3B1FF; }
+	{ color: #aaa; }
 .xmltree.highlight .switch,
 .xmltree.highlight .nodeName,
 .xmltree.highlight .attrName
-	{ color: #F4AE99; }
+	{ color: #aaa; }
 
 
 .xmltree.highlight .highlighted > .switch,

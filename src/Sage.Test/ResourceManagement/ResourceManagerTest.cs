@@ -56,7 +56,7 @@ namespace Sage.Test.ResourceManagement
 		It Should_use_the_handler_correctly = () => 
 		{
 			ResourceManager.RegisterNodeHandler(XmlNodeType.Element, "myelement", string.Empty, ProcessMyElement);
-			ResourceManager.CopyTree(document, context).InnerText.ShouldEqual("Hello!");
+			ResourceManager.ApplyHandlers(document, context).InnerText.ShouldEqual("Hello!");
 		};
 
 		static XmlNode ProcessMyElement(XmlNode node, SageContext context)
@@ -83,7 +83,7 @@ namespace Sage.Test.ResourceManagement
 		It Should_use_the_handler_correctly = () => 
 		{
 			ResourceManager.RegisterTextHandler(varName, SubstituteText);
-			XmlElement result = (XmlElement) ResourceManager.CopyTree(document, context);
+			XmlElement result = (XmlElement) ResourceManager.ApplyHandlers(document, context);
 			result.InnerText.ShouldEqual("Hello!");
 			result.GetAttribute("test").ShouldEqual("I say: Hello!");
 		};

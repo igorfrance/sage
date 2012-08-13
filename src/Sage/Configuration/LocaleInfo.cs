@@ -22,62 +22,51 @@ namespace Sage.Configuration
 	using System.Linq;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Extensions;
 
 	using log4net;
 
+	using XmlNamespaces = Sage.XmlNamespaces;
+
 	/// <summary>
 	/// Contains information about a language locale.
 	/// </summary>
-	public struct LocaleInfo
+	public class LocaleInfo : IXmlConvertible
 	{
 		internal const string DefaultLocale = "en-us";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(LocaleInfo).FullName);
 
-		private readonly CultureInfo culture;
-		private readonly string shortDateFormat;
-		private readonly string longDateFormat;
+		private CultureInfo culture;
+		private string shortDateFormat;
+		private string longDateFormat;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LocaleInfo"/> struct, using the specified <paramref name="infoElement"/>.
+		/// Initializes a new instance of the <see cref="LocaleInfo"/> class.
+		/// </summary>
+		public LocaleInfo()
+		{
+			this.Name = DefaultLocale;
+			this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
+			this.shortDateFormat = "d";
+			this.longDateFormat = "D";
+			this.DictionaryNames = new List<string> { "en" };
+			this.ResourceNames = new List<string> { "en", "default" };
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LocaleInfo"/> class, using the specified <paramref name="infoElement"/>.
 		/// </summary>
 		/// <param name="infoElement">The <see cref="XmlElement"/> that contains the information about the locale.</param>
 		/// <exception cref="ArgumentNullException">
 		/// <paramref name="infoElement"/> is <c>null</c>.
 		/// </exception>
 		public LocaleInfo(XmlElement infoElement)
-			: this()
 		{
 			Contract.Requires<ArgumentNullException>(infoElement != null);
 
-			XmlElement formatElement = infoElement.SelectSingleElement("p:format", XmlNamespaces.Manager);
-			this.Name = infoElement.GetAttribute("name");
-
-			try
-			{
-				this.culture = new CultureInfo(formatElement.GetAttribute("culture"));
-			}
-			catch (ArgumentException)
-			{
-				this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
-			}
-
-			var shortDate = formatElement.GetAttribute("shortDate");
-			var longDate = formatElement.GetAttribute("longDate");
-
-			this.shortDateFormat = string.IsNullOrEmpty(shortDate) ? "d" : shortDate;
-			this.longDateFormat = string.IsNullOrEmpty(longDate) ? "D" : longDate;
-
-			this.DictionaryNames = new List<string>(infoElement.GetAttribute("dictionaryNames")
-				.Replace(" ", string.Empty)
-				.Split(',')
-				.Distinct());
-
-			this.ResourceNames = new List<string>(infoElement.GetAttribute("resourceNames")
-				.Replace(" ", string.Empty)
-				.Split(',')
-				.Distinct());
+			this.Parse(infoElement);
 		}
 
 		/// <summary>
@@ -206,6 +195,56 @@ namespace Sage.Configuration
 			return string.Format("{0} ({1}) ({2})", this.Name,
 				string.Join(",", this.DictionaryNames),
 				string.Join(",", this.ResourceNames));
+		}
+
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			XmlElement formatElement = element.SelectSingleElement("p:format", XmlNamespaces.Manager);
+			this.Name = element.GetAttribute("name");
+
+			try
+			{
+				this.culture = new CultureInfo(formatElement.GetAttribute("culture"));
+			}
+			catch (ArgumentException)
+			{
+				this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
+			}
+
+			var shortDate = formatElement.GetAttribute("shortDate");
+			var longDate = formatElement.GetAttribute("longDate");
+
+			this.shortDateFormat = string.IsNullOrEmpty(shortDate) ? "d" : shortDate;
+			this.longDateFormat = string.IsNullOrEmpty(longDate) ? "D" : longDate;
+
+			this.DictionaryNames = new List<string>(element.GetAttribute("dictionaryNames")
+				.Replace(" ", string.Empty)
+				.Split(',')
+				.Distinct());
+
+			this.ResourceNames = new List<string>(element.GetAttribute("resourceNames")
+				.Replace(" ", string.Empty)
+				.Split(',')
+				.Distinct());
+		}
+
+		/// <inheritdoc/>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+			XmlElement result = document.CreateElement("locale", Ns);
+			XmlElement formatElem = result.AppendElement(document.CreateElement("format", Ns));
+
+			result.SetAttribute("name", this.Name);
+			result.SetAttribute("dictionaryNames", string.Join(",", this.DictionaryNames));
+			result.SetAttribute("resourceNames", string.Join(",", this.ResourceNames));
+
+			formatElem.SetAttribute("culture", this.Culture.Name);
+			formatElem.SetAttribute("shortDate", this.shortDateFormat);
+			formatElem.SetAttribute("longDate", this.longDateFormat);
+
+			return result;
 		}
 	}
 }

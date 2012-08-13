@@ -17,13 +17,7 @@ namespace Sage
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Xml;
-
-	using Kelp.Extensions;
-
-	using Kelp.XInclude;
-	using Kelp.XInclude.XPointer;
 
 	/// <summary>
 	/// Implements an exception that provides help about the error that occured.
@@ -88,18 +82,6 @@ namespace Sage
 
 				else
 					problem = new ProblemInfo(ProblemType.InvalidMarkup, path);
-			}
-
-			if (ex is FatalResourceException)
-			{
-				if (ex.Root() is FileNotFoundException)
-					problem = new ProblemInfo(ProblemType.IncludeNotFound, path);
-
-				if (ex.Root() is NoSubresourcesIdentifiedException)
-					problem = new ProblemInfo(ProblemType.IncludeFragmentNotFound, path);
-
-				if (ex.Root() is XPointerSyntaxException)
-					problem = new ProblemInfo(ProblemType.IncludeSyntaxError, path);
 			}
 
 			if (problem.Type == ProblemType.Unknown && suggestedProblem != ProblemType.Unknown)

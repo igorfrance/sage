@@ -45,7 +45,7 @@ namespace Sage.ResourceManagement
 
 		static UrlResolver()
 		{
-			foreach (Assembly a in Application.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 								  where t.IsClass && !t.IsAbstract
@@ -92,7 +92,7 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return dependencies;
+				return this.dependencies;
 			}
 		}
 
@@ -120,31 +120,31 @@ namespace Sage.ResourceManagement
 		/// <param name="resolver">The resolver.</param>
 		public void RegisterResolver(string scheme, IUrlResolver resolver)
 		{
-			if (instanceResolvers.ContainsKey(scheme))
+			if (this.instanceResolvers.ContainsKey(scheme))
 			{
 				log.WarnFormat("Overwriting existing resolver {0} for scheme '{1}' with resolver {2}",
-					instanceResolvers[scheme].GetType().FullName, scheme, resolver.GetType().FullName);
+					this.instanceResolvers[scheme].GetType().FullName, scheme, resolver.GetType().FullName);
 			}
 
-			instanceResolvers[scheme] = resolver;
+			this.instanceResolvers[scheme] = resolver;
 		}
 
 		/// <inheritdoc/>
 		public override object GetEntity(Uri uri, string role, Type returnObject)
 		{
-			IUrlResolver resolver = GetResolver(uri.Scheme);
+			IUrlResolver resolver = this.GetResolver(uri.Scheme);
 			if (resolver != null)
 			{
-				EntityResult result = resolver.GetEntity(this, context, uri.ToString().Replace("\\", "/"));
-				dependencies.AddRange(result.Dependencies);
-				resolved.Add(uri.ToString());
+				EntityResult result = resolver.GetEntity(this, this.context, uri.ToString().Replace("\\", "/"));
+				this.dependencies.AddRange(result.Dependencies);
+				this.resolved.Add(uri.ToString());
 				return result.Entity;
 			}
 
 			try
 			{
-				dependencies.Add(uri.LocalPath);
-				resolved.Add(uri.ToString());
+				this.dependencies.Add(uri.LocalPath);
+				this.resolved.Add(uri.ToString());
 				return base.GetEntity(uri, role, returnObject);
 			}
 			catch (NotSupportedException ex)
@@ -155,17 +155,17 @@ namespace Sage.ResourceManagement
 
 		private IUrlResolver GetResolver(string scheme)
 		{
-			if (instanceResolvers.ContainsKey(scheme))
-				return instanceResolvers[scheme];
+			if (this.instanceResolvers.ContainsKey(scheme))
+				return this.instanceResolvers[scheme];
 
-			if (instances.ContainsKey(scheme))
-				return instances[scheme];
+			if (this.instances.ContainsKey(scheme))
+				return this.instances[scheme];
 
 			if (staticResolvers.ContainsKey(scheme))
 			{
 				ConstructorInfo constructor = staticResolvers[scheme].GetConstructor(new Type[] { });
 				IUrlResolver resolver = (IUrlResolver) constructor.Invoke(new object[] { });
-				instances[scheme] = resolver;
+				this.instances[scheme] = resolver;
 				return resolver;
 			}
 

@@ -18,18 +18,22 @@ namespace Sage.Rewriters
 	using System;
 	using System.Web;
 
+	using log4net;
+
 	/// <summary>
 	/// Intercepts all requests and checks if there is a localized version matching the current request
 	/// </summary>
-	public class LocalizePathRewriter : IHttpModule
+	public sealed class LocalizePathRewriter : IHttpModule
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(LocalizePathRewriter).FullName);
+
 		/// <summary>
 		/// Inits the specified application.
 		/// </summary>
 		/// <param name="application">The application.</param>
 		public void Init(HttpApplication application)
 		{
-			application.BeginRequest += OnApplicationRequestStart;
+			application.BeginRequest += (sender, e) => RewritePath((HttpApplication) sender);
 		}
 
 		/// <summary>
@@ -39,18 +43,24 @@ namespace Sage.Rewriters
 		{
 		}
 
-		private void OnApplicationRequestStart(object sender, EventArgs e)
+		private static void RewritePath(HttpApplication application)
 		{
-			HttpApplication application = (HttpApplication) sender;
-			SageContext context = new SageContext(application.Context);
-
-			string requestPath = context.Request.Path;
-			string localizedPath = context.Path.Localize(requestPath);
-			if (localizedPath != requestPath)
+			try
 			{
-				context.HttpContext.RewritePath(localizedPath);
-				if (context.IsDeveloperRequest)
-					context.Response.AddHeader("OriginalFilePath", requestPath);
+				SageContext context = new SageContext(application.Context);
+
+				string requestPath = context.Request.Path;
+				string localizedPath = context.Path.Localize(requestPath);
+				if (localizedPath != requestPath)
+				{
+					context.HttpContext.RewritePath(localizedPath);
+					if (context.IsDeveloperRequest)
+						context.Response.AddHeader("OriginalFilePath", requestPath);
+				}
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
 			}
 		}
 	}

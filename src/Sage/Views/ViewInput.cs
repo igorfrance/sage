@@ -72,7 +72,7 @@ namespace Sage.Views
 
 			foreach (ResourceLibraryInfo library in matchingLibs)
 			{
-				foreach (string libraryRef in library.Dependencies)
+				foreach (string libraryRef in library.LibraryDependencies)
 				{
 					if (!config.ResourceLibraries.ContainsKey(libraryRef))
 					{
@@ -189,7 +189,7 @@ namespace Sage.Views
 			ModuleConfiguration moduleConfig = SageModuleFactory.GetModuleConfiguration(moduleTagName);
 			this.modules.Add(moduleTagName, moduleConfig);
 
-			foreach (string name in moduleConfig.Dependencies.Where(n => !this.modules.ContainsKey(n)))
+			foreach (string name in moduleConfig.ModuleDependencies.Where(n => !this.modules.ContainsKey(n)))
 			{
 				if (!config.Modules.ContainsKey(name))
 				{
@@ -209,7 +209,7 @@ namespace Sage.Views
 			{
 				ModuleConfiguration module = temp[index];
 				bool changed = false;
-				foreach (string name in module.Dependencies)
+				foreach (string name in module.ModuleDependencies)
 				{
 					if (!context.ProjectConfiguration.Modules.ContainsKey(name))
 						continue;
@@ -235,7 +235,7 @@ namespace Sage.Views
 			foreach (ModuleConfiguration module in temp)
 			{
 				this.modules.Add(module.Name, module);
-				foreach (string name in module.Libraries)
+				foreach (string name in module.LibraryDependencies)
 				{
 					this.AddModuleLibraryReference(name, module.Name);
 				}
@@ -248,7 +248,7 @@ namespace Sage.Views
 		{
 			var config = this.context.ProjectConfiguration;
 			ResourceLibraryInfo library = config.ResourceLibraries[libraryName];
-			foreach (string libraryRef in library.Dependencies)
+			foreach (string libraryRef in library.LibraryDependencies)
 			{
 				if (!config.ResourceLibraries.ContainsKey(libraryRef))
 				{

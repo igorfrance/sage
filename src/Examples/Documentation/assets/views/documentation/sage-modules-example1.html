@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>Creating a module without a back-end component</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-modules-example1"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-modules-example1"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Creating a module without a back-end component</span>
+				</header>
+				<details>
 		<p>
 			A module needs to be registered in <a href="url:link(configuration-project)">project configuration file</a> before it
 			can be used. Let's look at configuration options, and build a new module from scratch. The module will fetch an
@@ -30,15 +33,19 @@
 		<mod:XmlTree>
 			<mod:data>
 				<sage:literal>
-					<configuration>
+					<project>
 						<!-- .... -->
 						<modules>
 							<module name="RssReader"/>
 						</modules>
-					</configuration>
+					</project>
 				</sage:literal>
 			</mod:data>
 		</mod:XmlTree>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

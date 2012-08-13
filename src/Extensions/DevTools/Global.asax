@@ -1,1 +1,1 @@
-﻿<%@ Application Inherits="Sage.Application" Language="C#" %>
+﻿<%@ Application Inherits="Sage.Project" Language="C#" %>

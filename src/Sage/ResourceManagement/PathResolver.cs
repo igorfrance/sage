@@ -251,7 +251,7 @@ namespace Sage.ResourceManagement
 			get
 			{
 				return virtualDirectories ?? (virtualDirectories = 
-					Application.GetVirtualDirectories(this.context));
+					Project.GetVirtualDirectories(this.context));
 			}
 		}
 

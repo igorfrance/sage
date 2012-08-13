@@ -21,15 +21,22 @@ namespace Sage.ResourceManagement
 	using System.Text.RegularExpressions;
 	using System.Xml;
 
+	using Kelp;
+	using Kelp.Extensions;
+
+	using Sage.Modules;
+
 	using log4net;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Provides configuration information about Sage resource libraries.
 	/// </summary>
-	public class ResourceLibraryInfo
+	public class ResourceLibraryInfo : IXmlConvertible
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceLibraryInfo).FullName);
-		private readonly List<Regex> includePaths;
+		private List<Regex> includePaths;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ResourceLibraryInfo"/> class.
@@ -39,20 +46,52 @@ namespace Sage.ResourceManagement
 		{
 			Contract.Requires<ArgumentNullException>(configElem != null);
 
+			this.Parse(configElem);
+		}
+
+		/// <summary>
+		/// Gets the name of this resource library.
+		/// </summary>
+		public string Name { get; private set; }
+
+		/// <summary>
+		/// Gets a value indicating whether this library should be included on all views.
+		/// </summary>
+		public bool IncludeAlways { get; private set; }
+
+		/// <summary>
+		/// Gets the resource that this library consists of.
+		/// </summary>
+		public List<Resource> Resources { get; private set; }
+
+		/// <summary>
+		/// Gets the list of names of other libraries that this library depends on.
+		/// </summary>
+		public List<string> LibraryDependencies { get; private set; }
+
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format("{0}{1}", this.Name, this.IncludeAlways ? " (global)" : string.Empty);
+		}
+
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
 			var nm = XmlNamespaces.Manager;
 
-			this.Name = configElem.GetAttribute("name");
+			this.Name = element.GetAttribute("name");
 			this.Resources = new List<Resource>();
-			this.Dependencies = new List<string>();
+			this.LibraryDependencies = new List<string>();
 			this.includePaths = new List<Regex>();
 
-			foreach (XmlElement resourceElem in configElem.SelectNodes("p:resources/p:resource", nm))
+			foreach (XmlElement resourceElem in element.SelectNodes("p:resources/p:resource", nm))
 				this.Resources.Add(new Resource(resourceElem));
 
-			foreach (XmlElement dependencyElement in configElem.SelectNodes("p:dependencies/p:library", nm))
-				this.Dependencies.Add(dependencyElement.GetAttribute("ref"));
+			foreach (XmlElement dependencyElement in element.SelectNodes("p:dependencies/p:library", nm))
+				this.LibraryDependencies.Add(dependencyElement.GetAttribute("ref"));
 
-			foreach (XmlElement childElem in configElem.SelectNodes("p:include/*", nm))
+			foreach (XmlElement childElem in element.SelectNodes("p:include/*", nm))
 			{
 				if (childElem.LocalName == "always")
 					this.IncludeAlways = true;
@@ -74,30 +113,35 @@ namespace Sage.ResourceManagement
 			}
 		}
 
-		/// <summary>
-		/// Gets the name of this resource library.
-		/// </summary>
-		public string Name { get; private set; }
-
-		/// <summary>
-		/// Gets a value indicating whether this library should be included on all views.
-		/// </summary>
-		public bool IncludeAlways { get; private set; }
-
-		/// <summary>
-		/// Gets the resource that this library consists of.
-		/// </summary>
-		public List<Resource> Resources { get; private set; }
-
-		/// <summary>
-		/// Gets the lis of names of other libraries that this library depends on.
-		/// </summary>
-		public List<string> Dependencies { get; private set; }
-
 		/// <inheritdoc/>
-		public override string ToString()
+		public XmlElement ToXml(XmlDocument document)
 		{
-			return string.Format("{0}{1}", this.Name, this.IncludeAlways ? " (global)" : string.Empty);
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+			XmlElement result = document.CreateElement("library", Ns);
+
+			result.SetAttribute("name", this.Name);
+
+			XmlNode dependenciesNode = result.AppendChild(document.CreateElement("dependencies", Ns));
+			foreach (string name in this.LibraryDependencies)
+				dependenciesNode.AppendElement(document.CreateElement("library", Ns)).SetAttribute("ref", name);
+
+			XmlNode resourcesNode = result.AppendChild(document.CreateElement("resources", Ns));
+			foreach (Resource resource in this.Resources)
+				resourcesNode.AppendElement(resource.ToXml(document));
+
+			if (this.IncludeAlways || this.includePaths.Count != 0)
+			{
+				XmlNode includeNode = result.AppendChild(document.CreateElement("include", Ns));
+				if (this.IncludeAlways)
+					includeNode.AppendChild(document.CreateElement("always", Ns));
+
+				foreach (Regex expression in this.includePaths)
+				{
+					includeNode.AppendChild(document.CreateElement("path", Ns)).InnerText = expression.ToString();
+				}
+			}
+
+			return result;
 		}
 
 		internal bool MatchesPath(string url)

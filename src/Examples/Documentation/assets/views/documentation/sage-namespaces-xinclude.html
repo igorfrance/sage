@@ -11,65 +11,110 @@
 	</head>
 	<body>
 
-		<h1>The XInclude namespace</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-namespaces-xinclude"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>The XInclude namespace</span>
+				</header>
+				<details>
+					<summary>
+						The XInclude module library. Read more about <a href="http://www.w3.org/TR/xinclude/">XML Inclusions at w3.org</a>.
+					</summary>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-namespaces-xinclude"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<section class="namespace">
+						<header>Namespace URI:</header>
+						<details>http://www.w3.org/2003/XInclude</details>
+					</section>
 
-		<code class="principal">http://www.w3.org/2003/XInclude</code>
+					<section class="topic" id="elements" data-index="yes" data-level="1">
+						<header>Elements</header>
 
-		<p>
-			The XInclude module library. Read more about XML Inclusions on <a href="http://www.w3.org/TR/xinclude/">w3.org</a>.
-		</p>
+						<details>
+							<section class="element" id="include-element" data-index="yes" data-level="2">
+								<header>xi:include element</header>
+								<details>
+									<summary>Includes another document within the current document, replacing the <code>xi:include</code> element.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary>Including a complete document</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<xi:include href="footer.xml"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<summary>Including a document fragment, using xpointer attribute</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<xi:include href="footer.html" xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:div[@class='contact']/x:ul) "/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>href</header>
+												<details>Specifies the path to the document to include.</details>
+											</section>
+											<section class="attribute">
+												<header>parse</header>
+												<details>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>xpointer</header>
+												<details>
+													<p>
+														When <code>parse="xml"</code>, the XPointer contained in the xpointer attribute is evaluated to identify a portion of the resource to include. This attribute is optional; when omitted, the entire resource is included. The xpointer attribute must not be present when <code>parse="text"</code>.
+													</p>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="fallback-element" data-index="yes" data-level="2">
+								<header>xi:fallback element</header>
+								<details>
+									<summary>Optional alternative content to display in it's place if loading of the resource specified by the parent element's <code>href</code> attribute fails. If loading fails, and no fallback has been specified, a runtime error occurs. Fallback elements must not be empty, and can contain other include elements. </summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary>In this example, there are two levels of fallback:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<xi:include href="example.txt" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude">
+															<xi:fallback>
+																<xi:include href="fallback-example.txt" parse="text">
+																	<xi:fallback>
+																		<a href="mailto:bob@example.org">Report error</a>
+																	</xi:fallback>
+																</xi:include>
+															</xi:fallback>
+														</xi:include>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
 
-		<h5 class="tiny">Elements</h5>
-
-		<ul class="casual separate reference">
-			<li>
-				<h5 class="casual">xi:include</h5>
-				<span>Includes another document within the current document, replacing the <code>xi:include</code> element.</span>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@href</h6>
-						<span>Specifies the path to the document to include.</span>
-					</li>
-					<li>
-						<h6 class="casual">@parse</h6>
-						<span>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</span>
-					</li>
-					<li>
-						<h6 class="casual">@xpointer</h6>
-						<span>
-							When <code>parse="xml"</code>, the XPointer contained in the xpointer attribute is evaluated to identify
-							a portion of the resource to include. This attribute is optional; when omitted, the entire resource is
-							included. The xpointer attribute must not be present when <code>parse="text"</code>
-						</span>
-						<code class="example">xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class])"</code>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">xi:fallback</h5>
-				<span>Optional alternative content to display in it's place if loading of the resource specified by the
-				parent element's <code>href</code> attribute fails. If loading fails, and no fallback has been specified,
-				a runtime error occurs.</span>
-			</li>
-		</ul>
-
-		<h5 class="tiny">Examples</h5>
-
-		<ul class="casual examples">
-			<li>
-				<a href="examples/xinclude/include-document.html">Including a document</a>
-			</li>
-			<li>
-				<a href="examples/xinclude/include-fragment.html">Including a document fragment</a>
-			</li>
-		</ul>
-
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

@@ -17,42 +17,30 @@ namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
+
+	using Kelp;
+	using Kelp.Extensions;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Contains configuration information about a single URL route.
 	/// </summary>
-	public struct RouteInfo
+	public class RouteInfo : IXmlConvertible
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RouteInfo"/> struct, using the specified 
+		/// Initializes a new instance of the <see cref="RouteInfo"/> class, using the specified 
 		/// <paramref name="configurationElement"/>.
 		/// </summary>
 		/// <param name="configurationElement">The route configuration element's.</param>
 		/// <exception cref="ArgumentNullException"><c>routeConfig</c> is null.</exception>
 		public RouteInfo(XmlElement configurationElement)
-			: this()
 		{
-			if (configurationElement == null)
-				throw new ArgumentNullException("configurationElement");
+			Contract.Requires<ArgumentNullException>(configurationElement != null);
 
-			this.Name = configurationElement.GetAttribute("name");
-			this.Path = configurationElement.GetAttribute("path");
-			this.Controller = configurationElement.GetAttribute("controller");
-			this.Action = configurationElement.GetAttribute("action");
-			this.Namespace = configurationElement.GetAttribute("namespace");
-
-			this.Constraints = new Dictionary<string, string>();
-			this.Defaults = new Dictionary<string, string>();
-
-			this.Defaults.Add("action", this.Action);
-			this.Defaults.Add("controller", this.Controller);
-
-			foreach (XmlElement constrNode in configurationElement.SelectNodes("p:constraint", XmlNamespaces.Manager))
-				this.Constraints.Add(constrNode.GetAttribute("name"), constrNode.GetAttribute("expression"));
-
-			foreach (XmlElement constrNode in configurationElement.SelectNodes("p:default", XmlNamespaces.Manager))
-				this.Defaults.Add(constrNode.GetAttribute("name"), constrNode.GetAttribute("value"));
+			this.Parse(configurationElement);
 		}
 
 		/// <summary>
@@ -83,12 +71,65 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the constraints associated with this route.
 		/// </summary>
-		public Dictionary<string, string> Constraints { get; private set; }
+		public Dictionary<string, object> Constraints { get; private set; }
 
 		/// <summary>
 		/// Gets the default values associated with this route.
 		/// </summary>
-		public Dictionary<string, string> Defaults { get; private set; }
+		public Dictionary<string, object> Defaults { get; private set; }
+
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			this.Name = element.GetAttribute("name");
+			this.Path = element.GetAttribute("path");
+			this.Controller = element.GetAttribute("controller");
+			this.Action = element.GetAttribute("action");
+			this.Namespace = element.GetAttribute("namespace");
+
+			this.Constraints = new Dictionary<string, object>();
+			this.Defaults = new Dictionary<string, object>();
+
+			this.Defaults.Add("action", this.Action);
+			this.Defaults.Add("controller", this.Controller);
+
+			foreach (XmlElement constrNode in element.SelectNodes("p:constraint", XmlNamespaces.Manager))
+				this.Constraints[constrNode.GetAttribute("name")] = constrNode.GetAttribute("expression");
+
+			foreach (XmlElement constrNode in element.SelectNodes("p:default", XmlNamespaces.Manager))
+				this.Defaults[constrNode.GetAttribute("name")] = constrNode.GetAttribute("value");
+		}
+
+		/// <inheritdoc/>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+			XmlElement result = document.CreateElement("route", Ns);
+			result.SetAttribute("name", this.Name);
+			result.SetAttribute("path", this.Path);
+			result.SetAttribute("controller", this.Controller);
+			result.SetAttribute("action", this.Action);
+			result.SetAttribute("namespace", this.Namespace);
+
+			foreach (KeyValuePair<string, object> constraint in this.Constraints)
+			{
+				XmlElement element = result.AppendElement(document.CreateElement("constraint", Ns));
+				element.SetAttribute("name", constraint.Key);
+				element.SetAttribute("expression", constraint.Value == null ? string.Empty : constraint.Value.ToString());
+			}
+
+			foreach (KeyValuePair<string, object> dflt in this.Defaults)
+			{
+				if (dflt.Key == "action" || dflt.Key == "controller")
+					continue;
+
+				XmlElement element = result.AppendElement(document.CreateElement("default", Ns));
+				element.SetAttribute("name", dflt.Key);
+				element.SetAttribute("value", dflt.Value == null ? string.Empty : dflt.Value.ToString());
+			}
+
+			return result;
+		}
 
 		/// <inheritdoc/>
 		public override string ToString()

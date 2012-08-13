@@ -2,7 +2,7 @@
 <site:navigation xmlns:site="http://sage.cycle99.com/" xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
 	<ul xmlns="http://www.w3.org/1999/xhtml">
 		<li>
-			<a href="url:link(documentation)">Sage</a>
+			<a href="url:link(documentation)">Documentation</a>
 			<ul class="documentation">
 				<li>
 					<span>Getting started</span>
@@ -56,6 +56,9 @@
 							<a href="url:link(sage-uri-schemes)">Available URI schemes</a>
 						</li>
 						<li>
+							<a href="url:link(xslt-templates)">XSLT templates</a>
+						</li>
+						<li>
 							<a href="url:link(sage-namespaces)">Namespaces</a>
 							<ul>
 								<li>
@@ -107,10 +110,10 @@
 							<a href="url:link(xml-flow-copy-tree)">2: Contextualize</a>
 						</li>
 						<li>
-							<a href="url:link(xml-flow-expand-modules)">3: Process modules</a>
+							<a href="url:link(xml-flow-expand-modules)">3: Expand modules</a>
 						</li>
 						<li>
-							<a href="url:link(xml-flow-xslt-transform)">4: Transform to HTML</a>
+							<a href="url:link(xml-flow-xslt-transform)">4: XSLT Transform</a>
 						</li>
 					</ul>
 				</li>
@@ -182,6 +185,9 @@
 									<a href="url:link(extensibility-text-handlers)">Text handlers</a>
 								</li>
 								<li>
+									<a href="url:link(extensibility-text-functions)">Text functions</a>
+								</li>
+								<li>
 									<a href="url:link(extensibility-xml-filters)">View XML filters</a>
 								</li>
 								<li>
@@ -219,6 +225,44 @@
 						</li>
 						<li>
 							<a href="url:link(configuration-project)">Project</a>
+							<ul>
+								<li>
+									<a href="url:link(configuration-project-paths)">Paths</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-libraries)">Libraries</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-modules)">Modules</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-linking)">Linking</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-routing)">Routing</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-internationalization)">Internationalization</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-variables)">Variables</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-categories)">Categories</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-environment)">Environment</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-metaviews)">Meta views</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-extension)">Extension package</a>
+								</li>
+								<li>
+									<a href="url:link(configuration-project-custom)">Custom elements</a>
+								</li>
+							</ul>
 						</li>
 						<li>
 							<a href="url:link(configuration-category)">Category</a>

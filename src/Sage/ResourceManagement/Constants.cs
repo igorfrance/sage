@@ -40,17 +40,17 @@ namespace Sage.ResourceManagement
 	}
 
 	/// <summary>
-	/// Defines the way in which to globalize an <see cref="XmlResource"/>.
+	/// Defines the way in which to internationalize an <see cref="XmlResource"/>.
 	/// </summary>
-	public enum GlobalizeType
+	public enum InternationalizeType
 	{
 		/// <summary>
-		/// Indicates the standard processinbg mode, where values are simply resolved and translated.
+		/// Indicates the standard processing mode, where values are simply resolved and translated.
 		/// </summary>
 		Translate = 0,
 
 		/// <summary>
-		/// Indicates the diagnostic processinbg mode, where additional debugging information is emitted with each processed value.
+		/// Indicates the diagnostic processing mode, where additional debugging information is emitted with each processed value.
 		/// </summary>
 		Diagnose = 1,
 	}

@@ -11,184 +11,242 @@
 	</head>
 	<body>
 
-		<h1>The Sage namespace</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-namespaces-sage"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>The Sage namespace</span>
+				</header>
+				<details>
+					<summary>Contains various general purpose elements related to Sage.</summary>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-namespaces-sage"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<section class="namespace">
+						<header>Namespace URI:</header>
+						<details>http://www.cycle99.com/schemas/sage/sage.xsd</details>
+					</section>
 
-		<dfn class="sectionblock">Contains various general purpose elements related to Sage.</dfn>
+					<section class="topic" id="elements" data-index="yes" data-level="1">
+						<header>Elements</header>
+						<details>
+							<section class="element" id="version-element" data-index="yes" data-level="2">
+								<header>sage:version element</header>
+								<details>
+									<summary>Inserts the Sage version as a text node, replacing the original element.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:version/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<summary>Emits a value similar to:</summary>
+											<code class="block">
+												<sage:version/>
+											</code>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="link-element" data-index="yes" data-level="2">
+								<header>sage:link element</header>
+								<details>
+									<summary>Provides a generic element referring to a link that Sage resolves and appends as an <code>href</code> attribute during runtime. <a href="url:link(linking)">Read more</a>.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:link ref="customer-service" values="section=faq"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>ref</header>
+												<details>Specifies the <code>id</code> of the link this element refers to.</details>
+											</section>
+											<section class="attribute">
+												<header>values</header>
+												<details>
+													A querystring list of name-value pairs to be used as substitution values for any placeholders in the URL text of the link this element refers to. For more information, see <a href="url:link(linking)">linking</a>.
+												</details>
+											</section>
+											<section class="attribute">
+												<header>encode</header>
+												<details>If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="url-element" data-index="yes" data-level="2">
+								<header>sage:url element</header>
+								<details>
+									<summary>Provides a generic element that refers to a predefined link that Sage resolves, replacing the element with the resolved link URL. <a href="url:link(linking)">Read more</a>.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:version/>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>ref</header>
+												<details>Specifies the <code>id</code> of the link this element refers to.</details>
+											</section>
+											<section class="attribute">
+												<header>values</header>
+												<details>
+													A querystring list of name-value pairs to be used as substitution values for any placeholders in the URL text of the link this element refers to. For more information, see <a href="url:link(linking)">linking</a>.
+												</details>
+											</section>
+											<section class="attribute">
+												<header>encode</header>
+												<details>If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="literal-element" data-index="yes" data-level="2">
+								<header>sage:literal element</header>
+								<details>
+									<summary>This element is used to wrap markup that should be preserved as-is; that is, no preprocessing (xml inclusions, phrase or variable substitution etc) will be done on it; it's content will be served as specified, and the <code>sage:literal</code> element itself will be filtered out from the final output. The main usage of this element is to illustrate example usage.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal><sage:literal/></sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(xslt-templates)">XSLT template</a> (ignored, the template just skips over the element).
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="expression-element" data-index="yes" data-level="2">
+								<header>sage:expression element</header>
+								<details>
+									<summary>Provides an element whose text will be scanned for <a href="url:link(extensibility-text-functions)">text functions</a> expressions that are then evaluated inline and substituted with the result of their call.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:expression>Click here to process this link: url:link(configuration)</sage:expression>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
 
-		<blockquote>
-			<label class="small">Namespace URI:</label>
-			<code class="principal">http://www.cycle99.com/projects/sage</code>
-		</blockquote>
+					<section class="topic" id="attributes" data-index="yes" data-level="1">
+						<header>Attributes</header>
+						<details>
+							<section class="element" id="attrib-attribute" data-index="yes" data-level="2">
+								<header>sage:attrib attribute</header>
+								<details>
+									<summary>
+										<div>
+										Subtitutes itself with another attribute, created according to the value of this attribute. The syntax is:
+										</div>
+										<code class="principal">sage:attrib="{AttribName}={AttribValueExpression}"</code>
+										<p>
+											{AttribName} part specifies the name of the attribute to create. <br/>
+											{AttribValueExpression} part specifies the expression to evaluate and set the value of the attribute with.
+										</p>
+										<p>
+											The value is processed for <a href="url:link(extensibility-text-functions)">text functions</a>. The value can contain a combination of free text and text functions; the functions will be processed, free text will be left as is.
+										</p>
+									</summary>
 
-		<h3 class="section">Elements</h3>
-		<ul class="casual separate">
-			<li>
-				<div class="sectionblock">
-					<h5 class="casual" id="sage:version">sage:version</h5>
-					<span>Inserts the Sage version at a text node, replacing the original element.</span>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:version/>
-						</mod:data>
-					</mod:XmlTree>
-					<div>Emits a value similar to</div>
-					<code><b>1.04466.18976</b></code>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock">
-					<h5 class="casual" id="sage:basehref">sage:basehref</h5>
-					<span>Inserts an HTML <code>&lt;base /&gt;</code> element and sets it's <code>href</code> attribute to the
-					fully qualified base url of the current web application, thereby qualifying any unqualified URL on the page.</span>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:basehref/>
-						</mod:data>
-					</mod:XmlTree>
-					<div>Emits markup similar to</div>
-					<mod:XmlTree>
-						<mod:data>
-							<base href="http://www.myserver.com/myapp/"/>
-						</mod:data>
-					</mod:XmlTree>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock">
-					<h5 class="casual" id="sage:link">sage:link</h5>
-					<span>Provides a generic element that refers to a predefined link that Sage resolves and append as an
-					<code>href</code> attribute during runtime.</span>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<sage:link ref="customer-service" values="section=faq"/>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@ref</h6>
-							<span>Specifies the <code>id</code> of the link this element refers to.</span>
-						</li>
-						<li>
-							<h6 class="casual">@values</h6>
-							<p>A querystring list of name-value pairs to be used as substitution values for any placeholders
-							in the URL text of the link this element refers to.</p>
-							<p>
-								For more information, see the section about <a href="url:link(linking)">linking</a>.
-							</p>
-						</li>
-						<li>
-							<h6 class="casual">@encode</h6>
-							<p>
-								If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful
-								when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.
-							</p>
-						</li>
-					</ul>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock">
-					<h5 class="casual" id="sage:url">sage:url</h5>
-					<span>Provides a generic element that refers to a predefined link that Sage resolves, replacing the element
-					with the resolved link URL</span>
-				</div>
-				<blockquote>
-					<mod:XmlTree>
-						<mod:data>
-							<sage:literal>
-								<sage:url ref="customer-service" values="section=faq"/>
-							</sage:literal>
-						</mod:data>
-					</mod:XmlTree>
-					<h6 class="tiny">Attributes</h6>
-					<ul class="casual">
-						<li>
-							<h6 class="casual">@ref</h6>
-							<span>Specifies the <code>id</code> of the link this element refers to.</span>
-						</li>
-						<li>
-							<h6 class="casual">@values</h6>
-							<p>A querystring list of name-value pairs to be used as substitution values for any placeholders
-							in the URL text of the link this element refers to.</p>
-							<p>
-								For more information, see the section about <a href="url:link(linking)">linking</a>.
-							</p>
-						</li>
-						<li>
-							<h6 class="casual">@encode</h6>
-							<p>
-								If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful
-								when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.
-							</p>
-						</li>
-					</ul>
-				</blockquote>
-			</li>
-			<li>
-				<div class="sectionblock">
-					<h5 class="casual" id="sage:literal">sage:literal</h5>
-					<span>
-						This element is used to wrap markup that should be preserved as-is; that is, no preprocessing (xml inclusions,
-						phrase or variable substitution etc) will be done on it; it's content will be served as specified, and the
-						<code>sage:literal</code> element itself will be filtered out from the final output. The main usage of this
-						element is to illustrate example usage.
-					</span>
-				</div>
-			</li>
-		</ul>
-		<h3 class="section">Attributes</h3>
-		<div class="sectionblock">
-			<h5 class="casual" id="sage:attrib">@sage:attrib</h5>
-			<span>
-				Creates an attribute with the specified name, with it's value resolved dynamically by Sage.
-			</span>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<summary>Before processing:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<form sage:attrib="action=url:link(customer-service, section=faq)">...</form>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<summary>After processing:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<form action="feedback/customer-service/faq/">...</form>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
 		</div>
-		<blockquote>
-			<p>
-				The attribute that will be created will have the name as specified with <code>&lt;attribName&gt;</code>, and
-				the value as specified with &lt;attribValue&gt;. In the example above, the function <code>url:link</code> is
-				used. To find out more about functions, check the <a href="url:link(extensibility-text-functions)">text functions</a>
-				page in the <a href="url:link(extensibility)">extensibility section</a>.
-			</p>
-			<h6>Syntax</h6>
-			<blockquote>
-				<code class="principal">sage:attrib="&lt;attribName&gt;=&lt;attribValue&gt;"</code>
-			</blockquote>
-			<h6>Example</h6>
-			<blockquote>
-				<mod:XmlTree>
-					<mod:data>
-						<sage:literal>
-							<form sage:attrib="action=url:link(customer-service, section=faq)">...</form>
-						</sage:literal>
-					</mod:data>
-				</mod:XmlTree>
-				<p>Emits markup similar to (assuming the link 'customer-service' has been configured accordingly):</p>
-				<mod:XmlTree>
-					<mod:data>
-						<sage:literal>
-							<form action="feedback/customer-service/faq/">...</form>
-						</sage:literal>
-					</mod:data>
-				</mod:XmlTree>
-			</blockquote>
-		</blockquote>
-		<br class="spacer"/>
-
 	</body>
 </html>

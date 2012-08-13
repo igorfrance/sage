@@ -7,25 +7,36 @@
 	xmlns="http://www.w3.org/1999/xhtml"
 	exclude-result-prefixes="logic xhtml">
 
-	<xsl:template match="logic:conditions | logic:condition"/>
-
-	<xsl:template match="*[@logic:if]">
-		<xsl:variable name="valid">
-			<xsl:apply-templates select="@logic:if" mode="isTrue"/>
-		</xsl:variable>
-		<xsl:if test="$valid = 1">
-			<xsl:element name="{name()}" namespace="{namespace-uri()}">
-				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/schemas/sage/logic.xsd']"/>
-				<xsl:apply-templates select="node()"/>
-			</xsl:element>
+	<xsl:template match="logic:conditions | logic:clause">
+		<xsl:if test="ancestor::sage:literal">
+			<xsl:apply-templates select="." mode="copy"/>
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="*[@logic:ifnot]">
+	<xsl:template match="*[@logic:if]">
 		<xsl:variable name="valid">
-			<xsl:apply-templates select="@logic:ifnot" mode="isTrue"/>
+			<xsl:choose>
+				<xsl:when test="ancestor::sage:literal">1</xsl:when>
+				<xsl:otherwise>
+					<xsl:variable name="valid">
+						<xsl:apply-templates select="@logic:if" mode="isTrue"/>
+					</xsl:variable>
+					<xsl:choose>
+						<!-- reverse logic for not() expressions -->
+						<xsl:when test="starts-with(@logic:if, 'not(')">
+							<xsl:choose>
+								<xsl:when test="$valid=1">0</xsl:when>
+								<xsl:otherwise>1</xsl:otherwise>
+							</xsl:choose>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$valid"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
-		<xsl:if test="$valid = 0">
+		<xsl:if test="$valid = 1">
 			<xsl:element name="{name()}" namespace="{namespace-uri()}">
 				<xsl:apply-templates select="@*[namespace-uri() != 'http://www.cycle99.com/schemas/sage/logic.xsd']"/>
 				<xsl:apply-templates select="node()"/>
@@ -73,9 +84,10 @@
 
 	<xsl:template match="logic:and" mode="isTrue">
 		<xsl:variable name="result">
-			<xsl:apply-templates select="logic:condition" mode="isTrue"/>
+			<xsl:apply-templates select="*" mode="isTrue"/>
 		</xsl:variable>
 		<xsl:choose>
+			<xsl:when test="normalize-space($result) = ''">0</xsl:when>
 			<xsl:when test="contains($result, '0')">0</xsl:when>
 			<xsl:otherwise>1</xsl:otherwise>
 		</xsl:choose>
@@ -86,6 +98,7 @@
 			<xsl:apply-templates select="*" mode="isTrue"/>
 		</xsl:variable>
 		<xsl:choose>
+			<xsl:when test="normalize-space($result) = ''">0</xsl:when>
 			<xsl:when test="contains($result, '1')">1</xsl:when>
 			<xsl:otherwise>0</xsl:otherwise>
 		</xsl:choose>
@@ -95,37 +108,37 @@
 		<xsl:apply-templates select="@ref" mode="isTrue"/>
 	</xsl:template>
 
-	<xsl:template match="logic:condition[@object='useragent']" mode="isTrue">
+	<xsl:template match="logic:clause[@object='useragent']" mode="isTrue">
 		<xsl:apply-templates select="@*" mode="evaluate">
 			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:useragent/@*[name() = current()/@property]"/>
 		</xsl:apply-templates>
 	</xsl:template>
 
-	<xsl:template match="logic:condition[@object='querystring']" mode="isTrue">
+	<xsl:template match="logic:clause[@object='querystring']" mode="isTrue">
 		<xsl:apply-templates select="@*" mode="evaluate">
 			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:querystring/@*[name() = current()/@property]"/>
 		</xsl:apply-templates>
 	</xsl:template>
 
-	<xsl:template match="logic:condition[@object='cookie']" mode="isTrue">
+	<xsl:template match="logic:clause[@object='cookie']" mode="isTrue">
 		<xsl:apply-templates select="@*" mode="evaluate">
 			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:cookie/@*[name() = current()/@property]"/>
 		</xsl:apply-templates>
 	</xsl:template>
 
-	<xsl:template match="logic:condition[@object='address']" mode="isTrue">
+	<xsl:template match="logic:clause[@object='address']" mode="isTrue">
 		<xsl:apply-templates select="@*" mode="evaluate">
 			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:address/@*[name() = current()/@property]"/>
 		</xsl:apply-templates>
 	</xsl:template>
 
-	<xsl:template match="logic:condition[@object='dateTime']" mode="isTrue">
+	<xsl:template match="logic:clause[@object='dateTime']" mode="isTrue">
 		<xsl:apply-templates select="@*" mode="evaluate">
 			<xsl:with-param name="selection" select="/sage:view/sage:request/sage:dateTime/@*[name() = current()/@property]"/>
 		</xsl:apply-templates>
 	</xsl:template>
 
-	<xsl:template match="logic:condition" mode="isTrue">
+	<xsl:template match="logic:clause" mode="isTrue">
 		<xsl:param name="selection"/>
 		<xsl:apply-templates select="@*" mode="evaluate">
 			<xsl:with-param name="selection" select="$selection"/>
@@ -167,7 +180,7 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="@greaterThan" mode="evaluate">
+	<xsl:template match="@gt" mode="evaluate">
 		<xsl:param name="selection"/>
 		<xsl:choose>
 			<xsl:when test="$selection > .">1</xsl:when>
@@ -175,7 +188,7 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="@greaterThanOrEqual" mode="evaluate">
+	<xsl:template match="@gte" mode="evaluate">
 		<xsl:param name="selection"/>
 		<xsl:choose>
 			<xsl:when test="$selection >= .">1</xsl:when>
@@ -183,7 +196,7 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="@lessThan" mode="evaluate">
+	<xsl:template match="@lt" mode="evaluate">
 		<xsl:param name="selection"/>
 		<xsl:choose>
 			<xsl:when test="$selection &lt; .">1</xsl:when>
@@ -191,7 +204,7 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="@lessThanOrEqual" mode="evaluate">
+	<xsl:template match="@lte" mode="evaluate">
 		<xsl:param name="selection"/>
 		<xsl:choose>
 			<xsl:when test="$selection &lt;= .">1</xsl:when>
@@ -201,23 +214,36 @@
 
 	<xsl:template match="@*" mode="evaluate"/>
 
-	<xsl:template match="@when | @ref | @logic:if | @logic:ifnot" mode="isTrue">
-		<xsl:variable name="conditions" select="//logic:conditions/logic:and | //logic:conditions/logic:or"/>
+	<xsl:template match="@when | @ref | @logic:if" mode="isTrue">
+		<xsl:variable name="conditions" select="
+			//logic:conditions[not(ancestor::sage:literal)]/logic:and |
+			//logic:conditions[not(ancestor::sage:literal)]/logic:or"
+		/>
+		<xsl:variable name="condition">
+			<xsl:choose>
+				<xsl:when test="starts-with(., 'not(')">
+					<xsl:value-of select="substring(., 5, string-length(.) - 5)"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="."/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		<xsl:choose>
 			<xsl:when test="/sage:view/sage:request/@debug = '1'">
 				<xsl:choose>
-					<xsl:when test="$conditions[@id=current()]">
-						<xsl:apply-templates select="$conditions[@id=current()]" mode="isTrue"/>
+					<xsl:when test="$conditions[@id=$condition]">
+						<xsl:apply-templates select="$conditions[@id=$condition]" mode="isTrue"/>
 					</xsl:when>
 					<xsl:otherwise>
 						<!-- Preserve the plain text formatting for the error message: -->
 						<xsl:message terminate="yes"
->Missing condition '<xsl:value-of select="."/>'. <xsl:choose>
+>Missing condition '<xsl:value-of select="$condition"/>'. <xsl:choose>
 <xsl:when test="count($conditions) = 0">
 The current document contains no logical definition elements. In order to use conditon with name '<xsl:value-of select="."/>', try specifying something like:
 &lt;logic:conditions>
 	&lt;logic:and id="<xsl:value-of select="."/>">
-		&lt;logic:condition object="..." property="..." equals="..." />
+		&lt;logic:clause object="..." property="..." equals="..." />
 		...
 	&lt;/logic:and>
 &lt;/logic:conditions>
@@ -236,7 +262,7 @@ Current document contains these logical definition elements:
 				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:apply-templates select="$conditions[@id=current()]" mode="isTrue"/>
+				<xsl:apply-templates select="$conditions[@id=$condition]" mode="isTrue"/>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>

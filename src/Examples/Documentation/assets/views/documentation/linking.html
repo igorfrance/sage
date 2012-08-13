@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>Linking</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="linking"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="linking"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Linking</span>
+				</header>
+				<details>
 		<p>
 			To promote reuse and facilitate discoverability, Sage enables you to define project-global
 			URLs within the <a href="url:link(configuration-project)">project configuration file</a>, and then refer to them
@@ -62,6 +65,8 @@
 				<mod:XmlTree>
 					<mod:data>
 						<sage:literal>
+							<sage:value expression="url:link(configuration-project)"/>
+
 							<a href="url:link(xml-as-a-language)">XML as a language</a>
 						</sage:literal>
 					</mod:data>
@@ -82,7 +87,7 @@
 				<mod:XmlTree>
 					<mod:data>
 						<sage:literal>
-							<form method="post" sage:attrib="action:url:link(registration-action)">...</form>
+							<form method="post" sage:attrib="action=url:link(registration-action)">...</form>
 						</sage:literal>
 					</mod:data>
 				</mod:XmlTree>
@@ -264,5 +269,9 @@
 
 		<br class="spacer"/>
 
+
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

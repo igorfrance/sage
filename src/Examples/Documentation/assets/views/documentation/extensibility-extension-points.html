@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>Extensions points</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="extensibility-extension-points"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="extensibility-extension-points"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Extensions points</span>
+				</header>
+				<details>
 		<dfn class="sectionblock">
 			Extension points are various hooks for custom code to be registered for various core operations within Sage,
 			providing posibilities for extending and augmenting behavior of and possibilities within Sage.
@@ -33,5 +36,9 @@
 		</mod:RelatedArticles>
 
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

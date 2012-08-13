@@ -30,14 +30,14 @@ namespace Sage.Controllers
 	public class ControllerMessages : List<ControllerMessage>, IXmlConvertible
 	{
 		/// <inheritdoc/>
-		/// <exception cref="ArgumentNullException">
-		/// <c>ownerDoc</c> is null.
-		/// </exception>
+		public void Parse(XmlElement element)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc/>
 		public XmlElement ToXml(XmlDocument ownerDoc)
 		{
-			if (ownerDoc == null)
-				throw new ArgumentNullException("ownerDoc");
-
 			if (this.Count == 0)
 				return null;
 

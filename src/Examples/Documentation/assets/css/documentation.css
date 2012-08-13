@@ -5,9 +5,19 @@ body
 a,
 a code,
 a:visited
-	{ color: #0046b0; text-decoration: none; text-shadow: 1px 1px 1px #bbb; }
+	{ color: #0046b0; text-decoration: none;
+		-webkit-transition: all .2s ease-in-out;
+		-moz-transition: all .2s ease-in-out;
+		-o-transition: all .2s ease-in-out;
+		transition: all .2s ease-in-out;
+	}
 a:hover
-	{ color: #336600; text-decoration: underline; }
+	{ color: #ff9900; text-decoration: underline;
+		-webkit-transition: all .2s ease-in-out;
+		-moz-transition: all .2s ease-in-out;
+		-o-transition: all .2s ease-in-out;
+		transition: all .2s ease-in-out;
+	}
 a:hover code
 	{ color: #336600; }
 
@@ -102,18 +112,21 @@ div.container
 	{ overflow: hidden; }
 dfn
 	{ font-size: 120%; font-style: normal; display: block; }
-code
-	{ white-space: nowrap; color: #000; font-size: 95%; font-family: Consolas, Courier; }
-code.example
+code, pre
+	{ color: #000; font-size: 95%; font-family: Consolas, Courier; }
+
+code.example,
+pre.example
 	{ display: block; margin: 10px 0 10px  40px; }
 code.important
 	{ display: inline-block; padding: 2px; background: #efefef; border: 1px solid #ccc; }
 code.principal
-	{ display: inline-block; margin: 10px 0; padding: 5px; background: #efefef; border: 1px solid #ccc; }
+	{ display: inline-block; margin: 5px 0; padding: 5px 10px; background: #efefef; border: 1px solid #E6E6E6;
+	  border-radius: 3px; }
 dl
 	{}
 dt
-	{ margin-left: 20px; font-weight: bold; font-style: italic; font-size: 90%; }
+	{ margin-left: 20px; color: #000; font-family: Consolas, Courier New; font-size: 90%; }
 dd
 	{ margin-left: 40px; margin-bottom: 5px; }
 
@@ -130,10 +143,6 @@ dl.reference > dt
 dl.reference > dd
 	{ padding: 0 10px 10px 10px; background: #e9ebed; border-radius: 0 0 5px 5px; margin-left: 0; }
 
-/*
-ul, ol
-	{ padding-left: 3px; overflow: hidden; margin: 0; }
-*/
 ul, ol
 	{ overflow: hidden; padding-left: 20px; }
 ul > li
@@ -158,6 +167,12 @@ ul.bulleted > li
 
 ul li.category-name
 	{ color: #ccc; font-size: 85%; border-bottom: 1px solid #eee; margin: 5px 0 5px 0; }
+
+ul.notes
+	{ padding-left: 0; }
+ul.notes > li
+	{ background: url(../images/sagebullet.png) no-repeat 0 1px; padding-left: 20px; margin-bottom: 1px; }
+
 
 
 ul.root
@@ -200,16 +215,16 @@ table caption
 table.indent
 	{ margin-bottom: 40px; }
 table.definition
-	{ background: #fff; table-layout: fixed; width: 100%; border-collapse: collapse; }
+	{ background: #fff; table-layout: fixed; border-collapse: collapse; }
 table.definition th,
 table.definition td
-	{ border: 1px solid #ccc; }
+	{ border: 1px solid #ccc; vertical-align: top; }
 table.definition td
 	{ padding: 2px 1px; }
 table.definition thead th
-	{ background: #ccc; padding: 5px 2px 0 0; }
+	{ background: #ccc; padding: 5px 2px 0 1px; }
 table.definition tbody th
-	{ text-align: right; padding-right: 5px; min-width: 160px; color: #000; font-weight: normal; vertical-align: top; }
+	{ text-align: right; padding-left: 20px; padding-right: 5px; color: #000; font-weight: normal; vertical-align: top; }
 table.definition tbody th.right
 	{ text-align: right; }
 
@@ -226,6 +241,11 @@ table.definition tbody th.right
 .sectionblock p + *
 	{ margin-top: 15px; }
 
+/**
+ * generic
+ */
+.block
+	{ display: block; }
 .left
 	{ float: left; }
 .right
@@ -237,14 +257,23 @@ table.definition tbody th.right
 .center
 	{ text-align: center; }
 .indent
-	{ margin-left: 20px; }
+	{ margin-left: 16px; }
 .indent2
-	{ margin-left: 40px; }
+	{ margin-left: 32px; }
 .valign
 	{ width: 100%; height: 100%; display: table; }
 .vcell
 	{ width: 100%; height: 100%; display: table-cell; vertical-align: middle; }
+.nowrap
+	{ white-space: nowrap; }
+.marginframe
+	{ margin: 20px 0; }
+.error
+	{ color: red; font-weight: bold; }
 
+/**
+ * imageframe
+ */
 .imageframe
 	{ position: relative; float: left; margin: 0 40px 15px 0; }
 .imageframe .caption
@@ -259,6 +288,9 @@ table.definition tbody th.right
 .imageframe .copyright label
 	{ font-weight: bold; }
 
+/**
+ * Process flow
+ */
 .process-flow
 	{ position: relative; min-height: 90px; margin-bottom: 40px; white-space: nowrap; display: table; }
 .process-flow .change
@@ -268,6 +300,9 @@ table.definition tbody th.right
 .process-flow .state.to
 	{ display: inline-block; min-height: 90px; display: table-cell; vertical-align: top; }
 
+/**
+ * line
+ */
 .line
 	{ overflow: hidden; min-height: 18px; }
 .line label
@@ -275,44 +310,9 @@ table.definition tbody th.right
 .line .value
 	{ float: left; }
 
-#navigation
-	{ position: absolute; top: 0; left: -260px; bottom: 0; width: 240px; padding: 10px; overflow: auto;
-	  background: #DCDCDC; z-index: 1; }
-#navigation h1
-	{ background: url(../images/sage.png) no-repeat; width: 70px; height: 70px; margin-top: 0; }
-#navigation h1 a
-	{ display: block; height: 100%; }
-#navigation h1 span
-	{ display: none; }
-
-#navigation h2
-	{ margin: 0 0 10px 0; font-size: 16px; font-weight: normal; color: #999; }
-#navigation h5
-	{ margin: 10px 0 0 0; font-size: 12px; font-weight: normal; color: #666; }
-
-#navigation li
-	{ background: none; padding-left: 16px; }
-#navigation li.expandable
-	{ background: url(../images/expand.png) no-repeat 0 5px; cursor: pointer; }
-#navigation li.expandable:hover
-	{ background-image: url(../images/expand-a.png); }
-#navigation li.expandable.expanded
-	{ background-image: url(../images/expanded.png); }
-#navigation li.expandable ul
-	{ margin-left: 12px; margin-top: 10px; display: none; }
-#navigation li.expandable.expanded ul
-	{ display: block; }
-#navigation li.expandable ul,
-#navigation li.expandable li
-	{ cursor: default; padding-left: 0; font-size: 94%; }
-#navigation li.expandable a
-	{ cursor: pointer; }
-
-#navigation ul
-	{ list-style-type: none; padding: 0; margin: 0 0 20px 0; }
-#navigation li.separator
-	{ height: 10px; background: none; padding-left: 0; }
-
+/**
+ * Home page
+ */
 #welcome
 	{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; text-align: center; }
 #welcome .circle
@@ -426,7 +426,7 @@ html.dashboard .view-inspector .contenttoolbar {
 	{ margin-top: 20px; }
 
 /**
- * ExpandSection
+ * moreinfo section
  */
 section.moreinfo
 	{ margin-bottom: 20px; }
@@ -442,3 +442,143 @@ section.moreinfo > details
 	{ display: block; }
 section.moreinfo > header span.collapse
 	{ float: right; }
+
+/**
+ * page section
+ */
+div.page
+	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; overflow: hidden; }
+div.page > section.sidebar
+	{ position: absolute; top: 0; left: 0; bottom: 0; width: 200px; overflow: auto; }
+div.page > section.content
+	{ position: absolute; top: 0; left: 230px; bottom: 0; right: 0; overflow: hidden; }
+div.page > section.content > header
+	{ position: fixed; left: 230px; top: 0; right: 0; }
+div.page > section.content > details
+	{ position: absolute; top: 70px; left: 0; right: 0; bottom: 0; overflow: auto; }
+
+/**
+ * content section
+ */
+section.content > header
+	{ background-color: #e8e8e8; height: 50px; overflow: hidden; padding: 15px 15px 0 15px; border-bottom: 5px solid #ccc; }
+section.content > header span
+	{ display: block; padding-bottom: 7px;
+	  color: #444; font-size: 200%; font-weight: normal; text-shadow: 1px 1px 2px #999; }
+section.content > details
+	{ display: block; padding: 15px; }
+section.content > details > summary
+	{ display: block; font-size: 105%; margin-bottom: 15px; }
+section.content > details > summary dfn
+	{ padding: 15px; background: #ededed; border-radius: 5px; margin: 0 0 20px 0; }
+
+
+/**
+ * title section
+ */
+section.title > header
+	{ font-size: 120%; font-style: normal;
+	  padding: 15px; background: #ededed; border-radius: 5px; margin: 0 0 20px 0; }
+section.title > details
+	{ display: block; padding-left: 16px; }
+
+/**
+ * topic section
+ */
+section.topic
+	{	margin-bottom: 50px; }
+section.topic > header
+	{ margin: 0 0 15px 0; color: #95a2b0; border-bottom: 1px solid #b1bac5;
+	  font-size: 130%; font-weight: normal; }
+section.topic > details
+	{ display: block; }
+section.topic > details > summary
+	{ font-size: 105%; display: block; margin: 0 0 20px 0; background: #fff; }
+
+
+section.howitworks
+	{	margin-bottom: 30px; }
+section.howitworks > header
+	{ text-align: right; font-style: italic; color: #0080c0; font-size: 150%; font-weight: normal;
+	  border-bottom: 1px solid #0080c0; margin: 60px 10px 20px 0; padding-right: 10px;
+		text-shadow: 1px 1px 3px #919191; }
+
+
+/**
+ * namespace section
+ */
+section.namespace > header
+	{ font-size: 85%; font-weight: bold; color: #aaa; text-transform: lowercase; }
+section.namespace > details
+	{ display: block; background: #EBEBE2; padding: 10px 5px; margin: 2px 0 40px 0;
+	  font-family: Consolas, courier new; color: #7B7B74; border: 1px solid #C5C5C3; border-radius: 3px; }
+
+/**
+ * element section
+ */
+section.element > header
+	{ padding: 15px; background: #ededed; border-radius: 5px; margin: 20px 0;
+	  font-size: 100%; font-weight: bold; margin: 0; overflow: hidden; color: #24477b; }
+section.element > header h5
+	{ font-size: 90%; font-weight: bold; margin: 0; overflow: hidden; color: #24477b; }
+section.element > details
+	{ display: block; margin-left: 20px; padding-left: 10px; border-left: 1px solid #eee;
+	  background: url(../images/line.png) no-repeat left bottom; }
+section.element > details .sectionblock p
+	{ margin-bottom: 0; }
+section.element > details p + *
+	{ margin-top: 15px; }
+section.element > details > summary
+	{ display: block; margin: 5px 0 5px -17px; padding-bottom: 12px; background: #fff; }
+section.element ul.properties
+	{ padding: 0; }
+
+section.element + section.element
+	{ margin-top: 20px; }
+
+/**
+ * properties section
+ */
+section.properties
+	{ padding-bottom: 20px; }
+section.properties > header
+	{ font-size: 85%; font-weight: bold; margin-bottom: 10px;  overflow: hidden; color: #6e6e6e; }
+section.properties > details
+	{ display: block; padding-left: 20px; }
+section.properties > details > summary
+	{ display: block; margin-bottom: 10px; }
+
+/**
+ * attributes section
+ */
+section.attributes > details
+	{ display: block; padding-left: 15px; }
+
+/**
+ * attributes section
+ */
+section.attributegroup
+	{ margin-bottom: 20px;}
+section.attributegroup > header
+	{ border-bottom: 1px solid #eee; color: #ccc; font-size: 85%; margin: 5px 0; }
+
+/**
+ * attribute section
+ */
+section.attribute > header
+	{ font-size: 85%; font-weight: bold; margin: 0;  overflow: hidden; color: #467bb7; }
+section.attribute > details
+	{ display: block; padding-left: 15px; }
+
+/**
+ * example section
+ */
+section.properties.example > details > summary
+	{ border-bottom: 1px solid #ddd; color: #aaa; display: inline-block; font-size: 85%; margin-bottom: 10px;
+    padding-bottom: 3px; }
+
+/**
+ * children section
+ */
+section.properties.children
+	{ padding-bottom: 0; }

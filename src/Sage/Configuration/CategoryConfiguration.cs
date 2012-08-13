@@ -35,7 +35,7 @@ namespace Sage.Configuration
 			XmlElement categoryElement = configDocument.SelectSingleElement("c:configuration/c:category", nm);
 
 			this.Name = categoryElement.GetAttribute("name");
-			this.VariablesElement = categoryElement.SelectSingleElement("c:variables", nm);
+			this.Variables = categoryElement.SelectSingleElement("c:variables", nm);
 			this.ConfigurationElement = categoryElement;
 		}
 
@@ -53,7 +53,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the xml element containing the localization variables for use in internationalization.
 		/// </summary>
-		public XmlElement VariablesElement { get; private set; }
+		public XmlElement Variables { get; private set; }
 
 		/// <summary>
 		/// Creates a <see cref="CategoryConfiguration"/> using the specified <paramref name="configurationPath"/>.

@@ -11,17 +11,24 @@
 	</head>
 	<body>
 
-		<h1>License</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-license"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-license"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>License</span>
+				</header>
+				<details>
 		<pre>
 			<xi:include href="../../../license.txt" parse="text"/>
 		</pre>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

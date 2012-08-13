@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Variables (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-variables"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Variables (Project configuraton)</span>
+				</header>
+				<details>
+					<summary>
+						<a href="url:link(internationalization-variables)">Internatinalization variables</a> provide a way to easily split single values into multiple per-locale values. Variables defined in project configuration are global to the whole project.
+					</summary>
+
+					<section class="topic">
+						<header>
+							Reference
+						</header>
+						<details>
+							<section class="element">
+								<header>variables element</header>
+								<details>
+									<summary>Contains variable elements.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:config>
+													<mod:wrap>true</mod:wrap>
+												</mod:config>
+												<mod:data>
+													<sage:literal>
+														<variables xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+															<intl:variable id="spearmint-promo-url">
+																<intl:value locale="us">http://www.shopgum.com/product/gum-never-dies</intl:value>
+																<intl:value locale="ca">http://www.shopgum.ca/product/gum-never-dies.jsf</intl:value>
+																<intl:value locale="de">http://shop.gum.de/product/HH386/gum-never-dies.jsf</intl:value>
+																<intl:value locale="uk">http://shop.gum.co.uk/product/Spearmint+Extra/gum-never-dies.jsf</intl:value>
+																<intl:value locale="nl">http://shop.gum.nl/product/Spearmint+Extra/gum-never-dies.jsf</intl:value>
+																<intl:value locale="fr">http://shop.gum.fr/product/Speramint+Extra/gum-never-dies.jsf</intl:value>
+															</intl:variable>
+														</variables>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<sage:include
+												xpath="//xhtml:section[@class='content']"
+											/>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

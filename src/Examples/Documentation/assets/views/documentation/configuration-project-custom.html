@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Custom elements (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-custom"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Custom elements (Project configuration)</span>
+				</header>
+				<details>
+
+					<section class="topic">
+						<header>
+							Custom elements
+						</header>
+						<details>
+							<summary>
+								You can add your own elements to the project configuration document's root element, as long as the elements are defined in another namespace. This allows keeping all project configuration in one place, and the supporting back-end code exposes the project configuration element through <code>ProjectConfiguration.ToXml(XmlDocument)</code>.
+							</summary>
+							<section class="properties example">
+								<header>Examples:</header>
+								<details>
+									<summary>A custom element forms has been added as a child to the project configuration element:</summary>
+									<mod:XmlTree>
+										<mod:config>
+											<mod:namespaces>true</mod:namespaces>
+										</mod:config>
+										<mod:data>
+											<sage:literal>
+												<project xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+													<forms xmlns="http://www.somecompany.com">
+														<form name="F1">
+															<check ref="F1.Check"/>
+														</form>
+													</forms>
+												</project>
+											</sage:literal>
+										</mod:data>
+									</mod:XmlTree>
+									<summary>The custom element can also be x-included:</summary>
+									<mod:XmlTree>
+										<mod:data>
+											<sage:literal>
+												<project xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+													<xi:include href="Company.config"/>
+												</project>
+											</sage:literal>
+										</mod:data>
+									</mod:XmlTree>
+									<summary>Gets an instance of the project configuration element</summary>
+									<mod:SyntaxHighlighter>
+										<mod:config>
+											<mod:language>csharp</mod:language>
+											<mod:keywords>
+												<mod:group name="type">
+													XmlDocument|XmlElement|XmlNamespaceManager
+												</mod:group>
+											</mod:keywords>
+											<mod:code>
+
+												//// context is a SageContext instance
+												XmlNamespaceManager nm = new XmlNamespaceManager(new NameTable());
+												nm.AddNamespace("c", "http://www.somecompany.com");
+
+												XmlDocument document = new XmlDocument();
+												XmlElement configElement = context.ProjectConfiguration.ToXml(document);
+												XmlElement formsElement = (XmlElement) configElement.SelectSingleNode("c:forms", nm);
+
+												//// now proceed and handle your custom formsElement....
+
+											</mod:code>
+										</mod:config>
+									</mod:SyntaxHighlighter>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

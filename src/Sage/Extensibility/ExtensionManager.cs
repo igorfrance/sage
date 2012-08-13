@@ -20,6 +20,8 @@ namespace Sage.Extensibility
 	using System.Diagnostics.Contracts;
 	using System.IO;
 
+	using Sage.Configuration;
+
 	using log4net;
 	using Sage.ResourceManagement;
 
@@ -40,18 +42,19 @@ namespace Sage.Extensibility
 			return result;
 		}
 
-		public void Initialize(SageContext context)
+		public ValidationResult Initialize(SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 
 			string pluginPath = context.Path.Resolve(context.Path.ExtensionPath);
 			if (!Directory.Exists(pluginPath))
-				return;
+				return null;
 
 			string[] archives = Directory.GetFiles(pluginPath, "*.zip", SearchOption.TopDirectoryOnly);
 			ExtensionInfo extension = null;
 			string action = null;
 			string extensionPath = null;
+			ValidationResult result = null;
 
 			try
 			{
@@ -61,20 +64,28 @@ namespace Sage.Extensibility
 					extension = new ExtensionInfo(archive, context);
 					this.Add(extension);
 
-					if (!extension.IsInstalled)
+					result = extension.Config.ValidationResult;
+					if (extension.Config.ValidationResult.Success)
 					{
-						action = "installing";
-						extension.Install();
+						if (!extension.IsInstalled)
+						{
+							action = "installing";
+							extension.Install();
+						}
+						else if (extension.IsUpdateAvailable)
+						{
+							action = "updating";
+							extension.Update();
+						}
+						else if (extension.IsMissingResources)
+						{
+							action = "refreshing";
+							extension.Refresh();
+						}
 					}
-					else if (extension.IsUpdateAvailable)
+					else
 					{
-						action = "updating";
-						extension.Update();
-					}
-					else if (extension.IsMissingResources)
-					{
-						action = "refreshing";
-						extension.Refresh();
+						return result;
 					}
 				}
 			}
@@ -91,6 +102,8 @@ namespace Sage.Extensibility
 
 				throw;
 			}
+
+			return result;
 		}
 	}
 }

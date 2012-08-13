@@ -130,6 +130,14 @@ namespace Sage.DevTools.Modules
 			}
 
 			SyntaxHighlighter highlighter = new SyntaxHighlighter(languages[language], additionalGroups);
+			XmlElement digitsNode = moduleElement.SelectSingleElement("mod:config/mod:digits", nm);
+			if (digitsNode != null)
+			{
+				int lineCountDigits = 0;
+				if (int.TryParse(digitsNode.InnerText.Trim(), out lineCountDigits))
+					highlighter.LineCountDigits = lineCountDigits;
+			}
+
 			string highlighted = highlighter.Format(sourceCode);
 
 			ModuleResult result = new ModuleResult(moduleElement);

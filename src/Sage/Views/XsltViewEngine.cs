@@ -96,9 +96,9 @@ namespace Sage.Views
 		/// <exception cref="ArgumentException">The view name argument is missing the mandatory '/' slash character.</exception>
 		private ViewInfo GetViewInfo(ControllerContext controllerContext, string viewName)
 		{
-			if (controllerContext.Controller is SageController)
+			var controller = controllerContext.Controller as SageController;
+			if (controller != null)
 			{
-				SageController controller = (SageController) controllerContext.Controller;
 				return controller.GetViewInfo(viewName.Replace(
 					controller.GetType().Name.Replace("Controller", string.Empty) + "/", string.Empty));
 			}

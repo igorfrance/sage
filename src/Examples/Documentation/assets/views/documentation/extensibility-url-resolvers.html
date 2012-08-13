@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>URL resolvers</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="extensibility-url-resolvers"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="extensibility-url-resolvers"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>URL resolvers</span>
+				</header>
+				<details>
 		<p class="sectionblock">
 			In Sage, URL resolvers are implementations of <code>IUrlResolver</code> which, when decorated with
 			<code>UrlResolverAttribute</code> register as handlers for a specified URI scheme.
@@ -93,5 +96,9 @@
 
 		</blockquote>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

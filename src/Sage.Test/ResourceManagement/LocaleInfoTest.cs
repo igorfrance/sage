@@ -37,13 +37,13 @@ namespace Sage.Test.ResourceManagement
 		private Establish ctx = () =>
 			{
 				xmlDocument.LoadXml(@"
-					<globalization>
+					<internationalization>
 						<locale name=""uk"" dictionaryNames=""en-UK,en"" resourceNames=""en-UK,en,default"">
 							<format culture=""en-uk"" shortDate=""d"" longDate=""D""/>
 						</locale>
-					</globalization>");
+					</internationalization>");
 
-				localeInfo = new LocaleInfo((XmlElement) xmlDocument.SelectSingleNode("/globalization/locale"));
+				localeInfo = new LocaleInfo((XmlElement) xmlDocument.SelectSingleNode("/internationalization/locale"));
 			};
 
 		private It Should_have_the_correct_name = () => 

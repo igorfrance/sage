@@ -20,12 +20,15 @@ namespace Sage
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Xml;
+	using System.Xml.Xsl;
 
 	using Kelp.Extensions;
+
+	using Sage.ResourceManagement;
 	using Sage.Views;
 
 	/// <summary>
-	/// Implements an exception that can be XSLT transformed to HTML.
+	/// Implements an exception that can be converted to XML and through XSLT transformed to HTML.
 	/// </summary>
 	public class SageException : Exception
 	{
@@ -49,7 +52,7 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the path of the XSLT stylesheet that renderw this exception.
+		/// Gets the path of the XSLT stylesheet that renders this exception.
 		/// </summary>
 		public virtual string StylesheetPath
 		{
@@ -60,16 +63,16 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the actual exception that occured.
+		/// Gets or sets the actual exception that occurred.
 		/// </summary>
 		public virtual Exception Exception { get; protected set; }
 
 		/// <summary>
 		/// Renders the exception to the specified <paramref name="writer"/>
 		/// </summary>
-		/// <param name="context">The context under which this code is executing.</param>
 		/// <param name="writer">The writer to render the exception to.</param>
-		public virtual void Render(SageContext context, TextWriter writer)
+		/// <param name="context">The context under which this code is executing.</param>
+		public virtual void Render(TextWriter writer, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(writer != null);
@@ -88,10 +91,42 @@ namespace Sage
 			documentElement.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
 			documentElement.SetAttribute("time", DateTime.Now.ToString("hh:mm:ss"));
 
-			XsltTransform processor = XsltTransform.Create(context, StylesheetPath);
+			XsltTransform processor = XsltTransform.Create(context, this.StylesheetPath);
 			XmlWriter xmlwr = XmlWriter.Create(writer, processor.OutputSettings);
 
-			processor.Transform(documentElement, xmlwr, context, GetTransformArguments(context));
+			processor.Transform(documentElement, xmlwr, context, this.GetTransformArguments(context));
+		}
+
+		/// <summary>
+		/// Renders the exception to the specified <paramref name="writer"/>
+		/// </summary>
+		/// <param name="writer">The writer to render the exception to.</param>
+		public virtual void RenderWithoutContext(TextWriter writer)
+		{
+			Contract.Requires<ArgumentNullException>(writer != null);
+
+			XmlDocument document = new XmlDocument();
+			XmlElement documentElement = document.AppendElement(this.Exception.ToXml(document));
+			Exception inner = this.Exception.InnerException;
+
+			while (inner != null)
+			{
+				documentElement.AppendChild(inner.ToXml(document));
+				inner = inner.InnerException;
+			}
+
+			documentElement.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
+			documentElement.SetAttribute("time", DateTime.Now.ToString("hh:mm:ss"));
+
+			XmlReader xslReader = this.StylesheetPath.StartsWith(EmbeddedResourceResolver.Scheme)
+				? XmlReader.Create(EmbeddedResourceResolver.GetStream(this.StylesheetPath))
+				: XmlReader.Create(this.StylesheetPath);
+
+			XslCompiledTransform xslTransform = new XslCompiledTransform();
+			xslTransform.Load(xslReader);
+
+			XmlWriter xmlwr = XmlWriter.Create(writer, xslTransform.OutputSettings);
+			xslTransform.Transform(document, xmlwr);
 		}
 
 		/// <summary>

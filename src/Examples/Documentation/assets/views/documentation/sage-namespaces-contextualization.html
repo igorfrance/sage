@@ -2,6 +2,7 @@
 <html
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:context="http://www.cycle99.com/schemas/sage/contextualization.xsd"
  	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns="http://www.w3.org/1999/xhtml">
 
@@ -11,111 +12,252 @@
 	</head>
 	<body>
 
-		<h1>The Contextualization namespace</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-namespaces-contextualization"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>The Contextualization namespace</span>
+				</header>
+				<details>
+					<summary>
+						Provides elements that enable conditional rendering based on values in the current context.
+					</summary>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-namespaces-contextualization"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<section class="namespace">
+						<header>Namespace URI:</header>
+						<details>http://www.cycle99.com/schemas/sage/contextualization.xsd</details>
+					</section>
 
-		<code class="principal">http://www.cycle99.com/schemas/sage/contextualization.xsd</code>
-
-		<p>
-			Provides elements that enable conditional rendering based on values in the current context.
-		</p>
-
-		<h5 class="tiny">Elements</h5>
-
-		<ul class="casual separate reference">
-			<li>
-				<h5 class="casual">context:value</h5>
-				<p>
-					Inserts a value of a property of the current <code>SageContext</code>.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@property</h6>
-						<p>
-							The name of a property in the current instance of <code>SageContext</code>. Possible values are:
-						</p>
-						<blockquote class="accent">
-							<ul>
-								<li>Application</li>
-								<li>ApplicationPath</li>
-								<li>BaseHref</li>
-								<li>Category</li>
-								<li>IsDeveloperRequest</li>
-								<li>Locale</li>
-								<li>PhysicalApplicationPath</li>
-								<li>Query</li>
-								<li>ReferrerUrl</li>
-								<li>RouteValues</li>
-								<li>Session</li>
-								<li>UserAgentID</li>
-								<li>UserAgentType</li>
-							</ul>
-						</blockquote>
-					</li>
-					<li>
-						<h6 class="casual">@key</h6>
-						<p>
-							If the property specified with the <code>property</code> attribute is a collection (Application, Session,
-							Query, RouteValues), this attribute specifies the key within this dictionary of the value that should
-							be displayed.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">context:switch</h5>
-				<p>
-					Creates a switch block (similar to <code>xsl:choose</code> element), where the same property is evaluated
-					for each child <code>context:case</code> element, and the contents of the first <code>context:case</code>
-					element that evaluates to true is rendered, excluding all other siblings.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@property</h6>
-						<p>
-							The name of a property in the current instance of <code>SageContext</code>. For the list of possible values,
-							see <code>context:value</code> element.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@key</h6>
-						<p>
-							If the property specified with the <code>property</code> attribute is a collection (Application, Session,
-							Query, RouteValues), this attribute specifies the key within this dictionary to which the switch applies.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">context:case</h5>
-				<p>
-					Defines a single possible match case within the switch it belongs to.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@test</h6>
-						<p>
-							The property value to test for. If the property value matches the value of this attribute, the block
-							content will be rendered, replacing the whole <code>context:switch</code> element.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">context:default</h5>
-				<p>
-					Defines the content to render when none of the sibling <code>context:case</code> elements evaluate to true.
-				</p>
-			</li>
-		</ul>
-
+					<section class="topic" id="elements" data-index="yes" data-level="1">
+						<header>Elements</header>
+						<details>
+							<section class="element" id="switch-element" data-index="yes" data-level="2">
+								<header>context:switch</header>
+								<details>
+									<summary>Creates a switch block (similar to <code>xsl:choose</code> element), where the same property is evaluated for each child <code>context:case</code> element, and the contents of the first <code>context:case</code> element that evaluates to true is rendered, excluding all other siblings.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary></summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<context:switch property="RouteValues" key="category">
+															<context:case test="training">
+																<xi:include href="training-include.xml"/>
+															</context:case>
+															<context:case test="running">
+																<xi:include href="running-include.xml"/>
+															</context:case>
+															<context:case test="basketball">
+																<xi:include href="basketball-include.xml"/>
+															</context:case>
+															<context:default>
+																<xi:include href="default-include.xml"/>
+															</context:default>
+														</context:switch>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>property</header>
+												<details>
+													<summary>The name of a property in the current instance of <code>SageContext</code>.</summary>
+													<mod:ExpandSection>
+														<mod:config>
+															<mod:class>moreinfo</mod:class>
+															<mod:state>collapsed</mod:state>
+														</mod:config>
+														<mod:data>
+															<header>
+																<span class="expand">More</span>
+																<span class="collapse">Less</span>
+															</header>
+															<details>
+																<table class="definition">
+																	<col style="width: 100px"/>
+																	<col/>
+																	<thead>
+																		<tr>
+																			<th>Property</th>
+																			<th>Description</th>
+																		</tr>
+																	</thead>
+																	<tr>
+																		<th>Application</th>
+																		<td>The collection of application variables. Requires <code>key</code> to specify the item to get.</td>
+																	</tr>
+																	<tr>
+																		<th>Query</th>
+																		<td>The collection of query string parameters. Requires <code>key</code> attribute.</td>
+																	</tr>
+																	<tr>
+																		<th>RouteValues</th>
+																		<td>The colllection of current route values. Requires <code>key</code> attribute.</td>
+																	</tr>
+																	<tr>
+																		<th>Session</th>
+																		<td>The collection of session variables. Requires <code>key</code> attribute.</td>
+																	</tr>
+																	<tr>
+																		<th>ApplicationPath</th>
+																		<td>The virtual root path of the ASP.NET application on the server.</td>
+																	</tr>
+																	<tr>
+																		<th>PhysicalApplicationPath</th>
+																		<td>The physical file-system path of the current application's root directory.</td>
+																	</tr>
+																	<tr>
+																		<th>BaseHref</th>
+																		<td>The base href value (e.g. http://server:port/appname/") for requests within current context.</td>
+																	</tr>
+																	<tr>
+																		<th>Category</th>
+																		<td>Gets the currently applicable category.</td>
+																	</tr>
+																	<tr>
+																		<th>Locale</th>
+																		<td>Gets the currently applicable locale.</td>
+																	</tr>
+																	<tr>
+																		<th>IsDeveloperRequest</th>
+																		<td>Gets a value indicating whether this context is running within a developer request.</td>
+																	</tr>
+																	<tr>
+																		<th>ReferrerUrl</th>
+																		<td>Gets the URL of the client request that linked to the current URL.</td>
+																	</tr>
+																	<tr>
+																		<th>UserAgentID</th>
+																		<td>Gets the id of the current user agent.</td>
+																	</tr>
+																	<tr>
+																		<th>UserAgentType</th>
+																		<td>Gets the type of the current user agent.</td>
+																	</tr>
+																</table>
+															</details>
+														</mod:data>
+													</mod:ExpandSection>
+												</details>
+											</section>
+											<section class="attribute">
+												<header>key</header>
+												<details>If the property specified with the <code>property</code> attribute is a collection (Application, Session, Query, RouteValues), this attribute specifies the key within this dictionary to which the switch applies.</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<section class="element">
+												<header>context:case</header>
+												<details>
+													<summary>Defines a single possible match case within the switch it belongs to.</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+															<context:case test="training">
+																<xi:include href="training-include.xml"/>
+															</context:case>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>test</header>
+																<details>The property value to test for. If the property value matches the value of this attribute, the block content will be rendered, replacing the whole <code>context:switch</code> element.</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>context:default</header>
+												<details>
+													<summary>Defines the content to render when none of the sibling <code>context:case</code> elements evaluate to true.</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<context:default>
+																			<xi:include href="default-include.xml"/>
+																		</context:default>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="value-element" data-index="yes" data-level="2">
+								<header>context:value</header>
+								<details>
+									<summary>Inserts a value of a property of the current <code>SageContext</code>.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary>Inserts the query string parameter 'page':</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<context:value property="Query" key="page"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<summary>Inserts the current route's parameter 'page':</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<context:value property="RouteValues" key="page"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>property</header>
+												<details>
+													The name of a property in the current instance of <code>SageContext</code>. For the list of possible values, see <code>context:switch</code> element.
+												</details>
+											</section>
+											<section class="attribute">
+												<header>key</header>
+												<details>If the property specified with the <code>property</code> attribute is a collection (Application, Session, Query, RouteValues), this attribute specifies the key within this dictionary of the value that should be displayed.</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

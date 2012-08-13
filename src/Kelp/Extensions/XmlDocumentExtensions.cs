@@ -20,8 +20,6 @@ namespace Kelp.Extensions
 	using System.IO;
 	using System.Xml;
 
-	using Kelp.XInclude;
-
 	/// <summary>
 	/// Provides extensions for <see cref="System.Xml.XmlDocument"/>.
 	/// </summary>
@@ -64,21 +62,24 @@ namespace Kelp.Extensions
 				object reader = resolver.GetEntity(uri, null, null);
 				if (reader != null)
 				{
-					if (reader is Stream)
+					var stream = reader as Stream;
+					if (stream != null)
 					{
-						LoadX(document, (Stream) reader, resolver);
+						LoadX(document, stream, resolver);
 						return;
 					}
 
-					if (reader is TextReader)
+					var textReader = reader as TextReader;
+					if (textReader != null)
 					{
-						LoadX(document, (TextReader) reader, resolver);
+						LoadX(document, textReader, resolver);
 						return;
 					}
 
-					if (reader is XmlReader)
+					var xmlReader = reader as XmlReader;
+					if (xmlReader != null)
 					{
-						LoadX(document, (XmlReader) reader, resolver);
+						LoadX(document, xmlReader, resolver);
 						return;
 					}
 				}
@@ -165,19 +166,14 @@ namespace Kelp.Extensions
 			Contract.Requires<ArgumentNullException>(document != null);
 			Contract.Requires<ArgumentNullException>(reader != null);
 
-			XIncludingReader xreader = new XIncludingReader(XmlReader.Create(reader, settings));
-
-			if (resolver != null)
-				xreader.XmlResolver = resolver;
-
 			try
 			{
-				document.Load(xreader);
+				document.Load(reader);
 			}
 			finally
 			{
-				if (xreader.ReadState != ReadState.Closed)
-					xreader.Close();
+				if (reader.ReadState != ReadState.Closed)
+					reader.Close();
 			}
 		}
 	}

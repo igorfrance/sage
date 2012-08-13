@@ -63,7 +63,7 @@
     <CodeContractsExtraRewriteOptions />
     <CodeContractsExtraAnalysisOptions />
     <CodeContractsBaseLineFile />
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>Preconditions</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
     <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
@@ -124,20 +124,12 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\XmlNamespaceManagerExtensions.cs" />
     <Compile Include="Imaging\Filters\QueryFilterFactoryAttribute.cs" />
+    <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="SyntaxHighlighting\XmlLanguageDefinition.cs" />
     <Compile Include="SyntaxHighlighting\Delimiters.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="XInclude\Common\XmlBaseAwareXmlReader.cs" />
-    <Compile Include="XInclude\Common\XmlBaseState.cs" />
-    <Compile Include="XInclude\Common\XmlNodeListFactory.cs" />
-    <Compile Include="XInclude\Common\XmlPrefix.cs" />
-    <Compile Include="XInclude\Common\XmlWrappingReader.cs" />
-    <Compile Include="XInclude\XPath\DynamicContext.cs" />
-    <Compile Include="XInclude\XPath\IHasXPathNavigator.cs" />
-    <Compile Include="XInclude\XPath\SubtreeeXPathNavigator.cs" />
-    <Compile Include="XInclude\XPath\XPathCache.cs" />
-    <Compile Include="XInclude\XPath\XPathVariable.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
@@ -153,26 +145,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="QueryString.cs" />
-    <Compile Include="XInclude\TextIncludingReader.cs" />
-    <Compile Include="XInclude\TextUtils.cs" />
-    <Compile Include="XInclude\Exceptions.cs" />
-    <Compile Include="XInclude\XIncludeKeywords.cs" />
-    <Compile Include="XInclude\XIncludingReader.cs" />
-    <Compile Include="XInclude\XIncludingReaderState.cs" />
-    <Compile Include="XInclude\XPointer\ElementSchemaPointerPart.cs" />
-    <Compile Include="XInclude\XPointer\LexUtils.cs" />
-    <Compile Include="XInclude\XPointer\Pointer.cs" />
-    <Compile Include="XInclude\XPointer\PointerPart.cs" />
-    <Compile Include="XInclude\XPointer\SchemaBasedPointer.cs" />
-    <Compile Include="XInclude\XPointer\ShorthandPointer.cs" />
-    <Compile Include="XInclude\XPointer\XmlnsSchemaPointerPart.cs" />
-    <Compile Include="XInclude\XPointer\XPath1SchemaPointerPart.cs" />
-    <Compile Include="XInclude\XPointer\Exceptions.cs" />
-    <Compile Include="XInclude\XPointer\XPointerLexer.cs" />
-    <Compile Include="XInclude\XPointer\XPointerParser.cs" />
-    <Compile Include="XInclude\XPointer\XPointerReader.cs" />
-    <Compile Include="XInclude\XPointer\XPointerSchema.cs" />
-    <Compile Include="XInclude\XPointer\XPointerSchemaPointerPart.cs" />
     <None Include="SortedSet.cs" />
     <Compile Include="HttpMock\HttpApplicationStateMock.cs" />
     <Compile Include="HttpMock\HttpCachePolicyMock.cs" />

@@ -16,7 +16,10 @@
 namespace Sage.Configuration
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
+
+	using Kelp.Extensions;
 
 	/// <summary>
 	/// Provides path templates for various system-required files.
@@ -103,8 +106,7 @@ namespace Sage.Configuration
 		/// <param name="configElement">The configuration element to parse.</param>
 		public void Parse(XmlElement configElement)
 		{
-			if (configElement == null)
-				throw new ArgumentNullException("configElement");
+			Contract.Requires<ArgumentNullException>(configElement != null);
 
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 			string testValue;
@@ -144,6 +146,31 @@ namespace Sage.Configuration
 			testNode = configElement.SelectSingleNode("p:GlobalizedDirectoryForNonFileResources", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
 				this.GlobalizedDirectoryForNonFileResources = testValue;
+		}
+
+		/// <summary>
+		/// Generates an XML element that represents this instance.
+		/// </summary>
+		/// <param name="ownerDoc">The document to use to create the element with.</param>
+		/// <returns>The element that represents this instance.</returns>
+		public XmlElement ToXml(XmlDocument ownerDoc)
+		{
+			Contract.Requires<ArgumentNullException>(ownerDoc != null);
+
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+
+			XmlElement result = ownerDoc.CreateElement("paths", Ns);
+			result.AppendElement(ownerDoc.CreateElement("View", Ns)).InnerText = this.View;
+			result.AppendElement(ownerDoc.CreateElement("Module", Ns)).InnerText = this.Module;
+			result.AppendElement(ownerDoc.CreateElement("Extension", Ns)).InnerText = this.Extension;
+			result.AppendElement(ownerDoc.CreateElement("CategoryConfiguration", Ns)).InnerText = this.CategoryConfiguration;
+			result.AppendElement(ownerDoc.CreateElement("DefaultStylesheet", Ns)).InnerText = this.DefaultStylesheet;
+			result.AppendElement(ownerDoc.CreateElement("Dictionary", Ns)).InnerText = this.Dictionary;
+			result.AppendElement(ownerDoc.CreateElement("SiteMap", Ns)).InnerText = this.SiteMap;
+			result.AppendElement(ownerDoc.CreateElement("GlobalizedDirectory", Ns)).InnerText = this.GlobalizedDirectory;
+			result.AppendElement(ownerDoc.CreateElement("GlobalizedDirectoryForNonFileResources", Ns)).InnerText = this.GlobalizedDirectoryForNonFileResources;
+
+			return result;
 		}
 	}
 }

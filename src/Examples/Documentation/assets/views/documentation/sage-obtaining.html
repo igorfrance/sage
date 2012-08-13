@@ -12,47 +12,57 @@
 	</head>
 	<body>
 
-		<h1>Obtaining Sage</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current>
-					<sage:url ref="sage-obtaining"/>
-				</mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
-		<h3 class="section">Source code</h3>
-		<p>
-			Sage sources can be downloaded <a href="https://github.com/igorfrance/Sage" target="_top">from  github</a> using:
-		</p>
-
-		<code class="principal">git clone --recurse-submodules https://&lt;git-user-name&gt;/igorfrance/Sage.git ./sage</code>
-
-		<p>
-			Make sure to clone the submodules too, by using the <code>--recurse-submodules</code> option.
-		</p>
-
-		<h3 class="section">Binaries</h3>
-		<p>
-			The latest ready-to-run Sage binaries can be downloaded from the
-			<a href="http://cycle99.com:808/viewLog.html?buildId=lastSuccessful&amp;buildTypeId=bt5&amp;tab=artifacts">Team City build server on Cycle 99</a>:
-		</p>
-		<dl>
-			<dt class="zip">sage.zip</dt>
-			<dd>The latest successful build of Sage, packed together with all its dependencies. This is the main sage deliverable.</dd>
-		</dl>
-		<dl>
-			<dt class="zip">sage.documentation.zip</dt>
-			<dd>
-				<p>The documentation website, same as the website currently being watched.</p>
-			</dd>
-		</dl>
-		<dl>
-			<dt class="zip">sage.extensions.zip</dt>
-			<dd>Sage extensions in use by the documentation website.</dd>
-		</dl>
-
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-obtaining"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Obtaining Sage</span>
+				</header>
+				<details>
+					<summary>
+						<dfn class="sectionblock">Sage is freely available both as source code, and as a compiled binary ready to be installed.</dfn>
+					</summary>
+					<section class="topic">
+						<header>Source code</header>
+						<details>
+							<p>
+								Sage sources can be downloaded <a href="https://github.com/igorfrance/Sage" target="_top">from  github</a> using:
+							</p>
+							<code class="principal">git clone --recurse-submodules https://&lt;git-user-name&gt;/igorfrance/Sage.git ./sage</code>
+							<p>
+								Make sure to clone the submodules too, by using the <code>--recurse-submodules</code> option.
+							</p>
+						</details>
+					</section>
+					<section class="topic">
+						<header>Binaries</header>
+						<details>
+							<p>
+								The latest ready-to-run Sage binaries can be downloaded from the
+								<a href="http://cycle99.com:808/viewLog.html?buildId=lastSuccessful&amp;buildTypeId=bt5&amp;tab=artifacts">Team City build server on Cycle 99</a>:
+							</p>
+							<dl>
+								<dt class="zip">sage.zip</dt>
+								<dd>The latest successful build of Sage, packed together with all its dependencies. This is the main sage deliverable.</dd>
+							</dl>
+							<dl>
+								<dt class="zip">sage.documentation.zip</dt>
+								<dd>
+									<p>The documentation website, same as the website currently being watched.</p>
+								</dd>
+							</dl>
+							<dl>
+								<dt class="zip">sage.extensions.zip</dt>
+								<dd>Sage extensions in use by the documentation website.</dd>
+							</dl>
+						</details>
+					</section>
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

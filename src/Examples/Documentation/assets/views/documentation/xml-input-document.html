@@ -13,14 +13,17 @@
 	</head>
 	<body>
 
-		<h1>Input document</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="xml-input-document"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="xml-input-document"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Input document</span>
+				</header>
+				<details>
 		<dfn class="sectionblock">
 			The HTML documents you write are wrapped within a standard XML envelope before being served to the nearest XSLT
 			processor for transformation.
@@ -83,6 +86,8 @@
 								<sage:useragent/>
 								<sage:assembly/>
 								<sage:querystring/>
+								<sage:form/>
+								<sage:session/>
 								<sage:cookies/>
 								<sage:dateTime/>
 							</sage:request>
@@ -875,5 +880,9 @@
 
 		<br class="spacer"/>
 
+
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

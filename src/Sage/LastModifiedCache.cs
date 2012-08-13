@@ -61,15 +61,15 @@ namespace Sage
 			return null;
 		}
 
-        /// <summary>
-        /// Saves the last modification of the specified <paramref name="resourcePath"/>.
-        /// </summary>
-        /// <param name="resourcePath">The resource path for which to store the date.</param>
-        /// <param name="lastModificationDate">The last modification date to store.</param>
-        /// <param name="dependencies">The dependencies of the <paramref name="resourcePath"/>. If any one of
-        /// these files changes, the cached item will expire and be removed from cache, thereby ensuring that
-        /// the cached date is correct; its absence would indicate that the last modification date has expired
-        /// (or has never been saved, in any case causing the caller to get a fresh last modification date)</param>
+		/// <summary>
+		/// Saves the last modification of the specified <paramref name="resourcePath"/>.
+		/// </summary>
+		/// <param name="resourcePath">The resource path for which to store the date.</param>
+		/// <param name="lastModificationDate">The last modification date to store.</param>
+		/// <param name="dependencies">The dependencies of the <paramref name="resourcePath"/>. If any one of
+		/// these files changes, the cached item will expire and be removed from cache, thereby ensuring that
+		/// the cached date is correct; its absence would indicate that the last modification date has expired
+		/// (or has never been saved, in any case causing the caller to get a fresh last modification date)</param>
 		public void Put(string resourcePath, DateTime lastModificationDate, List<string> dependencies)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(resourcePath));

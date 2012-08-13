@@ -13,14 +13,17 @@
 	</head>
 	<body>
 
-		<h1>Modules</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-modules"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-modules"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Modules</span>
+				</header>
+				<details>
 		<p>
 			Modules are reusable pieces of logic and markup, as well as any resources (JavaScript and CSS) and/or XSLT
 			stylesheets that go with it.
@@ -355,5 +358,9 @@
 
 		<br class="spacer"/>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

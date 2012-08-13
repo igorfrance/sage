@@ -44,7 +44,7 @@ namespace Sage.Rewriters
 					{
 						lock (log)
 						{
-							List<string> extensions = ProjectConfiguration.Current.MetaViews.Keys.ToList();
+							List<string> extensions = Project.Configuration.MetaViews.Keys.ToList();
 							extensions.Add("html");
 
 							metaViewExpression = new Regex(string.Format(@"\.({0})$", string.Join("|", extensions)));
@@ -72,39 +72,46 @@ namespace Sage.Rewriters
 		{
 		}
 
-		private void OnApplicationRequestStart(object sender, EventArgs e)
+		private static void OnApplicationRequestStart(object sender, EventArgs e)
 		{
-			HttpApplication application = (HttpApplication) sender;
-			SageContext context = new SageContext(application.Context);
-
-			if (File.Exists(context.Request.PhysicalPath))
-				return;
-
-			QueryString query = new QueryString(HttpContext.Current.Request.Url.Query);
-			string view = query.GetString(MetaViewDictionary.ParamNameMetaView);
-			if (view != null && !context.ProjectConfiguration.MetaViews.ContainsKey(view))
-				view = null;
-
-			//// \.(html|xml|xmlx|htmlx)$
-			//// Meta view extension gets removed from the path
-			//// Path is rewritten with ?view=$1
-
-			string path = MetaViewExpression.Replace(context.Request.Path, delegate(Match m)
+			try
 			{
-				if (view == null)
-					view = m.Groups[1].Value;
+				HttpApplication application = (HttpApplication) sender;
+				SageContext context = new SageContext(application.Context);
 
-				return string.Empty;
-			});
+				if (File.Exists(context.Request.PhysicalPath))
+					return;
 
-			if (view != null)
+				QueryString query = new QueryString(HttpContext.Current.Request.Url.Query);
+				string view = query.GetString(MetaViewDictionary.ParamNameMetaView);
+				if (view != null && !context.ProjectConfiguration.MetaViews.ContainsKey(view))
+					view = null;
+
+				//// \.(html|xml|xmlx|htmlx)$
+				//// Meta view extension gets removed from the path
+				//// Path is rewritten with ?view=$1
+
+				string path = MetaViewExpression.Replace(context.Request.Path, delegate(Match m)
+				{
+					if (view == null)
+						view = m.Groups[1].Value;
+
+					return string.Empty;
+				});
+
+				if (view != null)
+				{
+					query.Remove(MetaViewDictionary.ParamNameMetaView);
+					query.Add(MetaViewDictionary.ParamNameMetaView, view);
+
+					string newUri = new Uri(path + query.ToString(true), UriKind.RelativeOrAbsolute).ToString();
+					log.DebugFormat("Rewriting the context path from '{0}' to '{1}'.", context.Request.Path, newUri);
+					application.Context.RewritePath(newUri);
+				}
+			}
+			catch (Exception ex)
 			{
-				query.Remove(MetaViewDictionary.ParamNameMetaView);
-				query.Add(MetaViewDictionary.ParamNameMetaView, view);
-
-				string newUri = new Uri(path + query.ToString(true), UriKind.RelativeOrAbsolute).ToString();
-				log.DebugFormat("Rewriting the context path from '{0}' to '{1}'.", context.Request.Path, newUri);
-				application.Context.RewritePath(newUri);
+				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
 			}
 		}
 	}

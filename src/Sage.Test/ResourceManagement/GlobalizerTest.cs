@@ -29,7 +29,7 @@ namespace Sage.Test.ResourceManagement
 	using Sage.Configuration;
 	using Sage.ResourceManagement;
 
-	[Subject(typeof(Globalizer)), Tags(Categories.ResourceManagement)]
+	[Subject(typeof(Internationalizer)), Tags(Categories.ResourceManagement)]
 	public class When_globalizing_a_resource
 	{
 		private static readonly SageContext context = Mother.CreateSageContext("default", "com");
@@ -40,8 +40,8 @@ namespace Sage.Test.ResourceManagement
 				string itemPath = context.Path.Expand("configuration/tests/internationalization-test1.xml");
 				resource = new XmlResource(itemPath, context);
 
-				Globalizer globalizer = new Globalizer(context);
-				globalizer.Globalize(resource);
+				Internationalizer globalizer = new Internationalizer(context);
+				globalizer.Internationalize(resource);
 			};
 
 		private It Should_translate_to_all_locales_applicable_for_its_category = () =>
@@ -49,7 +49,7 @@ namespace Sage.Test.ResourceManagement
 				CategoryInfo categoryInfo = context.ProjectConfiguration.Categories[context.Category];
 				foreach (string locale in categoryInfo.Locales)
 				{
-					string localizedPath = resource.GetGlobalizedName(locale, true);
+					string localizedPath = resource.GetInternationalizedName(locale, true);
 					File.Exists(localizedPath).ShouldBeTrue();
 				}
 			};

@@ -33,11 +33,11 @@ namespace Sage.Build.Utilities
 
 	internal class BatchGlobalizer : IUtility
 	{
-		internal const string SummaryXmlName = "globalization-summary-{0}.xml";
-		internal const string SummaryHtmlName = "globalization-summary-{0}.html";
+		internal const string SummaryXmlName = "internationalization-summary-{0}.xml";
+		internal const string SummaryHtmlName = "internationalization-summary-{0}.html";
 
 		private const string XsltPath = "Resources/Xslt/Summary.xslt";
-		private static readonly ILog log = LogManager.GetLogger(typeof(Globalizer).FullName);
+		private static readonly ILog log = LogManager.GetLogger(typeof(Internationalizer).FullName);
 		private static XsltTransform processor;
 
 		private string categoryPath;
@@ -63,12 +63,12 @@ namespace Sage.Build.Utilities
 
 			DateTime started = DateTime.Now;
 			XmlDocument summaryDoc = new XmlDocument();
-			XmlElement globalization = summaryDoc.AppendElement(summaryDoc.CreateElement("globalization"));
+			XmlElement internationalization = summaryDoc.AppendElement(summaryDoc.CreateElement("internationalization"));
 
-			globalization.SetAttribute("date", started.ToString("dd-MM-yyyy"));
-			globalization.SetAttribute("time", started.ToString("hh:mm:ss"));
+			internationalization.SetAttribute("date", started.ToString("dd-MM-yyyy"));
+			internationalization.SetAttribute("time", started.ToString("hh:mm:ss"));
 
-			XmlElement result = globalization.AppendElement(summaryDoc.CreateElement("result"));
+			XmlElement result = internationalization.AppendElement(summaryDoc.CreateElement("result"));
 			XmlElement categorySummary = result.AppendElement(summaryDoc.CreateElement("category"));
 			categorySummary.SetAttribute("name", arguments["category"]);
 
@@ -101,7 +101,7 @@ namespace Sage.Build.Utilities
 					foreach (XmlResource resource in resources)
 					{
 						log.InfoFormat("Processing {0}", resource.Name.Signature);
-						GlobalizationSummary summary = resource.Globalize();
+						InternationalizationSummary summary = resource.Globalize();
 						XmlElement summaryElement = summary.ToXml(summaryDoc);
 						resourcesElement.AppendChild(summaryElement);
 					}
@@ -115,7 +115,7 @@ namespace Sage.Build.Utilities
 
 			DateTime completed = DateTime.Now;
 			TimeSpan elapsed = new TimeSpan(completed.Ticks - started.Ticks);
-			globalization.SetAttribute("duration", string.Format("{0}.{1:D3}s", elapsed.Seconds, elapsed.Milliseconds));
+			internationalization.SetAttribute("duration", string.Format("{0}.{1:D3}s", elapsed.Seconds, elapsed.Milliseconds));
 
 			if (!string.IsNullOrWhiteSpace(arguments["reportpath"]))
 				SummarizeOverview(summaryDoc, arguments["reportpath"]);
@@ -161,7 +161,7 @@ namespace Sage.Build.Utilities
 
 		private string SummarizeOverview(XmlDocument resultDoc, string outputPath)
 		{
-			XmlElement resultElement = resultDoc.SelectSingleElement("/globalization/result");
+			XmlElement resultElement = resultDoc.SelectSingleElement("/internationalization/result");
 			foreach (XmlElement categoryElem in resultElement.SelectNodes("category"))
 			{
 				XmlElement phrasesElement = categoryElem.AppendElement(resultDoc.CreateElement("phrases"));

@@ -12,14 +12,17 @@
 	</head>
 	<body>
 
-		<h1>Minification</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="resource-processing-compression"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="resource-processing-compression"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Minification</span>
+				</header>
+				<details>
 		<p>
 			A common way of optimizing the total size and loading speed of web pages is to minify the files that are served;
 			that is, to strip them of any unnecessary comments and white-space that developers use to make them more readable for
@@ -101,5 +104,9 @@
 
 		<br class="spacer"/>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

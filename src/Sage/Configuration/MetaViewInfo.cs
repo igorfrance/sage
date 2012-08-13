@@ -16,14 +16,17 @@
 namespace Sage.Configuration
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
+
+	using Kelp;
 
 	using Sage.Views;
 
 	/// <summary>
 	/// Contains information about a meta view.
 	/// </summary>
-	public class MetaViewInfo
+	public class MetaViewInfo : IXmlConvertible
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MetaViewInfo"/> class.
@@ -31,19 +34,9 @@ namespace Sage.Configuration
 		/// <param name="infoElement">The info element.</param>
 		public MetaViewInfo(XmlElement infoElement)
 		{
-			if (infoElement == null)
-				throw new ArgumentNullException("infoElement");
+			Contract.Requires<ArgumentNullException>(infoElement != null);
 
-			this.Name = infoElement.GetAttribute("name");
-			this.Description = infoElement.GetAttribute("description");
-			this.ViewPath = infoElement.GetAttribute("path");
-
-			if (!string.IsNullOrWhiteSpace(infoElement.GetAttribute("contentType")))
-				this.ContentType = infoElement.GetAttribute("contentType");
-			else
-				this.ContentType = "text/html";
-
-			this.TypeName = infoElement.GetAttribute("type");
+			this.Parse(infoElement);
 		}
 
 		/// <summary>
@@ -75,6 +68,38 @@ namespace Sage.Configuration
 		/// Gets the XSLT transform associated with the meta view this object represents.
 		/// </summary>
 		public XsltTransform Processor { get; private set; }
+
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			this.Name = element.GetAttribute("name");
+			this.Description = element.GetAttribute("description");
+			this.ViewPath = element.GetAttribute("path");
+
+			if (!string.IsNullOrWhiteSpace(element.GetAttribute("contentType")))
+				this.ContentType = element.GetAttribute("contentType");
+			else
+				this.ContentType = "text/html";
+
+			this.TypeName = element.GetAttribute("type");
+		}
+
+		/// <inheritdoc/>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			XmlElement result = document.CreateElement("metaView", Sage.XmlNamespaces.ProjectConfigurationNamespace);
+			result.SetAttribute("name", this.Name);
+			if (!string.IsNullOrWhiteSpace(this.ViewPath))
+				result.SetAttribute("path", this.ViewPath);
+
+			result.SetAttribute("contentType", this.ContentType);
+			result.SetAttribute("type", this.TypeName);
+
+			if (!string.IsNullOrWhiteSpace(this.Description))
+				result.SetAttribute("description", this.Description);
+
+			return result;
+		}
 
 		/// <inheritdoc/>
 		public override string ToString()

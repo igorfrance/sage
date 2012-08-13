@@ -93,10 +93,15 @@
 				<div class="problem-description">
 					<xsl:apply-templates select="." mode="problem-description"/>
 				</div>
-				<h3>Suggestion:</h3>
-				<div class="problem-suggestion">
+				<xsl:variable name="problemSuggestionTest">
 					<xsl:apply-templates select="." mode="problem-suggestion"/>
-				</div>
+				</xsl:variable>
+				<xsl:if test="string-length(normalize-space($problemSuggestionTest)) != 0">
+					<h3>Suggestion:</h3>
+					<div class="problem-suggestion">
+						<xsl:apply-templates select="." mode="problem-suggestion"/>
+					</div>
+				</xsl:if>
 				<div class="problem-details">
 					<span class="switch">(<a href="javascript:expandProblemDetail()">Click to show technical details about this error</a>)</span>
 					<div class="content" id="problem-details-content">
@@ -137,12 +142,6 @@
 			<xsl:when test="$problemType = 'MissingConfigurationFile'">
 				No configuration file present
 			</xsl:when>
-			<xsl:when test="$problemType = 'ConfigurationMissingLocales'">
-				At least one locale needs to be configured
-			</xsl:when>
-			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
-				At least one category needs to be configured
-			</xsl:when>
 			<xsl:when test="$problemType = 'TransformResultMissingRootElement'">
 				Transform result missing
 			</xsl:when>
@@ -176,7 +175,15 @@
 			<xsl:when test="$problemType = 'ViewDocumentInitError'">
 				View document initialization error.
 			</xsl:when>
-			<xsl:otherwise>An error was caught</xsl:otherwise>
+			<xsl:when test="$problemType = 'ProjectSchemaValidationError'">
+				Project schema validation error.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ExtensionSchemaValidationError'">
+				Extension schema validation error.
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$problemType"/>				
+			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	
@@ -192,14 +199,6 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'MissingConfigurationFile'">
 				No configuration file has been found.
-			</xsl:when>
-			<xsl:when test="$problemType = 'ConfigurationMissingLocales'">
-				A Sage project needs to have one default locale in order to function correctly. Neither the system
-				configuration (System.config) not the project configuration (Project.config) defined any locales.
-			</xsl:when>
-			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
-				The current project is configured as multicategory <code><![CDATA[<project .. multiCategory="true">...</project>]]></code>,
-				but there are no categories defined.
 			</xsl:when>
 			<xsl:when test="$problemType = 'TransformResultMissingRootElement'">
 				The XSLT transform produced no result.
@@ -233,6 +232,12 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'ViewDocumentInitError'">
 				A problem occured during initialization of the view document.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ProjectSchemaValidationError'">
+				An error occured while validating the project configuration file.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ExtensionSchemaValidationError'">
+				An error occured while validating an extension's configuration file.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -290,22 +295,6 @@
 				Project.config (your own specific configuration) or both exist in the same directory from which Sage is being run 
 				(typically the 'bin' directory of the web application running Sage)</p>
 			</xsl:when>
-			<xsl:when test="$problemType = 'ConfigurationMissingLocales'">
-				Edit the Project.config file and make sure it contains the globalization element
-				with at least one locale. For exampe:<br/>
-<code class="pre"><![CDATA[<locale name="en" dictionaryNames="en" resourceNames="default">
-	<format culture="en-us" shortDate="MMMM d, yyyy" longDate="D"/>
-</locale>]]></code>
-			</xsl:when>
-			<xsl:when test="$problemType = 'ConfigurationMissingCategories'">
-				Edit the Project.config file and make sure it contains at least one category:
-<code class="pre"><![CDATA[<categories>
-	<category
-		name="running"
-		locales="en,de"
-		/>
-</categories>]]></code>
-			</xsl:when>
 			<xsl:when test="$problemType = 'TransformResultMissingRootElement'">
 				Make sure that the XSLT you use is contains the necessary template to process the 
 				supplied input document.
@@ -348,6 +337,12 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'ViewDocumentInitError'">
 				Look for the problem in the X(HT)ML document used for the current view.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ProjectSchemaValidationError'">
+				Read the description of the error and try to fix the configuration file to match the schema.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ExtensionSchemaValidationError'">
+				Read the description of the error and try to fix the configuration file to match the schema.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>

@@ -16,13 +16,14 @@
 namespace Sage.Extensibility
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
 
 	using Sage.ResourceManagement;
 
 	/// <summary>
 	/// Indicates that the method this attribute decorates should be used as a node handler for 
-	/// <see cref="ResourceManager.CopyTree"/>.
+	/// <see cref="ResourceManager.ApplyHandlers"/>.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class NodeHandlerAttribute : Attribute
@@ -35,8 +36,10 @@ namespace Sage.Extensibility
 		/// <param name="ns">The namespace of the node being handled.</param>
 		public NodeHandlerAttribute(XmlNodeType nodeType, string nodeName, string ns = null)
 		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(nodeName));
+
 			this.NodeType = nodeType;
-			this.NodeName = nodeName;
+			this.NodeName = nodeName.Substring(nodeName.IndexOf(":") + 1);
 			this.Namespace = ns;
 		}
 

@@ -26,12 +26,12 @@ namespace Sage.Build.Utilities
 	using ICSharpCode.SharpZipLib.Zip;
 
 	using Kelp.Extensions;
+
 	using log4net;
 	using Sage.Configuration;
+	using Sage.Extensibility;
 
 	//// TODO: Compile any xincluded project.config resources into a single file prior to packaging it
-	//// TODO: Issue a warning if the bin directory contains something other than *.dlls
-
 	internal class ExtensionBuilder : IUtility
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionBuilder).FullName);
@@ -107,13 +107,14 @@ namespace Sage.Build.Utilities
 					string.Format("The specified project configuration path '{0}' doesn't exist", configSourcePath));
 			}
 
-			XmlNamespaceManager nm = XmlNamespaces.Manager;
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
-			XmlElement extensionRoot = extensionConfig.SelectSingleElement("p:configuration/p:extension", nm);
+			XmlElement extensionRoot = extensionConfig.DocumentElement;
 
 			ProjectConfiguration config = ProjectConfiguration.Create(configSourcePath, systemConfigPath);
-			XmlElement configRoot = config.ConfigurationElement;
+			if (!config.ValidationResult.Success)
+				throw config.ValidationResult.Exception;
 
+			XmlElement configRoot = config.ToXml(extensionConfig);
 			if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))
 			{
 				extensionName = config.Name;
@@ -154,10 +155,17 @@ namespace Sage.Build.Utilities
 					this.PackFile(zipfile, file, "bin/" + childPath);
 				}
 
+				XmlElement linkingElement = 
+					extensionConfig.CreateElement("p:linking", XmlNamespaces.ProjectConfigurationNamespace);
+
 				// libraries, modules, links, metaviews, routes
-				this.CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:view", configRoot, extensionRoot);
+				this.CopyConfiguration(config.Package.Links, "p:link", "p:link", linkingElement, extensionRoot);
+				this.CopyConfiguration(config.Package.Formats, "p:formats", "p:format", linkingElement, extensionRoot);
+				if (linkingElement.SelectNodes("*").Count != 0)
+					extensionRoot.AppendElement(linkingElement);
+
+				this.CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:metaView", configRoot, extensionRoot);
 				this.CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
-				this.CopyConfiguration(config.Package.Links, "p:links", "p:link", configRoot, extensionRoot);
 				this.CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
 				this.CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
@@ -176,7 +184,7 @@ namespace Sage.Build.Utilities
 		private static XmlDocument CreateExtensionConfigurationDocument(string extensionName)
 		{
 			XmlDocument result = new XmlDocument();
-			result.LoadXml(string.Format("<configuration xmlns='{0}'><extension name='{1}'></extension></configuration>",
+			result.LoadXml(string.Format("<project xmlns='{0}' name='{1}'/>",
 				XmlNamespaces.ProjectConfigurationNamespace, extensionName));
 
 			return result;

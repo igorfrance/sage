@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Modules (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-modules"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Modules (Project configuration)</span>
+				</header>
+				<details>
+					<summary>
+						<a href="url:link(sage-modules)">Modules</a> provide a way to package reusable groups of logic, presentation and resources, and use them in markup as custom tags. The system ensures that any resources belonging to a module get included on views that use them. Modules can depend on other modules, which means that if you reference module A which depends on module B then module B's resources will also be added, before adding module A's resources. <a href="url:link(sage-modules)">Read more</a>.
+					</summary>
+
+					<section class="topic">
+						<header>
+							Reference
+						</header>
+						<details>
+							<section class="element">
+								<header>
+									<h5>module element</h5>
+								</header>
+								<details>
+									<summary>
+										Defines a module.
+									</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<module name="Navigation" category="site">
+															<stylesheets>
+																<stylesheet path="navigation.xsl"/>
+															</stylesheets>
+															<resources>
+																<resource type="script" path="navigation.js" location="body"/>
+																<resource type="style" path="navigation.css" location="head"/>
+															</resources>
+														</module>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>name</header>
+												<details>Specifies the name of the module.</details>
+											</section>
+											<section class="attribute">
+												<header>category</header>
+												<details>
+													This value specifies the path to the module within the module directory. For instance, if the module directory is <code>~/assets/modules</code>, and module Navigation is assigned category <code>documentation</code>, then the full path to that module will be <code>~/assets/modules/documentation/Navigation</code>. This value can contains slashes, making it possible to nest directories as desired.
+												</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>tags/tag</header>
+												<details>
+													<summary>
+														Defines one or more tag names that can be used with this module. By default, the name of the tag corresponding to the module is the same as the name of the module itself. If you want to change that, or if you want to have multiple tag names refer to the same module, you can define the names with this tag
+													</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<module name="Navigation" category="site">
+																			<tags>
+																				<tag>HeaderMenu</tag>
+																				<tag>FooterMenu</tag>
+																			</tags>
+																		</module>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>dependencies</header>
+												<details>
+													<summary>Specifies libraries or modules that this module depends on. Whenever this module is used, before it's own resources are added to the page, the resources of the dependencies will be added too.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<module name="Navigation" category="site">
+																			<dependencies>
+																				<module ref="Header" xmlns="highlight"/>
+																				<library ref="aeon" xmlns="highlight"/>
+																			</dependencies>
+																		</module>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>ref</header>
+																<details>Specifies the name of the library this that library depends on.</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>stylesheets/stylesheet</header>
+												<details>
+													<summary>Specifies one or more XSLT stylesheet resources to compile into the master modules XSLT stylesheet.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<module name="Navigation" category="site">
+																			<stylesheets>
+																				<stylesheet path="navigation.xsl"/>
+																			</stylesheets>
+																		</module>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>name</header>
+																<details>
+																	Specifies the path to the XSLT stylesheet. <a href="url:link(sage-uri-schemes)">sageres://</a> and <a href="url:link(sage-uri-schemes)">sageresx://</a> URL prefixes are supported here.
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>resources/resource</header>
+												<details>
+													<summary>Specifies the resources this library consists of. Whenever the library is used, it's resources will be added to the page, as defined with this element.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<library name="example">
+																			<resources>
+																				<resource type="script" location="head" path="kelp://{{assetpath}}/scripts/lib/aeon/aeon.js"/>
+																				<resource type="style" location="head" path="{{assetpath}}/css/documentation-ie.css" limitTo="ie"/>
+																				<resource type="document" location="data" path="{{assetpath}}/configuration/navigation.xml"/>
+																			</resources>
+																		</library>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>type</header>
+																<details>
+																	Specifies the resource type. Possible values are: <code>script</code>, <code>style</code>, <code>document</code> and <code>icon</code>.
+																	<mod:ExpandSection>
+																		<mod:config>
+																			<mod:class>moreinfo</mod:class>
+																			<mod:state>collapsed</mod:state>
+																		</mod:config>
+																		<mod:data>
+																			<header>
+																				<span class="expand">More</span>
+																				<span class="collapse">Less</span>
+																			</header>
+																			<details>
+																				<table class="definition">
+																					<col style="width: 100px"/>
+																					<col/>
+																					<thead>
+																						<tr>
+																							<th>Type</th>
+																							<th>Description</th>
+																						</tr>
+																					</thead>
+																					<tr>
+																						<th>script</th>
+																						<td>
+																							Specifies a client-side JavaScript resource. For <code>script</code> resources <code>location</code> may be either <code>head</code> or <code>body</code>.
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>style</th>
+																						<td>
+																							Specifies a client-side CSS resource. For <code>style</code> resources <code>location</code> may be either <code>head</code> or <code>body</code>.
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>document</th>
+																						<td>
+																							Specifies a server-side XML resource. For <code>document</code> resources <code>location</code> may only be <code>data</code>.
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>icon</th>
+																						<td>
+																							Specifies the website favorites icon. For <code>icon</code> resources <code>location</code> may only be <code>head</code>.
+																						</td>
+																					</tr>
+																				</table>
+																			</details>
+																		</mod:data>
+																	</mod:ExpandSection>
+																</details>
+															</section>
+															<section class="attribute">
+																<header>name</header>
+																<details>
+																	Specifies the resource name.
+																	This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="url:link(xml-input-document)">input document</a>, and is assigned this value as its <a href="url:link(xml-input-document, #sage:resourceName)">sage:resourceName</a> attribute.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>location</header>
+																<details>
+																	Specifies the location in which to include the resource. Possible values are: <code>head</code>, <code>body</code> and <code>data</code>.
+																	<mod:ExpandSection>
+																		<mod:config>
+																			<mod:class>moreinfo</mod:class>
+																			<mod:state>collapsed</mod:state>
+																		</mod:config>
+																		<mod:data>
+																			<header>
+																				<span class="expand">More</span>
+																				<span class="collapse">Less</span>
+																			</header>
+																			<details>
+																				<table class="definition">
+																					<col style="width: 100px"/>
+																					<col/>
+																					<thead>
+																						<tr>
+																							<th>Type</th>
+																							<th>Description</th>
+																						</tr>
+																					</thead>
+																					<tr>
+																						<th>head</th>
+																						<td>
+																							Indicates that the resource should be included within the head of the document.
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>body</th>
+																						<td>
+																							Indicates that the resource should be included within the body of the document. The
+																							resource (a <code>&lt;script/&gt;</code> or a <code>&lt;style/&gt;</code> tag) will
+																							be included just before the closing <code>&lt;/body&gt;</code> tag.
+																						</td>
+																					</tr>
+																					<tr>
+																						<th>data</th>
+																						<td>
+																							Indicates the the resource should be included as a child element of the request's input XML document. Applicable to <code>document</code> type resources.
+																						</td>
+																					</tr>
+																				</table>
+																			</details>
+																		</mod:data>
+																	</mod:ExpandSection>
+																</details>
+															</section>
+															<section class="attribute">
+																<header>path</header>
+																<details>
+																	Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="url:link(resource-processing-kelp)">kelp:// URL scheme</a> in the resource path.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>limitTo</header>
+																<details>
+																	<p class="indent">Comma-separated list of user agent id's to which the resource library applies. For instance, <code>ie6,ie7,chrome5,firefox7,opera10,safari4</code>.</p>
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

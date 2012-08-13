@@ -58,7 +58,7 @@ namespace Sage.Views
 		static XsltTransform()
 		{
 			extensions = new Dictionary<string, object>();
-			foreach (Assembly a in Application.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes() where t.IsClass && !t.IsAbstract select t;
 

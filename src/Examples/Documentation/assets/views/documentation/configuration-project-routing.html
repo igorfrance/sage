@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Routing (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-routing"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Routing (Project configuraton)</span>
+				</header>
+				<details>
+					<summary>
+						<p>
+							Routing configuration section enables you to set up <a href="http://msdn.microsoft.com/en-us/library/cc668201.aspx">URL routes</a> that will to be ensure that the paths of your choosing get handled by the <code>Controller</code> and <code>Action</code> of your choosing.
+						</p>
+						<p>
+							In addition to any routes you setup in the project configuration, Sage will automatically create the following routes each time a project initializes:
+						</p>
+						<dl>
+							<dt><code>(empty string)</code></dt>
+							<dd>
+								Matches empty path (root of the website, for example). Handled by <code>GenericController</code>
+							</dd>
+							<dt><code>{*anything}</code></dt>
+							<dd>
+								Matches any string. Handled by <code>GenericController</code>
+							</dd>
+						</dl>
+						<p>
+							These two routes ensure that all requests get handled by the <code>GenericController</code>. These routes have the lowest priority; if there is another, more specific route matching the current request path, it will take precedence instead of the <code>GenericController</code> route.
+						</p>
+						<section class="moreinfo">
+							<header>Generic controller</header>
+							<details>
+								<p>
+									If the request hits the <code>GenericController</code>, before deciding what to do with the request this controller examines the request path and checks to see if there is a view file that matches it. For instance, for URL <code>http://www.mysite.com/chewing/selection</code>, assuming that the application root is <code>/</code>, the request path is:
+									<code class="example">chewing/selection</code>
+									This path is split on the first slash, and the two variables that are produced are:<br/>
+									<pre class="example">controller=chewing<br/>  action=selection</pre>
+								</p>
+								<p>
+									The <code>GenericController</code> will then look in the view path as configured with the <a href="url:self(#paths)">paths/View element</a>, for a folder named <code>chewing</code> (the controller variable from the example above), and in there for a file named <code>selection.(html|xml|xsl|xslt)</code> (the action variable). If a matching file with either of these extensions exists in the matching directory, the <code>GenericController</code> will open it and process it accordingly.
+								</p>
+							</details>
+						</section>
+					</summary>
+					<section class="topic">
+						<header>
+							Reference
+						</header>
+						<details>
+							<section class="element">
+								<header>routing element</header>
+								<details>
+									<summary>Specifies the routing configuration.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<routing>
+															<route path="dev/log/{threadID}" name="Dev.Log" namespace="Sage.DevTools.Controllers" controller="Dev" action="Log"/>
+															<route path="dev/inspect" name="Dev.Inspect" namespace="Sage.DevTools.Controllers" controller="Dev" action="Inspect"/>
+															<route path="dev/routes" name="Dev.Routes" namespace="Sage.DevTools.Controllers" controller="RouteDebugger" action="Index"/>
+														</routing>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>defaultNamespace</header>
+												<details>
+													Specifies the default namespace to use with any routes that don't explicitly specify the namespace of their controllers. This attribute is optional and the default value is an empty string.
+												</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>route element</header>
+												<details>
+													<summary>Defines a single route</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<route path="dev/log/{threadID}" name="Dev.Log" namespace="Sage.DevTools.Controllers" controller="Dev" action="Log"/>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>name</header>
+																<details>
+																	The name of the route. This name must be unique and is required.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>path</header>
+																<details>
+																	The path that the route handles.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>controller</header>
+																<details>
+																	The controller that handles the route.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>action</header>
+																<details>
+																	The controller's method that handles the route.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>namespace</header>
+																<details>
+																	The namespace of the route controller.
+																</details>
+															</section>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<section class="element">
+																<header>constraint element</header>
+																<details>
+																	<summary>
+																		Specifies the constraint for a route parameter. A constraint specifies a regular expression that an element must match in order for the route to be condsidered valid; in case this test fails, the route will not match.
+																	</summary>
+																	<section class="properties example">
+																		<header>Example</header>
+																		<details>
+																			<summary>
+																				In this example, the constraint <code>^\d+$</code> specifies that the parameter should consist of digits only.
+																			</summary>
+																			<mod:XmlTree>
+																				<mod:data>
+																					<sage:literal>
+																						<route name="ProductDetail" path="products/{id}" controller="Product" action="Detail">
+																							<contraint name="id" expression="^\d+$"/>
+																						</route>
+																					</sage:literal>
+																				</mod:data>
+																			</mod:XmlTree>
+																		</details>
+																	</section>
+																	<section class="properties attributes">
+																		<header>Attributes</header>
+																		<details>
+																			<section class="attribute">
+																				<header>name</header>
+																				<details>
+																					The name of the parameter for which the constraint applies.
+																				</details>
+																			</section>
+																			<section class="attribute">
+																				<header>expression</header>
+																				<details>
+																					The regular expression that the parameter must match in order to be considered valid.
+																				</details>
+																			</section>
+																		</details>
+																	</section>
+																</details>
+															</section>
+															<section class="element">
+																<header>default element</header>
+																<details>
+																	<summary>
+																		Specifies the default value for a route parameter. If the URL does not contain a segment for that parameter, it's value will be set to the value attribute of this element.
+																	</summary>
+																	<section class="properties example">
+																		<header>Example</header>
+																		<details>
+																			<summary>
+																				In this example, if the <code>category</code> is empty, it will default to <code>all-categories</code>.
+																			</summary>
+																			<mod:XmlTree>
+																				<mod:data>
+																					<sage:literal>
+																						<route name="ProductList" path="products/{category}" controller="Product" action="List">
+																							<default name="category" value="all-products"/>
+																						</route>
+																					</sage:literal>
+																				</mod:data>
+																			</mod:XmlTree>
+																		</details>
+																	</section>
+																	<section class="properties attributes">
+																		<header>Attributes</header>
+																		<details>
+																			<section class="attribute">
+																				<header>name</header>
+																				<details>
+																					The name of the parameter for which the default applies.
+																				</details>
+																			</section>
+																			<section class="attribute">
+																				<header>value</header>
+																				<details>
+																					The default value for the parameter.
+																				</details>
+																			</section>
+																		</details>
+																	</section>
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

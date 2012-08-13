@@ -18,6 +18,8 @@ namespace Kelp.Extensions
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
+	using System.Text;
 	using System.Xml;
 
 	using Newtonsoft.Json;
@@ -318,6 +320,93 @@ namespace Kelp.Extensions
 				return defaultValue;
 
 			return value;
+		}
+
+		/// <summary>
+		/// Generates an XPath that can be used to select exactly the <paramref name="instance"/> node in the owner document.
+		/// </summary>
+		/// <param name="instance">The instance for which to generate the xpath</param>
+		/// <returns>An XPath string that can be used to select exactly the <paramref name="instance"/> node in the owner document.</returns>
+		public static string GetXPath(this XmlNode instance)
+		{
+			StringBuilder builder = new StringBuilder();
+			XmlNode node = instance;
+			while (node != null)
+			{
+				switch (node.NodeType)
+				{
+					case XmlNodeType.Attribute:
+						builder.Insert(0, "/@" + node.Name);
+						node = ((XmlAttribute) node).OwnerElement;
+						break;
+
+					case XmlNodeType.Element:
+						int index = GetPosition(node);
+						builder.Insert(0, "/" + node.Name + "[" + index + "]");
+						node = node.ParentNode;
+						break;
+
+					case XmlNodeType.Document:
+						break;
+
+					default:
+						node = node.ParentNode;
+						break;
+				}
+			}
+
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Gets the position index of the specified <paramref name="instance"/>.
+		/// </summary>
+		/// <param name="instance">The element whose index to get</param>
+		/// <returns>The position index of the specified <paramref name="instance"/>.</returns>
+		public static int GetPosition(this XmlNode instance)
+		{
+			XmlNode parentNode = instance.ParentNode;
+			if (parentNode is XmlDocument)
+				return 1;
+
+			XmlElement parent = (XmlElement) parentNode;
+			int index = 1;
+
+			foreach (XmlNode candidate in parent.ChildNodes.Cast<XmlNode>()
+				.Where(candidate => candidate is XmlElement && candidate.Name == instance.Name))
+			{
+				if (candidate == instance)
+					return index;
+
+				index++;
+			}
+
+			return -1;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the specified <paramref name="node"/> is a descendant of the current 
+		/// <paramref name="instance"/>.
+		/// </summary>
+		/// <param name="instance">The element being tested</param>
+		/// <param name="node">The descendant node being looked for</param>
+		/// <returns><c>true</c> if the specified <paramref name="node"/> is a descendant of the current 
+		/// <paramref name="instance"/>; otherwise <c>false</c>.</returns>
+		public static bool Contains(this XmlNode instance, XmlNode node)
+		{
+			XmlElement parentNode = node.ParentNode as XmlElement;
+			while (parentNode != null)
+			{
+				foreach (XmlNode childNode in parentNode.ChildNodes)
+				{
+					if (childNode == node)
+						return true;
+				}
+
+				parentNode = parentNode.ParentNode as XmlElement;
+			}
+
+			return false;
 		}
 
 		/// <summary>

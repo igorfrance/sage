@@ -15,18 +15,45 @@
  */
 namespace Kelp
 {
+	using System;
+	using System.Diagnostics.Contracts;
 	using System.Xml;
 
 	/// <summary>
-	/// Defines the interface for objects that support simple conversion to XML.
+	/// Represents an item that can be converted to and from an <see cref="XmlElement"/>.
 	/// </summary>
+	[ContractClass(typeof(IXmlConvertibleContract))]
 	public interface IXmlConvertible
 	{
 		/// <summary>
-		/// Returns an <see cref="XmlElement"/> that represents the current object.
+		/// Parses the specified <paramref name="element"/> into the current object.
 		/// </summary>
-		/// <param name="ownerDoc">The <see cref="XmlDocument"/> to use to create XML elements.</param>
-		/// <returns>An <see cref="XmlElement"/> that represents the current object.</returns>
-		XmlElement ToXml(XmlDocument ownerDoc);
+		/// <param name="element">The element to parse.</param>
+		void Parse(XmlElement element);
+
+		/// <summary>
+		/// Generates an <see cref="XmlElement" /> that represents this instance.
+		/// </summary>
+		/// <param name="document">The document to use to create the element with.</param>
+		/// <returns>An <see cref="XmlElement" /> that represents this instance.</returns>
+		XmlElement ToXml(XmlDocument document);
+	}
+
+	/// <summary>
+	/// Defines the contract for <see cref="IXmlConvertible"/>.
+	/// </summary>
+	[ContractClassFor(typeof(IXmlConvertible))]
+	internal abstract class IXmlConvertibleContract : IXmlConvertible
+	{
+		public void Parse(XmlElement element)
+		{
+			Contract.Requires<ArgumentNullException>(element != null);
+		}
+
+		public XmlElement ToXml(XmlDocument document)
+		{
+			Contract.Requires<ArgumentNullException>(document != null);
+			return null;
+		}
 	}
 }

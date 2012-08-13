@@ -200,7 +200,7 @@ namespace Sage.ResourceManagement
 				result = "{locale}";
 			else
 			{
-				ProjectConfiguration config = ProjectConfiguration.Current;
+				ProjectConfiguration config = Project.Configuration;
 
 				Match m;
 				while ((m = suffixTest.Match(fileName)).Success)

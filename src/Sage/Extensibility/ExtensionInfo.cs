@@ -73,14 +73,28 @@ namespace Sage.Extensibility
 					if (configFile != null)
 					{
 						this.Config = ProjectConfiguration.Create(extensionArchive.GetInputStream(configFile.Entry));
+						this.Config.ValidationResult.SourceFile = string.Format("{0}/{1}", this.ArchiveFileName, configFile.Name);
 						assetPath = (this.Config.AssetPath ?? assetPath).Replace("~/", string.Empty);
 					}
 
-					this.AssemblyFiles = this.ArchiveFiles
+					var dlls = this.ArchiveFiles
 						.Where(v =>
 							v.Name.StartsWith("bin/", StringComparison.InvariantCultureIgnoreCase) &&
 							v.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
 						.ToList();
+
+					var pdbs = this.ArchiveFiles
+						.Where(v =>
+							v.Name.StartsWith("bin/", StringComparison.InvariantCultureIgnoreCase) &&
+							v.Name.EndsWith(".pdb", StringComparison.InvariantCultureIgnoreCase))
+						.ToList();
+
+					this.AssemblyFiles = new List<ExtensionFile[]>();
+					foreach (ExtensionFile dll in dlls)
+					{
+						var pdb = pdbs.FirstOrDefault(p => p.Name == dll.Name);
+						this.AssemblyFiles.Add(new[] { dll, pdb });
+					}
 
 					this.AssetFiles = this.ArchiveFiles
 						.Where(v => v.Name.StartsWith(assetPath, StringComparison.InvariantCultureIgnoreCase))
@@ -101,7 +115,7 @@ namespace Sage.Extensibility
 
 		public List<ExtensionFile> ArchiveFiles { get; private set; }
 
-		public List<ExtensionFile> AssemblyFiles { get; private set; }
+		public List<ExtensionFile[]> AssemblyFiles { get; private set; }
 
 		public List<ExtensionFile> AssetFiles { get; private set; }
 
@@ -204,7 +218,7 @@ namespace Sage.Extensibility
 			ZipFile extensionArchive = new ZipFile(fs);
 			try
 			{
-				foreach (ExtensionFile file in this.ArchiveFiles)
+				foreach (ExtensionFile file in this.AssetFiles)
 				{
 					string childPath = file.Name;
 					string targetPath = context.Path.Resolve(childPath);
@@ -311,9 +325,15 @@ namespace Sage.Extensibility
 			try
 			{
 				this.assemblies = new List<Assembly>();
-				foreach (ExtensionFile assemblyFile in this.AssemblyFiles)
+				foreach (ExtensionFile[] assemblyPair in this.AssemblyFiles)
 				{
-					Assembly extensionAssembly = Assembly.Load(assemblyFile.Read(extensionArchive));
+					ExtensionFile dll = assemblyPair[0];
+					ExtensionFile pdb = assemblyPair[1];
+
+					Assembly extensionAssembly = pdb != null 
+						? Assembly.Load(dll.Read(extensionArchive), pdb.Read(extensionArchive))
+						: Assembly.Load(dll.Read(extensionArchive));
+
 					this.assemblies.Add(extensionAssembly);
 				}
 

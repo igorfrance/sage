@@ -190,7 +190,7 @@ namespace Sage.Views
 					}
 					catch (Exception ex)
 					{
-						log.ErrorFormat("Error proceesing module element {0}: {1}", moduleElement.Name, ex.Message);
+						log.ErrorFormat("Error procesing module element {0}: {1}", moduleElement.Name, ex.Message);
 					}
 					finally
 					{
@@ -211,6 +211,7 @@ namespace Sage.Views
 				}
 			}
 
+			// this section adds library reference for <sage:library[@ref]/> elements
 			XmlNodeList libraries = input.ConfigNode.SelectNodes(LibrarySelectXpath, XmlNamespaces.Manager);
 			foreach (XmlElement library in libraries)
 			{
@@ -225,7 +226,7 @@ namespace Sage.Views
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("{0} ({1})", this.Name, this.Controller.ControllerName);
+			return string.Format("{0} ({1})", this.Name, this.Controller.Name);
 		}
 
 		private void SynchronizeElements(XmlElement targetElement, XmlElement sourceElement)

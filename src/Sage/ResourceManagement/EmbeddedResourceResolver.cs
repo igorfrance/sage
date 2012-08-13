@@ -32,21 +32,12 @@ namespace Sage.ResourceManagement
 	{
 		public const string Scheme = "sageresx";
 
-		public EntityResult GetEntity(UrlResolver parent, SageContext context, string uri)
+		public static Stream GetStream(string resourceUri)
 		{
-			Stream reader = GetStreamResourceReader(parent, context, uri);
-			if (reader == null)
-				throw new ArgumentException(string.Format("The uri '{0}' could not be resolved", uri));
-
-			return new EntityResult { Entity = reader };
-		}
-
-		protected Stream GetStreamResourceReader(UrlResolver parent, SageContext context, string resourceUri)
-		{
-			string resourceName = ConvertPath(resourceUri);
+			string resourceName = EmbeddedResourceResolver.ConvertPath(resourceUri);
 
 			Stream result = null;
-			foreach (Assembly a in Application.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies)
 			{
 				string resourcePath = new List<string>(a.GetManifestResourceNames())
 					.FirstOrDefault(r => r.ToLower().IndexOf(resourceName) != -1);
@@ -61,7 +52,7 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
-		private string ConvertPath(string path)
+		public static string ConvertPath(string path)
 		{
 			return Regex.Replace(path, @"^\w+://", string.Empty)
 				.TrimEnd('/')
@@ -70,6 +61,15 @@ namespace Sage.ResourceManagement
 				.Replace('/', '.')
 				.Replace('\\', '.')
 				.ToLower();
+		}
+
+		public EntityResult GetEntity(UrlResolver parent, SageContext context, string uri)
+		{
+			Stream reader = GetStream(uri);
+			if (reader == null)
+				throw new ArgumentException(string.Format("The uri '{0}' could not be resolved", uri));
+
+			return new EntityResult { Entity = reader };
 		}
 	}
 }

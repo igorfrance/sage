@@ -22,17 +22,25 @@ namespace Sage.Modules
 	using System.Linq;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Extensions;
+
+	using log4net;
+
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 	using Sage.Views;
 
+	using XmlNamespaces = Sage.XmlNamespaces;
+
 	/// <summary>
 	/// Contains module configuration information.
 	/// </summary>
-	public class ModuleConfiguration
+	public class ModuleConfiguration : IXmlConvertible
 	{
 		private const string DefaultXslt = @"<xsl:stylesheet version=""1.0"" xmlns:xsl=""http://www.w3.org/1999/XSL/Transform"" xmlns=""http://www.w3.org/1999/xhtml""/>";
+		private static readonly ILog log = LogManager.GetLogger(typeof(ModuleConfiguration).FullName);
+
 		private readonly List<ModuleResource> resources = new List<ModuleResource>();
 		private Type moduleType;
 
@@ -64,55 +72,7 @@ namespace Sage.Modules
 		internal ModuleConfiguration(XmlElement configElement)
 			: this()
 		{
-			Contract.Requires<ArgumentNullException>(configElement != null);
-
-			this.Name = configElement.GetAttribute("name");
-			this.Category = configElement.GetAttribute("category");
-
-			this.TypeName = configElement.GetAttribute("type");
-			this.TagNames = new List<string>();
-
-			var tagNameNodes = configElement.SelectNodes("p:tags/p:tag", XmlNamespaces.Manager);
-			if (tagNameNodes.Count == 0)
-			{
-				this.TagNames.Add(this.Name);
-			}
-			else
-			{
-				foreach (XmlElement tagNode in tagNameNodes)
-				{
-					this.TagNames.Add(tagNode.GetAttribute("name"));
-				}
-			}
-
-			var dependencyNodes = configElement.SelectNodes("p:dependencies/p:module", XmlNamespaces.Manager);
-			foreach (XmlElement dependencyNode in dependencyNodes)
-			{
-				this.Dependencies.Add(dependencyNode.GetAttribute("ref"));
-			}
-
-			var libraryNodes = configElement.SelectNodes("p:dependencies/p:library", XmlNamespaces.Manager);
-			foreach (XmlElement libraryNode in libraryNodes)
-			{
-				this.Libraries.Add(libraryNode.GetAttribute("ref"));
-			}
-
-			var resourceNodes = configElement.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
-			foreach (XmlElement scriptNode in resourceNodes)
-			{
-				this.resources.Add(new ModuleResource(scriptNode, this.Name));
-			}
-
-			var stylesheetNodes = configElement.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);
-			foreach (XmlElement stylesheetNode in stylesheetNodes)
-			{
-				this.Stylesheets.Add(stylesheetNode.GetAttribute("path"));
-			}
-
-			this.AutoLocation = (ModuleAutoLocation) Enum.Parse(
-				typeof(ModuleAutoLocation), 
-				configElement.GetAttribute("auto"), 
-				true);
+			this.Parse(configElement);
 		}
 
 		private ModuleConfiguration()
@@ -120,8 +80,8 @@ namespace Sage.Modules
 			this.Category = string.Empty;
 			this.TagNames = new List<string>();
 			this.Stylesheets = new List<string>();
-			this.Dependencies = new List<string>();
-			this.Libraries = new List<string>();
+			this.ModuleDependencies = new List<string>();
+			this.LibraryDependencies = new List<string>();
 			this.AutoLocation = ModuleAutoLocation.None;
 		}
 
@@ -151,9 +111,9 @@ namespace Sage.Modules
 		}
 
 		/// <summary>
-		/// Gets the list of shared libaries this module uses / depends on.
+		/// Gets the list of names of libaries this module uses / depends on.
 		/// </summary>
-		public List<string> Libraries { get; private set; }
+		public List<string> LibraryDependencies { get; private set; }
 
 		/// <summary>
 		/// Gets the name of this module.
@@ -177,15 +137,22 @@ namespace Sage.Modules
 		{
 			get
 			{
-				if (moduleType == null)
+				if (this.moduleType == null)
 				{
 					if (!string.IsNullOrEmpty(this.TypeName))
-						moduleType = Application.GetType(this.TypeName);
+					{
+						this.moduleType = Project.GetType(this.TypeName);
+						if (this.moduleType == null)
+						{
+							log.ErrorFormat("The specified type '{0}' for module '{1}' could not be loaded", this.TypeName, this.Name);
+							this.moduleType = typeof(NullModule);
+						}
+					}
 					else
-						moduleType = typeof(NullModule);
+						this.moduleType = typeof(NullModule);
 				}
 
-				return moduleType;
+				return this.moduleType;
 			}
 		}
 
@@ -205,9 +172,109 @@ namespace Sage.Modules
 		public IList<string> Stylesheets { get; private set; }
 
 		/// <summary>
-		/// Gets this module's dependencies (list of other module's names) 
+		/// Gets the list of other modules that this module uses / depends on.
 		/// </summary>
-		public IList<string> Dependencies { get; private set; }
+		public IList<string> ModuleDependencies { get; private set; }
+
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			this.Name = element.GetAttribute("name");
+			this.Category = element.GetAttribute("category");
+
+			this.TypeName = element.GetAttribute("type");
+			this.TagNames = new List<string>();
+
+			var tagNameNodes = element.SelectNodes("p:tags/p:tag", XmlNamespaces.Manager);
+			if (tagNameNodes.Count == 0)
+			{
+				this.TagNames.Add(this.Name);
+			}
+			else
+			{
+				foreach (XmlElement tagNode in tagNameNodes)
+				{
+					this.TagNames.Add(tagNode.GetAttribute("name"));
+				}
+			}
+
+			var dependencyNodes = element.SelectNodes("p:dependencies/p:module", XmlNamespaces.Manager);
+			foreach (XmlElement dependencyNode in dependencyNodes)
+			{
+				this.ModuleDependencies.Add(dependencyNode.GetAttribute("ref"));
+			}
+
+			var libraryNodes = element.SelectNodes("p:dependencies/p:library", XmlNamespaces.Manager);
+			foreach (XmlElement libraryNode in libraryNodes)
+			{
+				this.LibraryDependencies.Add(libraryNode.GetAttribute("ref"));
+			}
+
+			var resourceNodes = element.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
+			foreach (XmlElement scriptNode in resourceNodes)
+			{
+				this.resources.Add(new ModuleResource(scriptNode, this.Name));
+			}
+
+			var stylesheetNodes = element.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);
+			foreach (XmlElement stylesheetNode in stylesheetNodes)
+			{
+				this.Stylesheets.Add(stylesheetNode.GetAttribute("path"));
+			}
+
+			var autoLocation = element.GetAttribute("auto");
+			if (!string.IsNullOrWhiteSpace(autoLocation))
+			{
+				this.AutoLocation = (ModuleAutoLocation) Enum.Parse(
+					typeof(ModuleAutoLocation),
+					element.GetAttribute("auto"),
+					true);
+			}
+		}
+
+		/// <inheritdoc/>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
+			XmlElement result = document.CreateElement("module", Ns);
+
+			result.SetAttribute("name", this.Name);
+
+			if (!string.IsNullOrWhiteSpace(this.Category))
+				result.SetAttribute("category", this.Category);
+
+			if (!string.IsNullOrWhiteSpace(this.TypeName))
+				result.SetAttribute("type", this.TypeName);
+
+			if (this.TagNames.Count > 1 || this.TagNames[0] != this.Name)
+			{
+				XmlNode tagsNode = result.AppendChild(document.CreateElement("tags", Ns));
+				foreach (string name in this.TagNames)
+				{
+					tagsNode.AppendElement(document.CreateElement("p:tag", Ns)).SetAttribute("name", name);
+				}
+			}
+
+			XmlNode dependenciesNode = result.AppendChild(document.CreateElement("dependencies", Ns));
+			foreach (string name in this.ModuleDependencies)
+				dependenciesNode.AppendElement(document.CreateElement("module", Ns)).SetAttribute("ref", name);
+
+			foreach (string name in this.LibraryDependencies)
+				dependenciesNode.AppendElement(document.CreateElement("library", Ns)).SetAttribute("ref", name);
+
+			XmlNode resourcesNode = result.AppendChild(document.CreateElement("resources", Ns));
+			foreach (ModuleResource resource in this.resources)
+				resourcesNode.AppendElement(resource.ToXml(document));
+
+			XmlNode stylesheetsNode = result.AppendChild(document.CreateElement("stylesheets", Ns));
+			foreach (string path in this.Stylesheets)
+				stylesheetsNode.AppendElement(document.CreateElement("stylesheet", Ns)).SetAttribute("path", path);
+
+			if (this.AutoLocation != ModuleAutoLocation.None)
+				result.SetAttribute("auto", this.AutoLocation.ToString().ToLower());
+
+			return result;
+		}
 
 		/// <inheritdoc/>
 		public override string ToString()
@@ -248,7 +315,7 @@ namespace Sage.Modules
 			IEnumerable<ModuleConfiguration> autoModules =
 				context.ProjectConfiguration.Modules.Values.Where(m => m.AutoLocation == location);
 
-			XmlNode resultNode = ResourceManager.CopyTree(htmlNode, context);
+			XmlNode resultNode = ResourceManager.ApplyHandlers(htmlNode, context);
 			foreach (ModuleConfiguration module in autoModules)
 				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
 
@@ -275,7 +342,7 @@ namespace Sage.Modules
 		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
 		{
 			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
-			foreach (string name in config.Dependencies)
+			foreach (string name in config.ModuleDependencies)
 			{
 				ModuleConfiguration reference;
 				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
@@ -294,18 +361,15 @@ namespace Sage.Modules
 			CacheableXmlDocument fromDocument = context.Resources.LoadXml(stylesheetPath);
 			targetDocument.AddDependencies(fromDocument.Dependencies);
 
+			string xpathOthers = string.Join(" | ", 
+				new[] { "/*/xsl:preserve-space", "/*/xsl:strip-space", "/*/xsl:namespace-alias", "/*/xsl:attribute-set" });
+
 			XmlNodeList paramNodes = fromDocument.SelectNodes("/*/xsl:param", XmlNamespaces.Manager);
 			XmlNodeList variableNodes = fromDocument.SelectNodes("/*/xsl:variable", XmlNamespaces.Manager);
 			XmlNodeList templateNodes = fromDocument.SelectNodes("/*/xsl:template", XmlNamespaces.Manager);
 			XmlNodeList includeNodes = fromDocument.SelectNodes("/*/xsl:include", XmlNamespaces.Manager);
 			XmlNodeList scriptNodes = fromDocument.SelectNodes("/*/msxsl:script", XmlNamespaces.Manager);
-			XmlNodeList otherNodes = fromDocument.SelectNodes(string.Join(" | ", new[] 
-			{
-				"/*/xsl:preserve-space", 
-				"/*/xsl:strip-space",
-				"/*/xsl:namespace-alias",
-				"/*/xsl:attribute-set",
-			}), XmlNamespaces.Manager);
+			XmlNodeList otherNodes = fromDocument.SelectNodes(xpathOthers, XmlNamespaces.Manager);
 
 			string stylesheetDirectory = Path.GetDirectoryName(stylesheetPath);
 

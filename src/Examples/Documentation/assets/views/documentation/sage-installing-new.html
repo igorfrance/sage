@@ -10,14 +10,17 @@
 	</head>
 	<body>
 
-		<h1>Installing a new Sage project</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-installing-new"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-		<p>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-installing-new"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Installing a new Sage project</span>
+				</header>
+				<details>		<p>
 			Prior to installing a Sage project on your server, make sure you have the following installed:
 		</p>
 		<ul>
@@ -45,15 +48,13 @@
 						<mod:toolbar>false</mod:toolbar>
 					</mod:config>
 					<mod:data>
-						<configuration xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
-							<project name="MySageProject" defaultLocale="en">
-								<globalization>
-									<locale name="en" dictionaryNames="en" resourceNames="default">
-										<format culture="en-us" shortDate="MMMM d, yyyy" longDate="D"/>
-									</locale>
-								</globalization>
-							</project>
-						</configuration>
+						<project name="MySageProject" defaultLocale="en" xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+							<globalization>
+								<locale name="en" dictionaryNames="en" resourceNames="default">
+									<format culture="en-us" shortDate="MMMM d, yyyy" longDate="D"/>
+								</locale>
+							</globalization>
+						</project>
 					</mod:data>
 				</mod:XmlTree>
 				To find out more check the <a href="url:link(sage-configuration)">configuration reference</a>. You will
@@ -123,5 +124,9 @@
 				<a href="url:link(resource-processing)" title="Resource processing in Sage">Read more about resource processing</a>.
 			</li>
 		</ol>
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

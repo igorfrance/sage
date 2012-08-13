@@ -6,81 +6,59 @@
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		xmlns="http://www.cycle99.com/schemas/sage/internationalization.xsd">
 
-	<xs:element name="dictionary">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="phrase" minOccurs="0" maxOccurs="unbounded">
-					<xs:complexType mixed="true">
-						<xs:choice minOccurs="0" maxOccurs="unbounded">
-							<xs:element ref="intl:phrase"/>
-							<xs:element ref="intl:variable"/>
-							<xs:any namespace="##other" minOccurs="0"/>
-						</xs:choice>
-						<xs:attribute name="id" type="xs:string" use="required" />
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-		<xs:unique name="unique.phrase.id">
-			<xs:selector xpath="intl:phrase"/>
-			<xs:field xpath="@id"/>
-		</xs:unique>
-	</xs:element>
-
-	<xs:element name="variables" type="intl:variables">
-		<xs:unique name="unique.value.id">
-			<xs:selector xpath="intl:value"/>
-			<xs:field xpath="@id"/>
-		</xs:unique>
-	</xs:element>
-
-	<xs:complexType name="variables">
+	<xs:complexType name="dictionary">
 		<xs:sequence>
-			<xs:element name="variable" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="phrase" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType mixed="true">
-					<xs:sequence minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="value" type="intl:value"/>
-					</xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="phrase" type="intl:phrase"/>
+						<xs:element name="variable" type="intl:variable"/>
+						<xs:any namespace="##other" minOccurs="0"/>
+					</xs:choice>
 					<xs:attribute name="id" type="xs:string" use="required" />
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:element name="phrase">
-		<xs:annotation>
-			<xs:documentation>References a phrase from the dictionary</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:attribute name="ref" use="required">
-				<xs:annotation>
-					<xs:documentation>Specifies the id of the phrase from the dictionary that this element represents</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-		</xs:complexType>
-	</xs:element>
-
-	<xs:element name="variable">
-		<xs:complexType>
-			<xs:attribute name="ref" use="required"/>
-		</xs:complexType>
-	</xs:element>
-
-	<xs:complexType name="value" mixed="true">
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:any processContents="lax"/>
-		</xs:choice>
-		<xs:attribute name="locale" type="xs:string" use="required" />
+	<xs:complexType name="variables">
+		<xs:sequence>
+			<xs:element name="variable" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType mixed="true">
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="value">
+							<xs:complexType mixed="true">
+								<xs:attribute name="locale" type="xs:string" use="required" />
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+					<xs:attribute name="id" type="xs:string" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
-	<xs:attribute name="locale">
+	<xs:complexType name="phrase">
 		<xs:annotation>
-			<xs:documentation>
-				A comma separated list of one or more locales that this not should, or should not be rendered in.
-				To make the element appear only in some locales, use a value such as 'en,de,fr'.
-				To make the element not appear only in some locales, surround the locales with a not: 'not(en,de,fr)'.
-			</xs:documentation>
+			<xs:documentation>References a dictionary phrase.</xs:documentation>
 		</xs:annotation>
-	</xs:attribute>
+		<xs:attribute name="ref" use="required">
+			<xs:annotation>
+				<xs:documentation>Specifies the id of the phrase from the dictionary that this element represents.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="variable">
+		<xs:annotation>
+			<xs:documentation>References an internationalization variable.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="ref" use="required">
+			<xs:annotation>
+				<xs:documentation>Specifies the id of the variable that this element represents.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
 
 </xs:schema>

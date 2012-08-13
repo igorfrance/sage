@@ -12,14 +12,17 @@
 	</head>
 	<body>
 
-		<h1>Locale fallback path</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="internationalization-fallback"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="internationalization-fallback"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Locale fallback path</span>
+				</header>
+				<details>
 		<p>
 			When selecting which localized file to open, which elements to render and which dictionary phrase or variable
 			value to substitute, Sage goes through locale fallback process from high to low priority until a match is found.
@@ -140,5 +143,9 @@
 			attribute for the current locale, the block will be rendered.
 		</p>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

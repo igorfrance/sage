@@ -33,16 +33,21 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="sage:basehref">
-		<base href="{$request/@basehref}"/>
+	<xsl:template match="sage:error">
+		<div class="error">
+			<xsl:apply-templates select="node()"/>
+		</div>
 	</xsl:template>
-
-	<xsl:template match="sage:version">
-		<xsl:value-of select="$request/sage:assembly/@version"/>
-	</xsl:template>
-
+	
 	<xsl:template match="sage:literal">
-		<xsl:apply-templates select="node()"/>
+		<xsl:choose>
+			<xsl:when test="ancestor::sage:literal">
+				<xsl:apply-templates select="."/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="node()"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="xhtml:html">
@@ -133,7 +138,7 @@
 			<xsl:value-of select="concat($request/@url, .)"/>
 		</xsl:attribute>
 	</xsl:template>
-	
+
 	<xsl:template match="@xml:base | @xml:space"/>
 
 	<xsl:template match="xhtml:*">
@@ -157,6 +162,23 @@
 	</xsl:template>
 
 	<xsl:template match="text()">
+		<xsl:value-of select="."/>
+	</xsl:template>
+
+	<xsl:template match="*" mode="copy">
+		<xsl:element name="{name()}">
+			<xsl:apply-templates select="@*" mode="copy"/>
+			<xsl:apply-templates select="node()" mode="copy"/>
+		</xsl:element>
+	</xsl:template>
+
+	<xsl:template match="@*" mode="copy">
+		<xsl:attribute name="{name()}">
+			<xsl:value-of select="."/>
+		</xsl:attribute>
+	</xsl:template>
+
+	<xsl:template match="text()" mode="copy">
 		<xsl:value-of select="."/>
 	</xsl:template>
 

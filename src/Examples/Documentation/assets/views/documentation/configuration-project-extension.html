@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Extension package (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-extension"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Extension package (Project configuration)</span>
+				</header>
+				<details>
+
+					<section class="topic">
+						<header>
+							Extension package
+						</header>
+						<details>
+							<summary>
+								If the project is an <a href="url:link(extensibility-extensions)">extension project</a>, this section can be used to define which of the project's assets and configuration sections to include in the extension zip archive. This enables clean deployment; the full project may contain various non-deliverable items; test views and files, unit tests, work in progress etc. This element specifies exactly which resources to include in the archive; anything else will not be touched.
+							</summary>
+							<section class="element">
+								<header>package element</header>
+								<details>
+									<summary>
+										<p>Defines how to package the project as an extension archive. Each of the child elements represents one group, and each group can contain any number of <code>include</code> and <code>exclude</code> elements that will be evaluated together into a set of selected items. First, include elements are evaluated one by one to create a selection of distinct items, after which exclude elements are evaluated one by one to determine which of the items to exclude from selection.</p>
+										<p>For <code>binaries</code> and <code>assets</code> elements the <code>include</code> and <code>exclude</code> selections refer to actual files; for all other elements they refer to the names of corresponding configuration sections that should be copied to the extension's project configuration file that will be generated (and later merged into the destination projects).</p>
+									</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<package>
+															<binaries>
+																<include>~/bin/Sage.DevTools.dll</include>
+															</binaries>
+															<assets>
+																<include>~/assets/modules</include>
+																<include>~/assets/scripts/lib</include>
+																<include>~/assets/views/dev</include>
+															</assets>
+															<libraries>
+																<include>*</include>
+															</libraries>
+															<modules>
+																<include>*</include>
+															</modules>
+															<routes>
+																<include>*</include>
+															</routes>
+														</package>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+										<p>Both the  <code>include</code> and <code>exclude</code> elements have the same structure; they specify one of the three types of expression:</p>
+										<dl>
+											<dt>~/assets/scripts/*</dt>
+											<dt>~/assets/scripts</dt>
+											<dd>Represents all files and folders in <code>~/assets/scripts/</code>.</dd>
+											<dt>~/assets/scripts/*.css</dt>
+											<dd>Represents all <code>css</code>files in <code>~/assets/scripts/</code>.</dd>
+											<dt>~/assets/scr*</dt>
+											<dd>Represents all files in <code>~/assets/</code> that start with <code>scr</code>.</dd>
+										</dl>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>*/include</header>
+												<details>
+													<summary>Specifies a single include expression.</summary>
+												</details>
+												<section class="properties example">
+													<header>Example</header>
+													<details>
+														<summary>Include all files in <code>~/assets/scripts</code>:</summary>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<assets>
+																		<include>~/assets/scripts/*</include>
+																	</assets>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</details>
+												</section>
+												<section class="properties example">
+													<header>Example</header>
+													<details>
+														<summary>Include all binary assemblies in <code>~/bin</code>:</summary>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<binaries>
+																		<include>~/bin/*.dll</include>
+																	</binaries>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</details>
+												</section>
+												<section class="properties example">
+													<header>Example</header>
+													<details>
+														<summary>Include all modules whose name starts with <code>documentation</code>:</summary>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<modules>
+																		<include>documentation*</include>
+																	</modules>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</details>
+												</section>
+											</section>
+											<section class="element">
+												<header>*/exclude</header>
+												<details>
+													<summary>Specifies a single exclude expression.</summary>
+												</details>
+												<section class="properties example">
+													<header>Example</header>
+													<details>
+														<summary>Exclude all files from <code>~/assets/modules/dev</code>:</summary>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<assets>
+																		<exclude>~/assets/modules/dev</exclude>
+																	</assets>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</details>
+												</section>
+												<section class="properties example">
+													<header>Example</header>
+													<details>
+														<summary>Exclude all links that start with <code>internal</code>:</summary>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<links>
+																		<exclude>internal*</exclude>
+																	</links>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</details>
+												</section>
+											</section>
+											<section class="element">
+												<header>binaries</header>
+												<details>
+													<summary>Specifies which binaries (assemblies) to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<binaries>
+																				<include>~/bin/Sage.DevTools.dll</include>
+																			</binaries>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>assets</header>
+												<details>
+													<summary>Specifies which file assets to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<assets>
+																				<include>~/assets/modules</include>
+																				<include>~/assets/scripts/lib</include>
+																				<include>~/assets/views/dev</include>
+																			</assets>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>modules</header>
+												<details>
+													<summary>Specifies which modules to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<modules>
+																				<include>Documentation*</include>
+																			</modules>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>libraries</header>
+												<details>
+													<summary>Specifies which libraries to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<libraries>
+																				<include>*</include>
+																				<exclude>jquery.ui.dev</exclude>
+																			</libraries>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>routes</header>
+												<details>
+													<summary>Specifies which routes to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<routes>
+																				<include>*</include>
+																			</routes>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>links</header>
+												<details>
+													<summary>Specifies which links to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<links>
+																				<include>*</include>
+																			</links>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>metaViews</header>
+												<details>
+													<summary>Specifies which metaViews to include in the extension archive.</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<package>
+																			<metaViews>
+																				<include>*</include>
+																			</metaViews>
+																		</package>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<dd>
+																<dt>include</dt>
+																<dt>exclude</dt>
+															</dd>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

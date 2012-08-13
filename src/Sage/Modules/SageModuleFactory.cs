@@ -50,7 +50,7 @@ namespace Sage.Modules
 						lock (log)
 						{
 							var temp = DiscoverAvailableModules();
-							foreach (ModuleConfiguration config in ProjectConfiguration.Current.Modules.Values)
+							foreach (ModuleConfiguration config in Project.Configuration.Modules.Values)
 							{
 								if (config.Type == null)
 									continue;
@@ -104,7 +104,7 @@ namespace Sage.Modules
 		private static Dictionary<string, ModuleConfiguration> DiscoverAvailableModules()
 		{
 			var types = new Dictionary<string, ModuleConfiguration>();
-			foreach (var asm in Application.RelevantAssemblies)
+			foreach (var asm in Project.RelevantAssemblies)
 			{
 				var modules = asm.GetTypes().Where(t => 
 					typeof(IModule).IsAssignableFrom(t) && !t.IsInterface && t != typeof(NullModule));

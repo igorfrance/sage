@@ -50,7 +50,7 @@ namespace Sage.Controllers
 					string controllerNs = ((string[]) route.DataTokens["namespaces"])[0];
 
 					string typeName = string.Concat(controllerNs, ".", controllerName);
-					type = Application.GetType(typeName);
+					type = Project.GetType(typeName);
 				}
 			}
 

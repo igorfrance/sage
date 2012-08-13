@@ -8,147 +8,444 @@
 
 	<head>
 		<sage:basehref/>
-		<title>The Internationalization namespace</title>
+		<title>The internationalization namespace</title>
 	</head>
 	<body>
 
-		<h1>The Internationalization namespace</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-namespaces-internationalization"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>The Internationalization namespace</span>
+				</header>
+				<details>
+					<summary>
+						Provides <a href="url:link(internationalization)">internationalization</a>-related elements and attributes.
+					</summary>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-namespaces-internationalization"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<section class="namespace">
+						<header>Namespace URI:</header>
+						<details>http://www.cycle99.com/schemas/sage/internationalization.xsd</details>
+					</section>
 
-		<code class="principal">http://www.cycle99.com/schemas/sage/internationalization.xsd</code>
+					<section class="topic" id="elements" data-index="yes" data-level="1">
+						<header>Elements</header>
+						<details>
+							<section class="element" id="dictionary-element" data-index="yes" data-level="2">
+								<header>intl:dictionary element</header>
+								<details>
+									<summary>
+										This element contains appears in dictionary files that define language strings in use throughout the project. Container for phrase elements.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:config>
+													<mod:namespaces>true</mod:namespaces>
+												</mod:config>
+												<mod:data>
+													<sage:literal>
+														<dictionary xmlns="http://www.cycle99.com/schemas/sage/internationalization.xsd">
+															<phrase id="navigation.home">Home</phrase>
+															<phrase id="navigation.shop">Shop</phrase>
+															<phrase id="navigation.contact">Contact</phrase>
+															<phrase id="navigation.faq">F.A.Q.</phrase>
+														</dictionary>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<section class="element">
+												<header>phrase element</header>
+												<details>
+													<summary>Specifies a single phrase. This phrase may contain reference to other <a href="url:self(#phrase-ref-element)">phrase[ref]</a> and <a href="url:self(#variable-ref-element)">variable[ref]</a> elements, as they will all get resolved during <a href="url:link(internationalization)">internationalization</a>.
+													</summary>
+													<section class="attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>id</header>
+																<details>Specifies the unique <code>id</code> of the phrase. The <a href="url:self(#phrase-ref-element)">phrase[ref]</a> element refers to this id through it's <code>ref</code> attribute.</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="variables-element" data-index="yes" data-level="2">
+								<header>intl:variables element</header>
+								<details>
+									<summary>
+										This element may appear on several places where <a href="url:link(internationalization-variables)">internationalization variables</a> may be defined. These are (from low to high priority):
+										<ul>
+											<li><a href="url:link(configuration-project)">Project.config</a> (global variables)</li>
+											<li><a href="url:link(configuration-category)">Category.config</a> (category variables)</li>
+											<li><a href="url:link(xml-input-document)">view document</a> (view variables)</li>
+										</ul>
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:config>
+													<mod:namespaces>true</mod:namespaces>
+												</mod:config>
+												<mod:data>
+													<sage:literal>
+														<variables xmlns="http://www.cycle99.com/schemas/sage/internationalization.xsd">
+															<variable id="chewyMangoUrl">
+																<value locale="default">http://shop.chew.com/pages/products/chewymango</value>
+																<value locale="uk">http://shop.chew.co.uk/pages/products/chewymango</value>
+																<value locale="de">http://shop.chew.de/pages/products/chewymango</value>
+																<value locale="nl">http://shop.chew.nl/pages/products/chewymango</value>
+																<value locale="fr">http://shop.chew.fr/pages/products/chewymango</value>
+																<value locale="ca">http://www.showchewing.ca/pages/products/chewymango</value>
+																<value locale="ru">http://shop.chew.ru/on/imaginationware.store/chewymango</value>
+																<value locale="kr">http://shop.chew.co.kr/chewymango</value>
+																<value locale="us">http://www.showchewing.com/chewymango</value>
+																<value locale="jp">http://shop.chew.jp/pc/item/chewymango</value>
+															</variable>
+														</variables>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<section class="element" id="variable-element" data-index="yes" data-level="3">
+												<header>variable element</header>
+												<details>
+													<summary>
+														<p>
+															Specifies a single variable. The variable may contain reference to other <a href="url:self(#phrase-ref-element)">phrase[ref]</a> and <a href="url:self(#variable-ref-element)">variable[ref]</a> elements, as they will all get resolved during <a href="url:link(internationalization)">internationalization</a>.
+														</p>
+														<p>
+															The child <code>value</code> elements specify separate values for each locale. The order in which the values are resolved is controlled by <code>dictionaryNames</code> attribute defined in <a href="url:link(configuration-project-internationalization)">project configuration</a>. Read more about it in <a href="url:link(internationalization-variables)">internationalization variables</a>.
+														</p>
+													</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:config>
+																	<mod:namespaces>true</mod:namespaces>
+																</mod:config>
+																<mod:data>
+																	<sage:literal>
+																		<variable id="chewyMangoUrl">
+																			<value locale="default">http://shop.chew.com/pages/products/chewymango</value>
+																			<value locale="uk">http://shop.chew.co.uk/pages/products/chewymango</value>
+																			<value locale="de">http://shop.chew.de/pages/products/chewymango</value>
+																		</variable>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>id</header>
+																<details>Specifies the unique <code>id</code> of the variable. The <a href="url:self(#variable-ref-element)">variable[ref]</a> element refers to this id through it's <code>ref</code> attribute.</details>
+															</section>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements:</header>
+														<details>
+															<section class="element">
+																<header>value element</header>
+																<details>
+																	<summary>Specifies the variable value for one locale.</summary>
+																	<section class="properties example">
+																		<header>Example:</header>
+																		<details>
+																			<mod:XmlTree>
+																				<mod:data>
+																					<sage:literal>
+																						<value locale="uk">http://shop.chew.co.uk/pages/products/chewymango</value>
+																					</sage:literal>
+																				</mod:data>
+																			</mod:XmlTree>
+																		</details>
+																	</section>
+																	<section class="properties attributes">
+																		<header>Attributes</header>
+																		<details>
+																			<section class="attribute">
+																				<header>locale</header>
+																				<details>The name of the locale for which this value applies.</details>
+																			</section>
+																		</details>
+																	</section>
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="variable-ref-element" data-index="yes" data-level="2">
+								<header>intl:variable[ref] element</header>
+								<details>
+									<summary>
+										<p>
+											Referes to a variable, providing a substitution placeholder for that variable. During <a href="url:link(internationalization-variables)">internationalization</a>, these elements get substituted with the value of that variable in each generated locale.
+										</p>
+										<p>
+											These elements can be placed anywhere in XML documents where the variable value is needed.
+										</p>
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<intl:variable ref="chewyMangoUrl"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>ref</header>
+												<details>The id of the variable that this element refers to.</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="phrase-ref-element" data-index="yes" data-level="2">
+								<header>intl:phrase[ref] element</header>
+								<details>
+									<summary>
+										<p>
+											Referes to a phrase, providing a substitution placeholder for that phrase. During <a href="url:link(internationalization-phrases)">internationalization</a>, these elements get substituted with the value of that phrase for each generated locale.
+										</p>
+										<p>
+											These elements can be placed anywhere in XML documents where the phrase value is needed.
+										</p>
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<intl:phrase ref="hello.world"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>ref</header>
+												<details>The id of the dictionary phrase that this element refers to.</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="localize-element" data-index="yes" data-level="2">
+								<header>intl:localize element</header>
+								<details>
+									<summary>Provides a construct for branching content based on locale. These elements can be placed anywhere in XML where such branching is needed.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary>There are two separate footer versions for uk and de, and another for all other locales:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<div class="footer">
+															<intl:localize>
+																<intl:if locale="uk">
+																	<xi:include href="footer-uk.html"/>
+																</intl:if>
+																<intl:if locale="de">
+																	<xi:include href="footer-de.html"/>
+																</intl:if>
+																<intl:else>
+																	<xi:include href="footer.html"/>
+																</intl:else>
+															</intl:localize>
+														</div>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>if element</header>
+												<details>
+													<summary>Renders child content only in locale(s) specified by its locale attribute.</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<intl:if locale="uk">
+																			<xi:include href="footer-uk.html"/>
+																		</intl:if>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>locale</header>
+																<details>A comma-separated list of locale to for which the content should be rendered (or not rendered, if surrounded with <code>not()</code></details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>else element</header>
+												<details>
+													<summary>The fallback element that contains the content to render in case none of the <code>if</code> elements matched.</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<intl:else>
+																			<xi:include href="footer.html"/>
+																		</intl:else>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
 
-		<p>
-			Provides internationalization-related elements and attributes. Read more about
-			<a href="url:link(internationalization)">internationalization</a>.
-		</p>
+					<section class="topic" id="attributes" data-index="yes" data-level="1">
+						<header>Attributes</header>
+						<details>
+							<section class="element" id="locale-attribute" data-index="yes" data-level="2">
+								<header>intl:locale attribute</header>
+								<details>
+									<summary>
+										<p>
+											Signifies that the element that this attribute appears on should only appear in the locale(s) specified by it. It can be attached to any element except the xi:include element.
+										</p>
+										<p>
+											The value of this attribute is a comma-separated list of names of locales in which the element to which this attribute is attached should appear; <code>intl:locale="fr"</code>
+										</p>
+										<p>
+											To reverse the logic of attribute (show in all locales except for the specified list), surround the list of locates within a <code>not()</code>;  <code>intl:locale="not(fr)"</code>
+										</p>
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary>The magazine item will only show up in 'jp' locale:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<ul class="navigation">
+															<li class="home">...</li>
+															<li class="catalog">...</li>
+															<li class="shop">...</li>
+															<li class="magazine" intl:locale="jp">...</li>
+														</ul>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<summary>The magazine ietm will <code>not</code> show up in 'jp' or 'kr' locales:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<ul class="navigation">
+															<li class="home">...</li>
+															<li class="catalog">...</li>
+															<li class="shop">...</li>
+															<li class="magazine" intl:locale="not(jp,kr)">...</li>
+														</ul>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
 
-		<h5 class="tiny">Elements</h5>
-
-		<ul class="casual separate reference">
-			<li>
-				<h5 class="casual">intl:dictionary</h5>
-				This element is the root element of a language dictionary, which is also the only place where this element is
-				and can be used. It can only contain <code>intl:phrase[@id]</code> elements as first-level children.
-			</li>
-			<li>
-				<h5 class="casual">intl:phrase[@id]</h5>
-				This element defines a phrase. It's content can be any text and/or markup, as well as references
-				to other phrases (<code>intl:phrase[@ref]</code> elements). Typically however, the content will mainly be
-				plain text.
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@id</h6>
-						<span>
-							Specifies the <code>id</code> of the phrase. This attribute is required, and it must be unique (no other
-							<code>intl:phrase</code> element in the same document can have the same id).
-						</span>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">intl:variables</h5>
-				<p>
-					This element is the container for variable definitions. It can be placed in any document where different
-					values are needed for different locales. It can only contain <code>intl:variable[@id]</code> elements as
-					first-level children.
-				</p>
-			</li>
-			<li>
-				<h5 class="casual">intl:variable[@id]</h5>
-				<p>
-					This element defines a variable. It can only contain <code>intl:value</code> elements as
-					first-level children.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@id</h6>
-						<span>
-							Specifies the <code>id</code> of the variable. This attribute is required, and it must be unique (no other
-							<code>intl:variable</code> element in the same document can have the same id).
-						</span>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">intl:value</h5>
-				<p>
-					This element is used within <code>intl:variable[@id]</code> elements to defines a locale-specific variable value.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@for</h6>
-						<span>
-							Specifies the locale for this value. This can be either one of the locales defined in Project.config, or
-							a string <code>'default'</code>, which indicates that the value if for other locale not more specifically
-							defined in the same variable.
-						</span>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">intl:phrase[@ref]</h5>
-				<p>
-					This element reference a phrase. The value of the <code>ref</code> attribute is the id of the phrase defined in
-					the language dictionary. It causes the content of that phrase to be rendered in it's place, replacing the element.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@ref</h6>
-						<p>
-							Specifies the id of the phrase to render in place of this element.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">intl:variable[@ref]</h5>
-				<p>
-					This element reference a variable. The value of the <code>ref</code> attribute is the id of the variable defined
-					earlier. It causes the content of that variable to be rendered in it's place, replacing the element.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual">
-					<li>
-						<h6 class="casual">@ref</h6>
-						<p>
-							Specifies the id of the variable to render in place of this element.
-						</p>
-					</li>
-				</ul>
-			</li>
-		</ul>
-
-		<h5 class="tiny">Attributes</h5>
-
-		<ul class="casual separate reference attributes">
-			<li>
-				<h5 class="casual">@intl:locale</h5>
-				<p>
-					Can be attached to any element (with the exception if <a href="url:link(sage-namespaces-xinclude)">xi:include element</a>)
-					to signify that if should appear only in the comma-separated list of locales that the attribute specifies, or
-					if <code>not()</code> is used, in any locale BUT the comma-separated list specified by it.
-				</p>
-				<p>
-					For example:
-					<code class="example">
-						&lt;p intl:locale="de,es,fr"&gt;....&lt;/p&gt;
-					</code>
-					or:
-					<code class="example">
-						&lt;p intl:locale="not(jp,kr)"&gt;....&lt;/p&gt;
-					</code>
-				</p>
-			</li>
-		</ul>
-
+					<section class="topic" id="attribute-values" data-index="yes" data-level="1">
+						<header>Attribute values</header>
+						<details>
+							<p>Sometimes, phrases or variables need to be embedded into attribute values and in those cases we cannot use <a href="url:self(#phrase-ref-element)">phrase[ref]</a> and <a href="url:self(#variable-ref-element)">variable[ref]</a> elements. To accomplish that, you can use the <code>intl:variable(id)</code> and <code>intl:phrase(id)</code> syntax in attribute values. For instance:
+							</p>
+							<section class="properties example">
+								<header>Example:</header>
+								<details>
+									<summary>The value of the title attribute will be the value of the specified phrase:</summary>
+									<mod:XmlTree>
+										<mod:data>
+											<sage:literal>
+												<a href="catalog/wintersports/shoes/" title="intl:phrase(catalog.wintersports.title)">
+													<intl:phrase ref="catalog.shoes"/>
+												</a>
+											</sage:literal>
+										</mod:data>
+									</mod:XmlTree>
+									<summary>The value of the href attribute will be the value of the specified variable:</summary>
+									<mod:XmlTree>
+										<mod:data>
+											<sage:literal>
+												<a href="intl:variable(catalog.link)">
+													<intl:phrase ref="catalog.shoes"/>
+												</a>
+											</sage:literal>
+										</mod:data>
+									</mod:XmlTree>
+								</details>
+							</section>
+						</details>
+					</section>
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

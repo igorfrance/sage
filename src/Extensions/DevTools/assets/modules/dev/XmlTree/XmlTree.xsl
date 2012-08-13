@@ -55,7 +55,34 @@
 	</xsl:template>
 
 	<xsl:template match="sage:literal" mode="xmltree" priority="100">
-		<xsl:apply-templates select="node()" mode="xmltree"/>
+		<xsl:param name="level" select="1"/>
+		<xsl:choose>
+			<xsl:when test="ancestor::sage:literal">
+				<div>
+					<xsl:apply-templates select="." mode="xhighlightclass"/>
+					<span class="switch_space">
+						<xsl:text>&#160;</xsl:text>
+					</span>
+					<span class="markup open">
+						<xsl:text>&lt;</xsl:text>
+					</span>
+					<span>
+						<xsl:apply-templates select="." mode="xmltree-class"/>
+						<xsl:value-of select="name()"/>
+					</span>
+					<xsl:apply-templates select="@*" mode="xmltree"/>
+					<xsl:apply-templates select="." mode="xnamespace">
+						<xsl:with-param name="level" select="$level" />
+					</xsl:apply-templates>
+					<span class="markup close">
+						<xsl:text>/></xsl:text>
+					</span>
+				</div>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="node()" mode="xmltree"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="*" mode="xmltree">

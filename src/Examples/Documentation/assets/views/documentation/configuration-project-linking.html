@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Linking (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-linking"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Linking (Project configuration)</span>
+				</header>
+				<details>
+					<summary>
+						Sage provides basic <a href="url:link(linking)">link management facilities</a>, and links need to be registered in the project configuration before they can be used throughout the system. In a nutshell, you define a dictionary of links in in the configuration file, and you then use them in your markup using dedicated XML elements and attribute, or a special syntax within the regular <code>href</code> attribute of <code>a</code> elements.
+					</summary>
+
+					<section class="topic">
+						<header>
+							Reference
+						</header>
+						<details>
+							<section class="element">
+								<header>linking element</header>
+								<details>
+									<summary>Contains linking configuration.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<linking>
+															<formats>
+																<format name="rewriteprefix">{{category}}/{{locale}}</format>
+															</formats>
+															<links>
+																<link name="registration">{rewriteprefix}/registration.html</link>
+																<link name="registration-success">{rewriteprefix}/registration/{customerid}/success.html</link>
+																<link name="registration-error">{rewriteprefix}/registration/{customerid}/error.html</link>
+															</links>
+														</linking>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>links/link element</header>
+												<details>
+													<summary>
+														Defines a single link. The names between braces (e.g. <code>{customerid}</code>) are placeholders for dynamic values. The placeholders are substituted using a name/value collection initialized with the current query string, and the current <code>locale</code> and <code>category</code> values. Additionally, if a placeholder refers to a <code>format</code> name, defined within the <code>formats</code> section, it will be substituted with the value of that format string. The placeholders within the format string will be processed for in exactly the same way.
+													</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<links>
+																			<link name="registration">{rewriteprefix}/registration.html</link>
+																			<link name="registration-success">{rewriteprefix}/registration/{customerid}/success.html</link>
+																			<link name="registration-error">{rewriteprefix}/registration/{customerid}/error.html</link>
+																		</links>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>name</header>
+																<details>Specifies the name of the link.</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>formats/format element</header>
+												<details>
+													<summary>
+														Formats provide reusable string parts that can be used within links just like other placeholders.
+													</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<formats>
+																			<format name="rewriteprefix">{{category}}/{{locale}}</format>
+																		</formats>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>name</header>
+																<details>Specifies the name of the format.</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

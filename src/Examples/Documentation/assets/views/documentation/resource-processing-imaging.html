@@ -11,14 +11,17 @@
 	</head>
 	<body>
 
-		<h1>Inline image manipulation</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="resource-processing-imaging"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="resource-processing-imaging"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Inline image manipulation</span>
+				</header>
+				<details>
 		<p>
 			Sage references the <a href="url:link(sage-libraries)">AForge.Imaging</a> library, which, in addition to the imaging
 			facilities already built-in in .NET framework, enables advanced image processing capabilities.
@@ -48,5 +51,9 @@
 
 		<br class="spacer"/>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

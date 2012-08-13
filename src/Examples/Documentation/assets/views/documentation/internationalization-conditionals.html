@@ -12,14 +12,17 @@
 	</head>
 	<body>
 
-		<h1>Conditional Rendering</h1>
-
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="internationalization-conditionals"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
-
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="internationalization-conditionals"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Conditional Rendering</span>
+				</header>
+				<details>
 
 		<p>
 			To branch out which content gets used for which locale, Sage supports a number of conditional elements and
@@ -178,5 +181,9 @@
 			</mod:data>
 		</mod:XmlTree>
 
+	
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

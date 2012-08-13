@@ -8,110 +8,57 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Contextualize - Document transform flow, step 2</title>
+		<title>Contextualize (Document transform flow)</title>
 	</head>
 	<body>
 
-		<h1>Contextualize Xml</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="xml-flow-copy-tree"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Contextualize (Document transform flow)</span>
+				</header>
+				<details>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="xml-flow-copy-tree"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<summary>
+						In this step, the localized template document is pre-processed by resolving and expanding any context-dependent
+						entities (XML elements, attributes or text), before returning it to the caller.
+					</summary>
 
+					<div class="marginframe">
+						<img src="{assetpath}/images/diagrams/xml-flow-contextualize.png" alt="Contextualization"/>
+					</div>
 
-		<div class="imageframe right">
-			<img src="{assetpath}/images/diagrams/xml-transform-flow-copy-tree.jpg" alt="Contextualize - Document transform flow, step 2"/>
+					<section class="topic">
+						<header>How it works</header>
+						<details>
+							<div class="marginframe">
+								<img align="right" src="{assetpath}/images/diagrams/xml-flow-contextualize-detail.png" alt="Contextualization"/>
+							</div>
+
+							<ul class="notes" style="margin-left: 5px; padding-right: 20px">
+								<li>
+									The localized document matching the current locale is opened and it's content is processed recursively, using registered <a href="url:link(extensibility-node-handlers)">node handlers</a> to process the document as a tree.
+								</li>
+								<li>
+									When processing text nodes and attribute values, the text is searched for registered <a href="url:link(extensibility-text-handlers)">text handler</a> patterns. The matches are replaced by the result of invoking the associated handler.
+								</li>
+								<li>
+									Sage provides default node handlers whose standard behavior is to simply copy the nodes as they are. When processing a document, if there is no node handler specific to the current selection, Sage invokes the default handlers, thereby ensuring the document is copied as is.
+								</li>
+								<li>
+									Sage provides a number of <a href="url:link(extensibility-node-handlers)">node and text handlers</a> that can be used within any XML documents residing in the project.
+								</li>
+							</ul>
+						</details>
+					</section>
+
+				</details>
+			</section>
 		</div>
-
-		<p>
-			In this step, the localized template document is pre-processed by resolving and expanding any context-dependent
-			entities (XML elements, attributes or text), before returning it to the caller.
-		</p>
-		<p>
-			The document tree is processed recursively node by node, using a number of registered handlers functions to process them.
-		</p>
-		<p>
-			In order to make this process as flexible and extendible as possible, the handler functions are implemented
-			as delegates, and any method that matches the designated delegate signature can be registered as a node or text
-			handler by decorating it with the appropriate attribute.
-		</p>
-		<p>
-			Sage provides default node handlers whose standard behavior is to simply copy the full tree as-is. Sage also
-			provides a number of node and text handlers for use anywhere within XML documents in the project:
-		</p>
-		<table class="indent definition">
-			<caption>Node handlers</caption>
-			<tr valign="top">
-				<th><code>&lt;sage:link/&gt;</code></th>
-				<td>
-					This element gets its <code>href</code> attribute set, as resolved from reading the it's other attributes.
-					Read more about it in <a href="url:link(linking)">linking</a>.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>&lt;sage:url/&gt;</code></th>
-				<td>
-					This element gets substituted with URL text as resolved from it's attributes.
-					Read more about it in <a href="url:link(linking)">linking</a>.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>@sage:attrib</code></th>
-				<td>
-				This universal attribute is used to instruct Sage to generate the value of another attribute.
-				Read more about it in <a href="url:link(linking)">linking</a>.
-				</td>
-			</tr>
-		</table>
-		<table class="indent definition">
-			<caption>Text handlers</caption>
-			<tr valign="top">
-				<th><code>{{assetpath}}</code></th>
-				<td>
-					Inserts the web-relative resolved value of the asset path configuration property. Read more about it in
-					<a href="url:link(configuration-project)">project configuration</a>.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>{{sharedassetpath}}</code></th>
-				<td>
-					Inserts the web-relative resolved value of the shared asset path configuration property. Read more about it in
-					<a href="url:link(configuration-project)">project configuration</a>.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>{{modulepath}}</code></th>
-				<td>
-					Inserts the web-relative resolved value of the module path configuration property. Read more about it in
-					<a href="url:link(configuration-project)">project configuration</a>.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>{{basehref}}</code></th>
-				<td>
-					Inserts the fully qualified URL of the current web application. For example: 'http//sage.cycle99.com'.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>{{locale}}</code></th>
-				<td>
-					Inserts the name of the current locale.
-				</td>
-			</tr>
-			<tr valign="top">
-				<th><code>{{category}}</code></th>
-				<td>
-					Inserts the name of the current category.
-				</td>
-			</tr>
-		</table>
-
-		<p>
-			To learn how to integrate your own custom node and text handlers, visit the
-			<a href="url:link(extensibility-node-handlers)">handlers configuration</a> page.
-		</p>
-
 	</body>
 </html>

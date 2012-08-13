@@ -82,7 +82,26 @@ namespace Kelp
 		public QueryString(string queryString)
 		{
 			if (!string.IsNullOrEmpty(queryString))
-				Parse(queryString);
+				this.Parse(queryString);
+		}
+
+		/// <summary>
+		/// Converts any characters invalid for an xml node name with an underscore character.
+		/// </summary>
+		/// <param name="name">Original node name.</param>
+		/// <returns>A valid node name</returns>
+		public static string ValidName(string name)
+		{
+			if (string.IsNullOrEmpty(name))
+			{
+				return string.Empty;
+			}
+
+			string validName = Regex.Replace(name, @"[^\w\.\-]", "_");
+			if (Regex.Match(validName.Substring(0, 1), @"[a-zA-Z_\-]").Success != true)
+				validName = "_" + validName;
+
+			return validName;
 		}
 
 		/// <summary>
@@ -127,6 +146,16 @@ namespace Kelp
 			return this;
 		}
 
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			this.Clear();
+			foreach (XmlAttribute attr in element.Attributes)
+			{
+				this[attr.LocalName] = attr.Value;
+			}
+		}
+
 		/// <summary>
 		/// Clones this instance.
 		/// </summary>
@@ -143,7 +172,7 @@ namespace Kelp
 		/// <returns>The current instance.</returns>
 		public QueryString Merge(NameValueCollection query)
 		{
-			return Merge(query, false);
+			return this.Merge(query, false);
 		}
 
 		/// <summary>
@@ -286,7 +315,7 @@ namespace Kelp
 		/// <returns>The specified value as a <see cref="Byte"/></returns>
 		public byte GetByte(string key)
 		{
-			return GetByte(key, 0);
+			return this.GetByte(key, 0);
 		}
 
 		/// <summary>
@@ -321,7 +350,7 @@ namespace Kelp
 		/// </returns>
 		public byte GetByte(string key, byte defaultValue, byte minValue, byte maxValue)
 		{
-			byte result = GetByte(key, defaultValue);
+			byte result = this.GetByte(key, defaultValue);
 			if (result < minValue) result = minValue;
 			if (result > maxValue) result = maxValue;
 			return result;
@@ -334,7 +363,7 @@ namespace Kelp
 		/// <returns>The specified value as an <see cref="Int32"/></returns>
 		public int GetInt(string key)
 		{
-			return GetInt(key, 0);
+			return this.GetInt(key, 0);
 		}
 
 		/// <summary>
@@ -347,7 +376,7 @@ namespace Kelp
 		/// </returns>
 		public int GetInt(string key, int defaultValue)
 		{
-			return (int) GetLong(key, defaultValue);
+			return (int) this.GetLong(key, defaultValue);
 		}
 
 		/// <summary>
@@ -362,7 +391,7 @@ namespace Kelp
 		/// </returns>
 		public int GetInt(string key, int defaultValue, int minValue, int maxValue)
 		{
-			int result = GetInt(key, defaultValue);
+			int result = this.GetInt(key, defaultValue);
 			if (result < minValue)
 				result = minValue;
 			if (result > maxValue)
@@ -378,7 +407,7 @@ namespace Kelp
 		/// <returns>The specified value as a <see cref="Int64"/></returns>
 		public long GetLong(string key)
 		{
-			return GetLong(key, 0);
+			return this.GetLong(key, 0);
 		}
 
 		/// <summary>
@@ -411,7 +440,7 @@ namespace Kelp
 		/// </returns>
 		public long GetLong(string key, long defaultValue, long minValue, long maxValue)
 		{
-			long result = GetLong(key, defaultValue);
+			long result = this.GetLong(key, defaultValue);
 			if (result < minValue)
 				result = minValue;
 			if (result > maxValue)
@@ -466,7 +495,7 @@ namespace Kelp
 		/// <returns>The specified value as a <see cref="String"/></returns>
 		public string GetString(string key, string defaultValue)
 		{
-			return GetString(key, defaultValue, false);
+			return this.GetString(key, defaultValue, false);
 		}
 
 		/// <summary>
@@ -481,7 +510,7 @@ namespace Kelp
 		/// </returns>
 		public string GetString(string key, string defaultValue, bool emptyIsValid)
 		{
-			string value = GetString(key);
+			string value = this.GetString(key);
 			if (value == null)
 				return defaultValue;
 
@@ -498,7 +527,7 @@ namespace Kelp
 		/// <returns>The specified value as a list of strings.</returns>
 		public List<string> GetList(string key)
 		{
-			return GetList(key, null);
+			return this.GetList(key, null);
 		}
 
 		/// <summary>
@@ -519,7 +548,7 @@ namespace Kelp
 				test = new Regex(expression);
 
 			List<string> list = new List<string>();
-			string value = GetString(key);
+			string value = this.GetString(key);
 			if (value != null)
 			{
 				string[] values = value.Split(',');
@@ -580,7 +609,7 @@ namespace Kelp
 		/// <returns>An <see cref="XmlElement"/> that contains this collection's name/value pairs set as attributes.</returns>
 		public XmlElement ToXml(XmlDocument document)
 		{
-			return ToXml(document, "query");
+			return this.ToXml(document, "query");
 		}
 
 		/// <summary>
@@ -622,35 +651,14 @@ namespace Kelp
 			foreach (string name in this)
 			{
 				if (name == null)
-					xmlNode.SetAttribute("value", this.Get(name));
-				else
-				{
-					string attrName = ValidName(name);
-					if (attrName != string.Empty)
-						xmlNode.SetAttribute(attrName, this.Get(name));
-				}
+					continue;
+
+				string attrName = ValidName(name);
+				if (attrName != string.Empty)
+					xmlNode.SetAttribute(attrName, this.Get(name));
 			}
 
 			return xmlNode;
-		}
-
-		/// <summary>
-		/// Converts any characters invalid for an xml node name with an underscore character.
-		/// </summary>
-		/// <param name="name">Original node name.</param>
-		/// <returns>A valid node name</returns>
-		private static string ValidName(string name)
-		{
-			if (string.IsNullOrEmpty(name))
-			{
-				return string.Empty;
-			}
-
-			string validName = Regex.Replace(name, @"[^\w\.\-]", "_");
-			if (Regex.Match(validName.Substring(0, 1), @"[a-zA-Z_\-]").Success != true)
-				validName = "_" + validName;
-
-			return validName;
 		}
 	}
 }

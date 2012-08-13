@@ -50,7 +50,7 @@
 			</fileset>
 		</copy>
 		<xmlpoke file="${targetSite}/bin/Project.config" 
-						 xpath="/p:configuration/p:project/@debugMode" 
+						 xpath="/p:project/@debugMode" 
 						 value="false">
 			<namespaces>
 				<namespace prefix="p" uri="http://www.cycle99.com/schemas/sage/configuration/project.xsd"/>

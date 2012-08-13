@@ -19,6 +19,7 @@ namespace Sage
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
@@ -58,6 +59,7 @@ namespace Sage
 		public const string CategoryVariableName = "category";
 
 		private const string FunctionPlaceholder = "<<Funct{0}>>";
+		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'[\w\.:$\-]*)=(?'AttribValue'.*)$", RegexOptions.Compiled);
 		private static readonly Regex functionExpression = new Regex(@"(?'FunctionName'[:\w\.$]+)\((?'FunctionArguments'[^\)]+)\)", RegexOptions.Compiled);
 		private static readonly Regex functionPlaceholderExpression = new Regex(@"<<Funct(?'FunctionIndex'\d+)>>", RegexOptions.Compiled);
 
@@ -75,7 +77,7 @@ namespace Sage
 			//// Discover and store all text functions
 			List<string> names = new List<string>();
 			functionHandlers = new Dictionary<string, TextFunction>();
-			foreach (Assembly a in Sage.Application.RelevantAssemblies)
+			foreach (Assembly a in Sage.Project.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 							where t.IsClass && !t.IsAbstract
@@ -231,7 +233,7 @@ namespace Sage
 					throw;
 			}
 
-			this.ProjectConfiguration = config ?? ProjectConfiguration.Current;
+			this.ProjectConfiguration = config ?? Sage.Project.Configuration;
 			this.Query = new QueryString();
 			this.Cache = new CacheWrapper(httpContext);
 			this.LmCache = new LastModifiedCache(this);
@@ -400,7 +402,7 @@ namespace Sage
 		{
 			get
 			{
-				return this.ProjectConfiguration.IsDeveloperIp(this.Request.UserHostAddress) ||
+				return this.ProjectConfiguration.Environment.IsDeveloperIp(this.Request.UserHostAddress) ||
 					(this.Session != null && this.Session["developer"] != null && (bool) this.Session["developer"]);
 			}
 		}
@@ -528,6 +530,12 @@ namespace Sage
 			return BaseHref.TrimEnd('/') + '/' + path.TrimStart('/');
 		}
 
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			throw new NotImplementedException();
+		}
+
 		/// <summary>
 		/// Gets an <see cref="XmlElement"/> that contains information about this context.
 		/// </summary>
@@ -579,10 +587,10 @@ namespace Sage
 			if (request.Browser != null)
 			{
 				browserNode.SetAttribute("id", this.UserAgentID);
-				browserNode.SetAttribute("name", request.Browser.Browser);
+				browserNode.SetAttribute("name", request.Browser.Browser.ToLower());
 				browserNode.SetAttribute("version", request.Browser.Version);
-				browserNode.SetAttribute("version.major", request.Browser.MajorVersion.ToString());
-				browserNode.SetAttribute("version.minor", request.Browser.MinorVersion.ToString());
+				browserNode.SetAttribute("version.major", request.Browser.MajorVersion.ToString(CultureInfo.InvariantCulture));
+				browserNode.SetAttribute("version.minor", request.Browser.MinorVersion.ToString(CultureInfo.InvariantCulture));
 				browserNode.SetAttribute("isCrawler", this.UserAgentType == UserAgentType.Crawler ? "1" : "0");
 			}
 
@@ -596,6 +604,28 @@ namespace Sage
 			resultElement.AppendChild(new QueryString(request.Cookies).ToXml(ownerDocument, "sage:cookies", XmlNamespaces.SageNamespace));
 			if (request.HttpMethod == "POST")
 				resultElement.AppendChild(new QueryString(request.Form).ToXml(ownerDocument, "sage:form", XmlNamespaces.SageNamespace));
+			
+			if (this.Session != null)
+			{
+				XmlElement sessionElem = resultElement.AppendElement("sage:session", XmlNamespaces.SageNamespace);
+				foreach (string key in this.Session.Keys)
+				{
+					var sessionObject = this.Session[key];
+
+					XmlElement itemElem = sessionElem.AppendElement("sage:item", XmlNamespaces.SageNamespace);
+					itemElem.SetAttribute("name", QueryString.ValidName(key));
+
+					if (sessionObject != null)
+					{
+						itemElem.SetAttribute("type", sessionObject.GetType().FullName);
+						if (sessionObject is IXmlConvertible)
+							sessionElem.AppendChild(((IXmlConvertible) sessionObject).ToXml(ownerDocument));
+						else
+							sessionElem.InnerText = sessionObject.ToString();
+					}
+				}
+			}
+
 
 			XmlElement dateNode = resultElement.AppendElement("sage:dateTime", XmlNamespaces.SageNamespace);
 			dateNode.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
@@ -713,7 +743,7 @@ namespace Sage
 				if (testValue == propValue)
 				{
 					foreach (XmlNode node in caseNode.SelectNodes("node()"))
-						result.AppendChild(ResourceManager.CopyTree(node, context));
+						result.AppendChild(ResourceManager.ApplyHandlers(node, context));
 
 					caseFound = true;
 					break;
@@ -728,7 +758,7 @@ namespace Sage
 				if (defaultNode != null)
 				{
 					foreach (XmlNode node in defaultNode.SelectNodes("node()"))
-						result.AppendChild(ResourceManager.CopyTree(node, context));
+						result.AppendChild(ResourceManager.ApplyHandlers(node, context));
 				}
 			}
 
@@ -760,6 +790,50 @@ namespace Sage
 				return valueElement.OwnerDocument.CreateTextNode(propValue);
 
 			return valueElement;
+		}
+
+		[NodeHandler(XmlNodeType.Element, "expression", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageValueNode(XmlNode valueElement, SageContext context)
+		{
+			if (valueElement.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return valueElement;
+
+			string expression = ResourceManager.ApplyTextHandlers(valueElement.InnerText, context);
+			string expressionValue = context.ProcessFunctions(expression);
+			return valueElement.OwnerDocument.CreateTextNode(expressionValue);
+		}
+
+		[NodeHandler(XmlNodeType.Element, "version", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageVersionNode(XmlNode versionNode, SageContext context)
+		{
+			if (versionNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return versionNode;
+
+			string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			return versionNode.OwnerDocument.CreateTextNode(version);
+		}
+
+		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageAttribute(XmlNode attribNode, SageContext context)
+		{
+			Contract.Requires<ArgumentNullException>(attribNode != null);
+			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return attribNode;
+
+			Match match;
+
+			if ((match = attribSpec.Match(attribNode.InnerText)).Success)
+			{
+				string attribName = match.Groups["AttribName"].Value;
+				string attribValue = match.Groups["AttribValue"].Value;
+
+				XmlAttribute result = attribNode.OwnerDocument.CreateAttribute(attribName);
+				result.InnerText = context.ProcessFunctions(attribValue);
+
+				return result;
+			}
+
+			return attribNode;
 		}
 
 		/// <summary>
@@ -842,7 +916,13 @@ namespace Sage
 
 		private static string GetContextProperty(SageContext context, string propName, string propKey)
 		{
-			PropertyInfo property = context.GetType().GetProperty(propName);
+			const BindingFlags BindingFlags = 
+				BindingFlags.IgnoreCase |
+				BindingFlags.Public |
+				BindingFlags.Instance |
+				BindingFlags.Static;
+
+			PropertyInfo property = context.GetType().GetProperty(propName, BindingFlags);
 			if (property == null)
 			{
 				log.ErrorFormat(

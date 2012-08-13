@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Categories (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-categories"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Categories (Project configuration)</span>
+				</header>
+				<details>
+
+					<section class="topic">
+						<header>
+							Categories
+						</header>
+						<details>
+							<summary>
+								Categories provide a way to divide a single project into several sub-projects with a shared base. This provides support for scenarios where multiple brands/presentations of the same product are required.
+							</summary>
+							<section class="element">
+								<header>categories element</header>
+								<details>
+									<summary>Defines the categories supported by the project.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<summary>
+												In this example, there are four categories. Each category specifies the locales it supports.
+											</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<categories>
+															<category name="running" locales="ar,at,be,br,ca,ch,cn,de,dk,es,,hu,it,kr,nl,th,tw,uk,us,vn,za"/>
+															<category name="training" locales="ar,at,ch,cn,de,dk,es,fr,gr,hk,hu,it,kr,nl,th,tw,uk,us,za"/>
+															<category name="football" locales="ar,at,be,ca,ch,cn,de,dk,es,fr,gr,hk,hu,it,jp,kr,nl,th,tw,uk,us,vn,za"/>
+															<category name="soccer" locales="us"/>
+														</categories>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>category element</header>
+												<details>
+													<summary>Defines a single category</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<category name="running" locales="ar,at,be,br,ca,ch,cn,de,dk,es,,hu,it,kr,nl,th,tw,uk,us,vn,za"/>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>name</header>
+																<details>
+																	Specifies the name of the category.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>locales</header>
+																<details>
+																	Specifies a comma-separated list of locales that this category supports. Each of the locales has to be defined in the internationalization section.
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

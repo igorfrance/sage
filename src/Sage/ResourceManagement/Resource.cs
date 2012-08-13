@@ -21,10 +21,13 @@ namespace Sage.ResourceManagement
 	using System.Linq;
 	using System.Xml;
 
+	using Kelp;
+	using XmlNamespaces = Sage.XmlNamespaces;
+
 	/// <summary>
 	/// Represents a file resource for use with Sage.
 	/// </summary>
-	public class Resource
+	public class Resource : IXmlConvertible
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Resource"/> class, using the specified <paramref name="configElement"/>.
@@ -34,17 +37,7 @@ namespace Sage.ResourceManagement
 		{
 			Contract.Requires<ArgumentNullException>(configElement != null);
 
-			this.Path = configElement.GetAttribute("path");
-			this.Name = configElement.GetAttribute("name");
-			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), configElement.GetAttribute("type"), true);
-			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), configElement.GetAttribute("location"), true);
-			this.LimitTo = new List<string>();
-
-			string limitTo = configElement.GetAttribute("limitTo");
-			if (!string.IsNullOrWhiteSpace(limitTo))
-			{
-				this.LimitTo.AddRange(limitTo.Split(',').Select(s => s.Trim().ToLower()));
-			}
+			this.Parse(configElement);
 		}
 
 		/// <summary>
@@ -82,7 +75,7 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public static bool operator ==(Resource left, Resource right)
 		{
-			return Equals(left, right);
+			return object.Equals(left, right);
 		}
 
 		/// <summary>
@@ -95,7 +88,7 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public static bool operator !=(Resource left, Resource right)
 		{
-			return !Equals(left, right);
+			return !object.Equals(left, right);
 		}
 
 		/// <summary>
@@ -141,13 +134,51 @@ namespace Sage.ResourceManagement
 			return context.Path.Resolve(this.Path);
 		}
 
+		/// <inheritdoc/>
+		public void Parse(XmlElement element)
+		{
+			this.Path = element.GetAttribute("path");
+			this.Name = element.GetAttribute("name");
+			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), element.GetAttribute("type"), true);
+			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), element.GetAttribute("location"), true);
+			this.LimitTo = new List<string>();
+
+			string limitTo = element.GetAttribute("limitTo");
+			if (!string.IsNullOrWhiteSpace(limitTo))
+			{
+				this.LimitTo.AddRange(limitTo.Split(',').Select(s => s.Trim().ToLower()));
+			}
+		}
+
 		/// <summary>
-		/// Creates an XML element that represent this resource.
+		/// Generates an <see cref="XmlElement" /> that represents the configuration of this instance.
+		/// </summary>
+		/// <param name="document">The document to use to create the element with.</param>
+		/// <returns>An <see cref="XmlElement" /> that represents the configuration of this instance.</returns>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			XmlElement result = document.CreateElement("resource", XmlNamespaces.ProjectConfigurationNamespace);
+
+			result.SetAttribute("name", this.Name);
+			result.SetAttribute("path", this.Path);
+			result.SetAttribute("type", this.Type.ToString().ToLower());
+			result.SetAttribute("location", this.Location.ToString().ToLower());
+
+			if (this.LimitTo.Count != 0)
+			{
+				result.SetAttribute("limitTo", string.Join(",", this.LimitTo.ToArray()));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Generates an <see cref="XmlElement" /> that represent a this resource.
 		/// </summary>
 		/// <param name="ownerDocument">The owner document to use to create the element.</param>
-		/// <param name="context">The context under which this method is executed.</param>
+		/// <param name="context">The context under which this method is executed, used to resolve the paths and load resources with.</param>
 		/// <returns>
-		/// An XML element that represent this resource.
+		/// An <see cref="XmlElement" /> that represent this resource.
 		/// </returns>
 		public virtual XmlElement ToXml(XmlDocument ownerDocument, SageContext context)
 		{
@@ -205,15 +236,15 @@ namespace Sage.ResourceManagement
 				return true;
 
 			return 
-				Equals(other.Type, this.Type) && 
-				Equals(other.Location, this.Location) &&
+				object.Equals(other.Type, this.Type) &&
+				object.Equals(other.Location, this.Location) &&
 				other.Path.Equals(this.Path, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		/// <inheritdoc/>
 		public override bool Equals(object obj)
 		{
-			return Equals(obj as Resource);
+			return this.Equals(obj as Resource);
 		}
 
 		/// <inheritdoc/>

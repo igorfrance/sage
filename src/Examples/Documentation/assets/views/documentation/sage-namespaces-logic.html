@@ -2,6 +2,9 @@
 <html
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:logic="http://www.cycle99.com/schemas/sage/logic.xsd"
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
+	xmlns:context="http://www.cycle99.com/schemas/sage/contextualization.xsd"
  	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns="http://www.w3.org/1999/xhtml">
 
@@ -9,186 +12,408 @@
 		<sage:basehref/>
 		<title>The Logic namespace</title>
 	</head>
+
 	<body>
 
-		<h1>The Logic namespace</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-namespaces-logic"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>The Logic namespace</span>
+				</header>
+				<details>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="sage-namespaces-logic"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<summary>
+						Referencing this namespace enables you to define and use your own custom conditions for rendering markup blocks.
+					</summary>
 
-		<code class="principal">http://www.cycle99.com/schemas/sage/logic.xsd</code>
+					<section class="namespace">
+						<header>Namespace URI:</header>
+						<details>http://www.cycle99.com/schemas/sage/logic.xsd</details>
+					</section>
 
-		<p>
-			Referencing this module enables you to define and use your own custom conditions for rendering markup blocks.
-			The implementation is strictly XSLT-based, and the extensions you write must also be written in XSLT.
-		</p>
+					<p>
+						The way it works is similar to conditional rendering described in <a href="url:link(sage-namespaces-contextualization)">contextualization</a>, but whereas with contextualization you can only work with properties of the current <code>SageContext</code>, here you work with data in the current input XML document, and the logic and conditions you can create is extensible and much more powerful.
+					</p>
 
-		<p>
-			The way it works is similar to conditional rendering described in
-			<a href="url:link(sage-namespaces-contextualization)">contextualization</a>, but whereas with contextualization you can
-			only work with properties of the current <code>SageContext</code>, here you work with data in the current input
-			XML document, and the logic you can create is extendable and can be much more complex.
-		</p>
+					<section class="topic" id="elements" data-index="yes" data-level="1">
+						<header>Elements</header>
+						<details>
+							<section class="element" id="conditions-element" data-index="yes" data-level="2">
+								<header>logic:conditions</header>
+								<details>
+									<summary>
+										Defines logical conditions that can be evaluated as render switches elsewhere in the document.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<p>
+												A few simple examples:
+											</p>
+											<mod:XmlTree>
+												<mod:config>
+													<mod:namespaces>true</mod:namespaces>
+												</mod:config>
+												<mod:data>
+													<sage:literal>
+														<conditions>
+															<and id="isFirefox">
+																<clause object="useragent" property="name" equals="firefox"/>
+															</and>
+															<and id="isChrome">
+																<clause object="useragent" property="name" equals="chrome"/>
+															</and>
+															<or id="isChromeOrFirefox">
+																<clause object="useragent" property="name" equals="firefox"/>
+																<clause object="useragent" property="name" equals="chrome"/>
+															</or>
+														</conditions>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<p>
+												Conditions can also be nested, as deep as required:
+											</p>
+											<mod:XmlTree>
+												<mod:config>
+													<mod:namespaces>true</mod:namespaces>
+													<mod:expandLevels>2</mod:expandLevels>
+												</mod:config>
+												<mod:data>
+													<sage:literal>
+														<conditions xmlns="http://www.cycle99.com/schemas/sage/logic.xsd">
+															<or id="isSupportedBrowser">
+																<and id="isFirefoxSupported">
+																	<clause object="useragent" property="name" equals="firefox"/>
+																	<clause object="useragent" property="version.major" gte="9"/>
+																</and>
+																<and id="isChromeSupported">
+																	<clause object="useragent" property="name" equals="chrome"/>
+																	<clause object="useragent" property="version.major" gte="11"/>
+																</and>
+																<and id="isOperaSupported">
+																	<clause object="useragent" property="name" equals="opera"/>
+																	<clause object="useragent" property="version.major" gte="9"/>
+																</and>
+																<and id="isSafariSupported">
+																	<clause object="useragent" property="name" equals="safari"/>
+																	<clause object="useragent" property="version.major" gte="4"/>
+																</and>
+																<and id="isIESupported">
+																	<clause object="useragent" property="name" equals="ie"/>
+																	<clause object="useragent" property="version.major" gte="9"/>
+																</and>
+															</or>
+														</conditions>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<section class="element">
+												<header>logic:and &amp; logic:or</header>
+												<details>
+													<summary>The <code>and</code> and <code>or</code> elements define <i>conditions</i>; sets of clauses that evaluate as <code>AND</code> and <code>OR</code> groups.</summary>
+													<ul class="notes">
+														<li>For <code>and</code> elements, ALL of the child clauses should evaluate to true. </li>
+														<li>For <code>or</code> elements, ANY of the child clauses should evaluate to true for the group to evaluate to true.</li>
+													</ul>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<summary>An AND condition:</summary>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<logic:and id="isFirefox">
+																			<logic:clause object="useragent" property="name" equals="firefox"/>
+																		</logic:and>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+															<summary>An OR condition:</summary>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<logic:or id="isChromeOrFirefox">
+																			<logic:clause object="useragent" property="name" equals="firefox"/>
+																			<logic:clause object="useragent" property="name" equals="chrome"/>
+																		</logic:or>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>id</header>
+																<details>Specifies the unique id of this condition.</details>
+															</section>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements:</header>
+														<details>
+															<section class="element">
+																<header>logic:clause</header>
+																<details>
+																	<summary>Defines a single clause for a condition.</summary>
+																	<section class="properties example">
+																		<header>Example:</header>
+																		<details>
+																			<mod:XmlTree>
+																				<mod:data>
+																					<sage:literal>
+																						<logic:clause object="useragent" property="name" equals="firefox"/>
+																					</sage:literal>
+																				</mod:data>
+																			</mod:XmlTree>
+																		</details>
+																	</section>
+																	<section class="properties attributes">
+																		<header>Attributes</header>
+																		<details>
+																			<summary>
+																				Attributes <code>equals</code>, <code>not</code>, <code>count</code>, <code>gt</code>, <code>gte</code>, <code>lt</code> and <code>lte</code> are mutually exclusive; it is an error to use more than one of these attributes at a time.
+																			</summary>
+																			<section class="attribute">
+																				<header>object</header>
+																				<details>Specifies the name of the object that this clause inspects.</details>
+																			</section>
+																			<section class="attribute">
+																				<header>property</header>
+																				<details>Specifies the name of the <code>object</code>'s property that this clause inspects.</details>
+																			</section>
+																			<section class="attribute">
+																				<header>equals</header>
+																				<details>Specifies the value that the <code>object</code>'s <code>property</code> should equal for this clause to be valid.</details>
+																			</section>
+																			<section class="attribute">
+																				<header>not</header>
+																				<details>Specifies the value that the <code>object</code>'s <code>property</code> should not equal for this clause to be valid.</details>
+																			</section>
+																			<section class="attribute">
+																				<header>count</header>
+																				<details>Specifies the count of items selected with <code>property</code> that the <code>object</code> should contain for this clause to be valid.</details>
+																			</section>
+																			<section class="attribute">
+																				<header>gt</header>
+																				<details>The number that the <code>property</code> should be greater (&gt;).</details>
+																			</section>
+																			<section class="attribute">
+																				<header>gte</header>
+																				<details>The number that the <code>property</code> should be greater than or equal to (&gt;=).</details>
+																			</section>
+																			<section class="attribute">
+																				<header>lt</header>
+																				<details>The number that the <code>property</code> should be less than (&lt;).</details>
+																			</section>
+																			<section class="attribute">
+																				<header>lte</header>
+																				<details>The number that the <code>property</code> should be less than or equal to (&lt;=)</details>
+																			</section>
+																		</details>
+																	</section>
+																</details>
+															</section>
+															<section class="element">
+																<header>logic:and &amp; logic:or</header>
+																<details>
+																	<summary>References <code>logic:and</code> and <code>logic:or</code> conditions defined at the top level, under <code>logic:conditions</code>.</summary>
+																	<section class="properties example">
+																		<header>Example:</header>
+																		<details>
+																			<p>The <code>logic:and[<b>ref</b>=isFirefox]</code> element refers to <code>logic:and[<b>id</b>=isFirefox]</code> element; the actual group is processed inline instead of the reference element, just as if it was there.</p>
+																			<mod:XmlTree>
+																				<mod:config>
+																					<mod:highlight/>
+																				</mod:config>
+																				<mod:data>
+																					<sage:literal>
+																						<logic:conditions>
+																							<logic:and id="isFirefox">
+																								<logic:clause object="useragent" property="name" equals="firefox"/>
+																							</logic:and>
+																							<logic:and id="compositeExample">
+																								<logic:clause object="querystring" property="A" equals="1"/>
+																								<logic:clause object="querystring" property="B" equals="2"/>
+																								<logic:clause object="querystring" property="C" equals="3"/>
+																								<logic:and ref="isFirefox" mod:highlight="on"/>
+																							</logic:and>
+																						</logic:conditions>
+																					</sage:literal>
+																				</mod:data>
+																			</mod:XmlTree>
+																		</details>
+																	</section>
+																	<section class="properties attributes">
+																		<header>Attributes</header>
+																		<details>
+																			<section class="attribute">
+																				<header>ref</header>
+																				<details>The id of the conditon group this element refers to.</details>
+																			</section>
+																		</details>
+																	</section>
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" id="switch-element" data-index="yes" data-level="2">
+								<header>logic:switch</header>
+								<details>
+									<summary>Provides a choose/when/otherwise-like construct that enables using the predefined conditions by name.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<p>A possible scenario where a fictional navigation item displays different text depending on whether the current user is registered, unregistered or just registered with email confirmation pending.
+											</p>
+											<mod:XmlTree>
+												<mod:config>
+													<mod:highlight>
+														<mod:namespace>http://www.cycle99.com/schemas/sage/logic.xsd</mod:namespace>
+													</mod:highlight>
+												</mod:config>
+												<mod:data>
+													<sage:literal xmlns:site="tempuri">
+														<ul class="navigation">
+															<li class="usermenu">
+																<logic:switch>
+																	<logic:case when="isNewRegistration">
+																		<intl:phrase ref="navigation.confirmation"/>
+																	</logic:case>
+																	<logic:case when="isRegisteredUser">
+																		<intl:phrase ref="navigation.welcome"/>
+																		<site:username format="default"/>
+																	</logic:case>
+																	<logic:default>
+																		<intl:phrase ref="navigation.register"/>
+																	</logic:default>
+																</logic:switch>
+															</li>
+														</ul>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<section class="element">
+												<header>logic:case</header>
+												<details>
+													<summary>Selects one condition case. If the condition of this element (specified with <code>when</code> attribute) evaluates to true, it's content will be rendered (provided it is the first match, if there are multiple matching case elements, only the first one will be processed).</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:config>
+																	<mod:highlight>
+																		<mod:namespace>http://www.cycle99.com/schemas/sage/logic.xsd</mod:namespace>
+																	</mod:highlight>
+																</mod:config>
+																<mod:data>
+																	<sage:literal>
+																		<logic:case when="isNewRegistration">
+																			<intl:phrase ref="navigation.confirmation"/>
+																		</logic:case>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>when</header>
+																<details>Specifies the id of the condition that should match in order for this element's content to be rendered.</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+											<section class="element">
+												<header>logic:default</header>
+												<details>
+													<summary>Specifies the default content to render in case none of the other elements in the switch evaluated to true.</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+															<mod:config>
+																<mod:highlight>
+																	<mod:namespace>http://www.cycle99.com/schemas/sage/logic.xsd</mod:namespace>
+																</mod:highlight>
+															</mod:config>
+																<mod:data>
+																	<sage:literal>
+																		<logic:default>
+																			<intl:phrase ref="navigation.register"/>
+																		</logic:default>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
 
-		<h3 class="section">Elements</h3>
-		<ul class="casual separate reference">
-			<li>
-				<h5 class="casual">logic:conditions</h5>
-				<p>
-					Provides a condition definition block. It can be placed anywhere in your document, the only direct child
-					allowed are <code>logic:condition</code> elements.
-				</p>
-			</li>
-			<li>
-				<h5 class="casual">logic:condition</h5>
-				<p>
-					Defines a single condition. There are a number of predefined conditions
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual separate">
-					<li>
-						<h6 class="casual">@object</h6>
-						<p>
-							Specifies the object to look in. The 'object' is actually an XML element. There is a number of predefined
-							objects supported out of the box:
-						</p>
-						<blockquote class="accent">
-							<ul>
-								<li><code>useragent</code>, selects <code>/sage:view/sage:request/sage:useragent</code></li>
-								<li><code>querystring</code>, selects <code>/sage:view/sage:request/sage:querystring</code></li>
-								<li><code>cookie</code>, selects <code>/sage:view/sage:request/sage:cookie</code></li>
-								<li><code>address</code>, selects <code>/sage:view/sage:request/sage:address</code></li>
-								<li><code>dateTime</code>, selects <code>/sage:view/sage:request/sage:dateTime</code></li>
-							</ul>
-						</blockquote>
-					</li>
-					<li>
-						<h6 class="casual">@property</h6>
-						<p>
-							Specifies the property of <code>@object</code> to select. The 'property' is actually an attribute of the
-							XML element selected with <code>@object</code>.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@equals</h6>
-						<p>
-							Indicates that the selected value should equal the value of this condition.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@not</h6>
-						<p>
-							Indicates that the selected value should not equal the value of this condition.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@count</h6>
-						<p>
-							Indicates that the count of elements selected by this condition should be equal to the value of this condition.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@greaterThan</h6>
-						<p>
-							Indicates that the selected value should be greater than the value of this condition.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@greaterThenOrEqual</h6>
-						<p>
-							Indicates that the selected value should be greater than or equal to the value of this condition.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@lessThan</h6>
-						<p>
-							Indicates that the selected value should be less than the value of this condition.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@lessThanOrEqual</h6>
-						<p>
-							Indicates that the selected value should be less than or equal to the value of this condition.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">logic:and</h5>
-				<p>
-					Groups one or more conditions into a logical AND switch.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual separate">
-					<li>
-						<h6 class="casual">@id</h6>
-						<p>
-							Specifies the id of the switch.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@ref</h6>
-						<p>
-							Specifies id of another switch.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">logic:or</h5>
-				<p>
-					Groups one or more conditions into a logical OR switch.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual separate">
-					<li>
-						<h6 class="casual">@id</h6>
-						<p>
-							Specifies the id of the switch.
-						</p>
-					</li>
-					<li>
-						<h6 class="casual">@ref</h6>
-						<p>
-							Specifies id of another switch.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">logic:switch</h5>
-				<p>
-					Provides a logical branch, similar to <code>xsl:choose</code>.
-				</p>
-			</li>
-			<li>
-				<h5 class="casual">logic:case</h5>
-				<p>
-					Defines a single possible match case within the switch it belongs to.
-				</p>
-				<h6 class="tiny">Attributes</h6>
-				<ul class="casual separate">
-					<li>
-						<h6 class="casual">@when</h6>
-						<p>
-							Specifies the <code>id</code> of the <code>logic:and</code> or <code>logic:or</code> element this
-							case refers to. If that element's conditions evaluate to <code>true</code>, the content of this element
-							will be rendered.
-						</p>
-					</li>
-				</ul>
-			</li>
-			<li>
-				<h5 class="casual">logic:default</h5>
-				<p>
-					Defines the content to render when none of the sibling <code>logic:case</code> elements evaluate to true.
-				</p>
-			</li>
-		</ul>
-
-
+					<section class="topic" id="attributes" data-index="yes" data-level="1">
+						<header>Attributes</header>
+						<details>
+							<section class="element" id="if-attribute" data-index="yes" data-level="2">
+								<header>@logic:if</header>
+								<details>
+									<summary>Specifies the condition (defined earlier, within a <a href="url:self(#conditions-element)">logic:conditions</a> element), that should evaluate to true for the attached element to be rendered.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary></summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<html>
+															<body>
+																<span logic:if="not(isSupportedBrowser)">
+																	Sorry, your browser is not supported.
+																</span>
+															</body>
+														</html>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+				</details>
+			</section>
+		</div>
 	</body>
 </html>

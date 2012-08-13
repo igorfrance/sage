@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Environment (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-environment"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Environment (Project configuration)</span>
+				</header>
+				<details>
+
+					<section>
+						<header>
+							Environment
+						</header>
+						<details>
+							<summary>
+								The environment section provides options for environment-specific values.
+							</summary>
+							<section class="element">
+								<header>environment element</header>
+								<details>
+									<summary>
+										Specifies environment-specific configuration options.
+									</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<environment>
+															<addresses>
+																<developers>
+																	<ip address="::1"/>
+																	<ip address="127.0.0.1"/>
+																	<ip address="10.180.0.0" to="10.180.255.255"/>
+																	<ip address="172.16.0.0" to="172.16.255.255"/>
+																	<!-- Igor -->
+																	<ip address="83.163.156.172"/>
+																</developers>
+															</addresses>
+														</environment>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<section class="element">
+													<header>addresses/developer element</header>
+													<details>
+														<summary>
+															Contains ip addresses and ranges that should be considered developers. If a user is considered a developer, s/he gains access to developer tools such as ad-hoc view/metaView switching, developer toolbar and more.
+														</summary>
+														<section class="properties children">
+															<header>Child elements</header>
+															<details>
+																<section class="element">
+																	<header>ip element</header>
+																	<details>
+																		<summary>Defines a single ip address or range.</summary>
+																		<section class="properties example">
+																			<header>Example</header>
+																			<details>
+																				<mod:XmlTree>
+																					<mod:data>
+																						<sage:literal>
+																							<ip address="127.0.0.1"/>
+																							<ip address="10.180.0.0" to="10.180.255.255"/>
+																						</sage:literal>
+																					</mod:data>
+																				</mod:XmlTree>
+																			</details>
+																		</section>
+																		<section class="properties attributes">
+																			<header>Attributes</header>
+																			<details>
+																				<section class="attribute">
+																					<header>address</header>
+																					<details>Specifies the address of a single IP address, or the address of the first IP in a range.</details>
+																				</section>
+																				<section class="attribute">
+																					<header>to</header>
+																					<details>Specifies address of the last IP in a range.</details>
+																				</section>
+																			</details>
+																		</section>
+																	</details>
+																</section>
+															</details>
+														</section>
+													</details>
+												</section>
+												<section class="element">
+													<header>addresses/blocked element</header>
+													<details>
+														<summary>
+															Contains ip addresses and ranges that should be blocked. Requests coming from these addresses will be left hanging indefinitely.
+														</summary>
+														<section class="properties children">
+															<header>Child elements</header>
+															<details>
+																<section class="element">
+																	<header>ip element</header>
+																	<details>
+																		<summary>Defines a single ip address or range.</summary>
+																		<section class="properties example">
+																			<header>Example</header>
+																			<details>
+																				<mod:XmlTree>
+																					<mod:data>
+																						<sage:literal>
+																							<ip address="127.0.0.1"/>
+																							<ip address="10.180.0.0" to="10.180.255.255"/>
+																						</sage:literal>
+																					</mod:data>
+																				</mod:XmlTree>
+																			</details>
+																		</section>
+																		<section class="properties attributes">
+																			<header>Attributes</header>
+																			<details>
+																				<section class="attribute">
+																					<header>address</header>
+																					<details>Specifies the address of a single IP address, or the address of the first IP in a range.</details>
+																				</section>
+																				<section class="attribute">
+																					<header>to</header>
+																					<details>Specifies address of the last IP in a range.</details>
+																				</section>
+																			</details>
+																		</section>
+																	</details>
+																</section>
+															</details>
+														</section>
+													</details>
+												</section>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

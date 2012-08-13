@@ -29,14 +29,14 @@ namespace Kelp.Properties {
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        private Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        private static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kelp.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Kelp.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        private static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Value cannot be null or an empty string..
         /// </summary>
-        internal static string Arg_NullOrEmpty {
+        private static string Arg_NullOrEmpty {
             get {
                 return ResourceManager.GetString("Arg_NullOrEmpty", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Include location identifies an attribute or namespace node!.
         /// </summary>
-        internal static string AttributeOrNamespaceInIncludeLocationError {
+        private static string AttributeOrNamespaceInIncludeLocationError {
             get {
                 return ResourceManager.GetString("AttributeOrNamespaceInIncludeLocationError", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Circular inclusion has been detected, inclusion location: {0}..
         /// </summary>
-        internal static string CircularInclusion {
+        private static string CircularInclusion {
             get {
                 return ResourceManager.GetString("CircularInclusion", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Circular inclusion has been detected, inclusion location: {0}. In {1}, Line {2}, Position {3}..
         /// </summary>
-        internal static string CircularInclusionLong {
+        private static string CircularInclusionLong {
             get {
                 return ResourceManager.GetString("CircularInclusionLong", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Circumflex character must be escaped in XPointer..
         /// </summary>
-        internal static string CircumflexCharMustBeEscaped {
+        private static string CircumflexCharMustBeEscaped {
             get {
                 return ResourceManager.GetString("CircumflexCharMustBeEscaped", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to An exception has occured during GetEntity call to custom XmlResolver..
         /// </summary>
-        internal static string CustomXmlResolverError {
+        private static string CustomXmlResolverError {
             get {
                 return ResourceManager.GetString("CustomXmlResolverError", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Custom XmlResolver returned null..
         /// </summary>
-        internal static string CustomXmlResolverReturnedNull {
+        private static string CustomXmlResolverReturnedNull {
             get {
                 return ResourceManager.GetString("CustomXmlResolverReturnedNull", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Custom XmlResolver returned object of an unsupported type &apos;{0}&apos;..
         /// </summary>
-        internal static string CustomXmlResolverReturnedUnsupportedType {
+        private static string CustomXmlResolverReturnedUnsupportedType {
             get {
                 return ResourceManager.GetString("CustomXmlResolverReturnedUnsupportedType", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in element() scheme data: empty XPointer..
         /// </summary>
-        internal static string EmptyElementSchemeXPointer {
+        private static string EmptyElementSchemeXPointer {
             get {
                 return ResourceManager.GetString("EmptyElementSchemeXPointer", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to xi:fallback element must be direct child of xi:include element. Location: {0}..
         /// </summary>
-        internal static string FallbackNotChildOfInclude {
+        private static string FallbackNotChildOfInclude {
             get {
                 return ResourceManager.GetString("FallbackNotChildOfInclude", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to xi:fallback element must be direct child of xi:include element. Location: {0}, Line {1}, Position {2}..
         /// </summary>
-        internal static string FallbackNotChildOfIncludeLong {
+        private static string FallbackNotChildOfIncludeLong {
             get {
                 return ResourceManager.GetString("FallbackNotChildOfIncludeLong", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Resource error has occured and no fallback has been provided: {0}..
         /// </summary>
-        internal static string FatalResourceException {
+        private static string FatalResourceException {
             get {
                 return ResourceManager.GetString("FatalResourceException", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Fragment identifiers must not be used in &apos;href&apos; attribute..
         /// </summary>
-        internal static string FragmentIDInHref {
+        private static string FragmentIDInHref {
             get {
                 return ResourceManager.GetString("FragmentIDInHref", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to xi:include element cannot be child of xi:include element. Location: {0}..
         /// </summary>
-        internal static string IncludeChildOfInclude {
+        private static string IncludeChildOfInclude {
             get {
                 return ResourceManager.GetString("IncludeChildOfInclude", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to xi:include element cannot be child of xi:include element. Location: {0}, Line {1}, Position {2}..
         /// </summary>
-        internal static string IncludeChildOfIncludeLong {
+        private static string IncludeChildOfIncludeLong {
             get {
                 return ResourceManager.GetString("IncludeChildOfIncludeLong", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Type of the first argument of key() function must be string..
         /// </summary>
-        internal static string IndexingXPathNavigator_KeyArgumentNotString {
+        private static string IndexingXPathNavigator_KeyArgumentNotString {
             get {
                 return ResourceManager.GetString("IndexingXPathNavigator_KeyArgumentNotString", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Wrong number of arguments of key() function..
         /// </summary>
-        internal static string IndexingXPathNavigator_KeyWrongArguments {
+        private static string IndexingXPathNavigator_KeyWrongArguments {
             get {
                 return ResourceManager.GetString("IndexingXPathNavigator_KeyWrongArguments", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to XIncludingReader doesn&apos;t support intra-document references..
         /// </summary>
-        internal static string IntradocumentReferencesNotSupported {
+        private static string IntradocumentReferencesNotSupported {
             get {
                 return ResourceManager.GetString("IntradocumentReferencesNotSupported", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &apos;accept&apos; attribute contains a character not allowed in HTTP header: 0x{0}..
         /// </summary>
-        internal static string InvalidCharForAccept {
+        private static string InvalidCharForAccept {
             get {
                 return ResourceManager.GetString("InvalidCharForAccept", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid Name token: {0}:{1}..
         /// </summary>
-        internal static string InvalidNameToken {
+        private static string InvalidNameToken {
             get {
                 return ResourceManager.GetString("InvalidNameToken", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid token..
         /// </summary>
-        internal static string InvalidToken {
+        private static string InvalidToken {
             get {
                 return ResourceManager.GetString("InvalidToken", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid token after shorthand pointer..
         /// </summary>
-        internal static string InvalidTokenAfterShorthandPointer {
+        private static string InvalidTokenAfterShorthandPointer {
             get {
                 return ResourceManager.GetString("InvalidTokenAfterShorthandPointer", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in element() scheme data: Invalid token in ChildSequence, a closing round bracket was expected..
         /// </summary>
-        internal static string InvalidTokenInElementSchemeWhileClosingRoundBracketExpected {
+        private static string InvalidTokenInElementSchemeWhileClosingRoundBracketExpected {
             get {
                 return ResourceManager.GetString("InvalidTokenInElementSchemeWhileClosingRoundBracketExpected", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in element() scheme data: Invalid token in ChildSequence, a number was expected..
         /// </summary>
-        internal static string InvalidTokenInElementSchemeWhileNumberExpected {
+        private static string InvalidTokenInElementSchemeWhileNumberExpected {
             get {
                 return ResourceManager.GetString("InvalidTokenInElementSchemeWhileNumberExpected", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in xmlns() scheme data: Invalid token in XmlnsSchemaData, equal sign was expected..
         /// </summary>
-        internal static string InvalidTokenInXmlnsSchemeWhileEqualsSignExpected {
+        private static string InvalidTokenInXmlnsSchemeWhileEqualsSignExpected {
             get {
                 return ResourceManager.GetString("InvalidTokenInXmlnsSchemeWhileEqualsSignExpected", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in xmlns() scheme data: Invalid token in XmlnsSchemaData, NCName was expected..
         /// </summary>
-        internal static string InvalidTokenInXmlnsSchemeWhileNCNameExpected {
+        private static string InvalidTokenInXmlnsSchemeWhileNCNameExpected {
             get {
                 return ResourceManager.GetString("InvalidTokenInXmlnsSchemeWhileNCNameExpected", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Invalid URI &apos;{0}&apos;..
         /// </summary>
-        internal static string InvalidURI {
+        private static string InvalidURI {
             get {
                 return ResourceManager.GetString("InvalidURI", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to I/O error while reading resource &apos;{0}&apos;..
         /// </summary>
-        internal static string IOErrorWhileFetchingResource {
+        private static string IOErrorWhileFetchingResource {
             get {
                 return ResourceManager.GetString("IOErrorWhileFetchingResource", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Malformed XInclusion result - xi:include element at the top level must include a single element and optional comments and PIs..
         /// </summary>
-        internal static string MalformedXInclusionResult {
+        private static string MalformedXInclusionResult {
             get {
                 return ResourceManager.GetString("MalformedXInclusionResult", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &apos;href&apos; or &apos;xpointer&apos; attributes can&apos;t both be omitted on xi:include element. Location: {0}.&quot;.
         /// </summary>
-        internal static string MissingHrefAndXpointerException {
+        private static string MissingHrefAndXpointerException {
             get {
                 return ResourceManager.GetString("MissingHrefAndXpointerException", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &apos;href&apos; or &apos;xpointer&apos; attributes can&apos;t both be omitted on xi:include element. Location: {0}, Line {1}, Position {2}..
         /// </summary>
-        internal static string MissingHrefAndXpointerExceptionLong {
+        private static string MissingHrefAndXpointerExceptionLong {
             get {
                 return ResourceManager.GetString("MissingHrefAndXpointerExceptionLong", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No attributes exposed.
         /// </summary>
-        internal static string NoAttributesExposed {
+        private static string NoAttributesExposed {
             get {
                 return ResourceManager.GetString("NoAttributesExposed", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Included document contains a character not allowed in XML: 0x{0}..
         /// </summary>
-        internal static string NonXmlCharacter {
+        private static string NonXmlCharacter {
             get {
                 return ResourceManager.GetString("NonXmlCharacter", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to XPointer &apos;{0}&apos; doesn&apos;t identify any subresources in document &apos;{1}&apos;..
         /// </summary>
-        internal static string NoSubresourcesIdentifiedException {
+        private static string NoSubresourcesIdentifiedException {
             get {
                 return ResourceManager.GetString("NoSubresourcesIdentifiedException", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Not supported encoding &apos;{0}&apos;..
         /// </summary>
-        internal static string NotSupportedEncoding {
+        private static string NotSupportedEncoding {
             get {
                 return ResourceManager.GetString("NotSupportedEncoding", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to XPointer pointer cannot be null..
         /// </summary>
-        internal static string NullXPointer {
+        private static string NullXPointer {
             get {
                 return ResourceManager.GetString("NullXPointer", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Out of memory error while reading resource &apos;{0}&apos;..
         /// </summary>
-        internal static string OutOfMemoryWhileFetchingResource {
+        private static string OutOfMemoryWhileFetchingResource {
             get {
                 return ResourceManager.GetString("OutOfMemoryWhileFetchingResource", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Resource &apos;{0}&apos; cannot be fetched..
         /// </summary>
-        internal static string ResourceError {
+        private static string ResourceError {
             get {
                 return ResourceManager.GetString("ResourceError", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Security exception while fetching &apos;{0}&apos;..
         /// </summary>
-        internal static string SecurityException {
+        private static string SecurityException {
             get {
                 return ResourceManager.GetString("SecurityException", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in xmlns() scheme data: {0}.
         /// </summary>
-        internal static string SyntaxErrorInXmlnsSchemeData {
+        private static string SyntaxErrorInXmlnsSchemeData {
             get {
                 return ResourceManager.GetString("SyntaxErrorInXmlnsSchemeData", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in xpath1() scheme data: {0}.
         /// </summary>
-        internal static string SyntaxErrorInXPath1SchemeData {
+        private static string SyntaxErrorInXPath1SchemeData {
             get {
                 return ResourceManager.GetString("SyntaxErrorInXPath1SchemeData", resourceCulture);
             }
@@ -432,7 +432,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in xpointer() scheme data: {0}.
         /// </summary>
-        internal static string SyntaxErrorInXPointerSchemeData {
+        private static string SyntaxErrorInXPointerSchemeData {
             get {
                 return ResourceManager.GetString("SyntaxErrorInXPointerSchemeData", resourceCulture);
             }
@@ -441,7 +441,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to xi:include element cannot contain more than one xi:fallback element. Location: {0}..
         /// </summary>
-        internal static string TwoFallbacks {
+        private static string TwoFallbacks {
             get {
                 return ResourceManager.GetString("TwoFallbacks", resourceCulture);
             }
@@ -450,7 +450,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to xi:include element cannot contain more than one xi:fallback element. Location: {0}, Line {1}, Position {2}..
         /// </summary>
-        internal static string TwoFallbacksLong {
+        private static string TwoFallbacksLong {
             get {
                 return ResourceManager.GetString("TwoFallbacksLong", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Undeclared prefix &apos;{0}&apos;..
         /// </summary>
-        internal static string UndeclaredPrefix {
+        private static string UndeclaredPrefix {
             get {
                 return ResourceManager.GetString("UndeclaredPrefix", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected end of scheme data..
         /// </summary>
-        internal static string UnexpectedEndOfSchemeData {
+        private static string UnexpectedEndOfSchemeData {
             get {
                 return ResourceManager.GetString("UnexpectedEndOfSchemeData", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown &apos;parse&apos; attribute value: &apos;{0}&apos;..
         /// </summary>
-        internal static string UnknownParseAttrValue {
+        private static string UnknownParseAttrValue {
             get {
                 return ResourceManager.GetString("UnknownParseAttrValue", resourceCulture);
             }
@@ -486,7 +486,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown &apos;parse&apos; attribute value: &apos;{0}&apos;. In {1}, Line {2}, Position {3}..
         /// </summary>
-        internal static string UnknownParseAttrValueLong {
+        private static string UnknownParseAttrValueLong {
             get {
                 return ResourceManager.GetString("UnknownParseAttrValueLong", resourceCulture);
             }
@@ -495,7 +495,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown element in the XInclude namespace has been detected: {0}..
         /// </summary>
-        internal static string UnknownXIncludeElement {
+        private static string UnknownXIncludeElement {
             get {
                 return ResourceManager.GetString("UnknownXIncludeElement", resourceCulture);
             }
@@ -504,7 +504,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unable to resolve URI reference &apos;{0}&apos;..
         /// </summary>
-        internal static string UnresolvableURI {
+        private static string UnresolvableURI {
             get {
                 return ResourceManager.GetString("UnresolvableURI", resourceCulture);
             }
@@ -513,7 +513,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to URI schema is not supported: &apos;{0}&apos;..
         /// </summary>
-        internal static string URISchemaNotSupported {
+        private static string URISchemaNotSupported {
             get {
                 return ResourceManager.GetString("URISchemaNotSupported", resourceCulture);
             }
@@ -522,7 +522,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Root element is missing..
         /// </summary>
-        internal static string Xml_MissingRoot {
+        private static string Xml_MissingRoot {
             get {
                 return ResourceManager.GetString("Xml_MissingRoot", resourceCulture);
             }
@@ -531,7 +531,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The XmlDocument instance can only be used for serialization purposes..
         /// </summary>
-        internal static string XmlDocumentFactory_NotImplementedDOM {
+        private static string XmlDocumentFactory_NotImplementedDOM {
             get {
                 return ResourceManager.GetString("XmlDocumentFactory_NotImplementedDOM", resourceCulture);
             }
@@ -540,7 +540,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Attempt to read past EOF..
         /// </summary>
-        internal static string XmlFragmentStream_EOF {
+        private static string XmlFragmentStream_EOF {
             get {
                 return ResourceManager.GetString("XmlFragmentStream_EOF", resourceCulture);
             }
@@ -549,7 +549,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The XPath query was not executed against an XmlNode-based object (such as XmlDocument)..
         /// </summary>
-        internal static string XmlNodeListFactory_IHasXmlNodeMissing {
+        private static string XmlNodeListFactory_IHasXmlNodeMissing {
             get {
                 return ResourceManager.GetString("XmlNodeListFactory_IHasXmlNodeMissing", resourceCulture);
             }
@@ -558,7 +558,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Sort expression must be either a string or an XPathExpression..
         /// </summary>
-        internal static string XPathCache_BadSortObject {
+        private static string XPathCache_BadSortObject {
             get {
                 return ResourceManager.GetString("XPathCache_BadSortObject", resourceCulture);
             }
@@ -567,7 +567,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t add new elements after the iterator has moved..
         /// </summary>
-        internal static string XPathNavigatorIterator_CantAddAfterMove {
+        private static string XPathNavigatorIterator_CantAddAfterMove {
             get {
                 return ResourceManager.GetString("XPathNavigatorIterator_CantAddAfterMove", resourceCulture);
             }
@@ -576,7 +576,7 @@ namespace Kelp.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error in element() scheme data: 0 index in ChildSequence..
         /// </summary>
-        internal static string ZeroIndexInElementSchemechildSequence {
+        private static string ZeroIndexInElementSchemechildSequence {
             get {
                 return ResourceManager.GetString("ZeroIndexInElementSchemechildSequence", resourceCulture);
             }

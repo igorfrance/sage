@@ -1,15 +1,16 @@
 ﻿.syntaxbox
-	{ font-family: Consolas, Courier New, Courier; font-size: 9pt; color: #000; 
+	{ font-family: Consolas, Courier New, Courier; font-size: 9pt; color: #000;
 	  position: relative; background: #ebebeb; overflow: auto; }
 
 .syntax
-	{ position: relative; }
+	{ position: relative; border: 1px solid #DDDDE6; }
 .syntax .linebg
-	{ position: absolute; z-index: 0; top: 0; left: 0; bottom: 0; width: 100px; background: #d4d4d4; border-right: 2px solid #898989; }
+	{ position: absolute; z-index: 0; top: 0; left: 0; bottom: 0; width: 100px; background: #586575;
+	  border-right: 2px solid #abb5c0; }
 .syntax ol
 	{ position: relative; z-index: 1; margin: 0; color: #000; }
 .syntax ol > li
-	{ color: #666; }
+	{ color: #D1D7DC; }
 .syntax ol > li *
 	{ color: #000; }
 .syntax ol li
@@ -17,14 +18,22 @@
 .syntax .tab
 	{ width: 20px; height: 3px; display: inline-block; }
 .syntax.cols-1 .linebg
-	{ width: 36px; }
+	{ width: 34px; }
+.syntax.cols-1 ol
+	{ padding-left: 40px; }
 .syntax.cols-2 .linebg
-	{ width: 36px; }
+	{ width: 46px; }
+.syntax.cols-2 ol
+	{ padding-left: 52px; }
 .syntax.cols-3 .linebg
-	{ width: 48px; }
+	{ width: 58px; }
+.syntax.cols-3 ol
+	{ padding-left: 64px; }
 .syntax.cols-4 .linebg
-	{ width: 64px; }
-	
+	{ width: 74px; }
+.syntax.cols-4 ol
+	{ padding-left: 80px; }
+
 .syntax *
 	{ float: none !important; }
 .syntax ol li

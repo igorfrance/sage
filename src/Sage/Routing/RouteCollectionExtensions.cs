@@ -16,6 +16,7 @@
 namespace Sage.Routing
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Web.Mvc;
 	using System.Web.Routing;
 
@@ -36,7 +37,7 @@ namespace Sage.Routing
 		/// <param name="url">The route URL pattern.</param>
 		public static void MapRoute(this RouteCollection routes, string name, string url)
 		{
-			routes.MapRouteLowercase(name, url, null, null);
+			routes.MapRouteLowercase(name, url, null, null as IDictionary<string, object>);
 		}
 
 		/// <summary>
@@ -48,7 +49,7 @@ namespace Sage.Routing
 		/// <param name="defaults">The route default values.</param>
 		public static void MapRoute(this RouteCollection routes, string name, string url, object defaults)
 		{
-			routes.MapRouteLowercase(name, url, defaults, null);
+			routes.MapRouteLowercase(name, url, defaults as IDictionary<string, object>, null as IDictionary<string, object>);
 		}
 
 		/// <summary>
@@ -59,7 +60,7 @@ namespace Sage.Routing
 		/// <param name="url">The route URL pattern.</param>
 		/// <param name="defaults">The route default values.</param>
 		/// <param name="constraints">The route parameter constraints.</param>
-		public static void MapRoute(this RouteCollection routes, string name, string url, object defaults, object constraints)
+		public static void MapRoute(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults, IDictionary<string, object> constraints)
 		{
 			routes.MapRouteLowercase(name, url, defaults, constraints);
 		}
@@ -72,7 +73,7 @@ namespace Sage.Routing
 		/// <param name="url">The route URL pattern.</param>
 		public static void MapRouteLowercase(this RouteCollection routes, string name, string url)
 		{
-			routes.MapRouteLowercase(name, url, null, null);
+			routes.MapRouteLowercase(name, url, null, null as IDictionary<string, object>);
 		}
 
 		/// <summary>
@@ -82,9 +83,9 @@ namespace Sage.Routing
 		/// <param name="name">The name of the route.</param>
 		/// <param name="url">The route URL pattern.</param>
 		/// <param name="defaults">The route default values.</param>
-		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, object defaults)
+		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults)
 		{
-			routes.MapRouteLowercase(name, url, defaults, null);
+			routes.MapRouteLowercase(name, url, defaults, null as IDictionary<string, object>);
 		}
 
 		/// <summary>
@@ -107,7 +108,7 @@ namespace Sage.Routing
 		/// <param name="url">The route URL pattern.</param>
 		/// <param name="defaults">The route default values.</param>
 		/// <param name="namespaces">The route namespaces.</param>
-		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, object defaults, string[] namespaces)
+		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults, string[] namespaces)
 		{
 			MapRouteLowercase(routes, name, url, defaults, null, namespaces);
 		}
@@ -120,7 +121,7 @@ namespace Sage.Routing
 		/// <param name="url">The route URL pattern.</param>
 		/// <param name="defaults">The route default values.</param>
 		/// <param name="constraints">The route parameter constraints.</param>
-		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, object defaults, object constraints)
+		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults, IDictionary<string, object> constraints)
 		{
 			MapRouteLowercase(routes, name, url, defaults, constraints, null);
 		}
@@ -135,7 +136,7 @@ namespace Sage.Routing
 		/// <param name="constraints">The route parameter constraints.</param>
 		/// <param name="namespaces">The route namespaces.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="routes"/> or <paramref name="url"/> is <c>null</c></exception>
-		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, object defaults, object constraints, string[] namespaces)
+		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults, IDictionary<string, object> constraints, string[] namespaces)
 		{
 			if (routes == null)
 				throw new ArgumentNullException("routes");
@@ -146,8 +147,8 @@ namespace Sage.Routing
 			var route = new LowerCaseRoute(url, new MvcRouteHandler())
 			{
 				Name = name,
-				Defaults = new RouteValueDictionary(defaults),
-				Constraints = new RouteValueDictionary(constraints),
+				Defaults = defaults == null ? null : new RouteValueDictionary(defaults),
+				Constraints = constraints == null ? null : new RouteValueDictionary(constraints),
 				DataTokens = new RouteValueDictionary(),
 			};
 
@@ -156,8 +157,10 @@ namespace Sage.Routing
 				route.DataTokens["Namespaces"] = namespaces;
 			}
 
-			if (String.IsNullOrEmpty(name))
+			if (string.IsNullOrEmpty(name))
+			{
 				routes.Add(route);
+			}
 			else
 			{
 				for (var i = 0; i < routes.Count; i++)
@@ -167,7 +170,7 @@ namespace Sage.Routing
 					{
 						log.WarnFormat("Overwriting an identically named route ('{0}') for url '{1}' and controller '{2}' with a new route for url '{3}' and controller '{4}'",
 							name, r.Url, r.Defaults["controller"], route.Url, route.Defaults["controller"]);
-						
+
 						routes.Insert(i, route);
 						return;
 					}

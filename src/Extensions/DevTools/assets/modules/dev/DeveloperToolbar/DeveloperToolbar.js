@@ -2,6 +2,7 @@
 
 sage.dev.Toolbar = new function Toolbar()
 {
+	var jQuery = window.jQuery;
 	var $toolbar, $icon, $text, $time, $commands, $frame, $iframe;
 	var hideTimeout = 100, hideTimeoutId = null;
 	var parameters = { basehref: "", thread: "0", url: escape(document.location) };
@@ -48,6 +49,8 @@ sage.dev.Toolbar = new function Toolbar()
 		jQuery(document).bind("keydown", onDocumentKeyDown);
 
 		loadLogData();
+
+		console.info("Developer console is ready, press CTRL-ALT-D to toggle it.");
 	}
 
 	function setStatusClass(status)
@@ -249,7 +252,7 @@ sage.dev.Toolbar = new function Toolbar()
 		{
 			setStatusClass("loading");
 			$iframe.load(onLogFrameLoaded);
-			$iframe.attr("src", expandUrl(logUrl, { view: "html" }));
+			$iframe[0].contentWindow.location.replace(expandUrl(logUrl, { view: "html" }));
 		}
 	}
 
@@ -308,7 +311,7 @@ sage.dev.Toolbar = new function Toolbar()
 
 		// this works because we are on the same domain
 		var logbody = jQuery($iframe[0].contentWindow.document.body);
-		var maxHeight = $(document.body).prop("offsetHeight") / 2;
+		var maxHeight = window.innerHeight / 2;
 		var targetHeight = 0;
 
 		$frame.css({ display: "block", visibility: "hidden" });

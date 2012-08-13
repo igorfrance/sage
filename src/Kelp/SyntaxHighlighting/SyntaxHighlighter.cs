@@ -17,6 +17,7 @@ namespace Kelp.SyntaxHighlighting
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
@@ -62,6 +63,7 @@ namespace Kelp.SyntaxHighlighting
 			this.language = language;
 			this.tabString = tabString;
 			this.patterns = new List<string>();
+			this.LineCountDigits = -1;
 		}
 
 		private enum ParseMode
@@ -84,6 +86,15 @@ namespace Kelp.SyntaxHighlighting
 			Entity,
 			CData,
 			Comment,
+		}
+
+		/// <summary>
+		/// Gets or sets the line count to use in the final format.
+		/// </summary>
+		public int LineCountDigits
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -118,7 +129,12 @@ namespace Kelp.SyntaxHighlighting
 
 			formattedSource = result.ToString();
 
-			return string.Format(WrapBlock, formattedSource, this.language.ClassName, lines.Length.ToString().Length);
+			int lineCountDigits = this.LineCountDigits != -1 
+				? this.LineCountDigits
+				: lines.Length.ToString(CultureInfo.InvariantCulture).Length;
+
+			return string.Format(WrapBlock,
+				formattedSource, this.language.ClassName, lineCountDigits);
 		}
 
 		private static string GetPlaceHolderPattern(int index)
@@ -192,7 +208,8 @@ namespace Kelp.SyntaxHighlighting
 					string prev = sourceCode.Substring(i - commentEnd.Length + 1, 1);
 					if (end == commentEnd && prev != language.EscapeChar)
 					{
-						this.patterns.Add(WrapExpression(currentComment.ToString(), LanguageDefinition.ClassNameComment));
+						this.patterns.Add(WrapExpression(currentComment + commentEnd, LanguageDefinition.ClassNameComment));
+						currentComment = new StringBuilder();
 						parsedSourceBuilder.Append(GetPlaceHolderPattern(this.patterns.Count));
 						mode = ParseMode.Code;
 					}
@@ -206,6 +223,7 @@ namespace Kelp.SyntaxHighlighting
 					if (curr == "\r" || curr == "\n")
 					{
 						this.patterns.Add(WrapExpression(currentComment.ToString(), LanguageDefinition.ClassNameLineComment));
+						currentComment = new StringBuilder();
 						parsedSourceBuilder.Append(GetPlaceHolderPattern(this.patterns.Count));
 						mode = ParseMode.Code;
 					}
@@ -235,8 +253,8 @@ namespace Kelp.SyntaxHighlighting
 						if (test != delimiters.Start)
 							continue;
 
-						commentEnd = delimiters.End;
 						mode = ParseMode.Comment;
+						commentEnd = delimiters.End;
 						currentComment = new StringBuilder(test);
 						i += test.Length - 1;
 						break;
@@ -252,6 +270,7 @@ namespace Kelp.SyntaxHighlighting
 							continue;
 
 						mode = ParseMode.LineComment;
+						commentEnd = string.Empty;
 						currentComment = new StringBuilder(delimiter);
 						i += test.Length - 1;
 						break;
@@ -277,6 +296,16 @@ namespace Kelp.SyntaxHighlighting
 				{
 					parsedSourceBuilder.Append(curr);
 				}
+			}
+
+			if (currentComment != null && currentComment.Length != 0)
+			{
+				string commentClass = mode == ParseMode.LineComment 
+					? LanguageDefinition.ClassNameLineComment 
+					: LanguageDefinition.ClassNameComment;
+
+				this.patterns.Add(WrapExpression(currentComment + commentEnd, commentClass));
+				parsedSourceBuilder.Append(GetPlaceHolderPattern(this.patterns.Count));
 			}
 
 			sourceCode = parsedSourceBuilder.ToString();

@@ -59,7 +59,7 @@ namespace Sage.Views
 			this.ViewPath = DefaultBuiltInStylesheetPath;
 
 			string pathTemplate = controller.IsShared ? context.Path.SharedViewPath : context.Path.ViewPath;
-			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controller.ControllerName));
+			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controller.Name));
 			string basePath = context.MapPath(string.Format("{0}/{1}", folderPath, action));
 
 			foreach (string extension in ConfigExtensions)
@@ -69,7 +69,7 @@ namespace Sage.Views
 					continue;
 
 				this.ConfigPath = path;
-				this.ConfigName = string.Concat(controller.ControllerName, "/", Path.GetFileName(this.ConfigPath));
+				this.ConfigName = string.Concat(controller.Name, "/", Path.GetFileName(this.ConfigPath));
 				this.ConfigExists = true;
 				break;
 			}

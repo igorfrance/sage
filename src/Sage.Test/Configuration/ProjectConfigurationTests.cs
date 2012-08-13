@@ -31,11 +31,11 @@ namespace Sage.Test.Configuration
 	{
 		private static ProjectConfiguration config;
 
-		private Because of = () => config = ProjectConfiguration.Current;
+		private Because of = () => config = Project.Configuration;
 
-		private It Should_return_true_for_local_adresses1 = () => config.IsDeveloperIp("127.0.0.1").ShouldBeTrue();
-		private It Should_return_true_for_local_adresses2 = () => config.IsDeveloperIp("::1").ShouldBeTrue();
-		private It Should_return_true_for_lan_adresses1 = () => config.IsDeveloperIp("172.16.4.12").ShouldBeTrue();
-		private It Should_return_true_for_lan_adresses32 = () => config.IsDeveloperIp("10.180.5.4").ShouldBeTrue();
+		private It Should_return_true_for_local_adresses1 = () => config.Environment.IsDeveloperIp("127.0.0.1").ShouldBeTrue();
+		private It Should_return_true_for_local_adresses2 = () => config.Environment.IsDeveloperIp("::1").ShouldBeTrue();
+		private It Should_return_true_for_lan_adresses1 = () => config.Environment.IsDeveloperIp("172.16.4.12").ShouldBeTrue();
+		private It Should_return_true_for_lan_adresses32 = () => config.Environment.IsDeveloperIp("10.180.5.4").ShouldBeTrue();
 	}
 }

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
+ 	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Internationalization (Project configuration)</title>
+	</head>
+	<body>
+
+		<div class="page">
+
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current>
+						<sage:url ref="configuration-project-internationalization"/>
+					</mod:current>
+				</mod:config>
+			</mod:Sidebar>
+
+			<section class="content">
+				<header>
+					<span>Internationalization (Project configuration)</span>
+				</header>
+				<details>
+
+					<section class="topic" data-index="yes" data-level="1" id="internationalization">
+						<header>
+							Internationalization
+						</header>
+						<details>
+							<summary>
+								If a project needs to be presented in multiple languages, possibly with different presentations and additional, replaced or removed content for each of those locales, it can be "internationalized". <a href="url:link(internationalization)">Internationalization in Sage</a> is a process of branching content and presentation based on the locale. It enables projects that operate in multiple languages to integrate locale-based differences smoothly and naturally, and it is applied on several different levels. The locales (languages) that the project supports are defined in the internationalization section of the project configuration. <a href="url:link(internationalization)">Find out more</a>.
+							</summary>
+							<section class="element">
+								<header>internationalization element</header>
+								<details>
+									<summary>Defines the locales to use with this project.</summary>
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<summary>
+												In this example, three locales have been defined; <code>uk</code>, <code>de</code> and <code>fr</code>:
+											</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<internationalization>
+															<locale name="uk" dictionaryNames="uk,en" resourceNames="uk,en,default">
+																<format culture="en-uk" shortDate="MMMM d, yyyy" longDate="D"/>
+															</locale>
+															<locale name="de" dictionaryNames="de,en" resourceNames="de-de,de,default">
+																<format culture="de-de" shortDate="d" longDate="D"/>
+															</locale>
+															<locale name="fr" dictionaryNames="fr,en" resourceNames="fr-fr,fr,default">
+																<format culture="fr-fr" shortDate="d" longDate="D"/>
+															</locale>
+														</internationalization>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element">
+												<header>locale element</header>
+												<details>
+													<summary>Defines a single locale</summary>
+													<section class="properties example">
+														<header>Example</header>
+														<details>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<locale name="de" dictionaryNames="de,en" resourceNames="de,en,default">
+																			<format culture="de-de" shortDate="MMMM d, yyyy" longDate="D"/>
+																		</locale>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
+														<header>Attributes</header>
+														<details>
+															<section class="attribute">
+																<header>name</header>
+																<details>
+																	Specifies the name of the locale. Any name can be used here but typically this would be a value such as <code>en</code> or <code>en-US</code>.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>dictionaryNames</header>
+																<details>
+																	Specifies the names of dictionaries that can be used with this locale, ordered by priority. See <a href="url:link(internationalization-phrases)">internationalization  phrases</a>.
+																</details>
+															</section>
+															<section class="attribute">
+																<header>resourceNames</header>
+																<details>
+																	Specifies the priority of name suffixes for locale-specific file overrides. See <a href="url:link(internationalization-fallback)">internationalization fallback</a>.
+																</details>
+															</section>
+														</details>
+													</section>
+													<section class="properties children">
+														<header>Child elements</header>
+														<details>
+															<section class="element">
+																<header>format element</header>
+																<details>
+																	<summary>Sets the cultture and date formatting options for the locale.</summary>
+																		<section class="properties example">
+																			<header>Example</header>
+																			<details>
+																				<mod:XmlTree>
+																					<mod:data>
+																						<sage:literal>
+																							<format culture="de-de" shortDate="MMMM d, yyyy" longDate="D"/>
+																						</sage:literal>
+																					</mod:data>
+																				</mod:XmlTree>
+																			</details>
+																		</section>
+																	<section class="properties attributes">
+																		<header>Attributes</header>
+																		<details>
+																			<section class="attribute">
+																				<header>culture</header>
+																				<details>
+																					Specifies the name of the <code>CultureInfo</code> instance to use with this locale.
+																				</details>
+																			</section>
+																			<section class="attribute">
+																				<header>shortDate</header>
+																				<details>
+																					Specifies the short date format to use with this locale. This value is optional and should only be used if it is different than the format provided by this locale's <code>CultureInfo</code> instance. Default value is <code>d</code>, which is represents the date and time format string that is defined by this locale's <code>CultureInfo</code> DateTimeFormatInfo.ShortDatePattern property.
+																				</details>
+																			</section>
+																			<section class="attribute">
+																				<header>longDate</header>
+																				<details>
+																					Specifies the long date format to use with this locale. This value is optional and should only be used if it is different than the format provided by this locale's <code>CultureInfo</code> instance. Default value is <code>D</code>, which is represents the date and time format string that is defined by this locale's <code>CultureInfo</code> DateTimeFormatInfo.LongDatePattern property.
+																				</details>
+																			</section>
+																		</details>
+																	</section>
+																</details>
+															</section>
+														</details>
+													</section>
+												</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

@@ -53,7 +53,7 @@ namespace Sage.Controllers
 
 		static SageController()
 		{
-			foreach (Assembly a in Application.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies)
 			{
 				var types = from t in a.GetTypes()
 							where t.IsClass && !t.IsAbstract
@@ -105,7 +105,7 @@ namespace Sage.Controllers
 		/// <summary>
 		/// Gets the name of this controller.
 		/// </summary>
-		public virtual string ControllerName
+		public virtual string Name
 		{
 			get
 			{
@@ -189,7 +189,7 @@ namespace Sage.Controllers
 		/// <inheritdoc/>
 		public virtual IModule CreateModule(XmlElement moduleElement)
 		{
-			return moduleFactory.CreateModule(moduleElement);
+			return this.moduleFactory.CreateModule(moduleElement);
 		}
 
 		/// <summary>
@@ -218,7 +218,7 @@ namespace Sage.Controllers
 
 			XmlDocument result = new XmlDocument();
 			XmlElement viewRoot = result.AppendElement("sage:view", XmlNamespaces.SageNamespace);
-			viewRoot.SetAttribute("controller", this.ControllerName);
+			viewRoot.SetAttribute("controller", this.Name);
 			viewRoot.SetAttribute("action", action);
 			viewRoot.AppendElement(this.Context.ToXml(result));
 

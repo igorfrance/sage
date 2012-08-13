@@ -149,7 +149,7 @@ namespace Sage.ResourceManagement
 			DateTime minDate = DateTime.MaxValue;
 			foreach (string locale in locales)
 			{
-				string path = GetGlobalizedName(locale, true);
+				string path = this.GetInternationalizedName(locale, true);
 				if (!File.Exists(path))
 					return null;
 
@@ -182,10 +182,10 @@ namespace Sage.ResourceManagement
 		/// <returns>
 		/// An object that contains information about the globalization of this resource.
 		/// </returns>
-		public GlobalizationSummary Globalize()
+		public InternationalizationSummary Globalize()
 		{
-			Globalizer globalizer = new Globalizer(context);
-			GlobalizationSummary summary = globalizer.Globalize(this);
+			Internationalizer globalizer = new Internationalizer(context);
+			InternationalizationSummary summary = globalizer.Internationalize(this);
 			summary.Save();
 
 			return summary;
@@ -197,7 +197,7 @@ namespace Sage.ResourceManagement
 		/// <param name="locale">The locale for which to get the name.</param>
 		/// <param name="appendPath">If set to <c>true</c> the resulting value will be the full path to the file.</param>
 		/// <returns>The globalized name and optionally, path to this resource file.</returns>
-		public string GetGlobalizedName(string locale, bool appendPath)
+		public string GetInternationalizedName(string locale, bool appendPath)
 		{
 			string globName = Name.ToLocale(locale);
 			return appendPath ? Path.Combine(this.TargetDirectory, globName) : globName;
@@ -231,11 +231,11 @@ namespace Sage.ResourceManagement
 			if (!this.IsGlobalizable(sourceDoc))
 				return sourceDoc;
 
-			var dependencies = new List<string> { GetGlobalizedName(locale, true) };
+			var dependencies = new List<string> { this.GetInternationalizedName(locale, true) };
 
-			if (context.ProjectConfiguration.AutoGlobalize)
+			if (context.ProjectConfiguration.AutoInternationalize)
 			{
-				DictionaryFileCollection dictionaries = Globalizer.GetTranslationDictionaryCollection(context);
+				DictionaryFileCollection dictionaries = Internationalizer.GetTranslationDictionaryCollection(context);
 				DateTime? resourceFirstGlobalized = this.GetDateFirstGlobalized(dictionaries.Locales);
 
 				DictionaryFile dictionary = dictionaries.Dictionaries[locale];
@@ -253,7 +253,7 @@ namespace Sage.ResourceManagement
 
 				if (generateNew)
 				{
-					GlobalizationSummary summary = this.Globalize();
+					InternationalizationSummary summary = this.Globalize();
 					dependencies.AddRange(summary.GetConstituentFiles(locale));
 				}
 			}
@@ -273,34 +273,25 @@ namespace Sage.ResourceManagement
 					this.FilePath, locale));
 			}
 
-			CacheableXmlDocument xmlDocument = this.LoadXmlDocument(fullPath);
-			return xmlDocument;
+			CacheableXmlDocument document = new CacheableXmlDocument();
+			document.Load(fullPath, this.context);
+			return document;
 		}
 
 		internal CacheableXmlDocument LoadLocalizedSourceDocument(string locale)
 		{
-			string fullPath = GetSourcePath(locale);
-			CacheableXmlDocument xmlDocument = this.LoadXmlDocument(fullPath);
-			return xmlDocument;
+			string fullPath = this.GetSourcePath(locale);
+			CacheableXmlDocument document = new CacheableXmlDocument();
+			document.Load(fullPath, this.context);
+			return document;
 		}
 
 		internal CacheableXmlDocument LoadGlobalizedDocument(string locale)
 		{
-			string fullPath = GetGlobalizedName(locale, true);
-			CacheableXmlDocument document = this.LoadXmlDocument(fullPath);
+			string fullPath = this.GetInternationalizedName(locale, true);
+			CacheableXmlDocument document = new CacheableXmlDocument();
+			document.Load(fullPath, this.context);
 			return document;
-		}
-
-		private CacheableXmlDocument LoadXmlDocument(string path)
-		{
-			CacheableXmlDocument result = new CacheableXmlDocument();
-			UrlResolver resolver = new UrlResolver(context);
-
-			result.Load(path, resolver);
-			result.AddDependencies(path);
-			result.AddDependencies(resolver.Dependencies.Where(d => !result.Dependencies.Contains(d)));
-
-			return result;
 		}
 	}
 }

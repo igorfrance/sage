@@ -7,66 +7,76 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Step 3: Expand modules - Document transform flow</title>
+		<title>Expand modules (Document transform flow)</title>
 	</head>
 	<body>
 
-		<h1>Step 3: Expand modules</h1>
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="xml-flow-expand-modules"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Expand modules (Document transform flow)</span>
+				</header>
+				<details>
 
-		<mod:BreadCrumb>
-			<mod:config>
-				<mod:current><sage:url ref="xml-flow-expand-modules"/></mod:current>
-			</mod:config>
-		</mod:BreadCrumb>
+					<p>
+						Modules are the formal way of providing reusable pieces of functionality in Sage. The way to invoke a module is to reference it with one of it's XML element tags within a controller view.
+					</p>
 
-		<div class="imageframe right">
-			<img src="{assetpath}/images/diagrams/xml-transform-flow-expand-modules.jpg" alt="Step 3: Expand modules"/>
+					<div class="marginframe">
+						<img src="{assetpath}/images/diagrams/xml-flow-expand.png" alt="Expand modules"/>
+					</div>
+
+					<section class="topic">
+						<header>How it works</header>
+						<details>
+							<div class="marginframe">
+								<img align="right" src="{assetpath}images/diagrams/xml-flow-expand-detail.png" alt="XSLT Transform details"/>
+							</div>
+
+							<p>
+								When processing the controller view, the document is scanned for register module elements, and then for each of the modules it's back-end code (if any) is supplied a reference to that element, with the chance to modify it in any way. This step will typically populate the module's <code>mode:data</code> element with any dynamic data that it is responsible of producing.
+							</p>
+
+							<p>
+								Later on, in <a href="url:link(xml-flow-xslt-transform)">XSLT transform step</a>, the XSLT templates associated with the module will take this data and generate the HTML.
+							</p>
+
+							<h5 class="caption clear">The module's markup as it appears in the template, before it gets expanded:</h5>
+							<mod:XmlTree>
+								<mod:data>
+									<mod:WeatherWidget>
+										<mod:config>
+											<mod:location>NLXX0002</mod:location>
+										</mod:config>
+									</mod:WeatherWidget>
+								</mod:data>
+							</mod:XmlTree>
+
+							<h5 class="caption">The module's markup after it is expanded:</h5>
+							<mod:XmlTree>
+								<mod:data>
+									<mod:WeatherWidget>
+										<mod:config>
+											<mod:location>NLXX0002</mod:location>
+										</mod:config>
+										<mod:data>
+											<mod:title>Current Weather Conditions In Amsterdam, Netherlands</mod:title>
+											<mod:link><![CDATA[http://www.weather.com/weather/local/NLXX0002?cm_pla=city_page&cm_ite=cc&site=city_page&cm_ven=LWO&cm_cat=rss&par=LWO_rss]]></mod:link>
+											<mod:description>Cloudy  and  Windy, and -4&#176; C</mod:description>
+										</mod:data>
+									</mod:WeatherWidget>
+								</mod:data>
+							</mod:XmlTree>
+						</details>
+					</section>
+
+				</details>
+			</section>
 		</div>
-
-		<p>
-			Modules are the formal way of providing reusable pieces of functionality in Sage. The way to invoke a module is to reference
-			it with one of it's XML element tags within a controller view.
-		</p>
-
-		<p>
-			When processing the controller view, the document is scanned for register module elements, and then for each of
-			the modules it's back-end code (if any) is supplied a reference to that element, with the chance to modify it
-			in any way. This step will typically populate the module's <code>mode:data</code> element with any dynamic data
-			that it is responsible of producing.
-		</p>
-
-		<p>
-			Later on, in <a href="url:link(xml-flow-xslt-transform)">XSLT transform step</a>, the XSLT templates
-			associated with the module will take this data and generate the HTML.
-		</p>
-
-		<h5 class="caption clear">The module's markup as it appears in the template, before it gets expanded:</h5>
-		<mod:XmlTree>
-			<mod:data>
-				<mod:WeatherWidget>
-					<mod:config>
-						<mod:location>NLXX0002</mod:location>
-					</mod:config>
-				</mod:WeatherWidget>
-			</mod:data>
-		</mod:XmlTree>
-
-		<h5 class="caption">The module's markup after it is expanded:</h5>
-		<mod:XmlTree>
-			<mod:data>
-				<mod:WeatherWidget>
-					<mod:config>
-						<mod:location>NLXX0002</mod:location>
-					</mod:config>
-					<mod:data>
-						<mod:title>Current Weather Conditions In Amsterdam, Netherlands</mod:title>
-						<mod:link><![CDATA[http://www.weather.com/weather/local/NLXX0002?cm_pla=city_page&cm_ite=cc&site=city_page&cm_ven=LWO&cm_cat=rss&par=LWO_rss]]></mod:link>
-						<mod:description>Cloudy  and  Windy, and -4&#176; C</mod:description>
-					</mod:data>
-				</mod:WeatherWidget>
-			</mod:data>
-		</mod:XmlTree>
-
-
 	</body>
 </html>
