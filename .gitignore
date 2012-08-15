@@ -19,3 +19,4 @@ _target
 /src/Examples/Documentation/assets/css/dev
 /src/Examples/Documentation/assets/views/dev
 /src/Examples/Documentation/assets/modules/dev
+*.favdoc
