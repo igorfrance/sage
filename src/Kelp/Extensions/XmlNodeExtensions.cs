@@ -394,16 +394,14 @@ namespace Kelp.Extensions
 		/// <paramref name="instance"/>; otherwise <c>false</c>.</returns>
 		public static bool Contains(this XmlNode instance, XmlNode node)
 		{
-			XmlElement parentNode = node.ParentNode as XmlElement;
-			while (parentNode != null)
-			{
-				foreach (XmlNode childNode in parentNode.ChildNodes)
-				{
-					if (childNode == node)
-						return true;
-				}
+			if (instance == null)
+				return false;
 
-				parentNode = parentNode.ParentNode as XmlElement;
+			while (node != null)
+			{
+				node = node.ParentNode;
+				if (node == instance)
+					return true;
 			}
 
 			return false;
