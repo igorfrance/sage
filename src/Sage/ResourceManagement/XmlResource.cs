@@ -267,7 +267,7 @@ namespace Sage.ResourceManagement
 		internal CacheableXmlDocument LoadSourceDocument(string locale)
 		{
 			string fullPath = context.Path.Localize(this.FilePath, locale, true);
-			if (new Uri(fullPath).Scheme == "file" && !File.Exists(fullPath))
+			if (UrlResolver.GetScheme(fullPath) == "file" && !File.Exists(fullPath))
 			{
 				throw new FileNotFoundException(string.Format("The resource file '{0}' could not be opened using locale '{1}'",
 					this.FilePath, locale));

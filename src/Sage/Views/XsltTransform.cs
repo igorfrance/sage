@@ -156,7 +156,7 @@ namespace Sage.Views
 			XsltTransform result = XsltTransform.Create(context, stylesheetDocument);
 			result.dependencies.AddRange(stylesheetDocument.Dependencies);
 
-			IEnumerable<string> fileDependencies = result.Dependencies.Where(d => new Uri(d).Scheme == "file").ToList();
+			IEnumerable<string> fileDependencies = result.Dependencies.Where(d => UrlResolver.GetScheme(d) == "file").ToList();
 			result.LastModified = Util.GetDateLastModified(fileDependencies);
 			context.Cache.Insert(key, result, new CacheDependency(fileDependencies.ToArray()));
 

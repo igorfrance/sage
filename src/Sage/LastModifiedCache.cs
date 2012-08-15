@@ -21,6 +21,8 @@ namespace Sage
 	using System.Linq;
 	using System.Web.Caching;
 
+	using Sage.ResourceManagement;
+
 	/// <summary>
 	/// Provides a simple mechanism for saving to and restoring from the ASP.NET cache the last modification dates
 	/// of local resources.
@@ -77,7 +79,7 @@ namespace Sage
 			Contract.Requires<ArgumentNullException>(dependencies.Count > 0);
 
 			string itemKey = string.Format(CacheKeyName, resourcePath);
-			IEnumerable<string> files = dependencies.Where(d => new Uri(d).Scheme == "file");
+			IEnumerable<string> files = dependencies.Where(d => UrlResolver.GetScheme(d) == "file");
 			context.Cache.Insert(itemKey, lastModificationDate, new CacheDependency(files.ToArray()));
 		}
 	}
