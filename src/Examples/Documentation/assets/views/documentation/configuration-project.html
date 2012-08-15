@@ -3,8 +3,7 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
-	xmlns="http://www.w3.org/1999/xhtml">
+ 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
@@ -38,7 +37,7 @@
 								<li>Sage first looks for a file with Sage defaults; <code>System.config</code>. The file should be in the working directory of the application. Working directory will typically be <code>/bin</code>.</li>
 								<li>Sage then tries to open <code>Project.config</code> file from the level above the working directory (<code>../Project.config</code>); failing that it then looks in the working directory (<code>./Project.config</code>). </li>
 								<li>Settings defined in <code>Project.config</code> will override equivalent settings from <code>System.config</code>.</li>
-								<li><code>Project.config</code> can be divided in several files using <a href="url:link(sage-namespaces-xinclude)">X-Includes</a></li>
+								<li><code>Project.config</code> can be divided in several files using <a href="url:link(sage-namespaces-sage)">sage-include</a> elements.</li>
 								<li>The configuration file is optional; without it, project will initialize with the built-in defaults.</li>
 							</ul>
 						</details>

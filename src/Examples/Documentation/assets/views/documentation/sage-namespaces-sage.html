@@ -2,8 +2,7 @@
 <html
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
-	xmlns="http://www.w3.org/1999/xhtml">
+ 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
@@ -27,6 +26,60 @@
 					<section class="namespace">
 						<header>Namespace URI:</header>
 						<details>http://www.cycle99.com/schemas/sage/sage.xsd</details>
+					</section>
+
+					<section class="topic" id="attributes" data-index="yes" data-level="1">
+						<header>Attributes</header>
+						<details>
+							<section class="element" id="attrib-attribute" data-index="yes" data-level="2">
+								<header>sage:attrib attribute</header>
+								<details>
+									<summary>
+										This attribute, when processed, subtitutes itself with another attribute, created according to the specification.
+									</summary>
+									<section class="properties syntax">
+										<header>Syntax</header>
+										<details>
+											<code class="principal">sage:attrib="&lt;AttribName>=&lt;AttribValueExpression>"</code>
+											<dl>
+												<dt><code>&lt;AttribName&gt;</code></dt>
+												<dd>The name of the attribute to create.</dd>
+												<dt><code>&lt;AttribValueExpression&gt;</code></dt>
+												<dd>The expression to evaluate and set the value of the attribute with. The expression is evaluated in the same way as the content of the <a href="url:self(#expression-element)">expression element</a>; any embedded <a href="url:link(extensibility-text-functions)">text function expressions</a> will be invoked and substituted by the result of that invokation.</dd>
+											</dl>
+										</details>
+									</section>
+
+									<section class="properties example">
+										<header>Example</header>
+										<details>
+											<summary>Before processing:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<form sage:attrib="action=url:link(customer-service, section=faq)">...</form>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+											<summary>After processing:</summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<form action="feedback/customer-service/faq/">...</form>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties implementation">
+										<header>Implemented as:</header>
+										<details>
+											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
 					</section>
 
 					<section class="topic" id="elements" data-index="yes" data-level="1">
@@ -190,54 +243,81 @@
 									</section>
 								</details>
 							</section>
-						</details>
-					</section>
-
-					<section class="topic" id="attributes" data-index="yes" data-level="1">
-						<header>Attributes</header>
-						<details>
-							<section class="element" id="attrib-attribute" data-index="yes" data-level="2">
-								<header>sage:attrib attribute</header>
+							<section class="element" id="include-element" data-index="yes" data-level="2">
+								<header>sage:include element</header>
 								<details>
-									<summary>
-										<div>
-										Subtitutes itself with another attribute, created according to the value of this attribute. The syntax is:
-										</div>
-										<code class="principal">sage:attrib="{AttribName}={AttribValueExpression}"</code>
-										<p>
-											{AttribName} part specifies the name of the attribute to create. <br/>
-											{AttribValueExpression} part specifies the expression to evaluate and set the value of the attribute with.
-										</p>
-										<p>
-											The value is processed for <a href="url:link(extensibility-text-functions)">text functions</a>. The value can contain a combination of free text and text functions; the functions will be processed, free text will be left as is.
-										</p>
-									</summary>
-
+									<summary>Includes another document or document fragment as either <code>xml</code> or <code>text</code> within the current document, replacing the including element with the included content.</summary>
 									<section class="properties example">
-										<header>Example</header>
+										<header>Example:</header>
 										<details>
-											<summary>Before processing:</summary>
+											<summary>Including a complete document</summary>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
-														<form sage:attrib="action=url:link(customer-service, section=faq)">...</form>
+														<sage:include href="footer.xml"/>
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-											<summary>After processing:</summary>
+											<summary>Including a document fragment, using the <code>xpath</code> attribute</summary>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
-														<form action="feedback/customer-service/faq/">...</form>
+														<sage:include href="footer.html" xpath="//xhtml:div[@class='contact']/xhtml:ul"/>
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
 										</details>
 									</section>
-									<section class="properties implementation">
-										<header>Implemented as:</header>
+									<section class="properties attributes">
+										<header>Attributes</header>
 										<details>
-											<a href="url:link(extensibility-node-handlers)">Node handler</a>
+											<section class="attribute">
+												<header>href</header>
+												<details>Specifies the path to the document to include.</details>
+											</section>
+											<section class="attribute">
+												<header>parse</header>
+												<details>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>xpath</header>
+												<details>
+													When <code>parse="xml"</code>, the expression specified with the <code>xpath</code> attribute is evaluated to identify a portion of the resource to include. This attribute is optional; when omitted, the entire resource is included. The namespace prefixes that can be used
+													here are any namespaces prefixes defined in the document where the <code>sage:include</code> element is being used, as well as the <a href="url:link(sage-namespaces)">common namespaces and namespace prefixes in use throughout Sage</a>.
+												</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements</header>
+										<details>
+											<section class="element" id="fallback-element" data-index="yes" data-level="3">
+												<header>sage:fallback element</header>
+												<details>
+													<summary>Optional alternative content to display in it's place if loading of the resource specified by the parent <code>sage:include</code> element fails.</summary>
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<summary>In this example, there are two levels of fallback:</summary>
+															<mod:XmlTree>
+																<mod:data>
+																	<sage:literal>
+																		<sage:include href="example.txt" parse="text">
+																			<sage:fallback>
+																				<sage:include href="fallback-example.txt" parse="text">
+																					<sage:fallback>
+																						<a href="mailto:bob@example.org">Report error</a>
+																					</sage:fallback>
+																				</sage:include>
+																			</sage:fallback>
+																		</sage:include>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+												</details>
+											</section>
 										</details>
 									</section>
 								</details>

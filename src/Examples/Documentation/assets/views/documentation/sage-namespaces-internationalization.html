@@ -3,8 +3,7 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
-	xmlns="http://www.w3.org/1999/xhtml">
+ 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
@@ -285,13 +284,13 @@
 														<div class="footer">
 															<intl:localize>
 																<intl:if locale="uk">
-																	<xi:include href="footer-uk.html"/>
+																	<sage:include href="footer-uk.html"/>
 																</intl:if>
 																<intl:if locale="de">
-																	<xi:include href="footer-de.html"/>
+																	<sage:include href="footer-de.html"/>
 																</intl:if>
 																<intl:else>
-																	<xi:include href="footer.html"/>
+																	<sage:include href="footer.html"/>
 																</intl:else>
 															</intl:localize>
 														</div>
@@ -314,7 +313,7 @@
 																<mod:data>
 																	<sage:literal>
 																		<intl:if locale="uk">
-																			<xi:include href="footer-uk.html"/>
+																			<sage:include href="footer-uk.html"/>
 																		</intl:if>
 																	</sage:literal>
 																</mod:data>
@@ -343,7 +342,7 @@
 																<mod:data>
 																	<sage:literal>
 																		<intl:else>
-																			<xi:include href="footer.html"/>
+																			<sage:include href="footer.html"/>
 																		</intl:else>
 																	</sage:literal>
 																</mod:data>
@@ -367,7 +366,7 @@
 								<details>
 									<summary>
 										<p>
-											Signifies that the element that this attribute appears on should only appear in the locale(s) specified by it. It can be attached to any element except the xi:include element.
+											Signifies that the element that this attribute appears on should only appear in the locale(s) specified by it. It can be attached to any element except the sage:include element.
 										</p>
 										<p>
 											The value of this attribute is a comma-separated list of names of locales in which the element to which this attribute is attached should appear; <code>intl:locale="fr"</code>

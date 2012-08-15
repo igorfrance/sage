@@ -3,8 +3,7 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:context="http://www.cycle99.com/schemas/sage/contextualization.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
-	xmlns="http://www.w3.org/1999/xhtml">
+ 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
@@ -48,16 +47,16 @@
 													<sage:literal>
 														<context:switch property="RouteValues" key="category">
 															<context:case test="training">
-																<xi:include href="training-include.xml"/>
+																<sage:include href="training-include.xml"/>
 															</context:case>
 															<context:case test="running">
-																<xi:include href="running-include.xml"/>
+																<sage:include href="running-include.xml"/>
 															</context:case>
 															<context:case test="basketball">
-																<xi:include href="basketball-include.xml"/>
+																<sage:include href="basketball-include.xml"/>
 															</context:case>
 															<context:default>
-																<xi:include href="default-include.xml"/>
+																<sage:include href="default-include.xml"/>
 															</context:default>
 														</context:switch>
 													</sage:literal>
@@ -169,9 +168,9 @@
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
-															<context:case test="training">
-																<xi:include href="training-include.xml"/>
-															</context:case>
+																		<context:case test="training">
+																			<sage:include href="training-include.xml"/>
+																		</context:case>
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
@@ -199,7 +198,7 @@
 																<mod:data>
 																	<sage:literal>
 																		<context:default>
-																			<xi:include href="default-include.xml"/>
+																			<sage:include href="default-include.xml"/>
 																		</context:default>
 																	</sage:literal>
 																</mod:data>

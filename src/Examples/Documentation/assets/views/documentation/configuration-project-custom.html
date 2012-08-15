@@ -3,8 +3,7 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
-	xmlns="http://www.w3.org/1999/xhtml">
+ 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
@@ -56,12 +55,12 @@
 											</sage:literal>
 										</mod:data>
 									</mod:XmlTree>
-									<summary>The custom element can also be x-included:</summary>
+									<summary>The custom element can also be included from an external document:</summary>
 									<mod:XmlTree>
 										<mod:data>
 											<sage:literal>
 												<project xmlns="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
-													<xi:include href="Company.config"/>
+													<sage:include href="Company.config"/>
 												</project>
 											</sage:literal>
 										</mod:data>

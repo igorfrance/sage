@@ -1,0 +1,39 @@
+section.sidebar
+	{ background: #E8E8E8; padding: 15px; }
+section.sidebar > header
+	{ color: #54596F; font-size: 234%; font-weight: normal; text-shadow: 1px 1px 3px #666; }
+section.sidebar > header a
+	{ display: block; background: url(logo.png) no-repeat top left; height: 40px; margin-bottom: 40px;}
+section.sidebar > header a span
+	{ display: none; }
+section.sidebar > header a:hover
+	{ text-decoration: none; }
+section.sidebar > details > section
+	{ margin-bottom: 40px; }
+section.sidebar > details header
+	{ font-size: 110%; color: #999; border-bottom: 1px solid #bbb; margin-bottom: 5px; }
+
+section.sidebar section.related .name.current
+	{ color: #000; font-weight: bold; }
+
+section.sidebar > details .level.current
+	{ color: #000; font-weight: bold; }
+section.sidebar > details .level1
+	{ padding-left: 0; }
+section.sidebar > details .level2
+	{ padding-left: 10px; }
+section.sidebar > details .level3
+	{ padding-left: 20px; }
+section.sidebar > details .level4
+	{ padding-left: 30px; }
+section.sidebar > details .level5
+	{ padding-left: 40px; }
+section.sidebar > details .level6
+	{ padding-left: 50px; }
+section.sidebar > details .level7
+	{ padding-left: 60px; }
+section.sidebar > details .level8
+	{ padding-left: 70px; }
+section.sidebar > details ul
+	{ margin: 0; padding: 0; }
+

@@ -2,8 +2,7 @@
 <html
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
- 	xmlns:xi="http://www.w3.org/2003/XInclude"
-	xmlns="http://www.w3.org/1999/xhtml">
+ 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
 		<sage:basehref/>
@@ -29,38 +28,60 @@
 						<header>Common namespaces</header>
 						<details>
 							<summary>The following namespaces will be automatically processed by Sage if used within xml views.</summary>
-							<ul class="casual separate">
-								<li>
-									<h5 class="casual"><a href="url:link(sage-namespaces-xinclude)">XInclude namespace</a></h5>
-									<code class="principal">http://www.w3.org/2003/XInclude</code>
-									<p>Support for XML Inclusions.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="url:link(sage-namespaces-sage)">Sage namespace</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/sage.xsd</code>
-									<p>Core utilities.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="url:link(sage-namespaces-internationalization)">Internationalization namespace</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/internationalization.xsd</code>
-									<p>Globalization.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="url:link(sage-namespaces-contextualization)">Contextualization namespace</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/contextualization.xsd</code>
-									<p>Document preprocessing.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="url:link(sage-modules)">Modules namespace</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/modules.xsd</code>
-									<p>Base namespace for all modules.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="url:link(sage-namespaces-logic)">Custom logic namespace</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/logic.xsd</code>
-									<p>Custom transform logic.</p>
-								</li>
-							</ul>
+							<section class="namespaceref">
+								<header>
+									<a href="http://www.w3.org/1999/xhtml">XHTML namespace</a>
+								</header>
+								<details>
+									<code class="principal">xmlns:<b>xhtml</b>="http://www.w3.org/1999/xhtml"</code>
+									<p>The famous XHTML namespace from 1999. It is registered within the global namespace manager with the namespace prefix <code>xhtml:</code>.</p>
+								</details>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="url:link(sage-namespaces-sage)">Sage namespace</a>
+								</header>
+								<details>
+									<code class="principal">xmlns:<b>sage</b>="http://www.cycle99.com/schemas/sage/sage.xsd</code>
+									<p>Core Sage utilities. It is registered within the global namespace manager with the namespace prefix <code>sage:</code>.</p>
+								</details>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="url:link(sage-namespaces-internationalization)">Internationalization namespace</a>
+								</header>
+								<details>
+									<code class="principal">xmlns:<b>intl</b>="http://www.cycle99.com/schemas/sage/internationalization.xsd</code>
+									<p>Internationalization facilities. It is registered within the global namespace manager with the namespace prefix <code>intl:</code>.</p>
+								</details>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="url:link(sage-namespaces-contextualization)">Contextualization namespace</a>
+								</header>
+								<details>
+									<code class="principal">xmlns:<b>context</b>="http://www.cycle99.com/schemas/sage/contextualization.xsd</code>
+									<p>Document preprocessing. It is registered within the global namespace manager with the namespace prefix <code>context:</code>.</p>
+								</details>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="url:link(sage-namespaces-modules)">Modules namespace</a>
+								</header>
+								<details>
+									<code class="principal">xmlns:<b>mod</b>="http://www.cycle99.com/schemas/sage/modules.xsd</code>
+									<p>Base namespace for all modules. It is registered within the global namespace manager with the namespace prefix <code>mod:</code>.</p>
+								</details>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="url:link(sage-namespaces-contextualization)">Custom logic namespace</a>
+								</header>
+								<details>
+									<code class="principal">xmlns:<b>logic</b>="http://www.cycle99.com/schemas/sage/logic.xsd</code>
+									<p>Custom transform logic. It is registered within the global namespace manager with the namespace prefix <code>logic:</code>.</p>
+								</details>
+							</section>
 						</details>
 					</section>
 					<section class="topic" id="extensions">
