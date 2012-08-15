@@ -138,6 +138,7 @@
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
+    <Compile Include="TODO.cs" />
     <Compile Include="Views\ViewConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\ControllerMessage.cs" />

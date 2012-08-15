@@ -121,22 +121,21 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Loads the XML document from the specified URL, with support for <c>XIncludes</c>.
+		/// Loads the XML document from the specified URL, with support for <c>sage:include</c> elements.
 		/// </summary>
-		/// <param name="filename">URL for the file containing the XML document to load. The URL can be either a local file or an HTTP URL (a Web address).</param>
+		/// <param name="filename">URL for the file containing the XML document to load. The URL can be either a local 
+		/// file or an HTTP URL (a Web address).</param>
 		/// <param name="context">The context under which the code is being invoked.</param>
-		/// <param name="resolver">Optional URL resolver to use instead of the default.</param>
-		public void Load(string filename, SageContext context, UrlResolver resolver = null)
+		public void Load(string filename, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(filename));
 
-			this.LoadInternal(filename, context, resolver);
+			this.LoadInternal(filename, context);
 		}
 
-		private void LoadInternal(string filename, SageContext context, UrlResolver resolver = null, bool processIncludes = true)
+		private void LoadInternal(string filename, SageContext context, bool processIncludes = true)
 		{
-			if (resolver == null)
-				resolver = new UrlResolver(context);
+			UrlResolver resolver = new UrlResolver(context);
 
 			XmlReader xmlReader;
 			XmlReaderSettings settings = CreateReaderSettings(resolver);
@@ -195,6 +194,7 @@ namespace Sage.ResourceManagement
 			XmlDocument elementDocument = contentElement.OwnerDocument;
 			foreach (XmlElement includingElement in includeElements)
 			{
+				XmlNode fallbackNode = includingElement.SelectSingleNode("sage:fallback", XmlNamespaces.Manager);
 				XmlNode includedNode = this.ProcessInclude(nm, includingElement, state);
 				XmlNode elementParent = includingElement.ParentNode;
 
@@ -214,10 +214,34 @@ namespace Sage.ResourceManagement
 				}
 				else
 				{
+					if (fallbackNode != null)
+					{
+						var fragment = elementDocument.CreateDocumentFragment();
+						foreach (XmlNode childNode in fallbackNode.ChildNodes)
+							fragment.AppendChild(childNode.CloneNode(true));
+
+						this.ProcessIncludes(fragment, state);
+						includedNode = fragment;
+					}
+
 					if (includedNode != null)
+					{
 						elementParent.ReplaceChild(elementDocument.ImportNode(includedNode, true), includingElement);
+					}
 					else
+					{
+						var includeId = GetIncludeId(includingElement);
+						var errorMessage = string.Format("NOT FOUND: {0}", includeId);
+						log.ErrorFormat(errorMessage);
+
+						if (debugMode)
+						{
+							var debugElement = this.CreateErrorElement(errorMessage);
+							elementParent.ReplaceChild(elementDocument.ImportNode(debugElement, true), includingElement);
+						}
+
 						elementParent.RemoveChild(includingElement);
+					}
 				}
 			}
 		}
@@ -235,12 +259,7 @@ namespace Sage.ResourceManagement
 				return null;
 			}
 
-			var includeId = href;
-			if (string.IsNullOrWhiteSpace(href))
-				includeId = xpath;
-			if (!string.IsNullOrWhiteSpace(href) && !string.IsNullOrWhiteSpace(xpath))
-				includeId = string.Format("{0}[{1}]", href, xpath);
-
+			var includeId = GetIncludeId(element);
 			if (state.IncludeStack.Count >= MaxIncludeDepth)
 			{
 				state.ErrorMessage = string.Format(Messages.MaxIncludeDepthExceeded, includeId, MaxIncludeDepth);
@@ -261,7 +280,7 @@ namespace Sage.ResourceManagement
 				directory = Path.GetDirectoryName(this.BaseURI);
 			}
 
-			if (!Path.IsPathRooted(includePath) && !string.IsNullOrWhiteSpace(directory))
+			if (UrlResolver.GetScheme(includePath) == "file" && !Path.IsPathRooted(includePath) && !string.IsNullOrWhiteSpace(directory))
 				includePath = Path.Combine(directory, includePath);
 
 			IDictionary<string, XmlNode> cacheEntry;
@@ -296,7 +315,7 @@ namespace Sage.ResourceManagement
 						if (includedNode.Contains(element))
 						{
 							// intra-document circular-reference inclusion
-							state.ErrorMessage = string.Format(Messages.IncludeRecursionError, includeId);
+							state.ErrorMessage = string.Format(Messages.IncludeRecursionErrorInternal, includeId);
 							return null;
 						}
 					}
@@ -357,11 +376,8 @@ namespace Sage.ResourceManagement
 			}
 			else
 			{
-				UrlResolver resolver = new UrlResolver(context);
-				resolver.RegisterResolver("http", new HttpUrlResolver());
-
 				CacheableXmlDocument temp = new CacheableXmlDocument();
-				temp.LoadInternal(includePath, context, resolver, false);
+				temp.LoadInternal(includePath, context, false);
 
 				result = temp.DocumentElement;
 				if (!string.IsNullOrWhiteSpace(xpath))
@@ -384,12 +400,18 @@ namespace Sage.ResourceManagement
 			return result;
 		}
 
-		internal class FatalIncludeException : Exception
+		private string GetIncludeId(XmlElement includingElement)
 		{
-			public FatalIncludeException(string message, Exception inner)
-				: base(message, inner)
-			{
-			}
+			string href = includingElement.GetAttribute("href");
+			string xpath = Kelp.Util.GetParameterValue(includingElement.GetAttribute("xpath"), "/");
+
+			var result = href;
+			if (string.IsNullOrWhiteSpace(href))
+				result = xpath;
+			if (!string.IsNullOrWhiteSpace(href) && !string.IsNullOrWhiteSpace(xpath))
+				result = string.Format("{0}[{1}]", href, xpath);
+
+			return result;
 		}
 	
 		private class IncludeProcessingState
@@ -405,7 +427,7 @@ namespace Sage.ResourceManagement
 
 			public IDictionary<string, IDictionary<string, XmlNode>> VisitedNodes { get; private set; }
 
-			public bool IsError { get; set; }
+			public bool IsError { get; private set; }
 
 			public string ErrorMessage
 			{
