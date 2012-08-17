@@ -1,6 +1,12 @@
-<?xml version="1.0" encoding="utf-8" ?> 
+<?xml version="1.0" encoding="utf-8" ?>
 <mod:XmlTree xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd">
 	<mod:config>
 		<mod:expandLevels>*</mod:expandLevels>
+		<mod:text>
+			<mod:phrase id="ToggleWrapping">Word-wrap</mod:phrase>
+			<mod:phrase id="ToggleNamespaces">Namespaces</mod:phrase>
+			<mod:phrase id="ToggleHighlighting">Highlighting</mod:phrase>
+			<mod:phrase id="ToggleAll">Toggle all</mod:phrase>
+		</mod:text>
 	</mod:config>
 </mod:XmlTree>

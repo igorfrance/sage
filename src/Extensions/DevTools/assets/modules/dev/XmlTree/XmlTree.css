@@ -1,158 +1,192 @@
 ﻿.xmltree
-	{ overflow: hidden; }
+	{ border: 1px solid transparent; position: relative; }
 .xmlroot
-	{ margin-top: -18px;  }
+	{ overflow: hidden; margin-top: -18px;  }
 .xmltree,
 .xmltree pre
 	{ font: 10pt Consolas; }
-.xmltree *
+.xmlroot *
 	{ text-align: left; }
-.xmltree .xmlroot
+.xmlroot
 	{ white-space: nowrap; }
+.xmltree:hover
+	{ background: #EDEDF5; border: 1px solid #e7e7f1; border-radius: 3px 0 3px 3px; }
+.xmltree:hover .toolbar
+	{ display: block; }
+
+/**
+ * Toolbar
+ */
 .xmltree .toolbar
-	{ font-size: 10px; padding: 4px 7px; overflow: hidden; background: #F5F5F5; border-radius: 4px; }
+	{ position: absolute; background: #EDEDF5; top: -24px; right: -1px; border: 1px solid #e7e7f1; border-bottom-color: #EDEDF5;
+	  display: none; white-space: nowrap; width: 200px; height: 18px; padding: 2px; border-radius: 3px 3px 0 0; }
 .xmltree .toolbar a
 	{ color: #8B8B8B; text-decoration: none; }
 .xmltree .toolbar a:hover
 	{ color: #f00; }
-.xmltree .toolbar .left
-	{ float: left; }
-.xmltree .toolbar .right
+.xmltree .toolbar .group.commands
 	{ float: right; }
-.xmltree .toolbar .toggler
-	{ margin-right: 10px; }
-.xmltree pre
+.xmltree .toolbar .group.switches
+	{ float: left; }
+.xmltree .toolbar .switch
+	{ float: left; }
+.xmltree .toolbar .switch,
+.xmltree .toolbar .command
+	{ display: block; width: 20px; height: 16px; background: no-repeat center;
+	  cursor: pointer; border: 1px solid transparent; border-radius: 3px; margin: 1px; }
+.xmltree .toolbar .switch.on
+	{ border-color: #cfcfe2; background-color: #ccc; }
+.xmltree .toolbar .switch:hover,
+.xmltree .toolbar .command:hover
+	{ background-color: #fff; }
+.xmltree .toolbar .switch .state,
+.xmltree .toolbar a span
+	{ display: none; }
+.xmltree .toolbar .wrap
+	{ background-image: url(images/wrapping.png); }
+.xmltree .toolbar .namespaces
+	{ background-image: url(images/namespaces.png); }
+.xmltree .toolbar .highlight
+	{ background-image: url(images/highlighting.png); }
+.xmltree .toolbar .toggleall
+	{ background-image: url(images/collapseall.png); }
+
+/**
+ * Tree structure
+ */
+.xmlroot pre
 	{ margin: 0px; }
-.xmltree .element > .children
+.xmlroot .element > .children
 	{ margin-left: 20px; width: 100%; }
-.xmltree .element.ce > .children
+.xmlroot .element.ce > .children
 	{ margin-left: 10px; }
-.xmltree .element > .children > .close
+.xmlroot .element > .children > .close
 	{ clear: left; margin-left: -10px; }
-.xmltree .element.ce > .children > .close
+.xmlroot .element.ce > .children > .close
 	{ clear: left; margin-left: -20px; }
-.xmltree .attrValue
+.xmlroot .attrValue
 	{ font-weight: bold;  }
-.xmltree .text
+.xmlroot .text
 	{ white-space: normal; }
-.xmltree .switch
+.xmlroot .switch
 	{ display: inline-block; cursor: pointer; width: 8px;
 	  text-align: right; font-weight: bold; padding-right: 2px; }
-.xmltree .switch_space
+.xmlroot .switch_space
 	{ display: inline-block; width: 10px; }
 .xmlroot > .element > .switch_space
 	{ width: 0px; }
 
-.xmltree.wrap .element,
-.xmltree.wrap .comment
-	{	clear: left; }
-.xmltree.wrap .element span,
-.xmltree.wrap .comment span,
-.xmltree.wrap .comment pre
-	{	float: left; overflow: hidden; }
-.xmltree.wrap .element
-	{ overflow: hidden; }
-.xmltree.wrap .element .children
-	{ }
-.xmltree.wrap .closed > .children,
-.xmltree.wrap .closed > pre,
-.xmltree.wrap .closed > .text
-	{ display: none; }
-.xmltree.wrap .element > .children > .close
-	{ clear: none; margin-left: 0px; }
-.xmltree.wrap .element.ce > .children > .close
-	{ clear: none; margin-left: -10px; }
-
-
-.xmltree.wrap .element.ce > .children
-	{ clear: left; }
-.xmltree.namespaces .nsattrib
-	{ display: inline; }
-
-.xmltree.wrap .element .indent
-	{ padding-left: 28px; }
-
-.xmltree .nsattrib
+.xmlroot .nsattrib
 	{ font-weight: normal; display: none; }
-.xmltree .nsattrib .attrName,
-.xmltree .nsattrib .markup,
-.xmltree .nsattrib .attrValue
+.xmlroot .nsattrib .attrName,
+.xmlroot .nsattrib .markup,
+.xmlroot .nsattrib .attrValue
 	{ font-weight: normal; }
-.xmltree .nsattrib a,
-.xmltree .nsattrib a:visited
+.xmlroot .nsattrib a,
+.xmlroot .nsattrib a:visited
 	{ text-decoration: underline; font-weight: normal; }
 
-.xmltree .comment *
+.xmlroot .comment *
 	{ color: #A7A7A7; }
-.xmltree .comment .markup
+.xmlroot .comment .markup
 	{ color: #888888; }
-.xmltree .comment .markup.open
+.xmlroot .comment .markup.open
 	{ margin-right: 10px;  }
-.xmltree .comment .markup.close
+.xmlroot .comment .markup.close
 	{ margin-left: 10px;  }
-.xmltree .comment.collapsible pre
+.xmlroot .comment.collapsible pre
 	{ clear: left;   }
-.xmltree .comment.collapsible .close
+.xmlroot .comment.collapsible .close
 	{ clear: left;   }
-.xmltree .comment.collapsible.closed .close
+.xmlroot .comment.collapsible.closed .close
 	{ clear: none; margin-left: 5px;  }
 
-.xmltree .text,
-.xmltree .attrValue
+/**
+ * Wrapping
+ */
+.xmlroot.wrap .element,
+.xmlroot.wrap .comment
+	{	clear: left; }
+.xmlroot.wrap .element span,
+.xmlroot.wrap .comment span,
+.xmlroot.wrap .comment pre
+	{	float: left; overflow: hidden; }
+.xmlroot.wrap .element
+	{ overflow: hidden; }
+.xmlroot.wrap .closed > .children,
+.xmlroot.wrap .closed > pre,
+.xmlroot.wrap .closed > .text
+	{ display: none; }
+.xmlroot.wrap .element > .children > .close
+	{ clear: none; margin-left: 0px; }
+.xmlroot.wrap .element.ce > .children > .close
+	{ clear: none; margin-left: -10px; }
+.xmlroot.wrap .element.ce > .children
+	{ clear: left; }
+.xmlroot.namespaces .nsattrib
+	{ display: inline; }
+.xmlroot.wrap .element .indent
+	{ padding-left: 28px; }
+
+/**
+ * Default colors
+ */
+.xmlroot .text,
+.xmlroot .attrValue
 	{ color: #323232; }
-.xmltree .markup,
-.xmltree .pi,
-.xmltree .ns,
-.xmltree .nsattrib .markup,
-.xmltree .nsattrib .attrValue,
-.xmltree .nsattrib a,
-.xmltree .nsattrib a:visited
+.xmlroot .markup,
+.xmlroot .pi,
+.xmlroot .ns,
+.xmlroot .nsattrib .markup,
+.xmlroot .nsattrib .attrValue,
+.xmlroot .nsattrib a,
+.xmlroot .nsattrib a:visited
 	{ color: #00f; }
-.xmltree .switch
+.xmlroot .switch
 	{ color: #F00; }
-.xmltree .nodeName,
-.xmltree .attrName
+.xmlroot .nodeName,
+.xmlroot .attrName
 	{ color: #CC0000; }
 
-
-.xmltree.highlight .comment
+/**
+ * Highlighting colors
+ */
+.xmlroot.highlight .comment
 	{ color: #aaa; }
-.xmltree.highlight .comment .markup
+.xmlroot.highlight .comment .markup
 	{ color: #aaa; }
-.xmltree.highlight .text,
-.xmltree.highlight .attrValue
+.xmlroot.highlight .text,
+.xmlroot.highlight .attrValue
 	{ color: #aaa; }
-.xmltree.highlight .markup,
-.xmltree.highlight .pi,
-.xmltree.highlight .ns,
-.xmltree.highlight .nsattrib .markup,
-.xmltree.highlight .nsattrib .attrValue,
-.xmltree.highlight .nsattrib a,
-.xmltree.highlight .nsattrib a:visited
+.xmlroot.highlight .markup,
+.xmlroot.highlight .pi,
+.xmlroot.highlight .ns,
+.xmlroot.highlight .nsattrib .markup,
+.xmlroot.highlight .nsattrib .attrValue,
+.xmlroot.highlight .nsattrib a,
+.xmlroot.highlight .nsattrib a:visited
 	{ color: #aaa; }
-.xmltree.highlight .switch,
-.xmltree.highlight .nodeName,
-.xmltree.highlight .attrName
+.xmlroot.highlight .switch,
+.xmlroot.highlight .nodeName,
+.xmlroot.highlight .attrName
 	{ color: #aaa; }
-
-
-.xmltree.highlight .highlighted > .switch,
-.xmltree.highlight .highlighted > .nodeName,
-.xmltree.highlight .highlighted > .attribute .attrName,
-.xmltree.highlight .highlighted > .children > .close .nodeName,
-.xmltree.highlight .highlighted > .attrName
+.xmlroot.highlight .highlighted > .switch,
+.xmlroot.highlight .highlighted > .nodeName,
+.xmlroot.highlight .highlighted > .attribute .attrName,
+.xmlroot.highlight .highlighted > .children > .close .nodeName,
+.xmlroot.highlight .highlighted > .attrName
 	{ color: #CC0000 !important; }
-.xmltree.highlight .highlighted > .markup,
-.xmltree.highlight .highlighted > .children > .close .markup,
-.xmltree.highlight .highlighted > .attribute .markup,
-.xmltree.highlight .highlighted > .pi,
-.xmltree.highlight .highlighted > .ns,
-.xmltree.highlight .highlighted > .nsattrib .markup,
-.xmltree.highlight .highlighted > .nsattrib .attrValue,
-.xmltree.highlight .highlighted > .nsattrib a,
-.xmltree.highlight .highlighted > .nsattrib a:visited
+.xmlroot.highlight .highlighted > .markup,
+.xmlroot.highlight .highlighted > .children > .close .markup,
+.xmlroot.highlight .highlighted > .attribute .markup,
+.xmlroot.highlight .highlighted > .pi,
+.xmlroot.highlight .highlighted > .ns,
+.xmlroot.highlight .highlighted > .nsattrib .markup,
+.xmlroot.highlight .highlighted > .nsattrib .attrValue,
+.xmlroot.highlight .highlighted > .nsattrib a,
+.xmlroot.highlight .highlighted > .nsattrib a:visited
 	{ color: #00f; }
-.xmltree.highlight .highlighted > .text,
-.xmltree.highlight .highlighted > .attribute .attrValue,
-.xmltree.highlight .highlighted > .attrValue
+.xmlroot.highlight .highlighted > .text,
+.xmlroot.highlight .highlighted > .attribute .attrValue,
+.xmlroot.highlight .highlighted > .attrValue
 	{ color: #323232; }

@@ -1,21 +1,16 @@
 ﻿Type.registerNamespace("sage.devtools");
 
-sage.devtools.XmlTree = new function XmlTree()
-{
-	function setup()
-	{
-		$(".xmltree .toolbar a.wrap").click(onToggleWordWrapClick);
-		$(".xmltree .toolbar a.namespaces").click(onToggleNamespacesClick);
-		$(".xmltree .toolbar a.toggleall").click(onToggleAllClick);
+sage.devtools.xmlroot = new function xmlroot() {
+	function setup() {
+		$(".xmltree .toolbar .switch").click(onToolbarSwitchClick);
+		$(".xmltree .toolbar .toggleall").click(onToggleAllClick);
 		$(".xmltree .switch").click(onSwitchClick);
 	}
 
-	function onSwitchClick()
-	{
+	function onSwitchClick() {
 		var element = $(this).closest(".element, .comment");
 		var children = element.find("> .children, > pre, > .text");
-		if (children.length)
-		{
+		if (children.length) {
 			if (children.is(":visible"))
 				collapseElement(element);
 			else
@@ -23,13 +18,11 @@ sage.devtools.XmlTree = new function XmlTree()
 		}
 	}
 
-	function onToggleAllClick()
-	{
-		var xmltree = $(this).closest(".xmltree");
-		var allvisible = xmltree.find(".children:hidden").length == 0;
+	function onToggleAllClick() {
+		var xmlroot = $(this).closest(".xmltree").find(".xmlroot");
+		var allvisible = xmlroot.find(".children:hidden").length == 0;
 
-		xmltree.find(".element").each(function (i, element)
-		{
+		xmlroot.find(".element").each(function (i, element) {
 			if (allvisible)
 				collapseElement($(element));
 			else
@@ -37,48 +30,29 @@ sage.devtools.XmlTree = new function XmlTree()
 		});
 	}
 
-	function onToggleNamespacesClick()
-	{
-		var xmltree = $(this).closest(".xmltree");
-		var state = $(this).closest(".toggler").find(".state");
+	function onToolbarSwitchClick() {
+		var el = $(this);
+		var className = el.attr("class")
+			.replace(/\b(?:switch|on|off)\b/g, "")
+			.replace(/^\s*(.*?)\s*$/, "$1");
 
-		if (xmltree.hasClass("namespaces"))
-		{
-			xmltree.removeClass("namespaces");
-			state.text("off");
+		var xmlroot = el.closest(".xmltree").find(".xmlroot");
+		if (xmlroot.hasClass(className)) {
+			xmlroot.removeClass(className);
+			el.removeClass("on").addClass("off");
 		}
-		else
-		{
-			xmltree.addClass("namespaces");
-			state.text("on");
-		}
-	}
-
-	function onToggleWordWrapClick()
-	{
-		var xmltree = $(this).closest(".xmltree");
-		var state = $(this).closest(".toggler").find(".state");
-
-		if (xmltree.hasClass("wrap"))
-		{
-			xmltree.removeClass("wrap");
-			state.text("off");
-		}
-		else
-		{
-			xmltree.addClass("wrap");
-			state.text("on");
+		else {
+			xmlroot.addClass(className);
+			el.removeClass("off").addClass("on");
 		}
 	}
 
-	function expandElement(element)
-	{
+	function expandElement(element) {
 		element.find("> .children, > pre, > .text").show();
 		element.find("> .switch").text("-");
 	}
 
-	function collapseElement(element)
-	{
+	function collapseElement(element) {
 		element.find("> .children, > pre, > .text").hide();
 		element.find("> .switch").text("+");
 	}

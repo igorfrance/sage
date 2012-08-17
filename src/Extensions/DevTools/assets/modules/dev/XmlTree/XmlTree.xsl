@@ -13,17 +13,55 @@
 		<xsl:variable name="showNamespaces" select="count($config/mod:namespaces[text()='true']) = 1"/>
 		<xsl:variable name="showToolbar" select="count($config/mod:toolbar[text()='true']) = 1"/>
 		<xsl:variable name="showHighlighted" select="count($config/mod:highlight/*) != 0"/>
+		<xsl:variable name="phrases" select="$config/mod:text/mod:phrase"/>
 		<div class="xmltree">
-			<xsl:attribute name="class">
-				<xsl:text>xmltree</xsl:text>
-				<xsl:if test="$showWrapped"> wrap</xsl:if>
-				<xsl:if test="$showNamespaces"> namespaces</xsl:if>
-				<xsl:if test="$showHighlighted"> highlight</xsl:if>
-			</xsl:attribute>
 			<xsl:if test="$showToolbar">
-				<xsl:apply-templates select="." mode="xmltree-toolbar"/>
+				<div class="toolbar">
+					<span class="group commands">
+						<span class="command toggleall" title="{$phrases[@id='ToggleAll']}">
+							<a href="javascript:;">
+								<span><xsl:value-of select="$phrases[@id='ToggleAll']"/></span>
+							</a>
+						</span>
+					</span>
+					<span class="group switches">
+						<span class="switch wrap {basic:iif($showWrapped, 'on', 'off')}" title="{$phrases[@id='ToggleWrapping']}">
+							<a href="javascript:;">
+								<span><xsl:value-of select="$phrases[@id='ToggleWrapping']"/></span>
+							</a>
+							<span class="state">&#160;
+								<span class="on"></span>
+								<span class="off"></span>
+							</span>
+						</span>
+						<span class="switch namespaces {basic:iif($showNamespaces, 'on', 'off')}" title="{$phrases[@id='ToggleNamespaces']}">
+							<a href="javascript:;">
+								<span><xsl:value-of select="$phrases[@id='ToggleNamespaces']"/></span>
+							</a>
+							<span class="state">&#160;
+								<span class="on"></span>
+								<span class="off"></span>
+							</span>
+						</span>
+						<span class="switch highlight {basic:iif($showHighlighted, 'on', 'off')}" title="{$phrases[@id='ToggleHighlighting']}">
+							<a href="javascript:;">
+								<span><xsl:value-of select="$phrases[@id='ToggleHighlighting']"/></span>
+							</a>
+							<span class="state">&#160;
+								<span class="on"></span>
+								<span class="off"></span>
+							</span>
+						</span>
+					</span>
+				</div>
 			</xsl:if>
 			<div class="xmlroot">
+				<xsl:attribute name="class">
+					<xsl:text>xmlroot</xsl:text>
+					<xsl:if test="$showWrapped"> wrap</xsl:if>
+					<xsl:if test="$showNamespaces"> namespaces</xsl:if>
+					<xsl:if test="$showHighlighted"> highlight</xsl:if>
+				</xsl:attribute>
 				<!--
 					some kind of character that won't be stripped by the xmlwriter;
 					this is needed to in order to force
@@ -33,24 +71,6 @@
 					<xsl:with-param name="level" select="1" />
 				</xsl:apply-templates>
 			</div>
-		</div>
-	</xsl:template>
-
-	<xsl:template match="mod:XmlTree" mode="xmltree-toolbar">
-		<div class="toolbar">
-			<span class="group left">
-				<span class="toggler">
-					<a href="javascript:;" class="wrap">Wrap: </a>
-					<span class="state">on</span>
-				</span>
-				<span class="toggler">
-					<a href="javascript:;" class="namespaces">Namespaces: </a>
-					<span class="state">off</span>
-				</span>
-			</span>
-			<span class="group right">
-				<a href="javascript:;" class="toggleall">toggle all</a>
-			</span>
 		</div>
 	</xsl:template>
 

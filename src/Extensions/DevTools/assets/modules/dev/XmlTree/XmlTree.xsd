@@ -32,6 +32,19 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="text">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="phrase">
+											<xs:complexType mixed="true">
+												<xs:choice>
+													<xs:any namespace="##other"/>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
 						</xs:choice>
 					</xs:complexType>
 				</xs:element>
