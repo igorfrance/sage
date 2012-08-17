@@ -66,6 +66,8 @@ namespace Sage
 		/// <summary>
 		/// Gets or sets the cache item at the specified key.
 		/// </summary>
+		/// <param name="key">The key of the item to get.</param>
+		/// <returns>The item with the corresponding key.</returns>
 		public object this[string key]
 		{
 			get

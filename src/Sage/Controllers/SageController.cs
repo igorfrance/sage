@@ -348,7 +348,7 @@ namespace Sage.Controllers
 		/// </returns>
 		public virtual DateTime? GetLastModificationDate(string viewName)
 		{
-			ViewInfo info = GetViewInfo(viewName);
+			ViewInfo info = this.GetViewInfo(viewName);
 			return info.LastModified;
 		}
 

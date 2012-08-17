@@ -21,6 +21,7 @@ namespace Sage
 	using System.Linq;
 	using System.Web.Caching;
 
+	using log4net;
 	using Sage.ResourceManagement;
 
 	/// <summary>
@@ -30,6 +31,7 @@ namespace Sage
 	public class LastModifiedCache
 	{
 		private const string CacheKeyName = "DATE_{0}";
+		private static readonly ILog log = LogManager.GetLogger(typeof(LastModifiedCache).FullName);
 		private readonly SageContext context;
 
 		/// <summary>
@@ -80,7 +82,17 @@ namespace Sage
 
 			string itemKey = string.Format(CacheKeyName, resourcePath);
 			IEnumerable<string> files = dependencies.Where(d => UrlResolver.GetScheme(d) == "file");
-			context.Cache.Insert(itemKey, lastModificationDate, new CacheDependency(files.ToArray()));
+			this.context.Cache.Insert(itemKey, lastModificationDate, new CacheDependency(files.ToArray()), Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, OnCacheItemExpired);
+		}
+
+		private void OnCacheItemExpired(string key, CacheItemUpdateReason reason, out object expensiveObject, out CacheDependency dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)
+		{
+			log.DebugFormat("Cache item '{0}' expired, reason: {1}.", key, reason);
+
+			expensiveObject = null;
+			dependency = null;
+			absoluteExpiration = Cache.NoAbsoluteExpiration;
+			slidingExpiration = Cache.NoSlidingExpiration;
 		}
 	}
 }

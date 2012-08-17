@@ -216,6 +216,10 @@ namespace Sage.Controllers
 					response.StatusCode = (int) HttpStatusCode.NotModified;
 					response.StatusDescription = "Not Modified";
 					response.AddHeader("Content-Length", "0");
+
+					if (context.IsDebuggingEnabled)
+						response.AddHeader("X-Processed-By", this.GetType().FullName);
+
 					filterContext.Result = new EmptyResult();
 				}
 			}
@@ -239,6 +243,9 @@ namespace Sage.Controllers
 				response.Cache.SetLastModified(lastModified.Value);
 			else
 				response.Cache.SetLastModified(DateTime.Now);
+
+			if (context.IsDebuggingEnabled)
+				response.AddHeader("X-Processed-By", this.GetType().FullName);
 		}
 
 		private static DateTime? GetLastModified(ActionExecutingContext filterContext)
