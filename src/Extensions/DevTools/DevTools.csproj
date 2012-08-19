@@ -129,6 +129,12 @@
     <Content Include="assets\modules\dev\ViewInspector\ViewInspector.css" />
     <Content Include="assets\modules\dev\ViewInspector\ViewInspector.js" />
     <Content Include="assets\modules\dev\ViewInspector\ViewInspector.xsl" />
+    <Content Include="assets\modules\dev\XmlTree\images\collapseall.png" />
+    <Content Include="assets\modules\dev\XmlTree\images\false.png" />
+    <Content Include="assets\modules\dev\XmlTree\images\highlighting.png" />
+    <Content Include="assets\modules\dev\XmlTree\images\namespaces.png" />
+    <Content Include="assets\modules\dev\XmlTree\images\true.png" />
+    <Content Include="assets\modules\dev\XmlTree\images\wrapping.png" />
     <Content Include="assets\modules\dev\XmlTree\XmlTree.css" />
     <Content Include="assets\modules\dev\XmlTree\XmlTree.js" />
     <Content Include="assets\modules\dev\XmlTree\XmlTree.xml" />

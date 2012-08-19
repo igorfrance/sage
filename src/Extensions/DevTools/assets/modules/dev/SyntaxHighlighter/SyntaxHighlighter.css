@@ -1,16 +1,16 @@
 ﻿.syntaxbox
 	{ font-family: Consolas, Courier New, Courier; font-size: 9pt; color: #000;
-	  position: relative; background: #ebebeb; overflow: auto; }
+	  position: relative; overflow: auto; }
 
 .syntax
-	{ position: relative; border: 1px solid #DDDDE6; }
+	{ position: relative; }
 .syntax .linebg
-	{ position: absolute; z-index: 0; top: 0; left: 0; bottom: 0; width: 100px; background: #586575;
+	{ position: absolute; z-index: 0; top: 0; left: 0; bottom: 0; width: 100px; background: #E6E6E6;
 	  border-right: 2px solid #abb5c0; }
 .syntax ol
 	{ position: relative; z-index: 1; margin: 0; color: #000; }
 .syntax ol > li
-	{ color: #D1D7DC; }
+	{ color: #bbb; }
 .syntax ol > li *
 	{ color: #000; }
 .syntax ol li
