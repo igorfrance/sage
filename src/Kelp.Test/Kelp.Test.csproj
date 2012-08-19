@@ -113,6 +113,7 @@
     <Compile Include="ResourceHandling\ImageFileTest.cs" />
     <Compile Include="ResourceHandling\ScriptFileTest.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="UtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config">

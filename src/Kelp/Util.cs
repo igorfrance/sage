@@ -20,6 +20,7 @@ namespace Kelp
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text;
 	using System.Text.RegularExpressions;
 
 	/// <summary>
@@ -27,6 +28,11 @@ namespace Kelp
 	/// </summary>
 	public static class Util
 	{
+		private const char Quotation = '"';
+		private const char Apostrophe = '\'';
+		private const char Escape = '\\';
+		private const string Space = "\t\r\n\f ";
+
 		/// <summary>
 		/// Gets the physical path of the currently executing assembly.
 		/// </summary>
@@ -100,6 +106,83 @@ namespace Kelp
 				return value;
 
 			return defaultValue;
+		}
+
+		/// <summary>
+		/// Splits the specified <paramref name="argumentString"/>using the specified <paramref name="separator"/>,
+		/// but taking into account possible quotation marks around individual arguments.
+		/// </summary>
+		/// <param name="separator">The separator string.</param>
+		/// <param name="argumentString">The argument string to process.</param>
+		/// <returns>An array or individual arguments, parsed from the specified <paramref name="argumentString"/>.</returns>
+		public static IEnumerable<string> SplitArguments(char separator, string argumentString)
+		{
+			List<string> result = new List<string>();
+			StringBuilder argument = new StringBuilder();
+
+			const char Zero = (char) 0;
+			char quote = Zero;
+			bool endQuote = false;
+
+			for (int i = 0; i <= argumentString.Length; i++)
+			{
+				char prev = i == 0 ? Zero : argumentString[i - 1];
+				char curr = i == argumentString.Length ? Zero : argumentString[i];
+				char next = i >= argumentString.Length - 1 ? Zero : argumentString[i + 1];
+
+				// skip over spaces when we are not in a string
+				if (Space.IndexOf(curr) != -1 && quote == Zero)
+					continue;
+
+				// we reached the end, or a separator not in a string; save the argument
+				if (curr == Zero || (curr == separator && (endQuote || quote == Zero)))
+				{
+					string value = argument.ToString();
+					if (endQuote)
+						value = value.Substring(1, value.Length - 2);
+
+					result.Add(value);
+					argument = new StringBuilder();
+					quote = Zero;
+					endQuote = false;
+
+					if (i == argumentString.Length)
+						break;
+				}
+				else
+				{
+					// starting a new argument
+					if (argument.Length == 0)
+					{
+						// beginning quotation
+						if (curr == Quotation || curr == Apostrophe)
+							quote = curr;
+						else
+						{
+							quote = Zero;
+							endQuote = false;
+						}
+					}
+					else if (curr == quote && prev != Escape)
+					{
+						endQuote = true;
+					}
+
+					bool isEscape = false;
+					if (curr == Escape)
+					{
+						isEscape = true;
+						int j = i;
+						while (j > 0 && argumentString[--j] == Escape)
+							isEscape = !isEscape;
+					}
+
+					if (!(isEscape && (next == Quotation || next == Apostrophe)))
+						argument.Append(curr);
+				}
+			}
+
+			return result;
 		}
 	}
 }
