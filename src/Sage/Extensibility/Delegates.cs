@@ -32,23 +32,18 @@ namespace Sage.Extensibility
 	/// <summary>
 	/// Defines the signature of a method that can be used to handle a single XML node during copying of an XML document.
 	/// </summary>
-	/// <param name="node">The node being processed.</param>
 	/// <param name="context">The context under which the method is being executed.</param>
+	/// <param name="node">The node being processed.</param>
 	/// <returns>The XML node that should be copied in the result document, or a <c>null</c> if the node should be skipped.</returns>
-	/// <seealso cref="ResourceManager.ApplyHandlers"/>
-	/// <seealso cref="ResourceManager.RegisterNodeHandler"/>
-	public delegate XmlNode NodeHandler(XmlNode node, SageContext context);
+	public delegate XmlNode NodeHandler(SageContext context, XmlNode node);
 
 	/// <summary>
-	/// Defines the signature of a method that can be used to substitute placeholders in element or attribute text during 
-	/// copying of an XML document.
+	/// Defines the signature of a method that can be used to generate variable values.
 	/// </summary>
-	/// <param name="variableName">The name of the variable that was matched.</param>
 	/// <param name="context">The context under which the method is being executed.</param>
-	/// <returns>The text that should be used instead of the original text, or a <c>null</c> if the node should be skipped.</returns>
-	/// <seealso cref="ResourceManager.ApplyHandlers"/>
-	/// <seealso cref="ResourceManager.RegisterTextHandler"/>
-	public delegate string TextHandler(string variableName, SageContext context);
+	/// <param name="variableName">The name of the variable.</param>
+	/// <returns>The variable value.</returns>
+	public delegate string TextVariable(SageContext context, string variableName);
 
 	/// <summary>
 	/// Defines the signature of a method that can be used to further filter and/or modify the XML document that is 
@@ -65,9 +60,9 @@ namespace Sage.Extensibility
 	/// <summary>
 	/// Defines the signature of a method that can be used to process a function-like expression in text.
 	/// </summary>
-	/// <param name="arguments">The arguments of the function; <code>function(arguments)</code>.</param>
 	/// <param name="context">The <see cref="SageContext"/> in which the method is executing.</param>
+	/// <param name="arguments">The array of function arguments.</param>
 	/// <returns>The result of evaluating this function.</returns>
 	/// <seealso cref="TextFunctionAttribute"/>
-	public delegate string TextFunction(string arguments, SageContext context);
+	public delegate string TextFunction(SageContext context, params string[] arguments);
 }

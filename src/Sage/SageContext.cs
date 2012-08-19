@@ -21,7 +21,6 @@ namespace Sage
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
-	using System.Linq;
 	using System.Reflection;
 	using System.Text.RegularExpressions;
 	using System.Web;
@@ -58,45 +57,15 @@ namespace Sage
 		/// </summary>
 		public const string CategoryVariableName = "category";
 
-		private const string FunctionPlaceholder = "<<Funct{0}>>";
 		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'[\w\.:$\-]*)=(?'AttribValue'.*)$", RegexOptions.Compiled);
-		private static readonly Regex functionExpression = new Regex(@"(?'FunctionName'[:\w\.$]+)\((?'FunctionArguments'[^\)]+)\)", RegexOptions.Compiled);
-		private static readonly Regex functionPlaceholderExpression = new Regex(@"<<Funct(?'FunctionIndex'\d+)>>", RegexOptions.Compiled);
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageContext).FullName);
-		private static readonly Dictionary<string, TextFunction> functionHandlers;
 		private static readonly Dictionary<string, CategoryConfiguration> categoryConfigurations =
 			new Dictionary<string, CategoryConfiguration>();
 
 		private readonly Func<string, string> pathMapper;
-
-		static SageContext()
-		{
-			const BindingFlags BindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-			//// Discover and store all text functions
-			List<string> names = new List<string>();
-			functionHandlers = new Dictionary<string, TextFunction>();
-			foreach (Assembly a in Sage.Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-							where t.IsClass && !t.IsAbstract
-							select t;
-
-				foreach (Type type in types)
-				{
-					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
-					{
-						foreach (TextFunctionAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextFunctionAttribute), false))
-						{
-							TextFunction del = (TextFunction) Delegate.CreateDelegate(typeof(TextFunction), methodInfo);
-							functionHandlers.Add(attrib.Name, del);
-							names.Add(attrib.Name);
-						}
-					}
-				}
-			}
-		}
+		private readonly TextEvaluator textEvaluator;
+		private readonly NodeEvaluator nodeEvaluator;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
@@ -215,6 +184,8 @@ namespace Sage
 			Contract.Requires<ArgumentNullException>(pathMapper != null);
 
 			this.pathMapper = pathMapper;
+			this.textEvaluator = new TextEvaluator(this);
+			this.nodeEvaluator = new NodeEvaluator(this);
 
 			//// In certain cases, an instance of Sage context is needed while the request
 			//// may not be available (when creating it from Application_Start event for instance)
@@ -626,7 +597,6 @@ namespace Sage
 				}
 			}
 
-
 			XmlElement dateNode = resultElement.AppendElement("sage:dateTime", XmlNamespaces.SageNamespace);
 			dateNode.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
 			dateNode.SetAttribute("time", DateTime.Now.ToString("HH:mm:ss"));
@@ -643,57 +613,32 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Looks for function expressions - <code>function(arguments)</code> - in the specified <paramref name="value"/>
-		/// and applies any matching function handlers on them.
+		/// Replaces any function or variable expression with the result of invoking it's corresponding 
+		/// handler function.
 		/// </summary>
-		/// <param name="value">The value to process.</param>
-		/// <returns>The specified <paramref name="value"/> with any matching function expressions replaces by the 
-		/// result of invoking their matching function.</returns>
-		public string ProcessFunctions(string value)
+		/// <param name="text">The text to process.</param>
+		/// <returns>The processed version of the text.</returns>
+		public string ProcessText(string text)
 		{
-			var expressionsFound = new List<string>();
+			return this.textEvaluator.Process(text);
+		}
 
-			//// First copy all expressions into a temp list
-			while (functionExpression.Match(value).Success)
-			{
-				value = functionExpression.Replace(value, delegate(Match match)
-				{
-					expressionsFound.Add(match.Groups[0].Value);
-					return string.Format(FunctionPlaceholder, expressionsFound.Count - 1);
-				});
-			}
-
-			//// Now substitute all expression with either the function result (if a matching function is found)
-			//// or by the original text.
-			while (functionPlaceholderExpression.Match(value).Success)
-			{
-				value = functionPlaceholderExpression.Replace(value, delegate(Match match)
-				{
-					int functionIndex = int.Parse(match.Groups["FunctionIndex"].Value);
-					string expressionText = expressionsFound[functionIndex];
-					return functionExpression.Replace(expressionText, delegate(Match inner)
-					{
-						string functionName = inner.Groups["FunctionName"].Value;
-						string functionArguments = inner.Groups["FunctionArguments"].Value;
-						if (functionHandlers.ContainsKey(functionName))
-						{
-							TextFunction function = functionHandlers[functionName];
-							return function.Invoke(functionArguments, this);
-						}
-
-						return expressionText;
-					});
-				});
-			}
-
-			return value;
+		/// <summary>
+		/// Recursively processes all nodes in the specified <paramref name="node"/>, applying any registered text and node
+		/// handlers on the way, and returns the result.
+		/// </summary>
+		/// <param name="node">The node to process.</param>
+		/// <returns>The processed version of the node.</returns>
+		public XmlNode ProcessNode(XmlNode node)
+		{
+			return this.nodeEvaluator.Process(node);
 		}
 
 		/// <summary>
 		/// Selects the case that matches the condition specified with the <paramref name="switchNode"/> and returns it's contents.
 		/// </summary>
-		/// <param name="switchNode">The node that specifies the condition</param>
 		/// <param name="context">The current context with which the method is being invoked.</param>
+		/// <param name="switchNode">The node that specifies the condition</param>
 		/// <returns>An <see cref="XmlDocumentFragment"/> populated with the content of the selected case node,
 		/// or the original <paramref name="switchNode"/> is the condition has been improperly specified.</returns>
 		/// <example>
@@ -704,7 +649,7 @@ namespace Sage
 		/// &lt;/context:switch&gt;
 		/// </example>
 		[NodeHandler(XmlNodeType.Element, "switch", XmlNamespaces.ContextualizationNamespace)]
-		internal static XmlNode ProcessContextSwitchNode(XmlNode switchNode, SageContext context)
+		internal static XmlNode ProcessContextSwitchNode(SageContext context, XmlNode switchNode)
 		{
 			if (switchNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
 				return switchNode;
@@ -743,7 +688,7 @@ namespace Sage
 				if (testValue == propValue)
 				{
 					foreach (XmlNode node in caseNode.SelectNodes("node()"))
-						result.AppendChild(ResourceManager.ApplyHandlers(node, context));
+						result.AppendChild(context.ProcessNode(node));
 
 					caseFound = true;
 					break;
@@ -758,7 +703,7 @@ namespace Sage
 				if (defaultNode != null)
 				{
 					foreach (XmlNode node in defaultNode.SelectNodes("node()"))
-						result.AppendChild(ResourceManager.ApplyHandlers(node, context));
+						result.AppendChild(context.ProcessNode(node));
 				}
 			}
 
@@ -766,88 +711,87 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Inserts a <paramref name="context"/> property value specified with <paramref name="valueElement"/>.
+		/// Inserts a <paramref name="context"/> property value specified with <paramref name="node"/>.
 		/// </summary>
-		/// <param name="valueElement">The element that represents the property</param>
 		/// <param name="context">The current context with which the method is being invoked.</param>
-		/// <returns>The <paramref name="context"/> property value specified with <paramref name="valueElement"/></returns>
+		/// <param name="node">The element that represents the property</param>
+		/// <returns>The <paramref name="context"/> property value specified with <paramref name="node"/></returns>
 		/// <example>
 		/// &lt;context:value property="QueryString" key="page"/&gt;
 		/// </example>
 		[NodeHandler(XmlNodeType.Element, "value", XmlNamespaces.ContextualizationNamespace)]
-		internal static XmlNode ProcessContextValueNode(XmlNode valueElement, SageContext context)
+		internal static XmlNode ProcessContextValueNode(SageContext context, XmlNode node)
 		{
-			if (valueElement.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return valueElement;
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
-			XmlElement valueElem = (XmlElement) valueElement;
+			XmlElement valueElem = (XmlElement) node;
 
 			string propName = valueElem.GetAttribute("property");
 			string propKey = valueElem.GetAttribute("key");
-			string propValue = GetContextProperty(context, propName, propKey);
+			string propValue = SageContext.GetContextProperty(context, propName, propKey);
 
 			if (propValue != null)
-				return valueElement.OwnerDocument.CreateTextNode(propValue);
+				return node.OwnerDocument.CreateTextNode(propValue);
 
-			return valueElement;
+			return node;
 		}
 
 		[NodeHandler(XmlNodeType.Element, "expression", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageValueNode(XmlNode valueElement, SageContext context)
+		internal static XmlNode ProcessSageValueNode(SageContext context, XmlNode node)
 		{
-			if (valueElement.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return valueElement;
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
-			string expression = ResourceManager.ApplyTextHandlers(valueElement.InnerText, context);
-			string expressionValue = context.ProcessFunctions(expression);
-			return valueElement.OwnerDocument.CreateTextNode(expressionValue);
+			string expressionValue = context.ProcessText(node.InnerText);
+			return node.OwnerDocument.CreateTextNode(expressionValue);
 		}
 
 		[NodeHandler(XmlNodeType.Element, "version", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageVersionNode(XmlNode versionNode, SageContext context)
+		internal static XmlNode ProcessSageVersionNode(SageContext context, XmlNode node)
 		{
-			if (versionNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return versionNode;
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
 			string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			return versionNode.OwnerDocument.CreateTextNode(version);
+			return node.OwnerDocument.CreateTextNode(version);
 		}
 
 		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageAttribute(XmlNode attribNode, SageContext context)
+		internal static XmlNode ProcessSageAttribute(SageContext context, XmlNode node)
 		{
-			Contract.Requires<ArgumentNullException>(attribNode != null);
-			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return attribNode;
+			Contract.Requires<ArgumentNullException>(node != null);
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
 			Match match;
 
-			if ((match = attribSpec.Match(attribNode.InnerText)).Success)
+			if ((match = attribSpec.Match(node.InnerText)).Success)
 			{
 				string attribName = match.Groups["AttribName"].Value;
 				string attribValue = match.Groups["AttribValue"].Value;
 
-				XmlAttribute result = attribNode.OwnerDocument.CreateAttribute(attribName);
-				result.InnerText = context.ProcessFunctions(attribValue);
+				XmlAttribute result = node.OwnerDocument.CreateAttribute(attribName);
+				result.InnerText = context.ProcessText(attribValue);
 
 				return result;
 			}
 
-			return attribNode;
+			return node;
 		}
 
 		/// <summary>
 		/// Insers a <paramref name="context"/> property value specified with <paramref name="variable"/>. 
 		/// </summary>
+		/// <param name="context">The current context with which the method is being invoked.</param>
 		/// <param name="variable">The name of the property to emit; supported values are apppath, assetpath, 
 		/// sharedassetpath, modulepath, locale, category, basehref.</param>
-		/// <param name="context">The current context with which the method is being invoked.</param>
 		/// <returns>The <paramref name="context"/> property value specified with <paramref name="variable"/></returns>
 		/// <example>
 		/// {basehref}
 		/// </example>
-		[TextHandler("apppath", "assetpath", "sharedassetpath", "modulepath", "locale", "category", "basehref")]
-		internal static string ResolvePathVariable(string variable, SageContext context)
+		[TextVariable("apppath", "assetpath", "sharedassetpath", "modulepath", "locale", "category", "basehref")]
+		internal static string ResolvePathVariable(SageContext context, string variable)
 		{
 			switch (variable.ToLower())
 			{

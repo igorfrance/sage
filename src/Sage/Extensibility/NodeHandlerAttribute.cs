@@ -22,8 +22,8 @@ namespace Sage.Extensibility
 	using Sage.ResourceManagement;
 
 	/// <summary>
-	/// Indicates that the method this attribute decorates should be used as a node handler for 
-	/// <see cref="ResourceManager.ApplyHandlers"/>.
+	/// Indicates that the method this attribute decorates should be used as a node handler for XML nodes with
+	/// specified type, name and namespace.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class NodeHandlerAttribute : Attribute

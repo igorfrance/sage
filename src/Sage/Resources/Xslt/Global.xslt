@@ -133,9 +133,15 @@
 		<link type="text/css" rel="stylesheet" href="{@path}" />
 	</xsl:template>
 
-	<xsl:template match="a/@href[starts-with(., '#')]">
+	<xsl:template match="xhtml:a/@href[starts-with(., '#')]">
 		<xsl:attribute name="{name()}">
 			<xsl:value-of select="concat($request/@url, .)"/>
+		</xsl:attribute>
+	</xsl:template>
+
+	<xsl:template match="xhtml:a/@href[starts-with(., '~/')] | xhtml:img/@src[starts-with(., '~/')]">
+		<xsl:attribute name="{name()}">
+			<xsl:value-of select="concat($request/@basehref, substring(., 3))"/>
 		</xsl:attribute>
 	</xsl:template>
 

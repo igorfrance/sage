@@ -84,6 +84,8 @@
     <Compile Include="Configuration\IpAddressTests.cs" />
     <Compile Include="Configuration\ProjectConfigurationTests.cs" />
     <Compile Include="ControllerFactoryExtensions.cs" />
+    <Compile Include="Extensibility\NodeEvaluatorTests.cs" />
+    <Compile Include="Extensibility\TextEvaluatorTests.cs" />
     <Compile Include="MockController.cs" />
     <Compile Include="Mother.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="ResourceManagement\ResourceManagerTest.cs" />
     <Compile Include="ResourceManagement\ResourceNameTest.cs" />
     <Compile Include="ResourceManagement\XmlResourceTest.cs" />
+    <Compile Include="SageContextTests.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="XsltRegistryTest.cs" />
   </ItemGroup>

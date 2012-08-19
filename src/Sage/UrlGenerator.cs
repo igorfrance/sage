@@ -29,7 +29,6 @@ namespace Sage
 	using log4net;
 	using Sage.Configuration;
 	using Sage.Extensibility;
-	using Sage.ResourceManagement;
 
 	/// <summary>
 	/// Implements a class that handles all link generation.
@@ -310,13 +309,13 @@ namespace Sage
 		}
 
 		[NodeHandler(XmlNodeType.Element, "link", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageLinkElement(XmlNode linkNode, SageContext context)
+		internal static XmlNode ProcessSageLinkElement(SageContext context, XmlNode node)
 		{
-			Contract.Requires<ArgumentNullException>(linkNode != null);
-			if (linkNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return linkNode;
+			Contract.Requires<ArgumentNullException>(node != null);
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
-			XmlElement linkElem = (XmlElement) linkNode;
+			XmlElement linkElem = (XmlElement) node;
 			string linkHref = context.Url.GetUrl(linkElem);
 
 			if (!string.IsNullOrEmpty(linkHref))
@@ -328,40 +327,37 @@ namespace Sage
 		}
 
 		[NodeHandler(XmlNodeType.Element, "url", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageUrlElement(XmlNode linkNode, SageContext context)
+		internal static XmlNode ProcessSageUrlElement(SageContext context, XmlNode node)
 		{
-			Contract.Requires<ArgumentNullException>(linkNode != null);
-			if (linkNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return linkNode;
+			Contract.Requires<ArgumentNullException>(node != null);
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
-			string linkHref = context.Url.GetUrl((XmlElement) linkNode);
+			string linkHref = context.Url.GetUrl((XmlElement) node);
 
 			if (!string.IsNullOrEmpty(linkHref))
 			{
-				if (linkNode.NodeType == XmlNodeType.Element)
-					return linkNode.OwnerDocument.CreateTextNode(linkHref);
+				if (node.NodeType == XmlNodeType.Element)
+					return node.OwnerDocument.CreateTextNode(linkHref);
 			}
 
-			return linkNode;
+			return node;
 		}
 
 		[NodeHandler(XmlNodeType.Attribute, "href", "")]
-		internal static XmlNode ProcessHrefAttribute(XmlNode attribNode, SageContext context)
+		internal static XmlNode ProcessHrefAttribute(SageContext context, XmlNode node)
 		{
-			Contract.Requires<ArgumentNullException>(attribNode != null);
-			if (attribNode.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return attribNode;
+			Contract.Requires<ArgumentNullException>(node != null);
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
 
-			string attribValue = context.ProcessFunctions(attribNode.InnerText);
-			attribNode.InnerText = ResourceManager.ApplyTextHandlers(attribValue, context);
-			return attribNode;
+			node.InnerText = context.ProcessText(node.InnerText);
+			return node;
 		}
 
 		[TextFunction(Name = "url:link")]
-		internal static string GetLinkFunction(string argumentString, SageContext context)
+		internal static string GetLinkFunction(SageContext context, params string[] parameters)
 		{
-			string[] parameters = argumentString.Split(',');
-
 			string linkName = parameters[0].Trim();
 			QueryString paramQuery = new QueryString();
 			QueryString hashQuery = new QueryString();
@@ -389,7 +385,7 @@ namespace Sage
 		}
 
 		[TextFunction(Name = "url:self")]
-		internal static string GetSelfFunction(string argumentString, SageContext context)
+		internal static string GetSelfFunction(SageContext context, params string[] arguments)
 		{
 			string currentUrl = context.Url.RawUrl;
 			QueryString paramQuery = new QueryString();
@@ -401,11 +397,8 @@ namespace Sage
 				currentUrl = currentUrl.Substring(0, currentUrl.IndexOf("?"));
 			}
 
-			string[] arguments = argumentString.Split(',');
-			foreach (string t in arguments)
+			foreach (string argument in arguments)
 			{
-				string argument = t.Trim();
-
 				QueryString tempQuery;
 				if (argument.IndexOf("?") == 0)
 				{

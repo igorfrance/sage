@@ -303,7 +303,7 @@ namespace Sage.Modules
 
 		[NodeHandler(XmlNodeType.Element, "head", XmlNamespaces.XHtmlNamespace)]
 		[NodeHandler(XmlNodeType.Element, "body", XmlNamespaces.XHtmlNamespace)]
-		internal static XmlNode ProcessHtmlElement(XmlNode htmlNode, SageContext context)
+		internal static XmlNode ProcessHtmlElement(SageContext context, XmlNode htmlNode)
 		{
 			Contract.Requires<ArgumentNullException>(htmlNode != null);
 
@@ -315,7 +315,7 @@ namespace Sage.Modules
 			IEnumerable<ModuleConfiguration> autoModules =
 				context.ProjectConfiguration.Modules.Values.Where(m => m.AutoLocation == location);
 
-			XmlNode resultNode = ResourceManager.ApplyHandlers(htmlNode, context);
+			XmlNode resultNode = context.ProcessNode(htmlNode);
 			foreach (ModuleConfiguration module in autoModules)
 				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
 

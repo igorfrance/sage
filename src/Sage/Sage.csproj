@@ -91,6 +91,8 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\EnvironmentConfiguration.cs" />
+    <Compile Include="Extensibility\NodeEvaluator.cs" />
+    <Compile Include="Extensibility\TextEvaluator.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="CacheWrapper.cs" />
     <Compile Include="Configuration\CategoryConfiguration.cs" />
@@ -113,7 +115,7 @@
     <Compile Include="Extensibility\ExtensionInfo.cs" />
     <Compile Include="Extensibility\ExtensionManager.cs" />
     <Compile Include="Extensibility\TextFunctionAttribute.cs" />
-    <Compile Include="Extensibility\TextHandlerAttributes.cs" />
+    <Compile Include="Extensibility\TextVariableAttribute.cs" />
     <Compile Include="Modules\ModuleConfiguration.cs" />
     <Compile Include="Configuration\ProjectConfiguration.cs" />
     <Compile Include="Configuration\RouteInfo.cs" />

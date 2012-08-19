@@ -39,45 +39,9 @@ namespace Sage.ResourceManagement
 	public class ResourceManager
 	{
 		private const string MissingPhrasePlaceholder = "{{{0}}}";
-		private const BindingFlags AttributeBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-		private static readonly Dictionary<string, NodeHandler> nodeHandlerRegistry = new Dictionary<string, NodeHandler>();
-		private static readonly Dictionary<string, TextHandler> textHandlerRegistry = new Dictionary<string, TextHandler>();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(ResourceManager).FullName);
-		private static Regex textReplaceExpression;
 		private readonly SageContext context;
-
-		static ResourceManager()
-		{
-			foreach (Assembly a in Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-							where t.IsClass && !t.IsAbstract
-							select t;
-
-				foreach (Type type in types)
-				{
-					foreach (MethodInfo methodInfo in type.GetMethods(AttributeBindingFlags))
-					{
-						foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
-						{
-							NodeHandler del = (NodeHandler) Delegate.CreateDelegate(typeof(NodeHandler), methodInfo);
-							RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, del);
-						}
-
-						foreach (TextHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextHandlerAttribute), false))
-						{
-							TextHandler del = (TextHandler) Delegate.CreateDelegate(typeof(TextHandler), methodInfo);
-							foreach (string variable in attrib.Variables)
-							{
-								RegisterTextHandler(variable, del);
-							}
-						}
-					}
-				}
-			}
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ResourceManager"/> class, using the specified <see cref="SageContext"/>.
@@ -97,66 +61,6 @@ namespace Sage.ResourceManagement
 			{
 				return context;
 			}
-		}
-
-		/// <summary>
-		/// Registers the specified node <paramref name="handler"/>, for the specified <paramref name="nodeType"/>,
-		/// <paramref name="nodeName"/> and <paramref name="nodeNamespace"/>.
-		/// </summary>
-		/// <param name="nodeType">The type of the node for wihch the handler is being registered.</param>
-		/// <param name="nodeName">The name of the node for wihch the handler is being registered.</param>
-		/// <param name="nodeNamespace">The namespace of the node for wihch the handler is being registered.</param>
-		/// <param name="handler">The method that will will handle the node.</param>
-		public static void RegisterNodeHandler(XmlNodeType nodeType, string nodeName, string nodeNamespace, NodeHandler handler)
-		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(nodeName));
-			Contract.Requires<ArgumentNullException>(handler != null);
-
-			string qualifiedName = QualifyName(nodeType, nodeName, nodeNamespace);
-			if (nodeHandlerRegistry.ContainsKey(qualifiedName))
-			{
-				log.WarnFormat("Replacing existing handler '{0}' for element '{1}' with new handler '{2}'",
-					Util.GetMethodSignature(nodeHandlerRegistry[qualifiedName].Method),
-					qualifiedName,
-					Util.GetMethodSignature(handler.Method));
-
-				nodeHandlerRegistry[qualifiedName] = handler;
-			}
-			else
-			{
-				nodeHandlerRegistry.Add(qualifiedName, handler);
-			}
-		}
-
-		/// <summary>
-		/// Registers the text handler.
-		/// </summary>
-		/// <param name="variableName">Name of the variable.</param>
-		/// <param name="handler">The handler.</param>
-		public static void RegisterTextHandler(string variableName, TextHandler handler)
-		{
-			if (string.IsNullOrEmpty(variableName))
-				throw new ArgumentNullException("variableName");
-			if (handler == null)
-				throw new ArgumentNullException("handler");
-
-			variableName = variableName.ToLower();
-			if (textHandlerRegistry.ContainsKey(variableName))
-			{
-				log.WarnFormat("Replacing existing handler '{0}' for variable '{1}' with new handler '{2}'",
-					Util.GetMethodSignature(textHandlerRegistry[variableName].Method),
-					variableName,
-					Util.GetMethodSignature(handler.Method));
-
-				textHandlerRegistry[variableName] = handler;
-			}
-			else
-			{
-				textHandlerRegistry.Add(variableName, handler);
-			}
-
-			textReplaceExpression = new Regex(@"\$?(\{)?{(" + string.Join("|", textHandlerRegistry.Keys.ToArray()) + @")}(\})?",
-				RegexOptions.IgnoreCase);
 		}
 
 		/// <summary>
@@ -247,7 +151,7 @@ namespace Sage.ResourceManagement
 					result = LoadSourceDocument(path, context);
 				}
 
-				result.ReplaceChild(ResourceManager.ApplyHandlers(result.DocumentElement, context), result.DocumentElement);
+				result.ReplaceChild(context.ProcessNode(result), result.DocumentElement);
 			}
 			else
 			{
@@ -344,112 +248,6 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Recursively processes all nodes in the specified <paramref name="node"/>, applying any registered text and node
-		/// handlers on the way, and returns the result.
-		/// </summary>
-		/// <param name="node">The node to process.</param>
-		/// <param name="context">The context to use.</param>
-		/// <returns>A copy of the specified <paramref name="node"/>, with it's child nodes processed.</returns>
-		public static XmlNode ApplyHandlers(XmlNode node, SageContext context)
-		{
-			XmlNode result;
-
-			switch (node.NodeType)
-			{
-				case XmlNodeType.Document:
-					result = ApplyHandlers(((XmlDocument) node).DocumentElement, context);
-					break;
-
-				case XmlNodeType.Element:
-					result = node.OwnerDocument.CreateElement(node.Name, node.NamespaceURI);
-
-					XmlNodeList attributes = node.SelectNodes("@*");
-					XmlNodeList children = node.SelectNodes("node()");
-
-					foreach (XmlAttribute attribute in attributes)
-					{
-						XmlNode processed = GetNodeHandler(attribute)(attribute, context);
-						if (processed != null)
-							result.Attributes.Append((XmlAttribute) processed);
-					}
-
-					foreach (XmlNode child in children)
-					{
-						XmlNode processed = GetNodeHandler(child)(child, context);
-						if (processed != null)
-							result.AppendChild(processed);
-					}
-
-					break;
-
-				case XmlNodeType.Attribute:
-					result = node.CloneNode(true);
-					if (node.SelectSingleNode("ancestor::sage:literal", Sage.XmlNamespaces.Manager) == null)
-					{
-						result.Value = ApplyTextHandlers(result.Value, context);
-						result.Value = context.ProcessFunctions(result.Value);
-					}
-
-					break;
-
-				case XmlNodeType.Text:
-					result = node.CloneNode(true);
-					if (node.SelectSingleNode("ancestor::sage:literal", Sage.XmlNamespaces.Manager) == null)
-					{
-						result.Value = ApplyTextHandlers(result.Value, context);
-					}
-
-					break;
-
-				default:
-					result = node.CloneNode(true);
-					break;
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Applies registerd text handlers on the specified input <paramref name="value"/>.
-		/// </summary>
-		/// <param name="value">The value to process.</param>
-		/// <param name="context">The context to use.</param>
-		/// <returns>A processed version of the specified <paramref name="value"/>.</returns>
-		public static string ApplyTextHandlers(string value, SageContext context)
-		{
-			if (textReplaceExpression != null)
-			{
-				value = textReplaceExpression.Replace(value, delegate(Match m)
-				{
-					bool isEscaped = m.Groups[1].Value == "{";
-					string varName = m.Groups[2].Value.ToLower();
-					if (isEscaped)
-						return string.Concat("{", varName, "}");
-
-					return textHandlerRegistry[varName](varName, context);
-				});
-			}
-
-			return value;
-		}
-
-		/// <summary>
-		/// Gets the node handler for the spefied node.
-		/// </summary>
-		/// <param name="node">The node.</param>
-		/// <returns>A <see cref="NodeHandler"/> for the specified node. If no handler is registered for this node's
-		/// local name and namespace, the default handler is returned; this handler simply continues processing the node 
-		/// and returns its copy.</returns>
-		public static NodeHandler GetNodeHandler(XmlNode node)
-		{
-			string key = ResourceManager.QualifyName(node);
-			if (nodeHandlerRegistry.ContainsKey(key))
-				return nodeHandlerRegistry[key];
-
-			return ResourceManager.ApplyHandlers;
-		}
-
-		/// <summary>
 		/// Creates and returns a new <see cref="CacheableXmlDocument"/>, loaded from the specified <paramref name="path"/>.
 		/// </summary>
 		/// <param name="path">The path.</param>
@@ -502,25 +300,6 @@ namespace Sage.ResourceManagement
 			}
 
 			return phrases[phraseId];
-		}
-
-		private static string QualifyName(XmlNodeType type, string name, string ns)
-		{
-			if (name.IndexOf(":") >= 0)
-				name = name.Substring(name.IndexOf(":") + 1);
-
-			if (string.IsNullOrEmpty(ns))
-				return string.Concat((int) type, "_", name);
-
-			return string.Concat((int) type, "_", ns, ":", name);
-		}
-
-		private static string QualifyName(XmlNode node)
-		{
-			if (string.IsNullOrEmpty(node.NamespaceURI))
-				return string.Concat((int) node.NodeType, "_", node.LocalName);
-
-			return string.Concat((int) node.NodeType, "_", node.NamespaceURI, ":", node.LocalName);
 		}
 
 		private static CacheableXmlDocument LoadGlobalizedDocument(string path, SageContext context)
