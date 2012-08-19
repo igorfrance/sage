@@ -25,8 +25,8 @@
 			</header>
 			<details>
 				<xsl:apply-templates select="." mode="mod:Sidebar_Contents"/>
-				<xsl:apply-templates select="." mode="mod:Sidebar_RelatedSiblings"/>
-				<xsl:apply-templates select="." mode="mod:Sidebar_RelatedChildren"/>
+				<!-- <xsl:apply-templates select="." mode="mod:Sidebar_RelatedSiblings"/> -->
+				<!-- <xsl:apply-templates select="." mode="mod:Sidebar_RelatedChildren"/> -->
 				<xsl:apply-templates select="." mode="mod:Sidebar_PageIndex"/>
 			</details>
 		</section>
@@ -38,18 +38,40 @@
 		<xsl:variable name="currentHref" select="normalize-space($config/mod:current/text())"/>
 		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/sage:data/site:navigation"/>
 		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>
+		<xsl:variable name="siblings" select="$currentLink/parent::node()/parent::node()/xhtml:li/xhtml:a"/>
+		<xsl:variable name="children" select="$currentLink/parent::node()/xhtml:ul/xhtml:li/xhtml:a"/>
 		<xsl:variable name="levels" select="$currentLink/ancestor::x:li"/>
 		<xsl:if test="count($levels) > 1">
 			<section class="contents">
 				<header>Contents</header>
 				<details>
 					<xsl:for-each select="$levels">
-						<div class="level level{position()}{basic:iif(x:a/@href = $currentHref, ' current', '')}">
+						<div class="level level{position()}">
 							<xsl:choose>
-								<xsl:when test="x:a/@href = $currentHref">
-									<span class="name">
-										<xsl:apply-templates select="x:a/text()"/>
-									</span>
+								<xsl:when test="position() = count($levels)">
+									<ul class="siblings">
+										<xsl:for-each select="$siblings">
+											<li>
+												<xsl:choose>
+													<xsl:when test="@href = $currentHref">
+														<span class="name{basic:iif(@href = $currentHref, ' current', '')}"><xsl:apply-templates select="text()"/></span>
+														<xsl:if test="count($children) != 0">
+															<ul class="children">
+																<xsl:for-each select="$children">
+																	<li>
+																		<xsl:apply-templates select="."/>
+																	</li>
+																</xsl:for-each>
+															</ul>
+														</xsl:if>
+													</xsl:when>
+													<xsl:otherwise>
+														<xsl:apply-templates select="."/>
+													</xsl:otherwise>
+												</xsl:choose>
+											</li>
+										</xsl:for-each>
+									</ul>
 								</xsl:when>
 								<xsl:otherwise>
 									<span class="name">
@@ -62,51 +84,6 @@
 				</details>
 			</section>
 		</xsl:if>
-	</xsl:template>
-
-	<xsl:template match="*" mode="mod:Sidebar_PageIndex">
-		<xsl:param name="config" select="mod:config"/>
-		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/sage:data/site:navigation"/>
-		<xsl:variable name="currentHref" select="normalize-space($config/mod:current/text())"/>
-		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>
-
-		<xsl:variable name="headers" select="//xhtml:*[@data-index]"/>
-		<xsl:choose>
-			<xsl:when test="count($headers)">
-				<section class="pageindex">
-					<header>
-						<xsl:apply-templates select="$currentLink/node()"/>
-					</header>
-					<details>
-						<ul>
-							<xsl:for-each select="$headers">
-								<xsl:variable name="headerid">
-									<xsl:apply-templates select="." mode="page-index-generate-id"/>
-								</xsl:variable>
-								<li class="level{basic:isnull(@data-level, 1)}">
-									<a href="{concat($request/sage:address/@url, '#', $headerid)}">
-										<xsl:choose>
-											<xsl:when test="@data-text">
-												<xsl:value-of select="@data-text"/>
-											</xsl:when>
-											<xsl:when test="xhtml:header">
-												<xsl:value-of select="xhtml:header"/>
-											</xsl:when>
-											<xsl:when test="xhtml:*[string:matches(local-name(), 'h\d')]">
-												<xsl:value-of select="xhtml:*[string:matches(local-name(), 'h\d')]"/>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="."/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</a>
-								</li>
-							</xsl:for-each>
-						</ul>
-					</details>
-				</section>
-			</xsl:when>
-		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="*" mode="mod:Sidebar_RelatedSiblings">
@@ -164,6 +141,51 @@
 				</details>
 			</section>
 		</xsl:if>
+	</xsl:template>
+
+	<xsl:template match="*" mode="mod:Sidebar_PageIndex">
+		<xsl:param name="config" select="mod:config"/>
+		<xsl:variable name="navigation" select="ancestor::sage:response/sage:resources/sage:data/site:navigation"/>
+		<xsl:variable name="currentHref" select="normalize-space($config/mod:current/text())"/>
+		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>
+
+		<xsl:variable name="headers" select="//xhtml:*[@data-index]"/>
+		<xsl:choose>
+			<xsl:when test="count($headers)">
+				<section class="pageindex">
+					<header>
+						Page index
+					</header>
+					<details>
+						<ul>
+							<xsl:for-each select="$headers">
+								<xsl:variable name="headerid">
+									<xsl:apply-templates select="." mode="page-index-generate-id"/>
+								</xsl:variable>
+								<li class="level{basic:isnull(@data-level, 1)}">
+									<a href="{concat($request/sage:address/@url, '#', $headerid)}">
+										<xsl:choose>
+											<xsl:when test="@data-text">
+												<xsl:value-of select="@data-text"/>
+											</xsl:when>
+											<xsl:when test="xhtml:header">
+												<xsl:value-of select="xhtml:header"/>
+											</xsl:when>
+											<xsl:when test="xhtml:*[string:matches(local-name(), 'h\d')]">
+												<xsl:value-of select="xhtml:*[string:matches(local-name(), 'h\d')]"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="."/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</a>
+								</li>
+							</xsl:for-each>
+						</ul>
+					</details>
+				</section>
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="*[@data-index='yes']">

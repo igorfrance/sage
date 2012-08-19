@@ -24,24 +24,24 @@
 				<details>
 
 					<summary>
-						In the localization step, any XML documents that reference <a href="url:link(sage-namespaces-internationalization)">internationalization namespace</a> are processed and generated separately for each of the project's locales.
+						In the localization step, any XML documents that reference <a href="${url:link(sage-namespaces-internationalization)}">internationalization namespace</a> are processed and generated separately for each of the project's locales.
 					</summary>
 
 					<div class="marginframe">
-						<img src="{assetpath}images/diagrams/xml-flow-localize.png" alt="Step 1: Localize"/>
+						<img src="${assetpath}images/diagrams/xml-flow-localize.png" alt="Step 1: Localize"/>
 					</div>
 
 					<section class="topic">
 						<header>How it works</header>
 						<details>
 							<div class="marginframe">
-								<img align="right" src="{assetpath}images/diagrams/xml-flow-localize-detail.png" alt="Localize details"/>
+								<img align="right" src="${assetpath}images/diagrams/xml-flow-localize-detail.png" alt="Localize details"/>
 							</div>
 
 							<ul class="notes">
 								<li>When localizing a resource, Sage generates a separate localized file for each locale in the project.</li>
 								<li>For each locale, a separate copy of the original document will be opened, if it exists. Although unusual (it's much more common to have a single template/resource for all locales), this allows having completely separate files for specific locales.</li>
-								<li>By default, the localized files are saved in a subdirectory '_target' within the file's source directory (<a href="url:link(configuration-project-paths)">this location is
+								<li>By default, the localized files are saved in a subdirectory '_target' within the file's source directory (<a href="${url:link(configuration-project-paths)}">this location is
 								configurable</a>).</li>
 							</ul>
 						</details>
@@ -54,7 +54,7 @@
 								For each of the locales a resource is being localized to, Sage checks weather a separate file, specific to that locale exists. If it does, it selects it instead of the more generic, default file.
 							</p>
 							<p>
-								When selecting this locale-specific file however, a list of names is considered. The list is defined with the <span>resourceNames</span> attributeo on the locale element of the <a href="url:link(configuration-project)">project configuration</a>:
+								When selecting this locale-specific file however, a list of names is considered. The list is defined with the <span>resourceNames</span> attributeo on the locale element of the <a href="${url:link(configuration-project)}">project configuration</a>:
 							</p>
 							<mod:XmlTree>
 								<mod:data>
@@ -98,11 +98,11 @@
 								On development setups, this step will happen per resource and as needed; when the source file or one of it's dependencies changes.
 							</p>
 							<p>
-								This behavior is controlled with the <code>autoInternationalize</code> attribute of the <a href="url:link(configuration-project,#project-element)">project element</a>
+								This behavior is controlled with the <code>autoInternationalize</code> attribute of the <a href="${url:link(configuration-project,#project-element)}">project element</a>
 							</p>
 							<p>
 								<b>The localization will happen only if the document references the
-								<a href="url:link(sage-namespaces-internationalization)">internationalization namespace</a>.</b>
+								<a href="${url:link(sage-namespaces-internationalization)}">internationalization namespace</a>.</b>
 							</p>
 						</details>
 					</section>

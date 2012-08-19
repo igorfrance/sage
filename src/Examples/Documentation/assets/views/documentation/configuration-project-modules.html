@@ -27,7 +27,7 @@
 				</header>
 				<details>
 					<summary>
-						<a href="url:link(sage-modules)">Modules</a> provide a way to package reusable groups of logic, presentation and resources, and use them in markup as custom tags. The system ensures that any resources belonging to a module get included on views that use them. Modules can depend on other modules, which means that if you reference module A which depends on module B then module B's resources will also be added, before adding module A's resources. <a href="url:link(sage-modules)">Read more</a>.
+						<a href="${url:link(sage-modules)}">Modules</a> provide a way to package reusable groups of logic, presentation and resources, and use them in markup as custom tags. The system ensures that any resources belonging to a module get included on views that use them. Modules can depend on other modules, which means that if you reference module A which depends on module B then module B's resources will also be added, before adding module A's resources. <a href="${url:link(sage-modules)}">Read more</a>.
 					</summary>
 
 					<section class="topic">
@@ -164,7 +164,7 @@
 															<section class="attribute">
 																<header>name</header>
 																<details>
-																	Specifies the path to the XSLT stylesheet. <a href="url:link(sage-uri-schemes)">sageres://</a> and <a href="url:link(sage-uri-schemes)">sageresx://</a> URL prefixes are supported here.
+																	Specifies the path to the XSLT stylesheet. <a href="${url:link(sage-uri-schemes)}">sageres://</a> and <a href="${url:link(sage-uri-schemes)}">sageresx://</a> URL prefixes are supported here.
 																</details>
 															</section>
 														</details>
@@ -254,7 +254,7 @@
 																<header>name</header>
 																<details>
 																	Specifies the resource name.
-																	This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="url:link(xml-input-document)">input document</a>, and is assigned this value as its <a href="url:link(xml-input-document, #sage:resourceName)">sage:resourceName</a> attribute.
+																	This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="${url:link(xml-input-document)}">input document</a>, and is assigned this value as its <a href="${url:link(xml-input-document, #sage:resourceName)}">sage:resourceName</a> attribute.
 																</details>
 															</section>
 															<section class="attribute">
@@ -310,7 +310,7 @@
 															<section class="attribute">
 																<header>path</header>
 																<details>
-																	Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="url:link(resource-processing-kelp)">kelp:// URL scheme</a> in the resource path.
+																	Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="${url:link(resource-processing-kelp)}">kelp:// URL scheme</a> in the resource path.
 																</details>
 															</section>
 															<section class="attribute">

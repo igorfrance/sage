@@ -28,18 +28,18 @@
 					</p>
 
 					<div class="marginframe">
-						<img src="{assetpath}/images/diagrams/xml-flow-transform.png" alt="XSLT Transform"/>
+						<img src="${assetpath}/images/diagrams/xml-flow-transform.png" alt="XSLT Transform"/>
 					</div>
 
 					<section class="topic">
 						<header>How it works</header>
 						<details>
 							<div class="marginframe">
-								<img align="right" src="{assetpath}images/diagrams/xml-flow-transform-detail.png" alt="XSLT Transform details"/>
+								<img align="right" src="${assetpath}images/diagrams/xml-flow-transform-detail.png" alt="XSLT Transform details"/>
 							</div>
 
 							<p>
-								At this point, the controller view XML document is localized and contextualized, and it's modules have been expanded with data. The whole view is wrapped together with request context information into the standard <a href="url:link(xml-input-document)">input document format</a>. Resources have been resolved and their information added to the input document. The last step remaining is to transform it into actual HTML.
+								At this point, the controller view XML document is localized and contextualized, and it's modules have been expanded with data. The whole view is wrapped together with request context information into the standard <a href="${url:link(xml-input-document)}">input document format</a>. Resources have been resolved and their information added to the input document. The last step remaining is to transform it into actual HTML.
 							</p>
 							<p>
 								Since sage provides a base stylesheet for use when no view or project-specific stylesheet exists, it is not required for a view to provide one. Additionally, any XSLT stylesheets belonging to modules will be automatically included with the default stylesheet.
@@ -71,7 +71,7 @@
 									Finally, if there is neither a controller/view-specific XSLT stylesheet, nor a project-default stylesheet,
 									Sage will open the system-default XSLT stylesheet that it provides. The system-default stylesheet is
 									compiled into Sage as an embedded resource, and as such it will be opened using a
-									<a href="url:link(sage-uri-schemes)">sageresx:// URI scheme</a> designated for resolving embedded resources:<br/>
+									<a href="${url:link(sage-uri-schemes)}">sageresx:// URI scheme</a> designated for resolving embedded resources:<br/>
 									<code class="principal">sageresx://sage/resources/xslt/global.xslt</code>.
 								</dd>
 							</dl>
@@ -90,14 +90,14 @@
 							<h3 class="section">Modules</h3>
 
 							<p>
-								Any XSLT stylesheets that are <a href="url:link(sage-modules)">configured for use with modules</a> are included automatically in the base stylesheet,
+								Any XSLT stylesheets that are <a href="${url:link(sage-modules)}">configured for use with modules</a> are included automatically in the base stylesheet,
 								so that any associated module templates can process the module element occurrences wherever they occur in controller views.
 							</p>
 
 							<p xml:space="preserve">
 								The XSLT markup from all module is combined in a single resource, provided by a
-								<a href="url:link(extensibility-xml-providers)">custom resource provider</a> that
-								generates it's content. Since that resource provider <a href="url:link(sage-uri-schemes)">registers for path</a>
+								<a href="${url:link(extensibility-xml-providers)}">custom resource provider</a> that
+								generates it's content. Since that resource provider <a href="${url:link(sage-uri-schemes)}">registers for path</a>
 								<code>modules.xslt</code>, we can include the module XSLT simply by specifying:
 							</p>
 

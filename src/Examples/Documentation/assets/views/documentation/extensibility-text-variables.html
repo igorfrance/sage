@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Text variables</title>
+	</head>
+	<body>
+
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="extensibility-text-variables"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Text variables</span>
+				</header>
+				<details>
+
+					<summary>
+						Sage text handlers are registered delegates that are invoked during the
+						<a href="${url:link(xml-flow-copy-tree)}">contextualization step</a> when tree processing matches the registered
+						text variable in either text nodes or attribute values.
+					</summary>
+
+					<section class="topic">
+						<details>
+							<p>
+								As each element, attribute and text node in an XML document are processed, their text is sought
+								for placeholders for registered variables and the matches are replaces by invoking their corresponding
+								Text handler delegate.
+							</p>
+
+							<ul class="notes indent">
+								<li>
+									A valid placeholder is both:
+									<code class="important">${variable}</code> and <code class="important">{variable}</code>
+								</li>
+								<li>
+									To escape a registered variable name, use double quotes around the variable name:
+									<code class="important">{{{assetpath}}}</code>
+								</li>
+								<li>
+									Variable names are case-insensitive.
+								</li>
+							</ul>
+
+							<h6 class="caption">Text handler signature</h6>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											XmlNode|SageContext
+										</mod:group>
+									</mod:keywords>
+									<mod:code>
+
+										delegate string TextHandler(string variableName, SageContext context);
+
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+
+							<h6 class="caption">TextHandler delegate implementation and registration</h6>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											TextHandler|SageContext|XmlNode
+										</mod:group>
+										<mod:group name="enum">
+											XmlNodeType
+										</mod:group>
+										<mod:group name="value">
+											Element
+										</mod:group>
+									</mod:keywords>
+									<mod:code>
+
+										[TextHandler("assetpath", "sharedassetpath", "modulepath")]
+										internal static string ResolveVariable(string variable, SageContext context)
+										{
+											//// ...
+										}
+
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+						</details>
+					</section>
+
+					<section class="topic">
+						<header>Text handlers provided by Sage</header>
+						<details>
+							<table class="definition">
+								<colgroup>
+									<col width="160"/>
+									<col/>
+								</colgroup>
+								<tr valign="top">
+									<th><code>{{assetpath}}</code></th>
+									<td>
+										Inserts the web-relative resolved value of the asset path configuration property. See <a href="${url:link(configuration-project-paths)}">paths (project configuration)</a>.
+									</td>
+								</tr>
+								<tr valign="top">
+									<th><code>{{sharedassetpath}}</code></th>
+									<td>
+										Inserts the web-relative resolved value of the shared asset path configuration property. See
+										<a href="${url:link(configuration-project)}">project configuration</a> and <a href="${url:link(configuration-project-paths)}">paths (project configuration)</a>.
+									</td>
+								</tr>
+								<tr valign="top">
+									<th><code>{{modulepath}}</code></th>
+									<td>
+										Inserts the web-relative resolved value of the module path configuration property. See <a href="${url:link(configuration-project-paths)}">paths (project configuration)</a>.
+									</td>
+								</tr>
+								<tr valign="top">
+									<th><code>{{basehref}}</code></th>
+									<td>
+										Inserts the fully qualified URL of the current web application. For example: 'http//sage.cycle99.com'.
+									</td>
+								</tr>
+								<tr valign="top">
+									<th><code>{{locale}}</code></th>
+									<td>
+										Inserts the name of the current locale.
+									</td>
+								</tr>
+								<tr valign="top">
+									<th><code>{{category}}</code></th>
+									<td>
+										Inserts the name of the current category.
+									</td>
+								</tr>
+							</table>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

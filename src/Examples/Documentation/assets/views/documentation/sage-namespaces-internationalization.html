@@ -23,7 +23,7 @@
 				</header>
 				<details>
 					<summary>
-						Provides <a href="url:link(internationalization)">internationalization</a>-related elements and attributes.
+						Provides <a href="${url:link(internationalization)}">internationalization</a>-related elements and attributes.
 					</summary>
 
 					<section class="namespace">
@@ -38,23 +38,23 @@
 								<header>intl:dictionary element</header>
 								<details>
 									<summary>
-										This element contains appears in dictionary files that define language strings in use throughout the project. Container for phrase elements.
+										This element is a container for phrase elements in dictionary files that define language strings used throughout the project.
 									</summary>
 									<section class="properties example">
 										<header>Example:</header>
 										<details>
 											<mod:XmlTree>
 												<mod:config>
-													<mod:namespaces>true</mod:namespaces>
+													<mod:toolbar>true</mod:toolbar>
 												</mod:config>
 												<mod:data>
 													<sage:literal>
-														<dictionary xmlns="http://www.cycle99.com/schemas/sage/internationalization.xsd">
-															<phrase id="navigation.home">Home</phrase>
-															<phrase id="navigation.shop">Shop</phrase>
-															<phrase id="navigation.contact">Contact</phrase>
-															<phrase id="navigation.faq">F.A.Q.</phrase>
-														</dictionary>
+														<intl:dictionary xmlns="http://www.cycle99.com/schemas/sage/internationalization.xsd">
+															<intl:phrase id="navigation.home">Home</intl:phrase>
+															<intl:phrase id="navigation.shop">Shop</intl:phrase>
+															<intl:phrase id="navigation.contact">Contact</intl:phrase>
+															<intl:phrase id="navigation.faq">F.A.Q.</intl:phrase>
+														</intl:dictionary>
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
@@ -63,17 +63,32 @@
 									<section class="properties children">
 										<header>Child elements:</header>
 										<details>
-											<section class="element">
-												<header>phrase element</header>
+											<section class="element" id="phrase-element" data-index="yes" data-level="3">
+												<header>intl:phrase element</header>
 												<details>
-													<summary>Specifies a single phrase. This phrase may contain reference to other <a href="url:self(#phrase-ref-element)">phrase[ref]</a> and <a href="url:self(#variable-ref-element)">variable[ref]</a> elements, as they will all get resolved during <a href="url:link(internationalization)">internationalization</a>.
+													<summary>Specifies a single phrase. Although the content will typically be plain text, this element may contain any number of XHTML and other XML elements. It may even contain references to other phrases and variables through the use of <a href="${url:self(#phrase-ref-element)}">phrase[ref]</a> and <a href="${url:self(#variable-ref-element)}">variable[ref]</a> elements. They will all be resolved during <a href="${url:link(internationalization)}">internationalization</a>.
 													</summary>
-													<section class="attributes">
+													<section class="properties example">
+														<header>Example:</header>
+														<details>
+															<mod:XmlTree>
+																<mod:config>
+																	<mod:toolbar>true</mod:toolbar>
+																</mod:config>
+																<mod:data>
+																	<sage:literal>
+																		<intl:phrase id="navigation.home">Home</intl:phrase>
+																	</sage:literal>
+																</mod:data>
+															</mod:XmlTree>
+														</details>
+													</section>
+													<section class="properties attributes">
 														<header>Attributes</header>
 														<details>
 															<section class="attribute">
 																<header>id</header>
-																<details>Specifies the unique <code>id</code> of the phrase. The <a href="url:self(#phrase-ref-element)">phrase[ref]</a> element refers to this id through it's <code>ref</code> attribute.</details>
+																<details>Specifies the unique <code>id</code> of the phrase. The <a href="${url:self(#phrase-ref-element)}">phrase[ref]</a> element refers to this id through it's <code>ref</code> attribute.</details>
 															</section>
 														</details>
 													</section>
@@ -87,11 +102,11 @@
 								<header>intl:variables element</header>
 								<details>
 									<summary>
-										This element may appear on several places where <a href="url:link(internationalization-variables)">internationalization variables</a> may be defined. These are (from low to high priority):
+										This element may appear on several places where <a href="${url:link(internationalization-variables)}">internationalization variables</a> may be defined. These are (from low to high priority):
 										<ul>
-											<li><a href="url:link(configuration-project)">Project.config</a> (global variables)</li>
-											<li><a href="url:link(configuration-category)">Category.config</a> (category variables)</li>
-											<li><a href="url:link(xml-input-document)">view document</a> (view variables)</li>
+											<li><a href="${url:link(configuration-project)}">Project.config</a> (global variables)</li>
+											<li><a href="${url:link(configuration-category)}">Category.config</a> (category variables)</li>
+											<li><a href="${url:link(xml-input-document)}">view document</a> (view variables)</li>
 										</ul>
 									</summary>
 									<section class="properties example">
@@ -130,10 +145,10 @@
 												<details>
 													<summary>
 														<p>
-															Specifies a single variable. The variable may contain reference to other <a href="url:self(#phrase-ref-element)">phrase[ref]</a> and <a href="url:self(#variable-ref-element)">variable[ref]</a> elements, as they will all get resolved during <a href="url:link(internationalization)">internationalization</a>.
+															Specifies a single variable. The variable may contain reference to other <a href="${url:self(#phrase-ref-element)}">phrase[ref]</a> and <a href="${url:self(#variable-ref-element)}">variable[ref]</a> elements, as they will all get resolved during <a href="${url:link(internationalization)}">internationalization</a>.
 														</p>
 														<p>
-															The child <code>value</code> elements specify separate values for each locale. The order in which the values are resolved is controlled by <code>dictionaryNames</code> attribute defined in <a href="url:link(configuration-project-internationalization)">project configuration</a>. Read more about it in <a href="url:link(internationalization-variables)">internationalization variables</a>.
+															The child <code>value</code> elements specify separate values for each locale. The order in which the values are resolved is controlled by <code>dictionaryNames</code> attribute defined in <a href="${url:link(configuration-project-internationalization)}">project configuration</a>. Read more about it in <a href="${url:link(internationalization-variables)}">internationalization variables</a>.
 														</p>
 													</summary>
 													<section class="properties example">
@@ -141,11 +156,11 @@
 														<details>
 															<mod:XmlTree>
 																<mod:config>
-																	<mod:namespaces>true</mod:namespaces>
+																	<mod:namespaces>false</mod:namespaces>
 																</mod:config>
 																<mod:data>
 																	<sage:literal>
-																		<variable id="chewyMangoUrl">
+																		<variable id="chewyMangoUrl" xmlns="http://www.cycle99.com/schemas/sage/internationalization.xsd">
 																			<value locale="default">http://shop.chew.com/pages/products/chewymango</value>
 																			<value locale="uk">http://shop.chew.co.uk/pages/products/chewymango</value>
 																			<value locale="de">http://shop.chew.de/pages/products/chewymango</value>
@@ -160,7 +175,7 @@
 														<details>
 															<section class="attribute">
 																<header>id</header>
-																<details>Specifies the unique <code>id</code> of the variable. The <a href="url:self(#variable-ref-element)">variable[ref]</a> element refers to this id through it's <code>ref</code> attribute.</details>
+																<details>Specifies the unique <code>id</code> of the variable. The <a href="${url:self(#variable-ref-element)}">variable[ref]</a> element refers to this id through it's <code>ref</code> attribute.</details>
 															</section>
 														</details>
 													</section>
@@ -207,7 +222,7 @@
 								<details>
 									<summary>
 										<p>
-											Referes to a variable, providing a substitution placeholder for that variable. During <a href="url:link(internationalization-variables)">internationalization</a>, these elements get substituted with the value of that variable in each generated locale.
+											Referes to a variable, providing a substitution placeholder for that variable. During <a href="${url:link(internationalization-variables)}">internationalization</a>, these elements get substituted with the value of that variable in each generated locale.
 										</p>
 										<p>
 											These elements can be placed anywhere in XML documents where the variable value is needed.
@@ -241,7 +256,7 @@
 								<details>
 									<summary>
 										<p>
-											Referes to a phrase, providing a substitution placeholder for that phrase. During <a href="url:link(internationalization-phrases)">internationalization</a>, these elements get substituted with the value of that phrase for each generated locale.
+											Referes to a phrase, providing a substitution placeholder for that phrase. During <a href="${url:link(internationalization-phrases)}">internationalization</a>, these elements get substituted with the value of that phrase for each generated locale.
 										</p>
 										<p>
 											These elements can be placed anywhere in XML documents where the phrase value is needed.
@@ -414,7 +429,7 @@
 					<section class="topic" id="attribute-values" data-index="yes" data-level="1">
 						<header>Attribute values</header>
 						<details>
-							<p>Sometimes, phrases or variables need to be embedded into attribute values and in those cases we cannot use <a href="url:self(#phrase-ref-element)">phrase[ref]</a> and <a href="url:self(#variable-ref-element)">variable[ref]</a> elements. To accomplish that, you can use the <code>intl:variable(id)</code> and <code>intl:phrase(id)</code> syntax in attribute values. For instance:
+							<p>Sometimes, phrases or variables need to be embedded into attribute values and in those cases we cannot use <a href="${url:self(#phrase-ref-element)}">phrase[ref]</a> and <a href="${url:self(#variable-ref-element)}">variable[ref]</a> elements. To accomplish that, you can use the <code>intl:variable(id)</code> and <code>intl:phrase(id)</code> syntax in attribute values. For instance:
 							</p>
 							<section class="properties example">
 								<header>Example:</header>

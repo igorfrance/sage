@@ -111,7 +111,7 @@ li > h5
 div.container
 	{ overflow: hidden; }
 dfn
-	{ font-size: 120%; font-style: normal; display: block; }
+	{ font-size: 120%; font-style: normal; display: block; margin-bottom: 20px; }
 code, pre
 	{ color: #000; font-size: 95%; font-family: Consolas, Courier; }
 

@@ -28,7 +28,7 @@
 		</p>
 
 		<p>
-			Resource libraries are defined within <a href="url:link(configuration-project)">project configuration</a>. If they
+			Resource libraries are defined within <a href="${url:link(configuration-project)}">project configuration</a>. If they
 			are referenced by a module, included on a page, or are configured to be directly or indirectly included
 			on a page, Sage will insert their resources in the specified location (<code>head</code>, <code>body</code> or <code>data</code>) of the pages that reference the library. The resources are inserted in order of dependency.
 		</p>
@@ -98,9 +98,9 @@
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">
 						<li class="others">
-							<a href="url:self(#p:resources)">p:resources</a>,
-							<a href="url:self(#p:include)">p:include</a>,
-							<a href="url:self(#p:dependencies)">p:dependencies</a>.
+							<a href="${url:self(#p:resources)}">p:resources</a>,
+							<a href="${url:self(#p:include)}">p:include</a>,
+							<a href="${url:self(#p:dependencies)}">p:dependencies</a>.
 						</li>
 					</ul>
 				</blockquote>
@@ -115,12 +115,12 @@
 				<blockquote>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others"><a href="url:self(#p:library)">p:library</a></li>
+						<li class="others"><a href="${url:self(#p:library)}">p:library</a></li>
 					</ul>
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">
 						<li class="others">
-							<a href="url:self(#p:resource)">p:resource</a>.
+							<a href="${url:self(#p:resource)}">p:resource</a>.
 						</li>
 					</ul>
 				</blockquote>
@@ -170,7 +170,7 @@
 						<li>
 							<h6 class="casual">@limitTo</h6>
 							<p>
-								Specifies the <a href="url:link(xml-input-document, #sage:useragent)">user agent id</a> to which this
+								Specifies the <a href="${url:link(xml-input-document, #sage:useragent)}">user agent id</a> to which this
 								resource applies (i.e. <code>'ie6'</code>). If this value has been specified, the resource will be include
 								only if the user agent id contains this value. This makes it possible to specify just a substring of the
 								browser id.
@@ -205,13 +205,13 @@
 					</mod:XmlTree>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others"><a href="url:self(#p:library)">p:library</a></li>
+						<li class="others"><a href="${url:self(#p:library)}">p:library</a></li>
 					</ul>
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">
 						<li class="others">
-							<a href="url:self(#p:path)">p:path</a>,
-							<a href="url:self(#p:always)">p:always</a>.
+							<a href="${url:self(#p:path)}">p:path</a>,
+							<a href="${url:self(#p:always)}">p:always</a>.
 						</li>
 					</ul>
 				</blockquote>
@@ -249,7 +249,7 @@
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others"><a href="url:self(#p:include)">p:include</a></li>
+						<li class="others"><a href="${url:self(#p:include)}">p:include</a></li>
 					</ul>
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">
@@ -277,7 +277,7 @@
 					</mod:XmlTree>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others"><a href="url:self(#p:include)">p:include</a></li>
+						<li class="others"><a href="${url:self(#p:include)}">p:include</a></li>
 					</ul>
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">
@@ -298,12 +298,12 @@
 				<blockquote>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others"><a href="url:self(#p:library)">p:library</a></li>
+						<li class="others"><a href="${url:self(#p:library)}">p:library</a></li>
 					</ul>
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">
 						<li class="others">
-							<a href="url:self(#p:library_ref)">p:library[@ref]</a>.
+							<a href="${url:self(#p:library_ref)}">p:library[@ref]</a>.
 						</li>
 					</ul>
 				</blockquote>
@@ -320,9 +320,9 @@
 						<mod:data>
 							<library name="listcontrol">
 								<resources>
-									<resource type="style" location="head" path="{assetpath}/lib/scripts/aeon/aeon/controls/list.css"/>
-									<resource type="style" location="head" path="{assetpath}/lib/scripts/aeon/aeon/controls/list-ie.css" limitTo="ie"/>
-									<resource type="script" location="head" path="{assetpath}/lib/scripts/aeon/aeon/controls/list.js"/>
+									<resource type="style" location="head" path="${assetpath}/lib/scripts/aeon/aeon/controls/list.css"/>
+									<resource type="style" location="head" path="${assetpath}/lib/scripts/aeon/aeon/controls/list-ie.css" limitTo="ie"/>
+									<resource type="script" location="head" path="${assetpath}/lib/scripts/aeon/aeon/controls/list.js"/>
 								</resources>
 								<dependencies>
 									<library ref="aeon"/>
@@ -339,7 +339,7 @@
 					</ul>
 					<h6 class="tiny">Parent elements</h6>
 					<ul class="casual">
-						<li class="others"><a href="url:self(#p:dependencies)">p:dependencies</a></li>
+						<li class="others"><a href="${url:self(#p:dependencies)}">p:dependencies</a></li>
 					</ul>
 					<h6 class="tiny">Child elements</h6>
 					<ul class="casual">

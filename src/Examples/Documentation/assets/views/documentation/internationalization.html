@@ -21,52 +21,51 @@
 					<span>Internationalization</span>
 				</header>
 				<details>
-		<p>
-			Internationalization is useful when your website speaks more than one language, and/or presents different content
-			for different locales.
-		</p>
-		<p>
-			The internationalization in Sage involves taking an XML resource and making separate physical copies of it for each
-			of the locales configured for project, where each copy can be as different as required, and Sage provides plenty of
-			ways to branch content based on locale.
-		</p>
-		<p>
-			The internationalization techniques Sage supports are:
-		</p>
-		<ul>
-			<li>
-				<h5><a href="url:link(internationalization-phrases)">Phrase substitution</a></h5>
-				<p>
-					Phrase substitution is the process of substituting text with content from the dictionary files. The entities
-					used for phrase substitution are <code>intl:phrase</code> element and <code>intl:phrase(id)</code> syntax
-					when used within attribute values.
-				</p>
-			</li>
-			<li>
-				<h5><a href="url:link(internationalization-variables)">Variable substitution</a></h5>
-				<p>
-					Similar to phrases, variable substitution is the process of substituting text with variables defined earlier
-					in the document. Variables can be configured per locale, with an optional default value. The entities
-					used for variable substitution are <code>intl:variable</code> element and <code>intl:variable(id)</code> syntax
-					when used within attribute values.
-				</p>
-			</li>
-			<li>
-				<h5><a href="url:link(internationalization-conditionals)">Conditional rendering</a></h5>
-				<p>
-					When the differences between locales are structural, we can branch and selectively render content on the basis
-					of the locale by using <code>intl:localize</code>/<code>intl:if</code>/<code>intl:else</code> elements, and
-					the <code>@intl:locale</code> attribute.
-				</p>
-			</li>
-			<li>
-				<h5>Separate files</h5>
-				<p>
-					If differences between localized versions of the file are big enough to warrant a separate file, the locale-specific
-					version of the file simply needs to add the locale suffix to the name of the file; read more about it in the
-					description of the <a href="url:link(xml-flow-localize)">XML localization</a>.
-				</p>
-			</li>
+					<dfn>
+						The internationalization in Sage involves taking an XML document that references the <a href="${url:link(sage-namespaces-internationalization)}">internationalization namespace</a>, and making separate physical copies of it for each of the locales configured for project or project category.
+					</dfn>
+					<p>
+						Internationalization is useful when a project is published in multiple languages, and content differ between locales. The differences can range from minor things such as displaying text in different languages, over having elements conditionally rendered based on locale, to completely customizing the content for any one or all of the locales.
+					</p>
+					<p>
+					</p>
+					<p>
+						The internationalization techniques Sage supports are:
+					</p>
+					<ul>
+						<li>
+							<h5><a href="${url:link(internationalization-phrases)}">Phrase substitution</a></h5>
+							<p>
+								Phrase substitution is the process of substituting text with content from the dictionary files. The entities
+								used for phrase substitution are <code>intl:phrase</code> element and <code>intl:phrase(id)</code> syntax
+								when used within attribute values.
+							</p>
+						</li>
+						<li>
+							<h5><a href="${url:link(internationalization-variables)}">Variable substitution</a></h5>
+							<p>
+								Similar to phrases, variable substitution is the process of substituting text with variables defined earlier
+								in the document. Variables can be configured per locale, with an optional default value. The entities
+								used for variable substitution are <code>intl:variable</code> element and <code>intl:variable(id)</code> syntax
+								when used within attribute values.
+							</p>
+						</li>
+						<li>
+							<h5><a href="${url:link(internationalization-conditionals)}">Conditional rendering</a></h5>
+							<p>
+								When the differences between locales are structural, we can branch and selectively render content on the basis
+								of the locale by using <code>intl:localize</code>/<code>intl:if</code>/<code>intl:else</code> elements, and
+								the <code>@intl:locale</code> attribute.
+							</p>
+						</li>
+						<li>
+							<h5>Separate files</h5>
+							<p>
+								If differences between localized versions of the file are big enough to warrant a separate file, the locale-specific
+								version of the file simply needs to add the locale suffix to the name of the file; read more about it in the
+								description of the <a href="${url:link(xml-flow-localize)}">XML localization</a>.
+							</p>
+						</li>
 		</ul>
 
 

@@ -28,7 +28,7 @@
 				<details>
 
 					<summary>
-						<a href="url:link(resource-libraries)">Resource libraries</a> provide a convenient way to automate inclusion of various web resources into pages. The library can be configured to be automatically included based on the request URL. If a module or one of its dependencies uses a library (such as <i>jquery.ui</i> for instance), and the module is used on the current view the library will be automatically included as well. Libraries can also depend on other libraries, enabling further resource reuse and organization. Additionally, a library can also be included on a view simply by referencing it with the <code>sage:library</code> element. <a href="url:link(resource-libraries)">Read more</a>.
+						<a href="${url:link(resource-libraries)}">Resource libraries</a> provide a convenient way to automate inclusion of various web resources into pages. The library can be configured to be automatically included based on the request URL. If a module or one of its dependencies uses a library (such as <i>jquery.ui</i> for instance), and the module is used on the current view the library will be automatically included as well. Libraries can also depend on other libraries, enabling further resource reuse and organization. Additionally, a library can also be included on a view simply by referencing it with the <code>sage:library</code> element. <a href="${url:link(resource-libraries)}">Read more</a>.
 					</summary>
 
 					<section class="topic">
@@ -168,7 +168,7 @@
 																<header>name</header>
 																<details>
 																	<summary>
-																		Specifies the resource name. This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="url:link(xml-input-document)">input document</a>, and is assigned this value as its <a href="url:link(xml-input-document, #sage:resourceName)">sage:resourceName</a> attribute.
+																		Specifies the resource name. This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="${url:link(xml-input-document)}">input document</a>, and is assigned this value as its <a href="${url:link(xml-input-document, #sage:resourceName)}">sage:resourceName</a> attribute.
 																	</summary>
 																</details>
 															</section>
@@ -227,7 +227,7 @@
 															<section class="attribute">
 																<header>path</header>
 																<details>
-																	<summary>Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="url:link(resource-processing-kelp)">kelp:// URL scheme</a> in the resource path.</summary>
+																	<summary>Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="${url:link(resource-processing-kelp)}">kelp:// URL scheme</a> in the resource path.</summary>
 																</details>
 															</section>
 															<section class="attribute">

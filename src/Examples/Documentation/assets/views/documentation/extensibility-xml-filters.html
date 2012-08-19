@@ -29,7 +29,7 @@
 		<blockquote>
 			<p>
 				The last step in preparing the XML document that will be sent off to transformation is to
-				<a href="url:link(xml-flow-expand-modules)">process the view configuration template</a> (typically, the XHTML
+				<a href="${url:link(xml-flow-expand-modules)}">process the view configuration template</a> (typically, the XHTML
 				document) that corresponds to the current view.
 				This is handled by <code>SageController.PrepareViewXml(ViewContext)</code> method. The last step of this method,
 				before returning the view input document, is to invoke any registered <code>ViewXMLFilter</code> delegate methods,
