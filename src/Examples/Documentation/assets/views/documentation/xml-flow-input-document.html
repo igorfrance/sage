@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
+ 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Prepare input document (Document transform flow)</title>
+	</head>
+	<body>
+
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="xml-flow-input-document"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Prepare input document (Document transform flow)</span>
+				</header>
+				<details>
+
+					<img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow-wrap-n-prep.png" alt="Prepare input document"/>
+
+					<summary><dfn>
+						Contextualized and expanded XHTML views are wrapped within a standard XML envelope before being served to the nearest XSLT processor for transformation.
+					</dfn></summary>
+
+					<p>
+						For a real-world example of the actual input document XML for this page, <a href="${url:self(?view=xmlx)}" target="_blank" title="View the input XML of this page">click here</a>.
+					</p>
+
+					<section class="topic">
+						<header>How it works</header>
+						<details>
+							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-wrap-n-prep-detail.png" alt="Prepare input document details"/>
+
+							<p>
+								This step is actually done together with <i>expanding modules</i> in the previous step, but for clarity they are here discussed separately.
+							</p>
+
+							<p>
+								As the document is being processed and modules expanded, the controller gathers resource info for <a href="${url:link(sage-modules)}" title="Modules">modules</a> and/or <a href="${url:link(resource-libraries)}" title="Resource libraries">resource libraries</a> used on the page. This information is then added to the input document under the <a href="${url:link(sage-namespaces-sage-input-document, #resources-element)}">sage:resources element</a> of the input document. The expanded XHTML view is inserted within the <a href="${url:link(sage-namespaces-sage-input-document, #model-element)}">sage:model element</a>.
+							</p>
+
+							<h6>Example</h6>
+							<blockquote class="marked">
+								<p>
+									Consider this very rudimentary view:
+								</p>
+								<mod:XmlTree>
+									<mod:data>
+										<sage:literal>
+											<html>
+												<head>
+													<title>Hello</title>
+												</head>
+												<body>
+													<h1>Hello, world!</h1>
+												</body>
+											</html>
+										</sage:literal>
+									</mod:data>
+								</mod:XmlTree>
+
+								<section class="flow vertical marginframe">
+									<details>
+										The simple example from above is then wrapped within the standard <a href="${url:link(sage-namespaces-sage-input-document)}">input document format</a>, an internally used format that also provides context and meta data information about the current view.
+									</details>
+								</section>
+
+								<mod:XmlTree>
+									<mod:config>
+										<mod:wrap>false</mod:wrap>
+										<mod:toolbar>true</mod:toolbar>
+										<mod:highlight>
+											<mod:element>html</mod:element>
+											<mod:element>head</mod:element>
+											<mod:element>title</mod:element>
+											<mod:element>body</mod:element>
+											<mod:element>h1</mod:element>
+										</mod:highlight>
+									</mod:config>
+									<mod:data>
+										<sage:literal>
+											<sage:view controller="documentation" action="hello-world" xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
+												<sage:request method="GET" localAddress="127.0.0.1" remoteAddress="127.0.0.1" category="default" locale="en" thread="634812507092657930" developer="1" debug="1">
+													<sage:address basehref="http://sage.local/" url="http://sage.local/documentation/hello-world.xml" serverName="sage.local" serverNameFull="http://sage.local" scriptName="/documentation/hello-world.xml" scriptNameFull="/documentation/hello-world.xml" queryString=""></sage:address>
+													<sage:path applicationPath="/" assetPath="/assets/" sharedAssetPath="/assets/" modulePath="/assets/modules/"></sage:path>
+													<sage:useragent id="firefox14" name="firefox" version="14.0" version.major="14" version.minor="0" isCrawler="0" value="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:14.0) Gecko/20100101 Firefox/14.0.1"></sage:useragent>
+													<sage:assembly version="1.0.4614.41718"/>
+													<sage:querystring/>
+													<sage:cookies/>
+													<sage:session/>
+													<sage:dateTime date="22-08-2012" time="16:45:09" day="22" month="08" year="2012" hour="16" minute="45" second="09"></sage:dateTime>
+												</sage:request>
+												<sage:response>
+													<sage:resources>
+														<sage:data>
+															<site:navigation xmlns:site="http://sage.cycle99.com/">...</site:navigation>
+														</sage:data>
+														<sage:head>
+															<xhtml:link rel="icon" href="/favicon.ico" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/css/documentation.css" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+															<xhtml:script type="text/javascript" language="javascript" src="kelp:///assets//scripts/lib/aeon/aeon.js" xmlns:xhtml="http://www.w3.org/1999/xhtml"></xhtml:script>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/modules/documentation/breadcrumb/breadcrumb.css" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/modules/documentation/sidebar/sidebar.css" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/modules/documentation/sidebar/sidebar.js" xmlns:xhtml="http://www.w3.org/1999/xhtml"></xhtml:script>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/modules/dev/xmltree/xmltree.css" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/modules/dev/developertoolbar/developertoolbar.css" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+														</sage:head>
+														<sage:body>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/modules/documentation/breadcrumb/breadcrumb.js" xmlns:xhtml="http://www.w3.org/1999/xhtml"></xhtml:script>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/modules/dev/xmltree/xmltree.js" xmlns:xhtml="http://www.w3.org/1999/xhtml"></xhtml:script>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/scripts/lib/aeon/aeon/controls/tooltip/tooltip.js" xmlns:xhtml="http://www.w3.org/1999/xhtml"></xhtml:script>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/scripts/lib/aeon/aeon/controls/tooltip/tooltip.css" xmlns:xhtml="http://www.w3.org/1999/xhtml" />
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/modules/dev/developertoolbar/developertoolbar.js" xmlns:xhtml="http://www.w3.org/1999/xhtml"></xhtml:script>
+														</sage:body>
+													</sage:resources>
+													<sage:model>
+														<html>
+															<head>
+																<title>Hello</title>
+															</head>
+															<body>
+																<h1>Hello, world!</h1>
+															</body>
+														</html>
+													</sage:model>
+												</sage:response>
+											</sage:view>
+										</sage:literal>
+									</mod:data>
+								</mod:XmlTree>
+
+							</blockquote>
+
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

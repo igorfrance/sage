@@ -71,63 +71,6 @@
     <Content Include="assets\scripts\lib\jquery\shadowbox.js" />
     <Content Include="assets\views\dev\inspect.html" />
     <Content Include="assets\views\dev\log.html" />
-    <Content Include="assets\views\documentation\configuration-category.html" />
-    <Content Include="assets\views\documentation\configuration-compression.html" />
-    <Content Include="assets\views\documentation\configuration-handlers.html" />
-    <Content Include="assets\views\documentation\configuration-project.html" />
-    <Content Include="assets\views\documentation\configuration-rewriters.html" />
-    <Content Include="assets\views\documentation\configuration.html" />
-    <Content Include="assets\views\documentation\extensibility-extensions.html" />
-    <Content Include="assets\views\documentation\extensibility-node-handlers.html" />
-    <Content Include="assets\views\documentation\extensibility-xml-providers.html" />
-    <Content Include="assets\views\documentation\extensibility-url-resolvers.html" />
-    <Content Include="assets\views\documentation\extensibility-xml-filters.html" />
-    <Content Include="assets\views\documentation\extensibility-xslt-extensions.html" />
-    <Content Include="assets\views\documentation\extensibility.html" />
-    <Content Include="assets\views\documentation\extension-devtools.html" />
-    <Content Include="assets\views\documentation\index.html" />
-    <Content Include="assets\views\documentation\internationalization-conditionals.html" />
-    <Content Include="assets\views\documentation\internationalization-fallback.html" />
-    <Content Include="assets\views\documentation\internationalization-phrases.html" />
-    <Content Include="assets\views\documentation\internationalization-variables.html" />
-    <Content Include="assets\views\documentation\internationalization.html" />
-    <Content Include="assets\views\documentation\linking.html" />
-    <Content Include="assets\views\documentation\resource-libraries.html" />
-    <Content Include="assets\views\documentation\resource-processing-compression.html" />
-    <Content Include="assets\views\documentation\resource-processing-imaging.html" />
-    <Content Include="assets\views\documentation\resource-processing-kelp.html" />
-    <Content Include="assets\views\documentation\sage-building.html" />
-    <Content Include="assets\views\documentation\sage-configuration.html" />
-    <Content Include="assets\views\documentation\sage-installing-example.html" />
-    <Content Include="assets\views\documentation\sage-installing-new.html" />
-    <Content Include="assets\views\documentation\sage-libraries.html" />
-    <Content Include="assets\views\documentation\sage-license.html" />
-    <Content Include="assets\views\documentation\sage-modules-example1.html" />
-    <Content Include="assets\views\documentation\sage-modules-example2.html" />
-    <Content Include="assets\views\documentation\sage-modules.html" />
-    <Content Include="assets\views\documentation\sage-namespaces-contextualization.html" />
-    <Content Include="assets\views\documentation\sage-namespaces-internationalization.html" />
-    <Content Include="assets\views\documentation\sage-namespaces-logic.html" />
-    <Content Include="assets\views\documentation\sage-namespaces-modules.html" />
-    <Content Include="assets\views\documentation\sage-namespaces-sage.html" />
-    <Content Include="assets\views\documentation\sage-namespaces-xinclude.html" />
-    <Content Include="assets\views\documentation\sage-namespaces.html" />
-    <Content Include="assets\views\documentation\sage-obtaining.html" />
-    <Content Include="assets\views\documentation\sage-uri-schemes.html" />
-    <Content Include="assets\views\documentation\xml-as-a-language.html" />
-    <Content Include="assets\views\documentation\xml-flow-copy-tree.html" />
-    <Content Include="assets\views\documentation\xml-flow-expand-modules.html" />
-    <Content Include="assets\views\documentation\xml-flow-localize.html" />
-    <Content Include="assets\views\documentation\xml-flow-xslt-transform.html" />
-    <Content Include="assets\views\documentation\xml-flow.html" />
-    <Content Include="assets\views\documentation\xml-input-document.html" />
-    <Content Include="assets\views\documentation\xslt-extensions-basic.html" />
-    <Content Include="assets\views\documentation\xslt-extensions-io.html" />
-    <Content Include="assets\views\documentation\xslt-extensions-set.html" />
-    <Content Include="assets\views\documentation\xslt-extensions-string.html" />
-    <Content Include="assets\views\examples\xinclude\footer.html" />
-    <Content Include="assets\views\examples\xinclude\include-document.html" />
-    <Content Include="assets\views\examples\xinclude\include-fragment.html" />
     <Content Include="assets\views\home\index.html" />
     <Content Include="assets\xslt\default.xslt" />
     <Content Include="Global.asax" />
@@ -143,7 +86,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="assets\views\examples\internationalization\" />
+    <Folder Include="assets\views\documentation\" />
     <Folder Include="extensions\" />
   </ItemGroup>
   <ItemGroup>

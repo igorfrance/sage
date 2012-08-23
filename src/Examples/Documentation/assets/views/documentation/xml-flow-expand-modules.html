@@ -22,20 +22,18 @@
 				</header>
 				<details>
 
-					<p>
-						Modules are the formal way of providing reusable pieces of functionality in Sage. The way to invoke a module is to reference it with one of it's XML element tags within a controller view.
-					</p>
+					<img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-expand.png" alt="Expand modules"/>
 
-					<div class="marginframe">
-						<img src="${assetpath}/images/diagrams/xml-flow-expand.png" alt="Expand modules"/>
-					</div>
+					<summary>
+						<dfn>
+							Modules are the formal way of providing reusable pieces of functionality in Sage. The way to invoke a module is to reference it with one of it's XML element tags within a controller view.
+						</dfn>
+					</summary>
 
 					<section class="topic">
 						<header>How it works</header>
 						<details>
-							<div class="marginframe">
-								<img align="right" src="${assetpath}images/diagrams/xml-flow-expand-detail.png" alt="XSLT Transform details"/>
-							</div>
+							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-expand-detail.png" alt="XSLT Transform details"/>
 
 							<p>
 								When processing the controller view, the document is scanned for register module elements, and then for each of the modules it's back-end code (if any) is supplied a reference to that element, with the chance to modify it in any way. This step will typically populate the module's <code>mode:data</code> element with any dynamic data that it is responsible of producing.

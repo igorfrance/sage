@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+ 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Input document elements</title>
+	</head>
+	<body>
+
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="sage-namespaces-sage"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Input document elements</span>
+				</header>
+				<details>
+
+					<summary>
+						Before a view is transformed with an XSLT stylesheet, it is wrapped within <em>input document</em>, an internal document structure used with the XSLT view engine.
+					</summary>
+
+					<section class="namespace">
+						<header>Namespace URI:</header>
+						<details>http://www.cycle99.com/schemas/sage/sage.xsd</details>
+					</section>
+
+					<section class="topic" data-index="yes" data-level="1" id="elements">
+						<header>Elements</header>
+						<details>
+							<section class="element" data-index="yes" data-level="2" id="view-element">
+								<header>sage:view</header>
+								<details>
+									<summary>The root element of the view.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:view controller="documentation" action="xml-flow-input-document">
+															<sage:request>...</sage:request>
+															<sage:response>...</sage:response>
+														</sage:view>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>controller</header>
+												<details>The name of the current controller</details>
+											</section>
+											<section class="attribute">
+												<header>action</header>
+												<details>The name of the current controller action</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											None.
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<a href="${url:self(#request-element)}">sage:request</a>,
+											<a href="${url:self(#response-element)}">sage:response</a>.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="3" id="request-element">
+								<header>sage:request</header>
+								<details>
+									<summary>Contains information about the  current request.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:request method="GET"
+															localAddress="127.0.0.1" remoteAddress="127.0.0.1"
+															category="default" locale="en" thread="634681460570201342" developer="1" debug="0">
+															<sage:path/>
+															<sage:address/>
+															<sage:useragent/>
+															<sage:assembly/>
+															<sage:querystring/>
+															<sage:cookies/>
+															<sage:dateTime/>
+														</sage:request>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>method</header>
+												<details>The current HTTP method; typically GET or POST.</details>
+											</section>
+											<section class="attribute">
+												<header>localAddress</header>
+												<details>The IP address of the local server.</details>
+											</section>
+											<section class="attribute">
+												<header>remoteAddress</header>
+												<details>The IP address of the remote client.</details>
+											</section>
+											<section class="attribute">
+												<header>category</header>
+												<details>The name of the current category.</details>
+											</section>
+											<section class="attribute">
+												<header>locale</header>
+												<details>The name of the current locale.</details>
+											</section>
+											<section class="attribute">
+												<header>thread</header>
+												<details>The name given to the thread of the request, used to identify this request's log messages in the main log file.</details>
+											</section>
+											<section class="attribute">
+												<header>developer</header>
+												<details>
+													Indicates whether the user making this request is considered a developer. Developers are granted a few
+													privileges without having to log on. Developers are selected on the basis of the IP address, this is configured
+													in the <a href="${url:link(configuration-project)}">project configuration file</a>. Possible values of this attribute
+													are zero (0) and one (1).
+												</details>
+											</section>
+											<section class="attribute">
+												<header>debug</header>
+												<details>
+													Indicates whether the current project is running in debug mode. When running in debug mode, modules can
+													emit debugging information inline to aid with problem fixing. When not in debug mode, errors are typically
+													caught and logged without showing the error to the end user. This value is configured
+													in the <a href="${url:link(configuration-project)}">project configuration file</a>. Possible values of this attribute
+													are zero (0) and one (1).
+												</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#view-element)}">sage:view</a>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<a href="${url:self(#path-element)}">sage:path</a>,
+											<a href="${url:self(#address-element)}">sage:address</a>,
+											<a href="${url:self(#useragent-element)}">sage:useragent</a>,
+											<a href="${url:self(#assembly-element)}">sage:assembly</a>,
+											<a href="${url:self(#querystring-element)}">sage:querystring</a>,
+											<a href="${url:self(#form-element)}">sage:form</a>,
+											<a href="${url:self(#cookies-element)}">sage:cookies</a>,
+											<a href="${url:self(#dateTime-element)}">sage:dateTime</a>.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="path-element">
+								<header>sage:path</header>
+								<details>
+									<summary>Provides various resolved project paths that might be useful for the frontend.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:path applicationPath="/" assetPath="/assets/" sharedAssetPath="/assets/" modulePath="/assets/lib/modules/"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>applicationPath</header>
+												<details>The current application path, for instance; <code>/myapp/</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>assetPath</header>
+												<details>Resolved value of <a href="${url:link(configuration-project, #paths-element)}" title="Path configuration">asset path variable</a>, for instance; <code>/myapp/assets/</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>sharedAssetPath</header>
+												<details>The path to the shared assets, applicable in multi-category scenarios,
+												for instance; <code>/myapp/assets/shared/</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>modulePath</header>
+												<details>The modules directory path, for instance; <code>/myapp/assets/modules/</code>.</details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="address-element">
+								<header>sage:address</header>
+								<details>
+									<summary>Provides information about the current URL and its constituent parts.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:address basehref="http://sage.local/" url="http://sage.local/documentation/xml-flow-input-document.html?view=xmlx"
+															referrer="http://sage.local/documentation/xml-flow-input-document.html"
+															serverName="sage.local" serverNameFull="http://sage.local"
+															scriptName="/documentation/xml-flow-input-document.html"
+															scriptNameFull="/documentation/xml-flow-input-document.html?view=xmlx" queryString="?view=xmlx"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>basehref</header>
+												<details>Fully qualified base URL for the current application, for instance;
+												<code>https://www.myserver.com/myapp/</code></details>
+											</section>
+											<section class="attribute">
+												<header>url</header>
+												<details>The current, visible URL of the request, for instance;
+												<code>https://www.myserver.com/myapp/pages/mycoolpage.html?show=everything</code>
+												</details>
+											</section>
+											<section class="attribute">
+												<header>referrer</header>
+												<details>The URL referrer string, if any.</details>
+											</section>
+											<section class="attribute">
+												<header>serverName</header>
+												<details>The name of the current server, for instance; <code>www.myserver.com</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>serverNameFull</header>
+												<details>The name of the current server, prefixed with the current protocol, with server port number
+												added (if other than 80 for http and 443 for https); <code>https://www.myserver.com:444</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>scriptName</header>
+												<details>The local part of the current URL; <code>/myapp/pages/mycoolpage.html</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>scriptNameFull</header>
+												<details>The local part of the current URL, with the quesry string included;
+												<code>/myapp/pages/mycoolpage.html?show=everything</code>.</details>
+											</section>
+											<section class="attribute">
+												<header>querystring</header>
+												<details>Only the querystring part of the URL, for instance;
+												<code>show=everything&amp;page=45&amp;order=desc</code></details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="useragent-element">
+								<header>sage:useragent</header>
+								<details>
+									<summary>Provides information about the current user agent.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:useragent id="firefox11" name="Firefox" version="11.0" version.major="11" version.minor="0"
+															isCrawler="0" value="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>id</header>
+												<div class="indent">The user agent ID. This is a copy of the value of <a href="#">HttpBrowserCapabilities.Type</a>
+												property, or in other words; the name and major (integer) version number of the browser. Examples:
+												<i>firefox11</i>, <i>chrome17</i> or <i>ie9</i>.
+												</div>
+											</section>
+											<section class="attribute">
+												<header>name</header>
+												<div class="indent">The name of the user agent. Examples: <i>IE</i>, <i>Chrome</i> or <i>Firefox</i>.</div>
+											</section>
+											<section class="attribute">
+												<header>version</header>
+												<div class="indent">The version string of the user agent, for instance; <i>11.0</i>.</div>
+											</section>
+											<section class="attribute">
+												<header>version.major</header>
+												<div class="indent">The <i>major</i> part of the user agent version, for instance; <i>11</i>.</div>
+											</section>
+											<section class="attribute">
+												<header>version.minor</header>
+												<div class="indent">The <i>minor</i> part of the user agent version, for instance; <i>0</i>.</div>
+											</section>
+											<section class="attribute">
+												<header>isCrawler</header>
+												<div class="indent">If the user agent string indicates that the current user agent is a crawler (<i>Googlebot</i>,
+												<i>YahooSeeker</i>, etc), this attribute's value will be <code>1</code>; otherwise it will be <code>0</code>.
+												</div>
+											</section>
+											<section class="attribute">
+												<header>value</header>
+												<div class="indent">
+													The raw user agent string, for instance;
+													<i>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0</i>
+												</div>
+											</section>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#request-element)}">sage:request</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="assembly-element">
+								<header>sage:assembly</header>
+								<details>
+									<summary>Provides the current assembly version to the frontend.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:assembly version="1.0.4465.30736"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>version</header>
+												<details>The current version of the compiled Sage assembly.</details>
+											</section>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#request-element)}">sage:request</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="querystring-element">
+								<header>sage:querystring</header>
+								<details>
+									<summary>
+										This element provides read access to all query string values contained in the URL of the request, in the form of attributes, where each attribute's name corresponds to the name of a querystring parameter, and the value of the attribute is the value of the parameter.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:querystring view="xmlx" show="everything" page="45" order="desc"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											Dynamic list of attributes corresponding to the QueryString values.
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#request-element)}">sage:request</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="form-element">
+								<header>sage:form</header>
+								<details>
+									<summary>
+										This element provides read access to all POSTed form values contained in the request, in the form of attributes, where each value's name is the name of the attribute, and the attribute value is the posted value. If the request method is GET, this element will not be present. If there are no posted values at the time of the request, the element will have no attributes.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:form FirstName="James" LastName="Johnson" Address="Sunset Rd. 758, 95646 CA, Alpine" EmailAddress="jjohnson@myweb.com"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											Dynamic list of attributes corresponding to the QueryString values.
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#request-element)}">sage:request</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="cookies-element">
+								<header>sage:cookies</header>
+								<details>
+									<summary>
+										This element provides read access to all cookies applicable for the request, in the form of attributes, where each cookie's name is the name of the attribute, and the attribute value is the value of that cookie. If there are no applicable cookies at the time of the request, the element will have no attributes.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:cookies username="jjohnson" authid="5f4dcc3b5aa765d61d8327deb882cf99" lastvisit="1332547367874"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											Dynamic list of attributes corresponding to currently applicable cookies.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="dateTime-element">
+								<header>sage:dateTime</header>
+								<details>
+									<summary>
+										Contains attributes that describe the current date and time. By adding this element, these values become available to XSLT for further processing based on date and/or time, without having to resort to extension methods (as XSLT 1.0 has no built-in support for working with dates).
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary></summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:dateTime date="24-03-2012" time="12:34:17" day="24" month="03" year="2012" hour="12" minute="34" second="17"/>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties attributes">
+										<header>Attributes</header>
+										<details>
+											<section class="attribute">
+												<header>date</header>
+												<details>Contains the current date at the moment of the request, in the fixed format of <code>dd-MM-yyyy</code></details>
+											</section>
+											<section class="attribute">
+												<header>time</header>
+												<details>Contains the current date at the moment of the request, in the fixed format of <code>hh:mm:ss</code></details>
+											</section>
+											<section class="attribute">
+												<header>day</header>
+												<details>Contains the current date at the moment of the request, in the fixed format of <code>dd</code></details>
+											</section>
+											<section class="attribute">
+												<header>month</header>
+												<details>Contains the current month at the moment of the request, in the fixed format of <code>MM</code></details>
+											</section>
+											<section class="attribute">
+												<header>year</header>
+												<details>Contains the current year at the moment of the request, in the fixed format of <code>yyyy</code></details>
+											</section>
+											<section class="attribute">
+												<header>hour</header>
+												<details>Contains the current hour at the moment of the request, in the fixed format of <code>hh</code></details>
+											</section>
+											<section class="attribute">
+												<header>minute</header>
+												<details>Contains the current minute at the moment of the request, in the fixed format of <code>mm</code></details>
+											</section>
+											<section class="attribute">
+												<header>second</header>
+												<details>Contains the current second at the moment of the request, in the fixed format of <code>ss</code></details>
+											</section>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="3" id="response-element">
+								<header>sage:response</header>
+								<details>
+									<summary>
+										Contains the response data for the current view; the view template (within <a href="${url:self(#model-element)}">sage:model</a> element) and the resources used by the view template (within <a href="${url:self(#resources-element)}">sage:resources</a> element.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:response>
+															<sage:resources>...</sage:resources>
+															<sage:model>...</sage:model>
+														</sage:response>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#view-element)}">sage:view</a>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<a href="${url:self(#resources-element)}">sage:resources</a>,
+											<a href="${url:self(#model-element)}">sage:model</a>.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="resources-element">
+								<header>sage:resources</header>
+								<details>
+									<summary>
+										This element is container for all resources reference by the view's modules and/or libraries. If there are no data, head or body resources, this element will not be present.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:resources>
+															<sage:data/>
+															<sage:head/>
+															<sage:body/>
+														</sage:resources>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#response-element)}">sage:response</a>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<a href="${url:self(#data-element)}">sage:data</a>,
+											<a href="${url:self(#head-element)}">sage:head</a>,
+											<a href="${url:self(#body-element)}">sage:body</a>.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="5" id="data-element">
+								<header>sage:data</header>
+								<details>
+									<summary>
+										Contains the module and/or library document resources that should be loaded within this element, and hence be made available to XSLT processing (typically by the module that references it). If there are no data resources on the current view, this element will not be present.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary></summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:data>
+															<any/>
+														</sage:data>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#resources-element)}">sage:resources</a>
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="5" id="head-element">
+								<header>sage:head</header>
+								<details>
+									<summary>
+										Contains the module and/or library resources, such as scripts and styles referenced by the view or the modules contained on it, that should be loaded within the head of the HTML page. If there are no head resources on the current view, this element will not be present.
+									</summary>
+									<p>
+										The <code>xhtml:link</code> elements supported are stylesheets (<code>rel=stylesheet</code>) and shortcut icons (<code>rel=icon</code>).
+									</p>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<summary></summary>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:head>
+															<xhtml:link rel="icon" href="/favicon.ico"/>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/css/documentation.css"/>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon.js"/>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/breadcrumb/breadcrumb.css"/>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/xmltree/xmltree.css"/>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/modules/developertoolbar/developertoolbar.css"/>
+														</sage:head>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#resources-element)}">sage:resources</a>.
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<a href="http://www.w3.org/TR/2002/WD-xhtml2-20020805/mod-scripting.html#sec_18.2.">xhtml:script</a>,
+											<a href="http://www.w3.org/TR/2006/WD-xhtml2-20060726/mod-meta.html#sec_23.1.">xhtml:link</a>.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="5" id="body-element">
+								<header>sage:body</header>
+								<details>
+									<summary>
+										Contains the module and/or library resources, such as scripts and styles referenced by the view or the modules contained on it, that should be loaded within the body of the HTML page. If there are no body resources on the current view, this element will not be present.
+									</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:body>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/breadcrumb/breadcrumb.js"/>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/xmltree/xmltree.js"/>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.js"/>
+															<xhtml:link type="text/css" rel="stylesheet" href="/assets/lib/scripts/aeon/aeon/controls/tooltip/tooltip.css"/>
+															<xhtml:script type="text/javascript" language="javascript" src="/assets/lib/modules/developertoolbar/developertoolbar.js"/>
+														</sage:body>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#resources-element)}">sage:resources</a>
+										</details>
+									</section>
+									<section class="properties children">
+										<header>Child elements:</header>
+										<details>
+											<a href="http://www.w3.org/TR/2002/WD-xhtml2-20020805/mod-scripting.html#sec_18.2.">xhtml:script</a>,
+											<a href="http://www.w3.org/TR/2006/WD-xhtml2-20060726/mod-meta.html#sec_23.1.">xhtml:link</a>.
+										</details>
+									</section>
+								</details>
+							</section>
+							<section class="element" data-index="yes" data-level="4" id="model-element">
+								<header>sage:model</header>
+								<details>
+									<summary>Holds the X(HT)ML view configuration document that was used; typically, the XHTML file that represents the current view.</summary>
+									<section class="properties example">
+										<header>Example:</header>
+										<details>
+											<mod:XmlTree>
+												<mod:data>
+													<sage:literal>
+														<sage:model>
+															<html>...</html>
+														</sage:model>
+													</sage:literal>
+												</mod:data>
+											</mod:XmlTree>
+										</details>
+									</section>
+									<section class="properties parents">
+										<header>Parent elements:</header>
+										<details>
+											<a href="${url:self(#response-element)}">sage:response</a>
+										</details>
+									</section>
+								</details>
+							</section>
+						</details>
+					</section>
+
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

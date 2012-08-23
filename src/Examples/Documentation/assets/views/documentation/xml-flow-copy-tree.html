@@ -23,34 +23,32 @@
 				</header>
 				<details>
 
-					<summary>
-						In this step, the localized template document is pre-processed by resolving and expanding any context-dependent
-						entities (XML elements, attributes or text), before returning it to the caller.
-					</summary>
+					<img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-contextualize.png" alt="Contextualization"/>
 
-					<div class="marginframe">
-						<img src="${assetpath}/images/diagrams/xml-flow-contextualize.png" alt="Contextualization"/>
-					</div>
+					<summary>
+						<dfn>
+							In this step, the localized template document is pre-processed by resolving and expanding any context-dependent entities (XML elements, attributes or text), before returning it to the caller.
+						</dfn>
+					</summary>
 
 					<section class="topic">
 						<header>How it works</header>
 						<details>
-							<div class="marginframe">
-								<img align="right" src="${assetpath}/images/diagrams/xml-flow-contextualize-detail.png" alt="Contextualization"/>
-							</div>
+
+							<img class="internationalization-detail" src="${assetpath}/images/diagrams/xml-flow-contextualize-detail.png" alt="Contextualization"/>
 
 							<ul class="notes" style="margin-left: 5px; padding-right: 20px">
 								<li>
 									The localized document matching the current locale is opened and it's content is processed recursively, using registered <a href="${url:link(extensibility-node-handlers)}">node handlers</a> to process the document as a tree.
 								</li>
 								<li>
-									When processing text nodes and attribute values, the text is searched for registered <a href="${url:link(extensibility-text-handlers)}">text handler</a> patterns. The matches are replaced by the result of invoking the associated handler.
+									When processing text nodes and attribute values, the text is evaluated for <a href="${url:link(text-expressions)}">text expression</a> patterns.
 								</li>
 								<li>
 									Sage provides default node handlers whose standard behavior is to simply copy the nodes as they are. When processing a document, if there is no node handler specific to the current selection, Sage invokes the default handlers, thereby ensuring the document is copied as is.
 								</li>
 								<li>
-									Sage provides a number of <a href="${url:link(extensibility-node-handlers)}">node and text handlers</a> that can be used within any XML documents residing in the project.
+									If there is a node handler registered specifically for the node being processed, it will be invoked instead of the default handler.
 								</li>
 							</ul>
 						</details>

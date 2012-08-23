@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
+ 	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Internationalize (Document transform flow)</title>
+	</head>
+	<body>
+
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="xml-flow-internationalize"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Internationalize (Document transform flow)</span>
+				</header>
+				<details>
+
+					<img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow-internationalize.png" alt="Internationalization"/>
+
+					<summary>
+						<dfn>
+							In the internationalization step, any XML documents that reference <a href="${url:link(sage-namespaces-internationalization)}">internationalization namespace</a> are processed and generated separately for each of the project's locales.
+						</dfn>
+					</summary>
+
+					<section class="topic">
+						<header>How it works</header>
+						<details>
+							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-internationalize-detail.png" alt="Internationalization details"/>
+
+							<ul class="notes">
+								<li>When internationalizng a resource, Sage generates a separate file for each locale in the project.</li>
+								<li>For each locale, if there is a resource version more specific to that locale than the default, then that version will be opened instead. This allows having completely separate versions of the resource per locale or locale hierarchy. The locale of the resource is set by the filename suffix at the end (e.g. <code>-en</code>, or <code>-en-UK</code> of the name (but before the extension). The specificity of the suffixes is controlled by the <a href="${url:link(configuration-project-internationalization)">project internationalization settings</a>.</li>
+								<li>By default, the internationalized files are saved in a subdirectory '_target' within the file's source directory. <a href="${url:link(configuration-project-paths)}">This location is
+								configurable</a>.</li>
+							</ul>
+						</details>
+					</section>
+
+					<section class="topic" id="locale-fallback-path" data-index="1">
+						<header>Locale fallback path</header>
+						<details>
+							<p>
+								For each of the locales a resource is being internationalized to, Sage checks weather a separate file, specific to that locale exists. If it does, it selects it instead of the more generic, default file.
+							</p>
+							<p>
+								When selecting this locale-specific file however, a list of names is considered. The list is defined with the <span>resourceNames</span> attribute on the locale element of the <a href="${url:link(configuration-project-internationalization)}">project internationalization configuration</a>:
+							</p>
+							<mod:XmlTree>
+								<mod:data>
+									<locale name="ar" dictionaryNames="ar,la,es,en" resourceNames="ar,la,es,default"/>
+								</mod:data>
+							</mod:XmlTree>
+							<p class="section">
+								With the above configuration in place, when localizing a resource "support.html", the file names Sage will attempt to open will be, in this order:
+							</p>
+							<ul>
+								<li>support-<b>ar</b>.html (<b>Argentina</b>)</li>
+								<li>support-<b>la</b>.html (<b>Latin America</b>)</li>
+								<li>support-<b>es</b>.html (<b>Spain</b>)</li>
+								<li>support.html (<b>Generic</b>)</li>
+							</ul>
+							<p>
+								The first existing file will be used, and the search stops.
+							</p>
+						</details>
+					</section>
+
+					<section class="topic" id="auto-internationalization" data-index="1">
+						<header>Automatic internationalization</header>
+						<details>
+							<p>
+								The internationalization can be done either:
+							</p>
+							<ul class="notes">
+								<li>
+									Single file, on-the-fly, as required due to resources changes
+								</li>
+								<li>
+									Complete project is preinternationalized, typically as part of the build process; Sage is then configured to not attempt any internationalization.
+								</li>
+							</ul>
+							<p>
+								In a production environment, the project will typically be pre-internationalizated before deployment, as this speeds up responses by having pregenerated the localizations already.
+							</p>
+							<p>
+								On development setups, it is convenient to have Sage do this as required; when the source file or one of it's dependencies changes.
+							</p>
+							<p>
+								This behavior is controlled with the <code>autoInternationalize</code> attribute of the <a href="${url:link(configuration-project,#project-element)}">project element</a>
+							</p>
+							<p>
+								<b>The localization will happen only if the document references the
+								<a href="${url:link(sage-namespaces-internationalization)}">internationalization namespace</a>.</b>
+							</p>
+						</details>
+					</section>
+
+				</details>
+			</section>
+		</div>
+	</body>
+</html>

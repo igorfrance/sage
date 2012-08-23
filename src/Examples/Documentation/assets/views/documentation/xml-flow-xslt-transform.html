@@ -7,7 +7,7 @@
 
 	<head>
 		<sage:basehref/>
-		<title>Transform (Document transform flow)</title>
+		<title>XSLT Transform (Document transform flow)</title>
 	</head>
 	<body>
 
@@ -19,66 +19,55 @@
 			</mod:Sidebar>
 			<section class="content">
 				<header>
-					<span>Transform (Document transform flow)</span>
+					<span>XSLT Transform (Document transform flow)</span>
 				</header>
 				<details>
 
-					<p>
-						The XSLT transform step is the last step in generating the HTML that will be returned to the browser.
-					</p>
+					<img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-transform.png" alt="XSLT Transform"/>
 
-					<div class="marginframe">
-						<img src="${assetpath}/images/diagrams/xml-flow-transform.png" alt="XSLT Transform"/>
-					</div>
+					<summary>
+						<dfn>
+							The XSLT transform step is the last step in generating the HTML that will be returned to the browser.
+						</dfn>
+					</summary>
 
 					<section class="topic">
 						<header>How it works</header>
 						<details>
-							<div class="marginframe">
-								<img align="right" src="${assetpath}images/diagrams/xml-flow-transform-detail.png" alt="XSLT Transform details"/>
-							</div>
+							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-transform-detail.png" alt="XSLT Transform details"/>
 
 							<p>
-								At this point, the controller view XML document is localized and contextualized, and it's modules have been expanded with data. The whole view is wrapped together with request context information into the standard <a href="${url:link(xml-input-document)}">input document format</a>. Resources have been resolved and their information added to the input document. The last step remaining is to transform it into actual HTML.
+								At this point, the controller view XML document is localized and contextualized, and it's modules have been expanded with data. The whole view is wrapped together with request context information into the standard <a href="${url:link(xml-flow-input-document)}">input document format</a>. Resources have been resolved and their information added to the input document. The last step remaining is to transform it into actual HTML.
 							</p>
 							<p>
 								Since sage provides a base stylesheet for use when no view or project-specific stylesheet exists, it is not required for a view to provide one. Additionally, any XSLT stylesheets belonging to modules will be automatically included with the default stylesheet.
 							</p>
 
 							<p>
-								When selecting the XSLT stylesheet to use with a controller view, there are several file locations that are
-								considered:
+								When selecting the XSLT stylesheet to use with a controller view, there are several file locations that are considered:
 							</p>
 							<dl>
 								<dt>Local path</dt>
 								<dd>
-									The first location place Sage looks for the controller view's XSLT stylesheet is the same directory in which
-									the view definition XHTML document resides, a file with the same name as the view definition, but with either
-									<code>xsl</code> or <code>xslt</code> extension. The default template path for local views is:<br/>
+									The first location place Sage looks for the controller view's XSLT stylesheet is the same directory in which the view definition XHTML document resides, a file with the same name as the view definition, but with either <code>xsl</code> or <code>xslt</code> extension. The default template path for local views is:<br/>
 									<code class="principal">{{assetpath}}/views/{controller}/{action}</code>.
 								</dd>
 
 								<dt>Project path</dt>
 								<dd>
-									Next, if there is no controller/view-specific XSLT stylesheet, Sage then checks if a stylesheet exists in
-									the project-default location. If it exists, it will be used with any view that doesn't have a local stylesheet.
-									The default template path for project-default stylesheet is:<br/>
+									Next, if there is no controller/view-specific XSLT stylesheet, Sage then checks if a stylesheet exists in the project-default location. If it exists, it will be used with any view that doesn't have a local stylesheet. The default template path for project-default stylesheet is:<br/>
 									<code class="principal">{{assetpath}}/views/xslt/default.xsl</code>.
 								</dd>
 
 								<dt>System path</dt>
 								<dd>
-									Finally, if there is neither a controller/view-specific XSLT stylesheet, nor a project-default stylesheet,
-									Sage will open the system-default XSLT stylesheet that it provides. The system-default stylesheet is
-									compiled into Sage as an embedded resource, and as such it will be opened using a
-									<a href="${url:link(sage-uri-schemes)}">sageresx:// URI scheme</a> designated for resolving embedded resources:<br/>
+									Finally, if there is neither a controller/view-specific XSLT stylesheet, nor a project-default stylesheet, Sage will open the system-default XSLT stylesheet that it provides. The system-default stylesheet is compiled into Sage as an embedded resource, and as such it will be opened using a <a href="${url:link(sage-uri-schemes)}">sageresx:// URI scheme</a> designated for resolving embedded resources:<br/>
 									<code class="principal">sageresx://sage/resources/xslt/global.xslt</code>.
 								</dd>
 							</dl>
 
 							<p class="section">
-								The system-default stylesheet provided by Sage contains many XSLT templates for working with Sage. Therefore,
-								you will probably want to include it even if you are providing a specific stylesheet:
+								The system-default stylesheet provided by Sage contains many XSLT templates for working with Sage. Therefore, you will probably want to include it even if you are providing a specific stylesheet:
 							</p>
 
 							<mod:XmlTree>
@@ -90,15 +79,11 @@
 							<h3 class="section">Modules</h3>
 
 							<p>
-								Any XSLT stylesheets that are <a href="${url:link(sage-modules)}">configured for use with modules</a> are included automatically in the base stylesheet,
-								so that any associated module templates can process the module element occurrences wherever they occur in controller views.
+								Any XSLT stylesheets that are <a href="${url:link(sage-modules)}">configured for use with modules</a> are included automatically in the base stylesheet, so that any associated module templates can process the module element occurrences wherever they occur in controller views.
 							</p>
 
 							<p xml:space="preserve">
-								The XSLT markup from all module is combined in a single resource, provided by a
-								<a href="${url:link(extensibility-xml-providers)}">custom resource provider</a> that
-								generates it's content. Since that resource provider <a href="${url:link(sage-uri-schemes)}">registers for path</a>
-								<code>modules.xslt</code>, we can include the module XSLT simply by specifying:
+								The XSLT markup from all module is combined in a single resource, provided by a <a href="${url:link(extensibility-xml-providers)}">custom resource provider</a> that generates it's content. Since that resource provider <a href="${url:link(sage-uri-schemes)}">registers for path</a> <code>modules.xslt</code>, we can include the module XSLT simply by specifying:
 							</p>
 
 							<mod:XmlTree>
@@ -107,11 +92,8 @@
 								</mod:data>
 							</mod:XmlTree>
 
-
 						</details>
 					</section>
-
-
 
 				</details>
 			</section>

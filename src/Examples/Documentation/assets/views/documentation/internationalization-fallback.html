@@ -75,7 +75,7 @@
 
 		<p>
 			When Sage <a href="${url:link(internationalization-phrases)}">substitutes phrases</a> during the
-			<a href="${url:link(xml-flow-localize)}">localization step</a>, it replaces the phrase reference nodes with
+			<a href="${url:link(xml-flow-internationalize)}">localization step</a>, it replaces the phrase reference nodes with
 			the actual values of referenced phrases. The phrases are defined in language dictionaries, and dictionaries can
 			be combined to facilitate reuse.
 		</p>
@@ -108,7 +108,7 @@
 
 		<h5 class="section">When opening files</h5>
 		<p>
-			When opening XML resources during the <a href="${url:link(xml-flow-localize)}">localization step</a>, Sage
+			When opening XML resources during the <a href="${url:link(xml-flow-internationalize)}">localization step</a>, Sage
 			will attempt to add each of locale names specified with the <code>resourceNames</code> attribute as a suffix of
 			the base name, and if it finds a file with that suffix it will be used instead of the requested base name.
 		</p>
@@ -131,13 +131,13 @@
 		<h5 class="section">When localizing documents</h5>
 		<p>
 			When Sage is <a href="${url:link(internationalization-variables)}">resolving variable values</a> during the
-			<a href="${url:link(xml-flow-localize)}">localization step</a>, it
+			<a href="${url:link(xml-flow-internationalize)}">localization step</a>, it
 			will attempt to resolve the value by going through the same list of locale names specified with the
 			<code>resourceNames</code> attribute, and return the value of the first matching locale.
 		</p>
 		<p>
 			When Sage is <a href="${url:link(internationalization-conditionals)}">resolving which elements to render</a> during the
-			<a href="${url:link(xml-flow-localize)}">localization step</a>, it goes through the list of locales specified
+			<a href="${url:link(xml-flow-internationalize)}">localization step</a>, it goes through the list of locales specified
 			by the conditional block, and if any one of the locales if found in the list of specified with the <code>resourceNames</code>
 			attribute for the current locale, the block will be rendered.
 		</p>

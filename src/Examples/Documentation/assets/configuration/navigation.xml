@@ -2,10 +2,10 @@
 <site:navigation xmlns:site="http://sage.cycle99.com/" xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
 	<ul xmlns="http://www.w3.org/1999/xhtml">
 		<li>
-			<a href="${url:link(documentation)}">Sage</a>
+			<a href="${url:link(documentation)}">Documentation</a>
 			<ul class="documentation">
 				<li>
-					<span>Getting started</span>
+					<a href="${url:link(getting-started)}">Getting started</a>
 					<ul>
 						<li>
 							<a href="${url:link(sage-license)}">License</a>
@@ -33,39 +33,84 @@
 					</ul>
 				</li>
 				<li>
-					<a href="${url:link(xml-as-a-language)}">XML as a language</a>
+					<a href="${url:link(features)}">Features</a>
 					<ul>
 						<li>
-							<a href="${url:link(xml-input-document)}">Input document</a>
+							<a href="${url:link(views)}">Views</a>
 						</li>
 						<li>
 							<a href="${url:link(sage-modules)}">Modules</a>
-							<ul class="examples">
-								<li>
-									<a href="${url:link(sage-modules-example1)}" data-shortTitle="Example1">Creating a module without a back-end component</a>
-								</li>
-								<li>
-									<a href="${url:link(sage-modules-example2)}" data-shortTitle="Example2">Creating a module with a back-end component</a>
-								</li>
-							</ul>
+						</li>
+						<li>
+							<a href="${url:link(resource-libraries)}">Resource libraries</a>
 						</li>
 						<li>
 							<a href="${url:link(linking)}">Linking</a>
 						</li>
 						<li>
-							<a href="${url:link(sage-uri-schemes)}">Available URI schemes</a>
+							<a href="${url:link(xslt-templates)}">XSLT templates</a>
 						</li>
 						<li>
-							<a href="${url:link(xslt-templates)}">XSLT templates</a>
+							<a href="${url:link(text-expressions)}">Text expressions</a>
+						</li>
+						<li>
+							<a href="${url:link(xml-as-a-language)}">XML as a language</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="${url:link(under-the-hood)}">Under the hood</a>
+					<ul>
+						<li>
+							<a href="${url:link(xml-flow)}">Document transform flow</a>
+							<ul>
+								<li>
+									<a href="${url:link(xml-flow-internationalize)}">Internationalize</a>
+								</li>
+								<li>
+									<a href="${url:link(xml-flow-copy-tree)}">Contextualize</a>
+								</li>
+								<li>
+									<a href="${url:link(xml-flow-expand-modules)}">Expand modules</a>
+								</li>
+								<li>
+									<a href="${url:link(xml-flow-input-document)}">Prepare input document</a>
+								</li>
+								<li>
+									<a href="${url:link(xml-flow-xslt-transform)}">XSLT Transform</a>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<a href="${url:link(internationalization)}">Internationalization</a>
+							<ul>
+								<li>
+									<a href="${url:link(internationalization-phrases)}">Phrase substitution</a>
+								</li>
+								<li>
+									<a href="${url:link(internationalization-variables)}">Variable substitution</a>
+								</li>
+								<li>
+									<a href="${url:link(internationalization-conditionals)}">Conditional rendering</a>
+								</li>
+								<li>
+									<a href="${url:link(internationalization-fallback)}">Locale resolution</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="${url:link(reference)}">Reference</a>
+					<ul>
+						<li>
+							<a href="${url:link(sage-uri-schemes)}">Available URI schemes</a>
 						</li>
 						<li>
 							<a href="${url:link(sage-namespaces)}">Namespaces</a>
 							<ul>
 								<li>
 									<a href="${url:link(sage-namespaces-xinclude)}">X-Include</a>
-								</li>
-								<li>
-									<a href="${url:link(sage-namespaces-sage)}">Sage</a>
 								</li>
 								<li>
 									<a href="${url:link(sage-namespaces-internationalization)}">Internationalization</a>
@@ -79,50 +124,21 @@
 								<li>
 									<a href="${url:link(sage-namespaces-logic)}">Logic</a>
 								</li>
+								<li>
+									<a href="${url:link(sage-namespaces-sage)}">Sage</a>
+									<ul>
+										<li>
+											<a href="${url:link(sage-namespaces-sage-input-document)}">Input document</a>
+										</li>
+									</ul>
+								</li>
 							</ul>
 						</li>
 					</ul>
 				</li>
 				<li>
-					<a href="${url:link(internationalization)}">Internationalization</a>
+					<a href="${url:link(resources)}">Resources</a>
 					<ul>
-						<li>
-							<a href="${url:link(internationalization-phrases)}">Phrase substitution</a>
-						</li>
-						<li>
-							<a href="${url:link(internationalization-variables)}">Variable substitution</a>
-						</li>
-						<li>
-							<a href="${url:link(internationalization-conditionals)}">Conditional rendering</a>
-						</li>
-						<li>
-							<a href="${url:link(internationalization-fallback)}">Locale resolution</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="${url:link(xml-flow)}">Document transform flow</a>
-					<ul>
-						<li>
-							<a href="${url:link(xml-flow-localize)}">1: Localize</a>
-						</li>
-						<li>
-							<a href="${url:link(xml-flow-copy-tree)}">2: Contextualize</a>
-						</li>
-						<li>
-							<a href="${url:link(xml-flow-expand-modules)}">3: Expand modules</a>
-						</li>
-						<li>
-							<a href="${url:link(xml-flow-xslt-transform)}">4: XSLT Transform</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<span>Resources</span>
-					<ul>
-						<li>
-							<a href="${url:link(resource-libraries)}">Resource libraries</a>
-						</li>
 						<li>
 							<a href="${url:link(resource-processing-kelp)}">Merging scripts and styles</a>
 						</li>
@@ -270,7 +286,7 @@
 					</ul>
 				</li>
 				<li>
-					<span>Extensions</span>
+					<a href="${url:link(extensions)}">Extensions</a>
 					<ul>
 						<li>
 							<a href="${url:link(extension-devtools)}">Developer tools</a>

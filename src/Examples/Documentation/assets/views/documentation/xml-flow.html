@@ -22,19 +22,17 @@
 				</header>
 				<details>
 
-					<summary>
-						When working with XML documents, Sage takes the document through several steps of processing before it is returned to the caller. With controller view templates, the resulting document is processed and transformed even further.
-					</summary>
+					<img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow.png" alt="XML transform flow overview"/>
 
-					<div class="marginframe">
-						<img src="${assetpath}images/diagrams/xml-flow.png" alt="XML transform flow overview"/>
-					</div>
+					<summary><dfn>
+						When working with XML documents, Sage takes them through several steps of processing before they are returned to the caller.
+					</dfn></summary>
 
-					<ol>
+					<ul>
 						<li>
-							<h5><a href="${url:link(xml-flow-localize)}">Localize</a> *</h5>
+							<h5><a href="${url:link(xml-flow-internationalize)}">Internationalize</a> *</h5>
 							<p>
-								The localized version of the source document is opened. Depending on the settings, this step is done either inline or as a part of the batch process for the whole project. The localization is done and a localized version opened only if the document uses entities from the Sage's <a href="href:${url:link(internationalization.html">internationalization</a> namespace.
+								The internationalized version of the source document is opened. Depending on the settings, this step is done either inline or as a part of the batch process for the whole project. The internationalization is done and a internationalized version opened only if the document uses entities from the Sage's <a href="${url:link(internationalization)}">internationalization</a> namespace.
 							</p>
 						</li>
 						<li>
@@ -46,7 +44,13 @@
 						<li>
 							<h5><a href="${url:link(xml-flow-expand-modules)}">Expand modules</a></h5>
 							<p>
-								Each module in the view template is executed as a backend <code>IModule</code> instance. The module may or may not have a specific backend component. In case the module doesn't have one, the default <code>NullModule</code> is used. The modules that do have a backend component will typically append content into the module element's data node, altough they can potentically modify the module element in any way.
+								Each module in the view template is executed as a backend <code>IModule</code> instance. The module may or may not have a specific backend component. In case the module doesn't have one, the default <code>NullModule</code> is used. The modules that have a backend component will typically append content into the module element's data node, although they can potentically modify the module element in any way.
+							</p>
+						</li>
+						<li>
+							<h5><a href="${url:link(xml-flow-input-document)}">Prepare input document</a></h5>
+							<p>
+								Before being sent off further to be XSLT transformed, a view document is wrapped in a <em>context envelope</em>; an internal document format used with all view transformations. This standard structure provides information about the request and access to controller data. The XHTML template document is appended into a dedicated element <a href="${url:link(xml-flow-input-document,#model-element)}">sage:model</a>. This step and the previous (expand modules) are actually done in a single step, but for clarity they are here discussed separately.
 							</p>
 						</li>
 						<li>
@@ -55,7 +59,7 @@
 								The prepared and processed view template is finally transformed using the XSLT template associated with the view. Modules may provide their own XSLT which will then be used to render the HTML associated with the modules in the view template.
 							</p>
 						</li>
-					</ol>
+					</ul>
 					<ul class="small clear">
 						<li>&#160;&#160;* only XML document referencing internationalization namespace</li>
 					</ul>

@@ -39,3 +39,5 @@ section.sidebar details .level8
 section.sidebar details ul
 	{ margin: 0; padding: 0; }
 
+section.sidebar details ul.children
+	{ padding-left: 10px; }

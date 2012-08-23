@@ -23,340 +23,325 @@
 					<span>Modules</span>
 				</header>
 				<details>
-		<p>
-			Modules are reusable pieces of logic and markup, as well as any resources (JavaScript and CSS) and/or XSLT
-			stylesheets that go with it.
-		</p>
+				<summary>
+					Modules are reusable pieces of logic and markup and resources (javascript, CSS stylesheets, document, XSLT stylesheets and more) that belong with it.
+				</summary>
 
-		<p>
-			Each module needs to be registered in the <a href="${url:link(configuration-project)}">project configuration</a> file
-			before it can be used. After it has been registered, it can be added anywhere within view markup, using it's
-			corresponding XML tag(s).
-		</p>
+				<p>
+					Each module needs to be registered in the <a href="${url:link(configuration-project)}">project configuration</a> file
+					before it can be used. After it has been registered, it can be added anywhere within view markup, using it's
+					corresponding XML tag(s).
+				</p>
 
-		<h3 class="section">Configuration and usage</h3>
+				<h3 class="section">Configuration and usage</h3>
 
-		<p>
-			The following snippet shows how the <a href="${url:link(extension-devtools)}">XmlTree</a>
-			module is configured. In the sections that follow, we'll discuss various module features,
-			occasionally referring back to this example.
-		</p>
+				<p>
+					The following snippet shows how the <a href="${url:link(extension-devtools)}">XmlTree</a>
+					module is configured. In the sections that follow, we'll discuss various module features,
+					occasionally referring back to this example.
+				</p>
 
-		<mod:XmlTree>
-			<mod:data>
-				<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
-					<stylesheets>
-						<stylesheet path="XmlTree.xsl"/>
-					</stylesheets>
-					<resources>
-						<library ref="aeon"/>
-						<resource type="script" location="body" path="XmlTree.js"/>
-						<resource type="style" location="head" path="XmlTree.css"/>
-					</resources>
-				</module>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:data>
+						<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
+							<stylesheets>
+								<stylesheet path="XmlTree.xsl"/>
+							</stylesheets>
+							<resources>
+								<library ref="aeon"/>
+								<resource type="script" location="body" path="XmlTree.js"/>
+								<resource type="style" location="head" path="XmlTree.css"/>
+							</resources>
+						</module>
+					</mod:data>
+				</mod:XmlTree>
 
-		<p>
-			After a module has been registered, we can use it in any view simply by referencing it through its tag(s).
-			Depending on the module, we may also need to set some options within it's <code>mod:config</code> element, or
-			provide some content within it's <code>mod:data</code> element.
-		</p>
+				<p>
+					After a module has been registered, we can use it in any view simply by referencing it through its tag(s).
+					Depending on the module, we may also need to set some options within it's <code>mod:config</code> element, or
+					provide some content within it's <code>mod:data</code> element.
+				</p>
 
-		<mod:XmlTree>
-			<mod:data>
-				<sage:literal>
-					<mod:XmlTree>
-						<mod:config>
-							<mod:toolbar>true</mod:toolbar>
-							<mod:wrap>false</mod:wrap>
-						</mod:config>
-						<mod:data>
-							<intl:dictionary lang="es">
-								<intl:phrase id="hello.world">¡Hola, mundo!</intl:phrase>
-							</intl:dictionary>
-						</mod:data>
-					</mod:XmlTree>
-				</sage:literal>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:XmlTree>
+								<mod:config>
+									<mod:toolbar>true</mod:toolbar>
+									<mod:wrap>false</mod:wrap>
+								</mod:config>
+								<mod:data>
+									<intl:dictionary lang="es">
+										<intl:phrase id="hello.world">¡Hola, mundo!</intl:phrase>
+									</intl:dictionary>
+								</mod:data>
+							</mod:XmlTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
 
 
-		<h3 class="section">Back-end code</h3>
+				<h3 class="section">Back-end code</h3>
 
-		<div class="sectionblock">
-			<p>
-				Depending on the purpose of the module, it may need some supporting back-end code. The class that corresponds
-				to the module is registered through the module configuration's <code>type</code> attribute. The value of this
-				attribute must point to a loadable class that implements <code>IModule</code> interface, or an exception will
-				be thrown.
-			</p>
-			<p>
-				If no back-end component is needed, this attribute can be skipped, in which case it defaults to the built-in
-				<code>NullModule</code> which is a blank implementation of <code>IModule</code> that does nothing.
-			</p>
-			<p>
-				For an example how back-end processing works, check <a href="${url:link(sage-modules-example2)}">creating a module
-				with a back-end component</a>.
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						Depending on the purpose of the module, it may need some supporting back-end code. The class that corresponds
+						to the module is registered through the module configuration's <code>type</code> attribute. The value of this
+						attribute must point to a loadable class that implements <code>IModule</code> interface, or an exception will
+						be thrown.
+					</p>
+					<p>
+						If no back-end component is needed, this attribute can be skipped, in which case it defaults to the built-in
+						<code>NullModule</code> which is a blank implementation of <code>IModule</code> that does nothing.
+					</p>
+				</div>
 
-		<h3 class="section">Generating markup</h3>
+				<h3 class="section">Generating markup</h3>
 
-		<div class="sectionblock">
-			<p>
-				The markup is generated by an XSLT template that matches the module. An XSLT stylesheet needs to be registered
-				with the module (see configuration example above), which will then be dynamically compiled into the main
-				stylesheet when the project first initializes. If you are working on the stylesheet locally, the system will
-				automatically reload changes with the next request.
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						The markup is generated by an XSLT template that matches the module. An XSLT stylesheet needs to be registered
+						with the module (see configuration example above), which will then be dynamically compiled into the main
+						stylesheet when the project first initializes. If you are working on the stylesheet locally, the system will
+						automatically reload changes with the next request.
+					</p>
+				</div>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:highlight>
-					<mod:element>stylesheets</mod:element>
-					<mod:element>stylesheet</mod:element>
-				</mod:highlight>
-			</mod:config>
-			<mod:data>
-				<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
-					<stylesheets>
-						<stylesheet path="XmlTree.xsl"/>
-					</stylesheets>
-					<resources>
-						<library ref="aeon"/>
-						<resource type="script" location="body" path="XmlTree.js"/>
-						<resource type="style" location="head" path="XmlTree.css"/>
-					</resources>
-				</module>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:highlight>
+							<mod:element>stylesheets</mod:element>
+							<mod:element>stylesheet</mod:element>
+						</mod:highlight>
+					</mod:config>
+					<mod:data>
+						<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
+							<stylesheets>
+								<stylesheet path="XmlTree.xsl"/>
+							</stylesheets>
+							<resources>
+								<library ref="aeon"/>
+								<resource type="script" location="body" path="XmlTree.js"/>
+								<resource type="style" location="head" path="XmlTree.css"/>
+							</resources>
+						</module>
+					</mod:data>
+				</mod:XmlTree>
 
-		<h3 class="section">Module resources</h3>
+				<h3 class="section">Module resources</h3>
 
-		<div class="sectionblock">
-			<p>
-				If your module generates HTML, odds are it needs additional resources, such as scripts or styles,
-				to display everything correctly. Managing this manually and making sure the correct resources are included
-				on all required pages, in the correct order can be a hustle and a maintenance nightmare.
-			</p>
-			<p>
-				Modules allow you to specify the resources it uses, and Sage will make sure they get included any time the
-				module is used on a view. The supported resource types are:
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						If your module generates HTML, odds are it needs additional resources, such as scripts or styles,
+						to display everything correctly. Managing this manually and making sure the correct resources are included
+						on all required pages, in the correct order can be a hustle and a maintenance nightmare.
+					</p>
+					<p>
+						Modules allow you to specify the resources it uses, and Sage will make sure they get included any time the
+						module is used on a view. The supported resource types are:
+					</p>
+				</div>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:highlight>
-					<mod:element>resources</mod:element>
-					<mod:element>resource</mod:element>
-				</mod:highlight>
-			</mod:config>
-			<mod:data>
-				<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
-					<stylesheets>
-						<stylesheet path="XmlTree.xsl"/>
-					</stylesheets>
-					<resources>
-						<library ref="aeon"/>
-						<resource type="script" location="body" path="XmlTree.js"/>
-						<resource type="style" location="head" path="XmlTree.css"/>
-					</resources>
-				</module>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:highlight>
+							<mod:element>resources</mod:element>
+							<mod:element>resource</mod:element>
+						</mod:highlight>
+					</mod:config>
+					<mod:data>
+						<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
+							<stylesheets>
+								<stylesheet path="XmlTree.xsl"/>
+							</stylesheets>
+							<resources>
+								<library ref="aeon"/>
+								<resource type="script" location="body" path="XmlTree.js"/>
+								<resource type="style" location="head" path="XmlTree.css"/>
+							</resources>
+						</module>
+					</mod:data>
+				</mod:XmlTree>
 
-		<h5 class="tiny">Resource types</h5>
+				<h5 class="tiny">Resource types</h5>
 
-		<ul>
-			<li>
-				<h5 class="casual">script</h5>
-			</li>
-			<li>
-				<h5 class="casual">style</h5>
-			</li>
-			<li>
-				<h5 class="casual">document</h5>
-			</li>
-		</ul>
+				<ul>
+					<li>
+						<h5 class="casual">script</h5>
+					</li>
+					<li>
+						<h5 class="casual">style</h5>
+					</li>
+					<li>
+						<h5 class="casual">document</h5>
+					</li>
+				</ul>
 
-		<p>
-			You have to specify the type for each module resource. A JavaScript is indicated with <b>script</b>, CSS with
-			<b>style</b> and an XML document with <b>document</b>.
-		</p>
+				<p>
+					You have to specify the type for each module resource. A JavaScript is indicated with <b>script</b>, CSS with
+					<b>style</b> and an XML document with <b>document</b>.
+				</p>
 
-		<h5 class="tiny">Resource locations</h5>
-		<ul>
-			<li>
-				<h5 class="casual">head</h5>
-			</li>
-			<li>
-				<h5 class="casual">body</h5>
-			</li>
-			<li>
-				<h5 class="casual">data</h5>
-			</li>
-		</ul>
+				<h5 class="tiny">Resource locations</h5>
+				<ul>
+					<li>
+						<h5 class="casual">head</h5>
+					</li>
+					<li>
+						<h5 class="casual">body</h5>
+					</li>
+					<li>
+						<h5 class="casual">data</h5>
+					</li>
+				</ul>
 
-		<p>
-			Each resource specifies the location where it should be included in. For JavaScript and CSS resources,
-			only <b>head</b> and <b>body</b> apply. If location is <b>head</b>, the resource will be included within the
-			<code>head</code> element of the view on which the module is being used. If location is <b>body</b>, the resource
-			will be included before the closing tag of the <code>body</code> element of the view on which the module is being used.
-		</p>
-		<p>
-			For XML documents, only valid location is <b>data</b>. This means that the document will be included within the
-			<code>sage:resources</code> element of the view's XML document. For more info on this, check how Sage prepares the
-			<a href="${url:link(xml-input-document)}">input document</a>.
-		</p>
+				<p>
+					Each resource specifies the location where it should be included in. For JavaScript and CSS resources,
+					only <b>head</b> and <b>body</b> apply. If location is <b>head</b>, the resource will be included within the
+					<code>head</code> element of the view on which the module is being used. If location is <b>body</b>, the resource
+					will be included before the closing tag of the <code>body</code> element of the view on which the module is being used.
+				</p>
+				<p>
+					For XML documents, only valid location is <b>data</b>. This means that the document will be included within the
+					<code>sage:resources</code> element of the view's XML document. For more info on this, check how Sage prepares the
+					<a href="${url:link(xml-flow-input-document)}">input document</a>.
+				</p>
 
-		<h3 class="section">Dependencies on other modules</h3>
+				<h3 class="section">Dependencies on other modules</h3>
 
-		<div class="sectionblock">
-			<p>
-				Sometimes a module will depend on another module. In practice, this generally means other module's resources.
-				You can speciy which other module your module depends on, and Sage will ensure that it's resource are loaded
-				too, whenever your module it used on a view. Naturally, the order of inclusion is taken into account, and the
-				resources of dependencies are included before any resources of the dependent module are loaded.
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						Sometimes a module will depend on another module. In practice, this generally means other module's resources.
+						You can speciy which other module your module depends on, and Sage will ensure that it's resource are loaded
+						too, whenever your module it used on a view. Naturally, the order of inclusion is taken into account, and the
+						resources of dependencies are included before any resources of the dependent module are loaded.
+					</p>
+				</div>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:highlight>
-					<mod:element>dependencies</mod:element>
-					<mod:element>module</mod:element>
-				</mod:highlight>
-			</mod:config>
-			<mod:data>
-				<p:module name="BreadCrumb" xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
-					<stylesheets>
-						<stylesheet path="breadcrumb.xsl"/>
-					</stylesheets>
-					<dependencies>
-						<module ref="Navigation"/>
-					</dependencies>
-					<resources>
-						<resource type="script" path="breadcrumb.js" location="body"/>
-						<resource type="style" path="breadcrumb.css" location="head"/>
-					</resources>
-				</p:module>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:highlight>
+							<mod:element>dependencies</mod:element>
+							<mod:element>module</mod:element>
+						</mod:highlight>
+					</mod:config>
+					<mod:data>
+						<p:module name="BreadCrumb" xmlns:p="http://www.cycle99.com/schemas/sage/configuration/project.xsd">
+							<stylesheets>
+								<stylesheet path="breadcrumb.xsl"/>
+							</stylesheets>
+							<dependencies>
+								<module ref="Navigation"/>
+							</dependencies>
+							<resources>
+								<resource type="script" path="breadcrumb.js" location="body"/>
+								<resource type="style" path="breadcrumb.css" location="head"/>
+							</resources>
+						</p:module>
+					</mod:data>
+				</mod:XmlTree>
 
-		<h3 class="section">Resource library references</h3>
+				<h3 class="section">Resource library references</h3>
 
-		<div class="sectionblock">
-			<p>
-				A module can also depend on shared <a href="${url:link(resource-libraries)}">resource libraries</a>. To make sure the
-				required libraries are present on the page where a module is used, you can declare them as module resources,
-				and Sage will do all the required wiring up to include the libraries, all in the correct order.
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						A module can also depend on shared <a href="${url:link(resource-libraries)}">resource libraries</a>. To make sure the
+						required libraries are present on the page where a module is used, you can declare them as module resources,
+						and Sage will do all the required wiring up to include the libraries, all in the correct order.
+					</p>
+				</div>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:highlight>
-					<mod:element>resources</mod:element>
-					<mod:element>library</mod:element>
-				</mod:highlight>
-			</mod:config>
-			<mod:data>
-				<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
-					<stylesheets>
-						<stylesheet path="XmlTree.xsl"/>
-					</stylesheets>
-					<resources>
-						<library ref="aeon"/>
-						<resource type="script" location="body" path="XmlTree.js"/>
-						<resource type="style" location="head" path="XmlTree.css"/>
-					</resources>
-				</module>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:highlight>
+							<mod:element>resources</mod:element>
+							<mod:element>library</mod:element>
+						</mod:highlight>
+					</mod:config>
+					<mod:data>
+						<module name="XmlTree" type="Sage.DevTools.Modules.XmlTreeModule,Sage.DevTools">
+							<stylesheets>
+								<stylesheet path="XmlTree.xsl"/>
+							</stylesheets>
+							<resources>
+								<library ref="aeon"/>
+								<resource type="script" location="body" path="XmlTree.js"/>
+								<resource type="style" location="head" path="XmlTree.css"/>
+							</resources>
+						</module>
+					</mod:data>
+				</mod:XmlTree>
 
-		<h3 class="section">Tag names</h3>
+				<h3 class="section">Tag names</h3>
 
-		<div class="sectionblock">
-			<p>
-				When a module is registered in the project configuration, it can be included in views using a tag with the same
-				name as the module. So if a module is called "SyntaxHighlighter", the corresponding tag will be
-				<code>mod:SyntaxHighlighter</code>. However, you may want to have the same more than one tag that you wish to
-				use with your module; it might make semantic sense to do that. You can declare these tag names in the module
-				configuration block.
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						When a module is registered in the project configuration, it can be included in views using a tag with the same
+						name as the module. So if a module is called "SyntaxHighlighter", the corresponding tag will be
+						<code>mod:SyntaxHighlighter</code>. However, you may want to have the same more than one tag that you wish to
+						use with your module; it might make semantic sense to do that. You can declare these tag names in the module
+						configuration block.
+					</p>
+				</div>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:highlight>
-					<mod:element>tags</mod:element>
-					<mod:element>tag</mod:element>
-				</mod:highlight>
-			</mod:config>
-			<mod:data>
-				<module name="BreadCrumb">
-					<stylesheets>
-						<stylesheet path="breadcrumb.xsl"/>
-					</stylesheets>
-					<resources>
-						<resource type="script" path="breadcrumb.js" location="body"/>
-						<resource type="style" path="breadcrumb.css" location="head"/>
-					</resources>
-					<tags>
-						<tag name="AlternativeName1"/>
-						<tag name="AlternativeName2"/>
-					</tags>
-				</module>
-			</mod:data>
-		</mod:XmlTree>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:highlight>
+							<mod:element>tags</mod:element>
+							<mod:element>tag</mod:element>
+						</mod:highlight>
+					</mod:config>
+					<mod:data>
+						<module name="BreadCrumb">
+							<stylesheets>
+								<stylesheet path="breadcrumb.xsl"/>
+							</stylesheets>
+							<resources>
+								<resource type="script" path="breadcrumb.js" location="body"/>
+								<resource type="style" path="breadcrumb.css" location="head"/>
+							</resources>
+							<tags>
+								<tag name="AlternativeName1"/>
+								<tag name="AlternativeName2"/>
+							</tags>
+						</module>
+					</mod:data>
+				</mod:XmlTree>
 
-		<h3 class="section">Automatic inclusion</h3>
+				<h3 class="section">Automatic inclusion</h3>
 
-		<div class="sectionblock">
-			<p>
-				There may be a situation where a module you created needs to be included on each and every page of the project.
-				You can configure a module to be automatically included by adding the <code>auto</code> attribute to it, and
-				specifying the location as it's value. The location can be either <b>head</b> or <b>body</b>. If location is
-				<b>body</b>, the module will be included before the closing tag of the <code>body</code> element of the view on
-				which it is being used. If location is <b>head</b>, the module will be included within the
-				<code>head</code> element of the view on which it is being used.
-			</p>
-		</div>
+				<div class="sectionblock">
+					<p>
+						There may be a situation where a module you created needs to be included on each and every page of the project.
+						You can configure a module to be automatically included by adding the <code>auto</code> attribute to it, and
+						specifying the location as it's value. The location can be either <b>head</b> or <b>body</b>. If location is
+						<b>body</b>, the module will be included before the closing tag of the <code>body</code> element of the view on
+						which it is being used. If location is <b>head</b>, the module will be included within the
+						<code>head</code> element of the view on which it is being used.
+					</p>
+				</div>
 
-		<mod:XmlTree>
-			<mod:config>
-				<mod:highlight>
-					<mod:element>module</mod:element>
-					<mod:attribute>auto</mod:attribute>
-				</mod:highlight>
-			</mod:config>
-			<mod:data>
-				<module name="DeveloperToolbar" auto="body" type="Sage.DevTools.Modules.DeveloperToolbarModule,Sage.DevTools">
-					<stylesheets>
-						<stylesheet path="DeveloperToolbar.xsl"/>
-					</stylesheets>
-					<resources>
-						<library ref="aeon"/>
-						<library ref="aeon.tooltip"/>
-						<resource type="script" location="body" path="DeveloperToolbar.js"/>
-						<resource type="style" location="head" path="DeveloperToolbar.css"/>
-					</resources>
-				</module>
-			</mod:data>
-		</mod:XmlTree>
-
-		<mod:RelatedArticles>
-			<mod:config>
-				<mod:current><sage:url ref="sage-modules"/></mod:current>
-				<mod:display>children</mod:display>
-			</mod:config>
-		</mod:RelatedArticles>
-
-		<br class="spacer"/>
-
+				<mod:XmlTree>
+					<mod:config>
+						<mod:highlight>
+							<mod:element>module</mod:element>
+							<mod:attribute>auto</mod:attribute>
+						</mod:highlight>
+					</mod:config>
+					<mod:data>
+						<module name="DeveloperToolbar" auto="body" type="Sage.DevTools.Modules.DeveloperToolbarModule,Sage.DevTools">
+							<stylesheets>
+								<stylesheet path="DeveloperToolbar.xsl"/>
+							</stylesheets>
+							<resources>
+								<library ref="aeon"/>
+								<library ref="aeon.tooltip"/>
+								<resource type="script" location="body" path="DeveloperToolbar.js"/>
+								<resource type="style" location="head" path="DeveloperToolbar.css"/>
+							</resources>
+						</module>
+					</mod:data>
+				</mod:XmlTree>
 
 				</details>
 			</section>
