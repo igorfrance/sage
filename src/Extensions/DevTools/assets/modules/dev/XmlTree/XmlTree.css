@@ -1,7 +1,7 @@
 ﻿.xmltree
 	{ border: 1px solid transparent; position: relative; }
 .xmlroot
-	{ overflow: hidden; margin-top: -18px;  }
+	{ overflow: auto; margin-top: -18px;  }
 .xmltree,
 .xmltree pre
 	{ font: 10pt Consolas; }
@@ -9,17 +9,17 @@
 	{ text-align: left; }
 .xmlroot
 	{ white-space: nowrap; }
-.xmltree:hover
-	{ background: #EDEDF5; border: 1px solid #e7e7f1; border-radius: 3px 0 3px 3px; }
-.xmltree:hover .toolbar
+.xmltree.with:hover
+	{ background: #fff; border: 1px solid #e7e7f1; border-radius: 3px 0 3px 3px; }
+.xmltree.with:hover .toolbar
 	{ display: block; }
 
 /**
  * Toolbar
  */
 .xmltree .toolbar
-	{ position: absolute; background: #EDEDF5; top: -24px; right: -1px; border: 1px solid #e7e7f1; border-bottom-color: #EDEDF5;
-	  display: none; white-space: nowrap; width: 200px; height: 18px; padding: 2px; border-radius: 3px 3px 0 0; }
+	{ position: absolute; background: #fff; top: -24px; right: -1px; border: 1px solid #e7e7f1; border-bottom-color: #fff;
+	  display: none; white-space: nowrap; height: 18px; padding: 2px; border-radius: 3px 3px 0 0; }
 .xmltree .toolbar a
 	{ color: #8B8B8B; text-decoration: none; }
 .xmltree .toolbar a:hover
@@ -27,7 +27,7 @@
 .xmltree .toolbar .group.commands
 	{ float: right; }
 .xmltree .toolbar .group.switches
-	{ float: left; }
+	{ float: left; margin-right: 50px;}
 .xmltree .toolbar .switch
 	{ float: left; }
 .xmltree .toolbar .switch,
@@ -38,7 +38,7 @@
 	{ border-color: #cfcfe2; background-color: #ccc; }
 .xmltree .toolbar .switch:hover,
 .xmltree .toolbar .command:hover
-	{ background-color: #fff; }
+	{ background-color: #78ade9; }
 .xmltree .toolbar .switch .state,
 .xmltree .toolbar a span
 	{ display: none; }
@@ -62,8 +62,8 @@
 	{ margin-left: 10px; }
 .xmlroot .element > .children > .close
 	{ clear: left; margin-left: -10px; }
-.xmlroot .element.ce > .children > .close
-	{ clear: left; margin-left: -20px; }
+/*.xmlroot .element.ce > .children > .close
+	{ clear: left; margin-left: -20px; }*/
 .xmlroot .attrValue
 	{ font-weight: bold;  }
 .xmlroot .text
@@ -190,3 +190,5 @@
 .xmlroot.highlight .highlighted > .attribute .attrValue,
 .xmlroot.highlight .highlighted > .attrValue
 	{ color: #323232; }
+.xmlroot.highlight .highlighted.text
+	{ color: #000; }

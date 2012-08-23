@@ -14,7 +14,7 @@
 		<xsl:variable name="showToolbar" select="count($config/mod:toolbar[text()='true']) = 1"/>
 		<xsl:variable name="showHighlighted" select="count($config/mod:highlight/*) != 0"/>
 		<xsl:variable name="phrases" select="$config/mod:text/mod:phrase"/>
-		<div class="xmltree">
+		<div class="xmltree{basic:iif($showToolbar, ' with', '')}">
 			<xsl:if test="$showToolbar">
 				<div class="toolbar">
 					<span class="group commands">
@@ -43,15 +43,17 @@
 								<span class="off"></span>
 							</span>
 						</span>
-						<span class="switch highlight {basic:iif($showHighlighted, 'on', 'off')}" title="{$phrases[@id='ToggleHighlighting']}">
-							<a href="javascript:;">
-								<span><xsl:value-of select="$phrases[@id='ToggleHighlighting']"/></span>
-							</a>
-							<span class="state">&#160;
-								<span class="on"></span>
-								<span class="off"></span>
+						<xsl:if test="$showHighlighted">
+							<span class="switch highlight {basic:iif($showHighlighted, 'on', 'off')}" title="{$phrases[@id='ToggleHighlighting']}">
+								<a href="javascript:;">
+									<span><xsl:value-of select="$phrases[@id='ToggleHighlighting']"/></span>
+								</a>
+								<span class="state">&#160;
+									<span class="on"></span>
+									<span class="off"></span>
+								</span>
 							</span>
-						</span>
+						</xsl:if>
 					</span>
 				</div>
 			</xsl:if>
@@ -247,6 +249,9 @@
 			<span class="markup">></span>
 			<div class="children">
 				<span class="text">
+					<xsl:apply-templates select="." mode="xhighlightclass">
+						<xsl:with-param name="class">text</xsl:with-param>
+					</xsl:apply-templates>
 					<xsl:value-of select="."/>
 				</span>
 				<div class="close">
@@ -281,6 +286,7 @@
 
 	<xsl:template match="text()" mode="xmltree">
 		<span class="text">
+			<xsl:apply-templates select="." mode="xhighlightclass"/>
 			<xsl:value-of select="."/>
 		</span>
 	</xsl:template>
@@ -428,10 +434,11 @@
 	</xsl:template>
 
 	<xsl:template match="*" mode="xhighlightclass">
+		<xsl:param name="class" select="'element'"/>
 		<xsl:variable name="hlElements" select="ancestor::mod:XmlTree/mod:config/mod:highlight/mod:element"/>
 		<xsl:variable name="hlNamespaces" select="ancestor::mod:XmlTree/mod:config/mod:highlight/mod:namespace"/>
 		<xsl:attribute name="class">
-			<xsl:text>element</xsl:text>
+			<xsl:value-of select="$class"/>
 			<xsl:if test="count(*) != 0 or count(comment()) != 0 or string-length(text()) > 110">
 				<xsl:text> ce </xsl:text>
 			</xsl:if>
