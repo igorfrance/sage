@@ -737,16 +737,6 @@ namespace Sage
 			return node;
 		}
 
-		[NodeHandler(XmlNodeType.Element, "expression", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageValueNode(SageContext context, XmlNode node)
-		{
-			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return node;
-
-			string expressionValue = context.ProcessText(node.InnerText);
-			return node.OwnerDocument.CreateTextNode(expressionValue);
-		}
-
 		[NodeHandler(XmlNodeType.Element, "version", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessSageVersionNode(SageContext context, XmlNode node)
 		{
