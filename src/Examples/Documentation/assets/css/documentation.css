@@ -273,6 +273,9 @@ table.definition tbody th.right
 	{ margin: 20px 0; }
 .error
 	{ color: red; font-weight: bold; }
+.todo
+	{ color: #c00; font-size: 120%; display: block; border: 1px solid #c00; border-width: 1px 0; background: #ffdddd;
+	  padding: 3px 0; text-decoration: underline; }
 
 /**
  * imageframe
