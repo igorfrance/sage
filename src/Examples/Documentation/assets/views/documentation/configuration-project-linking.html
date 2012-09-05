@@ -25,7 +25,7 @@
 				<header>
 					<span>Linking (Project configuration)</span>
 				</header>
-				<details>
+				<article>
 					<summary>
 						Sage provides basic <a href="${url:link(linking)}">link management facilities</a>, and links need to be registered in the project configuration before they can be used throughout the system. In a nutshell, you define a dictionary of links in in the configuration file, and you then use them in your markup using dedicated XML elements and attribute, or a special syntax within the regular <code>href</code> attribute of <code>a</code> elements.
 					</summary>
@@ -34,14 +34,14 @@
 						<header>
 							Reference
 						</header>
-						<details>
+						<article>
 							<section class="element">
 								<header>linking element</header>
-								<details>
+								<article>
 									<summary>Contains linking configuration.</summary>
 									<section class="properties example">
 										<header>Example</header>
-										<details>
+										<article>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
@@ -58,20 +58,20 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties children">
 										<header>Child elements</header>
-										<details>
+										<article>
 											<section class="element">
 												<header>links/link element</header>
-												<details>
+												<article>
 													<summary>
 														Defines a single link. The names between braces (e.g. <code>{customerid}</code>) are placeholders for dynamic values. The placeholders are substituted using a name/value collection initialized with the current query string, and the current <code>locale</code> and <code>category</code> values. Additionally, if a placeholder refers to a <code>format</code> name, defined within the <code>formats</code> section, it will be substituted with the value of that format string. The placeholders within the format string will be processed for in exactly the same way.
 													</summary>
 													<section class="properties example">
 														<header>Example</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -83,28 +83,28 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>name</header>
-																<details>Specifies the name of the link.</details>
+																<article>Specifies the name of the link.</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
 											<section class="element">
 												<header>formats/format element</header>
-												<details>
+												<article>
 													<summary>
 														Formats provide reusable string parts that can be used within links just like other placeholders.
 													</summary>
 													<section class="properties example">
 														<header>Example</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -114,27 +114,27 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>name</header>
-																<details>Specifies the name of the format.</details>
+																<article>Specifies the name of the format.</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

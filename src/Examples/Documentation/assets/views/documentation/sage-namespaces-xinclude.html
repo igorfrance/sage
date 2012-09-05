@@ -21,27 +21,27 @@
 				<header>
 					<span>The XInclude namespace</span>
 				</header>
-				<details>
+				<article>
 					<summary>
 						The XInclude module library. Read more about <a href="http://www.w3.org/TR/xinclude/">XML Inclusions at w3.org</a>.
 					</summary>
 
 					<section class="namespace">
 						<header>Namespace URI:</header>
-						<details>http://www.w3.org/2003/XInclude</details>
+						<article>http://www.w3.org/2003/XInclude</article>
 					</section>
 
 					<section class="topic" id="elements" data-index="yes" data-level="1">
 						<header>Elements</header>
 
-						<details>
+						<article>
 							<section class="element" id="include-element" data-index="yes" data-level="2">
 								<header>xi:include element</header>
-								<details>
+								<article>
 									<summary>Includes another document within the current document, replacing the <code>xi:include</code> element.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<summary>Including a complete document</summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -58,38 +58,38 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>href</header>
-												<details>Specifies the path to the document to include.</details>
+												<article>Specifies the path to the document to include.</article>
 											</section>
 											<section class="attribute">
 												<header>parse</header>
-												<details>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</details>
+												<article>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</article>
 											</section>
 											<section class="attribute">
 												<header>xpointer</header>
-												<details>
+												<article>
 													<p>
 														When <code>parse="xml"</code>, the XPointer contained in the xpointer attribute is evaluated to identify a portion of the resource to include. This attribute is optional; when omitted, the entire resource is included. The xpointer attribute must not be present when <code>parse="text"</code>.
 													</p>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="fallback-element" data-index="yes" data-level="2">
 								<header>xi:fallback element</header>
-								<details>
+								<article>
 									<summary>Optional alternative content to display in it's place if loading of the resource specified by the parent element's <code>href</code> attribute fails. If loading fails, and no fallback has been specified, a runtime error occurs. Fallback elements must not be empty, and can contain other include elements. </summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<summary>In this example, there are two levels of fallback:</summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -106,14 +106,14 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

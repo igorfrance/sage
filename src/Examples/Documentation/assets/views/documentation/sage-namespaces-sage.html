@@ -20,26 +20,26 @@
 				<header>
 					<span>The Sage namespace</span>
 				</header>
-				<details>
+				<article>
 					<summary>Contains various general purpose elements related to Sage.</summary>
 
 					<section class="namespace">
 						<header>Namespace URI:</header>
-						<details>http://www.cycle99.com/schemas/sage/sage.xsd</details>
+						<article>http://www.cycle99.com/schemas/sage/sage.xsd</article>
 					</section>
 
 					<section class="topic" id="attributes" data-index="yes" data-level="1">
 						<header>Attributes</header>
-						<details>
+						<article>
 							<section class="element" id="attrib-attribute" data-index="yes" data-level="2">
 								<header>sage:attrib attribute</header>
-								<details>
+								<article>
 									<summary>
 										This attribute, when processed, subtitutes itself with another attribute, created according to the specification.
 									</summary>
 									<section class="properties syntax">
 										<header>Syntax</header>
-										<details>
+										<article>
 											<code class="principal">sage:attrib="&lt;AttribName>=&lt;AttribValueExpression>"</code>
 											<dl>
 												<dt><code>&lt;AttribName&gt;</code></dt>
@@ -47,12 +47,12 @@
 												<dt><code>&lt;AttribValueExpression&gt;</code></dt>
 												<dd>The expression to evaluate and set the value of the attribute with. The expression is evaluated in the same way as the content of the <a href="${url:self(#expression-element)}">expression element</a>; any embedded <a href="${url:link(extensibility-text-functions)}">text function expressions</a> will be invoked and substituted by the result of that invokation.</dd>
 											</dl>
-										</details>
+										</article>
 									</section>
 
 									<section class="properties example">
 										<header>Example</header>
-										<details>
+										<article>
 											<summary>Before processing:</summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -69,29 +69,29 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties implementation">
 										<header>Implemented as:</header>
-										<details>
+										<article>
 											<a href="${url:link(extensibility-node-handlers)}">Node handler</a>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 
 					<section class="topic" id="elements" data-index="yes" data-level="1">
 						<header>Elements</header>
-						<details>
+						<article>
 							<section class="element" id="version-element" data-index="yes" data-level="2">
 								<header>sage:version element</header>
-								<details>
+								<article>
 									<summary>Inserts the Sage version as a text node, replacing the original element.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
@@ -103,23 +103,23 @@
 											<code class="block">
 												<sage:version/>
 											</code>
-										</details>
+										</article>
 									</section>
 									<section class="properties implementation">
 										<header>Implemented as:</header>
-										<details>
+										<article>
 											<a href="${url:link(extensibility-node-handlers)}">Node handler</a>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="link-element" data-index="yes" data-level="2">
 								<header>sage:link element</header>
-								<details>
+								<article>
 									<summary>Provides a generic element referring to a link that Sage resolves and appends as an <code>href</code> attribute during runtime. <a href="${url:link(linking)}">Read more</a>.</summary>
 									<section class="properties example">
 										<header>Example</header>
-										<details>
+										<article>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
@@ -127,42 +127,42 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>ref</header>
-												<details>Specifies the <code>id</code> of the link this element refers to.</details>
+												<article>Specifies the <code>id</code> of the link this element refers to.</article>
 											</section>
 											<section class="attribute">
 												<header>values</header>
-												<details>
+												<article>
 													A querystring list of name-value pairs to be used as substitution values for any placeholders in the URL text of the link this element refers to. For more information, see <a href="${url:link(linking)}">linking</a>.
-												</details>
+												</article>
 											</section>
 											<section class="attribute">
 												<header>encode</header>
-												<details>If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.</details>
+												<article>If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.</article>
 											</section>
-										</details>
+										</article>
 									</section>
 									<section class="properties implementation">
 										<header>Implemented as:</header>
-										<details>
+										<article>
 											<a href="${url:link(extensibility-node-handlers)}">Node handler</a>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="url-element" data-index="yes" data-level="2">
 								<header>sage:url element</header>
-								<details>
+								<article>
 									<summary>Provides a generic element that refers to a predefined link that Sage resolves, replacing the element with the resolved link URL. <a href="${url:link(linking)}">Read more</a>.</summary>
 									<section class="properties example">
 										<header>Example</header>
-										<details>
+										<article>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
@@ -170,42 +170,42 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>ref</header>
-												<details>Specifies the <code>id</code> of the link this element refers to.</details>
+												<article>Specifies the <code>id</code> of the link this element refers to.</article>
 											</section>
 											<section class="attribute">
 												<header>values</header>
-												<details>
+												<article>
 													A querystring list of name-value pairs to be used as substitution values for any placeholders in the URL text of the link this element refers to. For more information, see <a href="${url:link(linking)}">linking</a>.
-												</details>
+												</article>
 											</section>
 											<section class="attribute">
 												<header>encode</header>
-												<details>If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.</details>
+												<article>If <code>true</code>, this attribute will cause the resulting link to be URL-encoded. This is useful when the link is being generated as a part of another link, or anywhere where the URL needs to be encoded.</article>
 											</section>
-										</details>
+										</article>
 									</section>
 									<section class="properties implementation">
 										<header>Implemented as:</header>
-										<details>
+										<article>
 											<a href="${url:link(extensibility-node-handlers)}">Node handler</a>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="literal-element" data-index="yes" data-level="2">
 								<header>sage:literal element</header>
-								<details>
+								<article>
 									<summary>This element is used to wrap markup that should be preserved as-is; that is, no preprocessing (xml inclusions, phrase or variable substitution etc) will be done on it; it's content will be served as specified, and the <code>sage:literal</code> element itself will be filtered out from the final output. The main usage of this element is to illustrate example usage.</summary>
 									<section class="properties example">
 										<header>Example</header>
-										<details>
+										<article>
 											<mod:XmlTree>
 												<mod:data>
 													<sage:literal>
@@ -213,23 +213,23 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties implementation">
 										<header>Implemented as:</header>
-										<details>
+										<article>
 											<a href="${url:link(xslt-templates)}">XSLT template</a> (ignored, the template just skips over the element).
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="include-element" data-index="yes" data-level="2">
 								<header>sage:include element</header>
-								<details>
+								<article>
 									<summary>Includes another document or document fragment as either <code>xml</code> or <code>text</code> within the current document, replacing the including element with the included content.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<summary>Including a complete document</summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -246,38 +246,38 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>href</header>
-												<details>Specifies the path to the document to include.</details>
+												<article>Specifies the path to the document to include.</article>
 											</section>
 											<section class="attribute">
 												<header>parse</header>
-												<details>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</details>
+												<article>Specifies the parse mode of the document. Possible values are <code>xml</code> and <code>text</code>.</article>
 											</section>
 											<section class="attribute">
 												<header>xpath</header>
-												<details>
+												<article>
 													When <code>parse="xml"</code>, the expression specified with the <code>xpath</code> attribute is evaluated to identify a portion of the resource to include. This attribute is optional; when omitted, the entire resource is included. The namespace prefixes that can be used
 													here are any namespaces prefixes defined in the document where the <code>sage:include</code> element is being used, as well as the <a href="${url:link(sage-namespaces)}">common namespaces and namespace prefixes in use throughout Sage</a>.
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
 									<section class="properties children">
 										<header>Child elements</header>
-										<details>
+										<article>
 											<section class="element" id="fallback-element" data-index="yes" data-level="3">
 												<header>sage:fallback element</header>
-												<details>
+												<article>
 													<summary>Optional alternative content to display in it's place if loading of the resource specified by the parent <code>sage:include</code> element fails.</summary>
 													<section class="properties example">
 														<header>Example:</header>
-														<details>
+														<article>
 															<summary>In this example, there are two levels of fallback:</summary>
 															<mod:XmlTree>
 																<mod:data>
@@ -294,18 +294,18 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

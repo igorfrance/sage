@@ -18,8 +18,8 @@
 	-->
 	<xsl:param name="dictionary"/>
 	<xsl:param name="fallbacks"/>
-	<xsl:param name="globalvariables"/>
-	<xsl:param name="categoryvariables"/>
+	<xsl:param name="globalvariables" select="."/>
+	<xsl:param name="categoryvariables" select="."/>
 
 	<!--
 
@@ -189,7 +189,7 @@
 			<xsl:apply-templates select="." mode="substitute"/>
 		</intl:variable>
 	</xsl:template>
-	
+
 	<xsl:template match="intl:variable[@id]" mode="substitute">
 		<xsl:param name="diagnose" select="0"/>
 		<xsl:variable name="fallbackLocale" select="$fallbacks/locale[.=current()/intl:value/@locale][1]/text()"/>
@@ -311,7 +311,7 @@
 	<xsl:template match="sage:literal">
 		<xsl:apply-templates select="." mode="preserve"/>
 	</xsl:template>
-	
+
 	<xsl:template match="*" mode="preserve">
 		<xsl:element name="{name()}" namespace="{namespace-uri()}">
 			<xsl:apply-templates select="@*" mode="preserve"/>
@@ -328,7 +328,7 @@
 	<xsl:template match="text()" mode="preserve">
 		<xsl:value-of select="."/>
 	</xsl:template>
-	
+
 	<xsl:template match="comment()" mode="preserve">
 		<xsl:comment>
 			<xsl:value-of select="."/>

@@ -21,26 +21,26 @@
 				<header>
 					<span>The Contextualization namespace</span>
 				</header>
-				<details>
+				<article>
 					<summary>
 						Provides elements that enable conditional rendering based on values in the current context.
 					</summary>
 
 					<section class="namespace">
 						<header>Namespace URI:</header>
-						<details>http://www.cycle99.com/schemas/sage/contextualization.xsd</details>
+						<article>http://www.cycle99.com/schemas/sage/contextualization.xsd</article>
 					</section>
 
 					<section class="topic" id="elements" data-index="yes" data-level="1">
 						<header>Elements</header>
-						<details>
+						<article>
 							<section class="element" id="switch-element" data-index="yes" data-level="2">
 								<header>context:switch</header>
-								<details>
+								<article>
 									<summary>Creates a switch block (similar to <code>xsl:choose</code> element), where the same property is evaluated for each child <code>context:case</code> element, and the contents of the first <code>context:case</code> element that evaluates to true is rendered, excluding all other siblings.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<summary></summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -62,14 +62,14 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>property</header>
-												<details>
+												<article>
 													<summary>The name of a property in the current instance of <code>SageContext</code>.</summary>
 													<mod:ExpandSection>
 														<mod:config>
@@ -81,7 +81,7 @@
 																<span class="expand">More</span>
 																<span class="collapse">Less</span>
 															</header>
-															<details>
+															<article>
 																<table class="definition">
 																	<col style="width: 100px"/>
 																	<col/>
@@ -144,27 +144,27 @@
 																		<td>Gets the type of the current user agent.</td>
 																	</tr>
 																</table>
-															</details>
+															</article>
 														</mod:data>
 													</mod:ExpandSection>
-												</details>
+												</article>
 											</section>
 											<section class="attribute">
 												<header>key</header>
-												<details>If the property specified with the <code>property</code> attribute is a collection (Application, Session, Query, RouteValues), this attribute specifies the key within this dictionary to which the switch applies.</details>
+												<article>If the property specified with the <code>property</code> attribute is a collection (Application, Session, Query, RouteValues), this attribute specifies the key within this dictionary to which the switch applies.</article>
 											</section>
-										</details>
+										</article>
 									</section>
 									<section class="properties children">
 										<header>Child elements:</header>
-										<details>
+										<article>
 											<section class="element">
 												<header>context:case</header>
-												<details>
+												<article>
 													<summary>Defines a single possible match case within the switch it belongs to.</summary>
 													<section class="properties example">
 														<header>Example:</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -174,26 +174,26 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>test</header>
-																<details>The property value to test for. If the property value matches the value of this attribute, the block content will be rendered, replacing the whole <code>context:switch</code> element.</details>
+																<article>The property value to test for. If the property value matches the value of this attribute, the block content will be rendered, replacing the whole <code>context:switch</code> element.</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
 											<section class="element">
 												<header>context:default</header>
-												<details>
+												<article>
 													<summary>Defines the content to render when none of the sibling <code>context:case</code> elements evaluate to true.</summary>
 													<section class="properties example">
 														<header>Example:</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -203,21 +203,21 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="value-element" data-index="yes" data-level="2">
 								<header>context:value</header>
-								<details>
+								<article>
 									<summary>Inserts a value of a property of the current <code>SageContext</code>.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<summary>Inserts the query string parameter 'page':</summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -234,28 +234,28 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>property</header>
-												<details>
+												<article>
 													The name of a property in the current instance of <code>SageContext</code>. For the list of possible values, see <code>context:switch</code> element.
-												</details>
+												</article>
 											</section>
 											<section class="attribute">
 												<header>key</header>
-												<details>If the property specified with the <code>property</code> attribute is a collection (Application, Session, Query, RouteValues), this attribute specifies the key within this dictionary of the value that should be displayed.</details>
+												<article>If the property specified with the <code>property</code> attribute is a collection (Application, Session, Query, RouteValues), this attribute specifies the key within this dictionary of the value that should be displayed.</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

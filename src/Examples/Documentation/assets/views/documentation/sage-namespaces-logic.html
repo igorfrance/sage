@@ -24,7 +24,7 @@
 				<header>
 					<span>The Logic namespace</span>
 				</header>
-				<details>
+				<article>
 
 					<summary>
 						Referencing this namespace enables you to define and use your own custom conditions for rendering markup blocks.
@@ -32,7 +32,7 @@
 
 					<section class="namespace">
 						<header>Namespace URI:</header>
-						<details>http://www.cycle99.com/schemas/sage/logic.xsd</details>
+						<article>http://www.cycle99.com/schemas/sage/logic.xsd</article>
 					</section>
 
 					<p>
@@ -41,16 +41,16 @@
 
 					<section class="topic" id="elements" data-index="yes" data-level="1">
 						<header>Elements</header>
-						<details>
+						<article>
 							<section class="element" id="conditions-element" data-index="yes" data-level="2">
 								<header>logic:conditions</header>
-								<details>
+								<article>
 									<summary>
 										Defines logical conditions that can be evaluated as render switches elsewhere in the document.
 									</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<p>
 												A few simple examples:
 											</p>
@@ -112,14 +112,14 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties children">
 										<header>Child elements:</header>
-										<details>
+										<article>
 											<section class="element">
 												<header>logic:and &amp; logic:or</header>
-												<details>
+												<article>
 													<summary>The <code>and</code> and <code>or</code> elements define <i>conditions</i>; sets of clauses that evaluate as <code>AND</code> and <code>OR</code> groups.</summary>
 													<ul class="notes">
 														<li>For <code>and</code> elements, ALL of the child clauses should evaluate to true. </li>
@@ -127,7 +127,7 @@
 													</ul>
 													<section class="properties example">
 														<header>Example:</header>
-														<details>
+														<article>
 															<summary>An AND condition:</summary>
 															<mod:XmlTree>
 																<mod:data>
@@ -149,27 +149,27 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>id</header>
-																<details>Specifies the unique id of this condition.</details>
+																<article>Specifies the unique id of this condition.</article>
 															</section>
-														</details>
+														</article>
 													</section>
 													<section class="properties children">
 														<header>Child elements:</header>
-														<details>
+														<article>
 															<section class="element">
 																<header>logic:clause</header>
-																<details>
+																<article>
 																	<summary>Defines a single clause for a condition.</summary>
 																	<section class="properties example">
 																		<header>Example:</header>
-																		<details>
+																		<article>
 																			<mod:XmlTree>
 																				<mod:data>
 																					<sage:literal>
@@ -177,61 +177,61 @@
 																					</sage:literal>
 																				</mod:data>
 																			</mod:XmlTree>
-																		</details>
+																		</article>
 																	</section>
 																	<section class="properties attributes">
 																		<header>Attributes</header>
-																		<details>
+																		<article>
 																			<summary>
 																				Attributes <code>equals</code>, <code>not</code>, <code>count</code>, <code>gt</code>, <code>gte</code>, <code>lt</code> and <code>lte</code> are mutually exclusive; it is an error to use more than one of these attributes at a time.
 																			</summary>
 																			<section class="attribute">
 																				<header>object</header>
-																				<details>Specifies the name of the object that this clause inspects.</details>
+																				<article>Specifies the name of the object that this clause inspects.</article>
 																			</section>
 																			<section class="attribute">
 																				<header>property</header>
-																				<details>Specifies the name of the <code>object</code>'s property that this clause inspects.</details>
+																				<article>Specifies the name of the <code>object</code>'s property that this clause inspects.</article>
 																			</section>
 																			<section class="attribute">
 																				<header>equals</header>
-																				<details>Specifies the value that the <code>object</code>'s <code>property</code> should equal for this clause to be valid.</details>
+																				<article>Specifies the value that the <code>object</code>'s <code>property</code> should equal for this clause to be valid.</article>
 																			</section>
 																			<section class="attribute">
 																				<header>not</header>
-																				<details>Specifies the value that the <code>object</code>'s <code>property</code> should not equal for this clause to be valid.</details>
+																				<article>Specifies the value that the <code>object</code>'s <code>property</code> should not equal for this clause to be valid.</article>
 																			</section>
 																			<section class="attribute">
 																				<header>count</header>
-																				<details>Specifies the count of items selected with <code>property</code> that the <code>object</code> should contain for this clause to be valid.</details>
+																				<article>Specifies the count of items selected with <code>property</code> that the <code>object</code> should contain for this clause to be valid.</article>
 																			</section>
 																			<section class="attribute">
 																				<header>gt</header>
-																				<details>The number that the <code>property</code> should be greater (&gt;).</details>
+																				<article>The number that the <code>property</code> should be greater (&gt;).</article>
 																			</section>
 																			<section class="attribute">
 																				<header>gte</header>
-																				<details>The number that the <code>property</code> should be greater than or equal to (&gt;=).</details>
+																				<article>The number that the <code>property</code> should be greater than or equal to (&gt;=).</article>
 																			</section>
 																			<section class="attribute">
 																				<header>lt</header>
-																				<details>The number that the <code>property</code> should be less than (&lt;).</details>
+																				<article>The number that the <code>property</code> should be less than (&lt;).</article>
 																			</section>
 																			<section class="attribute">
 																				<header>lte</header>
-																				<details>The number that the <code>property</code> should be less than or equal to (&lt;=)</details>
+																				<article>The number that the <code>property</code> should be less than or equal to (&lt;=)</article>
 																			</section>
-																		</details>
+																		</article>
 																	</section>
-																</details>
+																</article>
 															</section>
 															<section class="element">
 																<header>logic:and &amp; logic:or</header>
-																<details>
+																<article>
 																	<summary>References <code>logic:and</code> and <code>logic:or</code> conditions defined at the top level, under <code>logic:conditions</code>.</summary>
 																	<section class="properties example">
 																		<header>Example:</header>
-																		<details>
+																		<article>
 																			<p>The <code>logic:and[<b>ref</b>=isFirefox]</code> element refers to <code>logic:and[<b>id</b>=isFirefox]</code> element; the actual group is processed inline instead of the reference element, just as if it was there.</p>
 																			<mod:XmlTree>
 																				<mod:config>
@@ -253,34 +253,34 @@
 																					</sage:literal>
 																				</mod:data>
 																			</mod:XmlTree>
-																		</details>
+																		</article>
 																	</section>
 																	<section class="properties attributes">
 																		<header>Attributes</header>
-																		<details>
+																		<article>
 																			<section class="attribute">
 																				<header>ref</header>
-																				<details>The id of the conditon group this element refers to.</details>
+																				<article>The id of the conditon group this element refers to.</article>
 																			</section>
-																		</details>
+																		</article>
 																	</section>
-																</details>
+																</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
 							<section class="element" id="switch-element" data-index="yes" data-level="2">
 								<header>logic:switch</header>
-								<details>
+								<article>
 									<summary>Provides a choose/when/otherwise-like construct that enables using the predefined conditions by name.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<p>A possible scenario where a fictional navigation item displays different text depending on whether the current user is registered, unregistered or just registered with email confirmation pending.
 											</p>
 											<mod:XmlTree>
@@ -310,18 +310,18 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties children">
 										<header>Child elements:</header>
-										<details>
+										<article>
 											<section class="element">
 												<header>logic:case</header>
-												<details>
+												<article>
 													<summary>Selects one condition case. If the condition of this element (specified with <code>when</code> attribute) evaluates to true, it's content will be rendered (provided it is the first match, if there are multiple matching case elements, only the first one will be processed).</summary>
 													<section class="properties example">
 														<header>Example:</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:config>
 																	<mod:highlight>
@@ -336,26 +336,26 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>when</header>
-																<details>Specifies the id of the condition that should match in order for this element's content to be rendered.</details>
+																<article>Specifies the id of the condition that should match in order for this element's content to be rendered.</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
 											<section class="element">
 												<header>logic:default</header>
-												<details>
+												<article>
 													<summary>Specifies the default content to render in case none of the other elements in the switch evaluated to true.</summary>
 													<section class="properties example">
 														<header>Example:</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 															<mod:config>
 																<mod:highlight>
@@ -370,27 +370,27 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 
 					<section class="topic" id="attributes" data-index="yes" data-level="1">
 						<header>Attributes</header>
-						<details>
+						<article>
 							<section class="element" id="if-attribute" data-index="yes" data-level="2">
 								<header>@logic:if</header>
-								<details>
+								<article>
 									<summary>Specifies the condition (defined earlier, within a <a href="${url:self(#conditions-element)}">logic:conditions</a> element), that should evaluate to true for the attached element to be rendered.</summary>
 									<section class="properties example">
 										<header>Example:</header>
-										<details>
+										<article>
 											<summary></summary>
 											<mod:XmlTree>
 												<mod:data>
@@ -405,13 +405,13 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

@@ -23,12 +23,12 @@
 					<span>Sage</span>
 				</a>
 			</header>
-			<details>
+			<article>
 				<xsl:apply-templates select="." mode="mod:Sidebar_Contents"/>
 				<!-- <xsl:apply-templates select="." mode="mod:Sidebar_RelatedSiblings"/> -->
 				<!-- <xsl:apply-templates select="." mode="mod:Sidebar_RelatedChildren"/> -->
 				<xsl:apply-templates select="." mode="mod:Sidebar_PageIndex"/>
-			</details>
+			</article>
 		</section>
 
 	</xsl:template>
@@ -44,7 +44,7 @@
 
 		<section class="contents">
 			<header>Contents</header>
-			<details>
+			<article>
 				<xsl:for-each select="$levels">
 					<div class="level level{position()}">
 						<xsl:choose>
@@ -81,7 +81,7 @@
 						</xsl:choose>
 					</div>
 				</xsl:for-each>
-			</details>
+			</article>
 		</section>
 	</xsl:template>
 
@@ -98,7 +98,7 @@
 				<header>
 					<xsl:value-of select="$parentName"/>
 				</header>
-				<details>
+				<article>
 					<ul>
 						<xsl:for-each select="$siblings">
 							<li class="name{basic:iif(@href = $currentHref, ' current', '')}">
@@ -113,7 +113,7 @@
 							</li>
 						</xsl:for-each>
 					</ul>
-				</details>
+				</article>
 			</section>
 		</xsl:if>
 	</xsl:template>
@@ -129,7 +129,7 @@
 				<header>
 					<xsl:apply-templates select="$currentLink/node()"/>
 				</header>
-				<details>
+				<article>
 					<ul>
 						<xsl:for-each select="$children">
 							<li>
@@ -137,7 +137,7 @@
 							</li>
 						</xsl:for-each>
 					</ul>
-				</details>
+				</article>
 			</section>
 		</xsl:if>
 	</xsl:template>
@@ -155,7 +155,7 @@
 					<header>
 						Page index
 					</header>
-					<details>
+					<article>
 						<ul>
 							<xsl:for-each select="$headers">
 								<xsl:variable name="headerid">
@@ -181,7 +181,7 @@
 								</li>
 							</xsl:for-each>
 						</ul>
-					</details>
+					</article>
 				</section>
 			</xsl:when>
 		</xsl:choose>

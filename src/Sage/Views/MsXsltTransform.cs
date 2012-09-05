@@ -111,8 +111,9 @@ namespace Sage.Views
 			};
 
 			Stopwatch sw = new Stopwatch();
+			log.DebugFormat("XSLT transform start");
 			long milliseconds = sw.TimeMilliseconds(executor);
-			log.DebugFormat("Transform completed in {0}ms", milliseconds);
+			log.DebugFormat("XSLT transform end: {0}ms", milliseconds);
 		}
 
 		private ProblemInfo DetectProblemType(Exception ex)

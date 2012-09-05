@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 namespace Sage.Views
 {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.IO;
@@ -30,6 +30,7 @@ namespace Sage.Views
 	using System.Xml.XPath;
 	using System.Xml.Xsl;
 
+	using Kelp.Extensions;
 	using Kelp.Http;
 
 	using log4net;
@@ -143,22 +144,29 @@ namespace Sage.Views
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(stylesheetPath));
 
-			object cachedItem;
+			XsltTransform cachedItem;
 			string key = string.Format(CacheKeyFormat, stylesheetPath);
-			if ((cachedItem = context.Cache.Get(key)) != null && cachedItem is XsltTransform)
+			cachedItem = context.Cache.Get(key) as XsltTransform;
+
+			if (cachedItem != null)
+				return cachedItem;
+
+			XsltTransform result = null;
+			log.DebugFormat("XSLT create '{0}'", stylesheetPath);
+			long milliseconds = new Stopwatch().TimeMilliseconds(() =>
 			{
-				return (XsltTransform)cachedItem;
-			}
+				CacheableXmlDocument stylesheetDocument = ResourceManager.LoadXmlDocument(stylesheetPath, context);
+				OmitNamespacePrefixResults(stylesheetDocument);
 
-			CacheableXmlDocument stylesheetDocument = ResourceManager.LoadXmlDocument(stylesheetPath, context);
-			OmitNamespacePrefixResults(stylesheetDocument);
+				result = XsltTransform.Create(context, stylesheetDocument);
+				result.dependencies.AddRange(stylesheetDocument.Dependencies);
 
-			XsltTransform result = XsltTransform.Create(context, stylesheetDocument);
-			result.dependencies.AddRange(stylesheetDocument.Dependencies);
+				IEnumerable<string> fileDependencies = result.Dependencies.Where(d => UrlResolver.GetScheme(d) == "file").ToList();
+				result.LastModified = Util.GetDateLastModified(fileDependencies);
+				context.Cache.Insert(key, result, new CacheDependency(fileDependencies.ToArray()));
+			});
 
-			IEnumerable<string> fileDependencies = result.Dependencies.Where(d => UrlResolver.GetScheme(d) == "file").ToList();
-			result.LastModified = Util.GetDateLastModified(fileDependencies);
-			context.Cache.Insert(key, result, new CacheDependency(fileDependencies.ToArray()));
+			log.DebugFormat("XSLT create complete: {0}ms", milliseconds);
 
 			return result;
 		}

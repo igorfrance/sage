@@ -32,14 +32,12 @@ namespace Sage
 
 	using Kelp.Extensions;
 
-	using Sage.ResourceManagement;
-	using Sage.Rewriters;
-
 	using log4net;
 
 	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.Extensibility;
+	using Sage.ResourceManagement;
 	using Sage.Routing;
 	using Sage.Views;
 
@@ -124,7 +122,7 @@ namespace Sage
 			{
 				try
 				{
-					return this.Context.Request != null;
+					return this.Context != null && this.Context.Request != null;
 				}
 				catch
 				{
@@ -293,14 +291,11 @@ namespace Sage
 
 			Thread.CurrentThread.Name = DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture);
 			if (this.Context != null)
-			{
-				log.InfoFormat(
-					"Request {0} started, thread name set to {1}", HttpContext.Current.Request.Url, Thread.CurrentThread.Name);
-			}
+				log.InfoFormat("Request {0} started.", HttpContext.Current.Request.Url);
 			else
-			{
-				log.InfoFormat("Request started, thread name set to {0}", Thread.CurrentThread.Name);
-			}
+				log.InfoFormat("Request started (no context)");
+
+			log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
 		}
 
 		/// <summary>

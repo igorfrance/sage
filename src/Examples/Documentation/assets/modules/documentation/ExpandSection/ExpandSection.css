@@ -10,5 +10,5 @@ section.expand > header span.expand
 	{ display: none; }
 section.expand.collapsed > header span.expand
 	{ display: inline; }
-section.expand.collapsed details
+section.expand.collapsed article
 	{ display: none; }

@@ -20,7 +20,7 @@
 				<header>
 					<span>Node handlers</span>
 				</header>
-				<details>
+				<article>
 
 					<summary>
 						Node handlers are registered delegate functions invoked during the <a href="${url:link(xml-flow-copy-tree)}">contextualization step</a> when tree processing encounters an element
@@ -40,7 +40,7 @@
 
 					<section class="topic" id="nodehandler-delegate" data-index="true" data-level="1">
 						<header>NodeHandler delegate</header>
-						<details>
+						<article>
 							<mod:SyntaxHighlighter>
 								<mod:config>
 									<mod:language>csharp</mod:language>
@@ -63,12 +63,12 @@
 							<p>
 								This method accepts two arguments; The <code>XmlNode</code> that is being processed, and the <code>SageContext</code> under which the code is being executed. The method returns an <code>XmlNode</code> that is the result of whatever work this method does internally, and this node will be used in the resulting document. To make the node not appear in the output tree, the method shoud return a <code>null</code>. It is an error to
 							</p>
-						</details>
+						</article>
 					</section>
 
 					<section class="topic" id="nodehandler-attribute" data-index="true" data-level="1">
 						<header>NodeHandler attribute</header>
-						<details>
+						<article>
 							<p>
 								To register a method as a node handler, decorate it with the <code>NodeHandlerAttribute</code> and specify the type, name and namespace of the node that the method should handle. There can be multiple instance of the attribute for different nodes that this method handles.
 							</p>
@@ -109,12 +109,12 @@
 									</mod:code>
 								</mod:config>
 							</mod:SyntaxHighlighter>
-						</details>
+						</article>
 					</section>
 
 					<section class="topic" id="nodehandlers-sage" data-index="true" data-level="1">
 						<header>Sage Node handlers</header>
-						<details>
+						<article>
 							<summary>
 								Reference to the node handlers provided by Sage:
 							</summary>
@@ -167,10 +167,10 @@
 									</tr>
 								</tbody>
 							</table>
-						</details>
+						</article>
 					</section>
 
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

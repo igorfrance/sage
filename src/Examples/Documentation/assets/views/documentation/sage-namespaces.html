@@ -2,6 +2,7 @@
 <html
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
  	xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
@@ -9,6 +10,12 @@
 		<title>Sage namespaces</title>
 	</head>
 	<body>
+
+		<intl:variables>
+			<intl:variable id="prefix.title">
+				<intl:value locale="default">Use this namespace prefix to reference the namespace</intl:value>
+			</intl:variable>
+		</intl:variables>
 
 		<div class="page">
 			<mod:Sidebar>
@@ -20,120 +27,140 @@
 				<header>
 					<span>Sage namespaces</span>
 				</header>
-				<details>
+				<article>
 					<summary>
 						This page provides a reference list of namespaces in use throughout Sage.
 					</summary>
 					<section class="topic" id="common">
 						<header>Common namespaces</header>
-						<details>
-							<summary>The following namespaces will be automatically processed by Sage if used within xml views.</summary>
+						<article>
+							<summary>XML elements and attributes from the following namespaces will be automatically processed by Sage if used within XHTML views.</summary>
 							<section class="namespaceref">
 								<header>
 									<a href="http://www.w3.org/1999/xhtml">XHTML namespace</a>
 								</header>
-								<details>
-									<code class="principal">xmlns:<b>xhtml</b>="http://www.w3.org/1999/xhtml"</code>
-									<p>The famous XHTML namespace from 1999. It is registered within the global namespace manager with the namespace prefix <code>xhtml:</code>.</p>
-								</details>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">xhtml</code>="http://www.w3.org/1999/xhtml"</code>
+									<p>The famous XHTML namespace from 1999. It is registered within the global namespace manager with the namespace prefix <code class="accent" title="intl:variable(prefix.title)" >xhtml:</code></p>
+								</article>
 							</section>
 							<section class="namespaceref">
 								<header>
 									<a href="${url:link(sage-namespaces-sage)}">Sage namespace</a>
 								</header>
-								<details>
-									<code class="principal">xmlns:<b>sage</b>="http://www.cycle99.com/schemas/sage/sage.xsd</code>
-									<p>Core Sage utilities. It is registered within the global namespace manager with the namespace prefix <code>sage:</code>.</p>
-								</details>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">sage</code>="http://www.cycle99.com/schemas/sage/sage.xsd"</code>
+									<p>Core Sage utilities. It is registered within the global namespace manager with the namespace prefix <code class="accent" title="intl:variable(prefix.title)">sage:</code></p>
+								</article>
 							</section>
 							<section class="namespaceref">
 								<header>
 									<a href="${url:link(sage-namespaces-internationalization)}">Internationalization namespace</a>
 								</header>
-								<details>
-									<code class="principal">xmlns:<b>intl</b>="http://www.cycle99.com/schemas/sage/internationalization.xsd</code>
-									<p>Internationalization facilities. It is registered within the global namespace manager with the namespace prefix <code>intl:</code>.</p>
-								</details>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">intl</code>="http://www.cycle99.com/schemas/sage/internationalization.xsd"</code>
+									<p>Internationalization facilities. It is registered within the global namespace manager with the namespace prefix <code class="accent" title="intl:variable(prefix.title)">intl:</code></p>
+								</article>
 							</section>
 							<section class="namespaceref">
 								<header>
 									<a href="${url:link(sage-namespaces-contextualization)}">Contextualization namespace</a>
 								</header>
-								<details>
-									<code class="principal">xmlns:<b>context</b>="http://www.cycle99.com/schemas/sage/contextualization.xsd</code>
-									<p>Document preprocessing. It is registered within the global namespace manager with the namespace prefix <code>context:</code>.</p>
-								</details>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">context</code>="http://www.cycle99.com/schemas/sage/contextualization.xsd"</code>
+									<p>Document preprocessing. It is registered within the global namespace manager with the namespace prefix <code class="accent" title="intl:variable(prefix.title)">context:</code></p>
+								</article>
 							</section>
 							<section class="namespaceref">
 								<header>
 									<a href="${url:link(sage-namespaces-modules)}">Modules namespace</a>
 								</header>
-								<details>
-									<code class="principal">xmlns:<b>mod</b>="http://www.cycle99.com/schemas/sage/modules.xsd</code>
-									<p>Base namespace for all modules. It is registered within the global namespace manager with the namespace prefix <code>mod:</code>.</p>
-								</details>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">mod</code>="http://www.cycle99.com/schemas/sage/modules.xsd"</code>
+									<p>Base namespace for all modules. It is registered within the global namespace manager with the namespace prefix <code class="accent" title="intl:variable(prefix.title)">mod:</code></p>
+								</article>
 							</section>
 							<section class="namespaceref">
 								<header>
-									<a href="${url:link(sage-namespaces-contextualization)}">Custom logic namespace</a>
+									<a href="${url:link(sage-namespaces-contextualization)}">Logic namespace</a>
 								</header>
-								<details>
-									<code class="principal">xmlns:<b>logic</b>="http://www.cycle99.com/schemas/sage/logic.xsd</code>
-									<p>Custom transform logic. It is registered within the global namespace manager with the namespace prefix <code>logic:</code>.</p>
-								</details>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">logic</code>="http://www.cycle99.com/schemas/sage/logic.xsd"</code>
+									<p>Custom transform logic. It is registered within the global namespace manager with the namespace prefix <code class="accent" title="intl:variable(prefix.title)">logic:</code></p>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 					<section class="topic" id="extensions">
 						<header>XSLT extension object namespaces</header>
-						<details>
+						<article>
 							<summary>The following namespaces are used with custom objects added as XSLT extension objects to the XSLT stylesheets intent on consuming them. To use the methods from these namespaces, simply reference them in your document.</summary>
-							<ul class="casual separate">
-								<li>
-									<h5 class="casual"><a href="${url:link(xslt-extensions-basic)}">Basic</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd</code>
+							<section class="namespaceref">
+								<header>
+									<a href="${url:link(xslt-extensions-basic)}">Basic</a>
+								</header>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">basic</code>="http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd"</code>
 									<p>A few useful shorthand conditional utilities from Basic.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="${url:link(xslt-extensions-string)}">String</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd</code>
+								</article>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="${url:link(xslt-extensions-string)}">String</a>
+								</header>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">string</code>="http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd"</code>
 									<p>String formatting and regular expression matching and replacement.</p>
-								</li>
-								<li>
-									<h5 class="casual"><a href="${url:link(xslt-extensions-set)}">Set</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/xslt/extensions/set.xsd</code>
+								</article>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="${url:link(xslt-extensions-set)}">Set</a>
+								</header>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">set</code>="http://www.cycle99.com/schemas/sage/xslt/extensions/set.xsd"</code>
 									<p>Filtering nodesets.</p>
-								</li>
-							</ul>
-						</details>
+								</article>
+							</section>
+						</article>
 					</section>
 					<section class="topic" id="configuration">
 						<header>Configuration namespaces</header>
-						<details>
-							<ul class="casual separate">
-								<li>
-									<h5 class="casual"><a href="sage:url(configuration-project)">Project configuration</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/configuration/project.xsd</code>
-								</li>
-								<li>
-									<h5 class="casual"><a href="sage:url(configuration-category)">Category configuration</a></h5>
-									<code class="principal">http://www.cycle99.com/schemas/sage/configuration/category.xsd</code>
-								</li>
-							</ul>
-						</details>
+						<article>
+							<section class="namespaceref">
+								<header>
+									<a href="${url:link(configuration-project)}">Project configuration</a>
+								</header>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">p</code>="http://www.cycle99.com/schemas/sage/configuration/project.xsd"</code>
+									<p>&#160;</p>
+								</article>
+							</section>
+							<section class="namespaceref">
+								<header>
+									<a href="${url:link(configuration-category)}">Category configuration</a>
+								</header>
+								<article>
+									<code class="principal">xmlns:<code class="accent" title="intl:variable(prefix.title)">c</code>="http://www.cycle99.com/schemas/sage/configuration/category.xsd"</code>
+									<p>&#160;</p>
+								</article>
+							</section>
+						</article>
 					</section>
 					<section class="topic" id="other">
 						<header>Other namespaces</header>
-						<details>
-							<ul class="casual separate">
-								<li>
-									<h5 class="casual"><a href="sage:url(extension-devtools)">Developer tools</a></h5>
+						<article>
+							<section class="namespaceref">
+								<header>
+									<a href="${url:link(extension-devtools)}">Developer tools</a>
+								</header>
+								<article>
 									<code class="principal">http://www.cycle99.com/schemas/sage/configuration/devtools.xsd</code>
-								</li>
-							</ul>
-						</details>
+								</article>
+							</section>
+						</article>
 					</section>
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

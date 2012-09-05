@@ -35,7 +35,8 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class Internationalizer
 	{
-		private const string XsltPath = "sageresx://sage/resources/xslt/internationalization.xslt";
+		//private const string XsltPath = "sageresx://sage/resources/xslt/internationalization.xslt";
+		private const string XsltPath = @"G:\cycle99\projects\web\sage\src\Sage\Resources\Xslt\Internationalization.xslt";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(Internationalizer).FullName);
 

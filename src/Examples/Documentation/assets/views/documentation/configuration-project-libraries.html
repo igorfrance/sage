@@ -25,7 +25,7 @@
 				<header>
 					<span>Libraries (Project configuration)</span>
 				</header>
-				<details>
+				<article>
 
 					<summary>
 						<a href="${url:link(resource-libraries)}">Resource libraries</a> provide a convenient way to automate inclusion of various web resources into pages. The library can be configured to be automatically included based on the request URL. If a module or one of its dependencies uses a library (such as <i>jquery.ui</i> for instance), and the module is used on the current view the library will be automatically included as well. Libraries can also depend on other libraries, enabling further resource reuse and organization. Additionally, a library can also be included on a view simply by referencing it with the <code>sage:library</code> element. <a href="${url:link(resource-libraries)}">Read more</a>.
@@ -35,18 +35,18 @@
 						<header>
 							Reference
 						</header>
-						<details>
+						<article>
 							<section class="element">
 								<header>
 									<h5>library element</h5>
 								</header>
-								<details>
+								<article>
 									<summary>
 										Defines a reusable resource library that can be used throughout the project
 									</summary>
 									<section class="properties example">
 										<header>Example</header>
-										<details>
+										<article>
 											<mod:XmlTree>
 												<mod:config>
 												</mod:config>
@@ -67,29 +67,29 @@
 													</sage:literal>
 												</mod:data>
 											</mod:XmlTree>
-										</details>
+										</article>
 									</section>
 									<section class="properties attributes">
 										<header>Attributes</header>
-										<details>
+										<article>
 											<section class="attribute">
 												<header>name</header>
-												<details>Specifies the name of the library.</details>
+												<article>Specifies the name of the library.</article>
 											</section>
-										</details>
+										</article>
 									</section>
 									<section class="properties children">
 										<header>Child elements</header>
-										<details>
+										<article>
 											<section class="element">
 												<header>
 													<h5>resources/resource</h5>
 												</header>
-												<details>
+												<article>
 													<summary>Specifies the resources this library consists of. Whenever the library is used, it's resources will be added to the page, as defined with this element.</summary>
 													<section class="properties example">
 														<header>Example</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -103,14 +103,14 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>type</header>
-																<details>
+																<article>
 																	<summary>
 																		Specifies the resource type. Possible values are: <code>script</code>, <code>style</code>, <code>document</code> and <code>icon</code>.
 																	</summary>
@@ -124,7 +124,7 @@
 																				<span class="expand">More</span>
 																				<span class="collapse">Less</span>
 																			</header>
-																			<details>
+																			<article>
 																				<table class="definition">
 																					<col style="width: 100px"/>
 																					<col/>
@@ -159,22 +159,22 @@
 																						</td>
 																					</tr>
 																				</table>
-																			</details>
+																			</article>
 																		</mod:data>
 																	</mod:ExpandSection>
-																</details>
+																</article>
 															</section>
 															<section class="attribute">
 																<header>name</header>
-																<details>
+																<article>
 																	<summary>
 																		Specifies the resource name. This attribute is only applicable for <code>document</code> type resources. A documents resource is inserted as a child element into the <a href="${url:link(xml-flow-input-document)}">input document</a>, and is assigned this value as its <code>name</code> attribute.
 																	</summary>
-																</details>
+																</article>
 															</section>
 															<section class="attribute">
 																<header>location</header>
-																<details>
+																<article>
 																	<summary>
 																		Specifies the location in which to include the resource. Possible values are: <code>head</code>, <code>body</code> and <code>data</code>.
 																	</summary>
@@ -188,7 +188,7 @@
 																				<span class="expand">More</span>
 																				<span class="collapse">Less</span>
 																			</header>
-																			<details>
+																			<article>
 																				<table class="definition">
 																					<col style="width: 100px"/>
 																					<col/>
@@ -219,38 +219,38 @@
 																						</td>
 																					</tr>
 																				</table>
-																			</details>
+																			</article>
 																		</mod:data>
 																	</mod:ExpandSection>
-																</details>
+																</article>
 															</section>
 															<section class="attribute">
 																<header>path</header>
-																<details>
+																<article>
 																	<summary>Specifies the resource path. Unless the path is qualified, it is considered relative to the root of the web application. You can use the <a href="${url:link(resource-processing-kelp)}">kelp:// URL scheme</a> in the resource path.</summary>
-																</details>
+																</article>
 															</section>
 															<section class="attribute">
 																<header>limitTo</header>
-																<details>
+																<article>
 																	<summary>Comma-separated list of user agent id's to which the resource library applies. For instance, <code>ie6,ie7,chrome5,firefox7,opera10,safari4</code>.</summary>
-																</details>
+																</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
 											<section class="element">
 												<header>
 													<h5>dependencies/library</h5>
 												</header>
-												<details>
+												<article>
 													<summary>
 														Specifies libraries that this library depends on. Whenever the library is used, before it's own resources are added to the page, the resources of the dependency library will be added too.
 													</summary>
 													<section class="properties example">
 														<header>Example</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -262,24 +262,24 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
 													<section class="properties attributes">
 														<header>Attributes</header>
-														<details>
+														<article>
 															<section class="attribute">
 																<header>ref</header>
-																<details>Specifies the name of the library this that library depends on.</details>
+																<article>Specifies the name of the library this that library depends on.</article>
 															</section>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
 											<section class="element">
 												<header>
 													<h5>include/path</h5>
 												</header>
-												<details>
+												<article>
 													<summary>
 														Defines a (part of a) URL path for which the library should automatically be included. Multiple path elements can be used to provide various paths.
 													</summary>
@@ -288,7 +288,7 @@
 													</summary>
 													<section class="properties example">
 														<header>Example</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -301,19 +301,19 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
 											<section class="element">
 												<header>
 													<h5>include/always</h5>
 												</header>
-												<details>
+												<article>
 													<summary>Indicates that the library should always be included, with every request. If this element appears, any sibling <code>path</code> elements are ignored and the library is included, always.</summary>
 													<section class="properties example">
 														<header>Example</header>
-														<details>
+														<article>
 															<mod:XmlTree>
 																<mod:data>
 																	<sage:literal>
@@ -325,18 +325,18 @@
 																	</sage:literal>
 																</mod:data>
 															</mod:XmlTree>
-														</details>
+														</article>
 													</section>
-												</details>
+												</article>
 											</section>
-										</details>
+										</article>
 									</section>
-								</details>
+								</article>
 							</section>
-						</details>
+						</article>
 					</section>
 
-				</details>
+				</article>
 			</section>
 		</div>
 	</body>

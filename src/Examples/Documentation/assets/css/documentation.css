@@ -21,6 +21,10 @@ a:hover
 a:hover code
 	{ color: #336600; }
 
+::-moz-selection,
+::selection
+	{ background: #004080; color: #fff; }
+
 br.spacer
 	{ margin-bottom: 60px; }
 
@@ -123,9 +127,14 @@ pre.example
 	{ display: block; margin: 10px 0 10px  40px; }
 code.important
 	{ display: inline-block; padding: 2px; background: #efefef; border: 1px solid #ccc; }
+code.accent
+	{ display: inline-block; background: #f2f2ff; padding: 2px; font-style: italic; }
 code.principal
 	{ display: inline-block; margin: 5px 0; padding: 5px 10px; background: #efefef; border: 1px solid #E6E6E6;
 	  border-radius: 3px; }
+code.principal code.accent
+	{ background: transparent; padding: 0px; text-decoration: underline; }
+
 dl
 	{}
 dt
@@ -444,7 +453,7 @@ section.moreinfo > header span
 	{ color: #0046b0; text-decoration: underline; }
 section.moreinfo.collapsed > header
 	{ display: inline; border-bottom: none; }
-section.moreinfo > details
+section.moreinfo > article
 	{ display: block; }
 section.moreinfo > header span.collapse
 	{ float: right; }
@@ -460,7 +469,7 @@ div.page > section.content
 	{ position: absolute; top: 0; left: 230px; bottom: 0; right: 0; overflow: hidden; }
 div.page > section.content > header
 	{ position: fixed; left: 230px; top: 0; right: 0; }
-div.page > section.content > details
+div.page > section.content > article
 	{ position: absolute; top: 70px; left: 0; right: 0; bottom: 0; overflow: auto; }
 
 /**
@@ -471,11 +480,11 @@ section.content > header
 section.content > header span
 	{ display: block; padding-bottom: 7px;
 	  color: #444; font-size: 200%; font-weight: normal; text-shadow: 1px 1px 2px #999; }
-section.content > details
+section.content > article
 	{ display: block; padding: 15px; }
-section.content > details > summary
+section.content > article > summary
 	{ display: block; font-size: 105%; margin-bottom: 15px; }
-section.content > details > summary dfn
+section.content > article > summary dfn
 	{ padding: 15px; background: #ededed; border-radius: 5px; margin: 0 0 20px 0; }
 
 
@@ -485,7 +494,7 @@ section.content > details > summary dfn
 section.title > header
 	{ font-size: 120%; font-style: normal;
 	  padding: 15px; background: #ededed; border-radius: 5px; margin: 0 0 20px 0; }
-section.title > details
+section.title > article
 	{ display: block; padding-left: 16px; }
 
 /**
@@ -496,9 +505,9 @@ section.topic
 section.topic > header
 	{ margin: 0 0 15px 0; color: #95a2b0; border-bottom: 1px solid #b1bac5;
 	  font-size: 130%; font-weight: normal; }
-section.topic > details
+section.topic > article
 	{ display: block; }
-section.topic > details > summary
+section.topic > article > summary
 	{ font-size: 105%; display: block; margin: 0 0 20px 0; background: #fff; }
 
 
@@ -517,7 +526,7 @@ section.property
 	{ overflow: hidden; }
 section.property > header
 	{ float: left; text-align: right; padding-right: 5px; width: 120px; }
-section.property > details
+section.property > article
 	{ padding-left: 130px; }
 
 /**
@@ -525,18 +534,17 @@ section.property > details
  */
 section.namespace > header
 	{ font-size: 85%; font-weight: bold; color: #aaa; text-transform: lowercase; }
-section.namespace > details
+section.namespace > article
 	{ display: block; background: #EBEBE2; padding: 10px 5px; margin: 2px 0 40px 0;
 	  font-family: Consolas, courier new; color: #7B7B74; border: 1px solid #C5C5C3; border-radius: 3px; }
 
 /**
  * namespaceref section
  */
-section.namespaceref
-	{ margin-left: 20px; }
 section.namespaceref > header
-	{ font-size: 90%;
-    font-weight: bold; }
+	{ font-size: 90%; font-weight: bold; }
+section.namespaceref > article
+	{ padding: 4px 0 10px 20px; }
 
 /**
  * element section
@@ -546,14 +554,14 @@ section.element > header
 	  font-size: 100%; font-weight: bold; margin: 0; overflow: hidden; color: #24477b; }
 section.element > header h5
 	{ font-size: 90%; font-weight: bold; margin: 0; overflow: hidden; color: #24477b; }
-section.element > details
+section.element > article
 	{ display: block; margin-left: 20px; padding-left: 10px; border-left: 1px solid #eee;
 	  background: url(../images/line.png) no-repeat left bottom; }
-section.element > details .sectionblock p
+section.element > article .sectionblock p
 	{ margin-bottom: 0; }
-section.element > details p + *
+section.element > article p + *
 	{ margin-top: 15px; }
-section.element > details > summary
+section.element > article > summary
 	{ display: block; margin: 5px 0 5px -17px; padding-bottom: 12px; background: #fff; }
 section.element ul.properties
 	{ padding: 0; }
@@ -568,15 +576,15 @@ section.properties
 	{ padding-bottom: 20px; }
 section.properties > header
 	{ font-size: 85%; font-weight: bold; margin-bottom: 10px;  overflow: hidden; color: #6e6e6e; }
-section.properties > details
+section.properties > article
 	{ display: block; padding-left: 20px; }
-section.properties > details > summary
+section.properties > article > summary
 	{ display: block; margin-bottom: 10px; }
 
 /**
  * attributes section
  */
-section.attributes > details
+section.attributes > article
 	{ display: block; padding-left: 15px; }
 
 /**
@@ -592,13 +600,13 @@ section.attributegroup > header
  */
 section.attribute > header
 	{ font-size: 85%; font-weight: bold; margin: 0;  overflow: hidden; color: #467bb7; }
-section.attribute > details
+section.attribute > article
 	{ display: block; padding-left: 15px; }
 
 /**
  * example section
  */
-section.properties.example > details > summary
+section.properties.example > article > summary
 	{ border-bottom: 1px solid #ddd; color: #aaa; display: inline-block; font-size: 85%; margin-bottom: 10px;
     padding-bottom: 3px; }
 
@@ -613,11 +621,11 @@ section.properties.children
  */
 section.flow,
 section.flow > header,
-section.flow > details
+section.flow > article
 	{ display: block; }
 section.flow.vertical
 	{ background: url(../images/arrow-down.png) no-repeat left bottom; }
-section.flow.vertical > details
+section.flow.vertical > article
 	{ background: url(../images/arrow-down.png) no-repeat right bottom; padding: 0 60px; }
 
 /**

@@ -250,6 +250,7 @@ namespace Sage.Extensibility
 						}
 					}
 
+					log.DebugFormat("Extracting '{0}' to '{1}'", file.Name, targetPath);
 					file.Extract(extensionArchive, targetPath);
 					entry.State = InstallState.Installed;
 				}
