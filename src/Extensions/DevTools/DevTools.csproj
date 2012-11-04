@@ -145,7 +145,6 @@
     <Content Include="assets\views\tests\directory-tree.html" />
     <Content Include="assets\views\tests\syntax-highlighting.html" />
     <Content Include="assets\views\tests\xml-tree.html" />
-    <Content Include="assets\xslt\default.xslt" />
     <Content Include="log4net.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
