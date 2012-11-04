@@ -22,7 +22,7 @@
 				</header>
 				<article>
 
-					<img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow.png" alt="XML transform flow overview"/>
+					<!-- <img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow.png" alt="XML transform flow overview"/> -->
 
 					<summary><dfn>
 						When working with XML documents, Sage takes them through several steps of processing before they are returned to the caller.
@@ -30,31 +30,31 @@
 
 					<ul>
 						<li>
-							<h5><a href="${url:link(xml-flow-internationalize)}">Internationalize</a> *</h5>
+							<h5><a href="${url:link(xml-flow-internationalize)}">Internationalization</a></h5>
 							<p>
-								The internationalized version of the source document is opened. Depending on the settings, this step is done either inline or as a part of the batch process for the whole project. The internationalization is done and a internationalized version opened only if the document uses entities from the Sage's <a href="${url:link(internationalization)}">internationalization</a> namespace.
+								Any XML document referencing the <a href="${url:link(internationalization)}">internationalization</a> namespace is internationalized into all project locales. Depending on the settings, this step is done either as required when the document is requested, or in advance, as a part of the batch process for the whole project.
 							</p>
 						</li>
 						<li>
-							<h5><a href="url:link(xml-flow-copy-tree)}">Contextualize</a></h5>
+							<h5><a href="url:link(xml-flow-copy-tree)}">Contextualization</a></h5>
 							<p>
 								Every xml document opened through Sage will be processed node by node as a tree, starting at the root and drilling down recursively through child nodes. Registered node and text handlers have full control over how the entity they are handling will appear in the document.
 							</p>
 						</li>
 						<li>
-							<h5><a href="${url:link(xml-flow-expand-modules)}">Expand modules</a></h5>
+							<h5><a href="${url:link(xml-flow-expand-modules)}">Module expansion</a></h5>
 							<p>
 								Each module in the view template is executed as a backend <code>IModule</code> instance. The module may or may not have a specific backend component. In case the module doesn't have one, the default <code>NullModule</code> is used. The modules that have a backend component will typically append content into the module element's data node, although they can potentically modify the module element in any way.
 							</p>
 						</li>
 						<li>
-							<h5><a href="${url:link(xml-flow-input-document)}">Prepare input document</a></h5>
+							<h5><a href="${url:link(xml-flow-input-document)}">Wrap</a></h5>
 							<p>
 								Before being sent off further to be XSLT transformed, a view document is wrapped in a <em>context envelope</em>; an internal document format used with all view transformations. This standard structure provides information about the request and access to controller data. The XHTML template document is appended into a dedicated element <a href="${url:link(xml-flow-input-document,#model-element)}">sage:model</a>. This step and the previous (expand modules) are actually done in a single step, but for clarity they are here discussed separately.
 							</p>
 						</li>
 						<li>
-							<h5><a href="${url:link(xml-flow-xslt-transform)}">XSLT Transform</a></h5>
+							<h5><a href="${url:link(xml-flow-xslt-transform)}">Transform</a></h5>
 							<p>
 								The prepared and processed view template is finally transformed using the XSLT template associated with the view. Modules may provide their own XSLT which will then be used to render the HTML associated with the modules in the view template.
 							</p>
@@ -63,8 +63,6 @@
 					<ul class="small clear">
 						<li>&#160;&#160;* only XML document referencing internationalization namespace</li>
 					</ul>
-
-
 				</article>
 			</section>
 		</div>

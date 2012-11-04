@@ -5,7 +5,7 @@ body
 a,
 a code,
 a:visited
-	{ color: #0046b0; text-decoration: none;
+	{ color: #2B518E; text-decoration: none;
 		-webkit-transition: all .2s ease-in-out;
 		-moz-transition: all .2s ease-in-out;
 		-o-transition: all .2s ease-in-out;
@@ -485,7 +485,7 @@ section.content > article
 section.content > article > summary
 	{ display: block; font-size: 105%; margin-bottom: 15px; }
 section.content > article > summary dfn
-	{ padding: 15px; background: #ededed; border-radius: 5px; margin: 0 0 20px 0; }
+	{ padding: 15px; background: #CCDCFF; border-radius: 3px; margin: 0 0 20px 0; }
 
 
 /**

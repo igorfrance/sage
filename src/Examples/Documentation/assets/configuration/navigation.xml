@@ -62,7 +62,7 @@
 					<a href="${url:link(under-the-hood)}">Under the hood</a>
 					<ul>
 						<li>
-							<a href="${url:link(xml-flow)}">Document transform flow</a>
+							<a href="${url:link(xml-flow)}">Document process flow</a>
 							<ul>
 								<li>
 									<a href="${url:link(xml-flow-internationalize)}">Internationalize</a>
@@ -71,13 +71,13 @@
 									<a href="${url:link(xml-flow-copy-tree)}">Contextualize</a>
 								</li>
 								<li>
-									<a href="${url:link(xml-flow-expand-modules)}">Expand modules</a>
+									<a href="${url:link(xml-flow-expand-modules)}">Expand</a>
 								</li>
 								<li>
-									<a href="${url:link(xml-flow-input-document)}">Prepare input document</a>
+									<a href="${url:link(xml-flow-input-document)}">Wrap</a>
 								</li>
 								<li>
-									<a href="${url:link(xml-flow-xslt-transform)}">XSLT Transform</a>
+									<a href="${url:link(xml-flow-xslt-transform)}">Transform</a>
 								</li>
 							</ul>
 						</li>
