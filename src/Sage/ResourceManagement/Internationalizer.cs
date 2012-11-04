@@ -35,8 +35,8 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class Internationalizer
 	{
-		//private const string XsltPath = "sageresx://sage/resources/xslt/internationalization.xslt";
-		private const string XsltPath = @"G:\cycle99\projects\web\sage\src\Sage\Resources\Xslt\Internationalization.xslt";
+		private const string XsltPath = "sageresx://sage/resources/xslt/internationalization.xslt";
+		//// private const string XsltPath = @"G:\cycle99\projects\web\sage\src\Sage\Resources\Xslt\Internationalization.xslt";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(Internationalizer).FullName);
 
@@ -50,7 +50,7 @@ namespace Sage.ResourceManagement
 		/// Initializes a new instance of the <see cref="Internationalizer"/> class, using the specified 
 		/// <paramref name="context"/>.
 		/// </summary>
-		/// <param name="context">The context under which the internationalizer is being executed.</param>
+		/// <param name="context">The context under which the code is being executed.</param>
 		public Internationalizer(SageContext context)
 		{
 			this.processor = XsltTransform.Create(context, Internationalizer.XsltPath);
@@ -62,10 +62,10 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		/// <param name="resource">The resource.</param>
 		/// <returns>
-		/// The summary information about the internationalization of the specied <paramref name="resource"/>.
+		/// The summary information about the internationalization of the specified <paramref name="resource"/>.
 		/// </returns>
 		/// <exception cref="ApplicationException">
-		/// One of the locales configured for the category being internationalized doesn't have any dictionary files.
+		/// One of the locales configured for the category being processed doesn't have any dictionary files.
 		/// </exception>
 		public InternationalizationSummary Internationalize(XmlResource resource)
 		{

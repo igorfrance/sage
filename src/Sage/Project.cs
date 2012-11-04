@@ -44,9 +44,6 @@ namespace Sage
 	/// <summary>
 	/// Implements the <see cref="HttpApplication"/> class for this web application.
 	/// </summary>
-	/// <remarks>
-	/// this class is supplying methods for the initialisation and destruction of the web application
-	/// </remarks>
 	public class Project : HttpApplication
 	{
 		private const string ConfigWatchName = "ProjectConfigurationChangeWatch";
@@ -423,7 +420,7 @@ namespace Sage
 
 				var extensionManager = new ExtensionManager();
 				result = extensionManager.Initialize(context);
-				if (!result.Success)
+				if (result != null && !result.Success)
 				{
 					initializationError = result.Exception;
 					initializationProblemInfo = new ProblemInfo(ProblemType.ExtensionSchemaValidationError, result.SourceFile);
