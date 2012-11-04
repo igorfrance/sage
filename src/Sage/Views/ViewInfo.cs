@@ -93,56 +93,54 @@ namespace Sage.Views
 		}
 
 		/// <summary>
-		/// Gets the controller associated with the view this object represents.
-		/// </summary>
-		public SageController Controller { get; private set; }
-
-		/// <summary>
 		/// Gets the action associated with the view this object represents.
 		/// </summary>
 		public string Action { get; private set; }
 
 		/// <summary>
-		/// Gets the path to the view file (either the XML template or XSLY stylesheet) 
-		/// corresponding to this object.
+		/// Gets the view configuration document associated with the view this object represents.
 		/// </summary>
-		public string ViewPath { get; private set; }
+		public CacheableXmlDocument ConfigDocument
+		{
+			get
+			{
+				if (configDoc == null)
+				{
+					if (ConfigExists)
+					{
+						try
+						{
+							configDoc = context.Resources.LoadXml(ConfigPath);
+							string defaultNamespace = configDoc.DocumentElement.GetAttribute("xmlns");
+							if (string.IsNullOrEmpty(defaultNamespace))
+								configDoc.DocumentElement.SetAttribute("xmlns", XmlNamespaces.XHtmlNamespace);
 
-		/// <summary>
-		/// Gets a number indicating the source of the view stylesheet (specific, global or category).
-		/// </summary>
-		public ViewSource ViewSource { get; private set; }
+							configDoc.LoadXml(configDoc.InnerXml);
+						}
+						catch (Exception ex)
+						{
+							SageHelpException helpError = SageHelpException.Create(ex, this.ConfigPath, ProblemType.ViewDocumentInitError);
+							if (helpError.Problem.Type == ProblemType.Unknown)
+								throw;
 
-		/// <summary>
-		/// Gets the path to the view configuration file associated with the view this object represents.
-		/// </summary>
-		public string ConfigPath { get; private set; }
+							throw helpError;
+						}
+					}
+				}
 
-		/// <summary>
-		/// Gets the name that identifies the cofig document for the view that this object represents.
-		/// </summary>
-		public string ConfigName { get; private set; }
+				return configDoc;
+			}
+
+			internal set
+			{
+				configDoc = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this view's configuration file exists.
 		/// </summary>
 		public bool ConfigExists { get; private set; }
-
-		/// <summary>
-		/// Gets or sets the content type associated with the view this object represents.
-		/// </summary>
-		public string ContentType { get; set; }
-
-		/// <summary>
-		/// Gets the file extension of this view.
-		/// </summary>
-		public string ViewExtension
-		{
-			get
-			{
-				return Path.GetExtension(this.ViewPath);
-			}
-		}
 
 		/// <summary>
 		/// Gets the file extension associated with this view's configuration file.
@@ -156,6 +154,26 @@ namespace Sage.Views
 		}
 
 		/// <summary>
+		/// Gets the name that identifies the config document for the view that this object represents.
+		/// </summary>
+		public string ConfigName { get; private set; }
+
+		/// <summary>
+		/// Gets the path to the view configuration file associated with the view this object represents.
+		/// </summary>
+		public string ConfigPath { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the content type associated with the view this object represents.
+		/// </summary>
+		public string ContentType { get; set; }
+
+		/// <summary>
+		/// Gets the controller associated with the view this object represents.
+		/// </summary>
+		public SageController Controller { get; private set; }
+
+		/// <summary>
 		/// Gets a value indicating whether the view or view configuration exist.
 		/// </summary>
 		public bool Exists
@@ -163,17 +181,6 @@ namespace Sage.Views
 			get
 			{
 				return this.ConfigExists || this.ViewSource == Sage.ViewSource.Specific;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this instance represents an XSLT view.
-		/// </summary>
-		public bool IsXsltView
-		{
-			get
-			{
-				return this.Exists && this.ViewExtension.IndexOf("xsl", System.StringComparison.Ordinal) != -1;
 			}
 		}
 
@@ -191,6 +198,17 @@ namespace Sage.Views
 				return
 					ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='cache-control' and @content='no-cache']", nm) != null ||
 					ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='pragma' and @content='no-cache']", nm) != null;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance represents an XSLT view.
+		/// </summary>
+		public bool IsXsltView
+		{
+			get
+			{
+				return this.Exists && this.ViewExtension.IndexOf("xsl", System.StringComparison.Ordinal) != -1;
 			}
 		}
 
@@ -244,46 +262,6 @@ namespace Sage.Views
 		}
 
 		/// <summary>
-		/// Gets the view configuration document associated with the view this object represents.
-		/// </summary>
-		public CacheableXmlDocument ConfigDocument
-		{
-			get
-			{
-				if (configDoc == null)
-				{
-					if (ConfigExists)
-					{
-						try
-						{
-							configDoc = context.Resources.LoadXml(ConfigPath);
-							string defaultNamespace = configDoc.DocumentElement.GetAttribute("xmlns");
-							if (string.IsNullOrEmpty(defaultNamespace))
-								configDoc.DocumentElement.SetAttribute("xmlns", XmlNamespaces.XHtmlNamespace);
-
-							configDoc.LoadXml(configDoc.InnerXml);
-						}
-						catch (Exception ex)
-						{
-							SageHelpException helpError = SageHelpException.Create(ex, this.ConfigPath, ProblemType.ViewDocumentInitError);
-							if (helpError.Problem.Type == ProblemType.Unknown)
-								throw;
-
-							throw helpError;
-						}
-					}
-				}
-
-				return configDoc;
-			}
-
-			internal set
-			{
-				configDoc = value;
-			}
-		}
-
-		/// <summary>
 		/// Gets the XSLT processor associated with the view this object represents.
 		/// </summary>
 		public XsltTransform Processor
@@ -318,6 +296,28 @@ namespace Sage.Views
 				processor = value;
 			}
 		}
+
+		/// <summary>
+		/// Gets the file extension of this view.
+		/// </summary>
+		public string ViewExtension
+		{
+			get
+			{
+				return Path.GetExtension(this.ViewPath);
+			}
+		}
+
+		/// <summary>
+		/// Gets the path to the view file (either the XML template or XSLT style sheet) 
+		/// corresponding to this object.
+		/// </summary>
+		public string ViewPath { get; private set; }
+
+		/// <summary>
+		/// Gets a number indicating the source of the view style sheet (specific, global or category).
+		/// </summary>
+		public ViewSource ViewSource { get; private set; }
 
 		/// <inheritdoc/>
 		public override string ToString()

@@ -64,22 +64,6 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Fethes the remote file from the specified <paramref name="url"/> and returns the response text.
-		/// </summary>
-		/// <param name="url">The URL of the file to fetch.</param>
-		/// <returns>The contents of the remote file from the specified <paramref name="url"/></returns>
-		public static string GetRemoteTextFile(string url)
-		{
-			WebResponse response = GetHttpResponse(url, null, null);
-			StreamReader reader = new StreamReader(response.GetResponseStream());
-			string responseText = reader.ReadToEnd();
-			reader.Close();
-			reader.Dispose();
-
-			return responseText;
-		}
-
-		/// <summary>
 		/// Returns the <see cref="WebResponse"/> resulting from issuing a request to <paramref name="url"/>.
 		/// </summary>
 		/// <param name="url">The URL to which to send the request.</param>
@@ -105,6 +89,22 @@ namespace Sage.ResourceManagement
 
 			WebResponse response = request.GetResponse();
 			return response;
+		}
+
+		/// <summary>
+		/// Fetches the remote file from the specified <paramref name="url"/> and returns the response text.
+		/// </summary>
+		/// <param name="url">The URL of the file to fetch.</param>
+		/// <returns>The contents of the remote file from the specified <paramref name="url"/></returns>
+		public static string GetRemoteTextFile(string url)
+		{
+			WebResponse response = GetHttpResponse(url, null, null);
+			StreamReader reader = new StreamReader(response.GetResponseStream());
+			string responseText = reader.ReadToEnd();
+			reader.Close();
+			reader.Dispose();
+
+			return responseText;
 		}
 
 		/// <summary>
@@ -181,25 +181,6 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Validates the specified document <paramref name="element"/> against the XML schema loaded from the specified
-		/// <paramref name="schemaPath"/>, and returns an object that contains the validation information.
-		/// </summary>
-		/// <param name="element">The element to validate.</param>
-		/// <param name="schemaPath">The path to the XML schema to use to validate the element against.</param>
-		/// <returns>An object that contains the validation information</returns>
-		public static ValidationResult ValidateElement(XmlElement element, string schemaPath)
-		{
-			Contract.Requires<ArgumentNullException>(element != null);
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(schemaPath));
-
-			XmlDocument document = new XmlDocument();
-			document.PreserveWhitespace = true;
-			document.LoadXml(element.OuterXml);
-
-			return ValidateDocument(document, schemaPath);
-		}
-
-		/// <summary>
 		/// Validates the specified document <paramref name="document"/> against the XML schema loaded from the specified
 		/// <paramref name="schemaPath"/>, and returns an object that contains the validation information.
 		/// </summary>
@@ -245,6 +226,25 @@ namespace Sage.ResourceManagement
 			});
 
 			return result;
+		}
+
+		/// <summary>
+		/// Validates the specified document <paramref name="element"/> against the XML schema loaded from the specified
+		/// <paramref name="schemaPath"/>, and returns an object that contains the validation information.
+		/// </summary>
+		/// <param name="element">The element to validate.</param>
+		/// <param name="schemaPath">The path to the XML schema to use to validate the element against.</param>
+		/// <returns>An object that contains the validation information</returns>
+		public static ValidationResult ValidateElement(XmlElement element, string schemaPath)
+		{
+			Contract.Requires<ArgumentNullException>(element != null);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(schemaPath));
+
+			XmlDocument document = new XmlDocument();
+			document.PreserveWhitespace = true;
+			document.LoadXml(element.OuterXml);
+
+			return ValidateDocument(document, schemaPath);
 		}
 
 		/// <summary>
