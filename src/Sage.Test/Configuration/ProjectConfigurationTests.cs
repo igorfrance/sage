@@ -23,6 +23,9 @@
 
 namespace Sage.Test.Configuration
 {
+	using System.Linq;
+	using System.Xml;
+
 	using Machine.Specifications;
 	using Sage.Configuration;
 
@@ -37,5 +40,28 @@ namespace Sage.Test.Configuration
 		private It Should_return_true_for_local_adresses2 = () => config.Environment.IsDeveloperIp("::1").ShouldBeTrue();
 		private It Should_return_true_for_lan_adresses1 = () => config.Environment.IsDeveloperIp("172.16.4.12").ShouldBeTrue();
 		private It Should_return_true_for_lan_adresses32 = () => config.Environment.IsDeveloperIp("10.180.5.4").ShouldBeTrue();
+	}
+
+	[Subject(typeof(ProjectConfiguration)), Tags(Categories.Configuration)]
+	public class If_default_locale_doesnt_exist
+	{
+		private static ProjectConfiguration config;
+
+		private Because of = () =>
+		{
+			config = ProjectConfiguration.Create(new XmlDocument { InnerXml =
+				@"<project xmlns='http://www.cycle99.com/schemas/sage/configuration/project.xsd' defaultLocale='en'>
+					<internationalization>
+						<locale name='us' dictionaryNames='us,en' resourceNames='us,en,default'>
+							<format culture='en-us' shortDate='MMMM d, yyyy' longDate='D'/>
+						</locale>
+					</internationalization>
+				</project>"});
+
+			System.Diagnostics.Debug.WriteLine(config.Locales.Count);
+		};
+
+		private It Should_set_the_default_locale_to_the_first_defined_locale = () => 
+			config.DefaultLocale.ShouldEqual(config.Locales.First().Key);
 	}
 }

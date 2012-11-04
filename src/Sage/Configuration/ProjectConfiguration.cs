@@ -168,7 +168,7 @@ namespace Sage.Configuration
 		public MetaViewDictionary MetaViews { get; private set; }
 
 		/// <summary>
-		/// Gets the dictionary of module confiurations
+		/// Gets the dictionary of module configurations
 		/// </summary>
 		public Dictionary<string, ModuleConfiguration> Modules { get; private set; }
 
@@ -492,6 +492,13 @@ namespace Sage.Configuration
 				}
 			}
 
+			if (this.Locales.Count != 0 && !this.Locales.ContainsKey(this.DefaultLocale))
+			{
+				string firstLocale = this.Locales.First().Key;
+				log.ErrorFormat("The default locale '{0}' doesn't exist, resetting it to '{1}'.", this.DefaultLocale, firstLocale);
+				this.DefaultLocale = firstLocale;
+			}
+
 			var categoryNodes = configNode.SelectNodes("p:categories/p:category", nm);
 			if (categoryNodes.Count != 0)
 			{
@@ -508,6 +515,13 @@ namespace Sage.Configuration
 							category.Name, string.Join(",", undefinedLocales));
 					}
 				}
+			}
+
+			if (this.Categories.Count != 0 && !this.Categories.ContainsKey(this.DefaultCategory))
+			{
+				string firstCategory = this.Categories.First().Key;
+				log.ErrorFormat("The default category '{0}' doesn't exist, resetting it to '{1}'.", this.DefaultCategory, firstCategory);
+				this.DefaultCategory = firstCategory;
 			}
 
 			foreach (XmlElement viewNode in configNode.SelectNodes("p:metaViews/p:metaView", nm))
