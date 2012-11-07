@@ -72,9 +72,25 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the physical path of the currently executing assembly.
+		/// Gets the path to the directory that contains the source Sage assembly.
 		/// </summary>
-		public static string AssemblyPath
+		public static string AssemblyCodeBaseDirectory
+		{
+			get
+			{
+				return Path.GetDirectoryName(
+					Assembly.GetExecutingAssembly()
+						.CodeBase
+						.Replace("file:///", string.Empty)
+						.Replace("/", "\\"));
+			}
+		}
+
+		/// <summary>
+		/// Gets the path to the directory that contains the runtime copy of the Sage assembly 
+		/// (the .net <c>temp</c> directory).
+		/// </summary>
+		public static string AssemblyLocationDirectory
 		{
 			get
 			{
@@ -98,7 +114,7 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets a list with the current assembly and all assemblies loaded from the <see cref="AssemblyPath"/> that 
+		/// Gets a list with the current assembly and all assemblies loaded from the <see cref="AssemblyCodeBaseDirectory"/> that 
 		/// reference the current assembly.
 		/// </summary>
 		public static List<Assembly> RelevantAssemblies
@@ -113,7 +129,7 @@ namespace Sage
 						{
 							var currentAssembly = Assembly.GetExecutingAssembly();
 							relevantAssemblies = new List<Assembly> { currentAssembly };
-							var files = Directory.GetFiles(AssemblyPath, "*.dll", SearchOption.AllDirectories);
+							var files = Directory.GetFiles(AssemblyCodeBaseDirectory, "*.dll", SearchOption.AllDirectories);
 							foreach (string path in files)
 							{
 								Assembly asmb = Assembly.LoadFrom(path);
@@ -396,9 +412,9 @@ namespace Sage
 
 		private static void InitializeConfiguration(SageContext context)
 		{
-			string systemConfigPath = Path.Combine(AssemblyPath, ProjectConfiguration.SystemConfigName);
-			string projectConfigPathBinDir = Path.Combine(AssemblyPath, ProjectConfiguration.ProjectConfigName);
-			string projectConfigPathProjDir = Path.Combine(AssemblyPath, "..\\" + ProjectConfiguration.ProjectConfigName);
+			string systemConfigPath = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.SystemConfigName);
+			string projectConfigPathBinDir = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
+			string projectConfigPathProjDir = Path.Combine(AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
 
 			string projectConfigPath = projectConfigPathBinDir;
 			if (File.Exists(projectConfigPathProjDir))
