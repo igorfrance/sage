@@ -23,6 +23,8 @@ namespace Kelp
 	using System.Text;
 	using System.Text.RegularExpressions;
 
+	using log4net;
+
 	/// <summary>
 	/// Contains various utility methods and properties that don't fit anywhere else.
 	/// </summary>
@@ -33,18 +35,55 @@ namespace Kelp
 		private const char Escape = '\\';
 		private const string Space = "\t\r\n\f ";
 
+		private static readonly ILog log = LogManager.GetLogger(typeof(Util).FullName);
+
 		/// <summary>
-		/// Gets the physical path of the currently executing assembly.
+		/// Gets the physical path of the currently executing assembly in the .net framework temp directory.
 		/// </summary>
-		public static string ExecutingAssemblyPath
+		public static string ExecutingAssemblyLocation
 		{
 			get
 			{
-				return Path.GetDirectoryName(
-					Assembly.GetExecutingAssembly()
+				return Assembly.GetExecutingAssembly()
+						.Location
+						.Replace("file:///", string.Empty)
+						.Replace("/", "\\");
+			}
+		}
+
+		/// <summary>
+		/// Gets the physical path of the code currently executing assembly in the directory from which it 
+		/// was copied to the .net framework temp directory.
+		/// </summary>
+		public static string ExecutingAssemblyCodeBase
+		{
+			get
+			{
+				return Assembly.GetExecutingAssembly()
 						.CodeBase
 						.Replace("file:///", string.Empty)
-						.Replace("/", "\\"));
+						.Replace("/", "\\");
+			}
+		}
+
+		/// <summary>
+		/// Gets the last modification date of the specified <paramref name="assembly"/>.
+		/// </summary>
+		/// <value>The last modification date of the specified <paramref name="assembly"/>.</value>
+		public static DateTime? GetAssemblyDate(Assembly assembly)
+		{
+			if (assembly == null)
+				return null;
+
+			try
+			{
+				FileInfo fileInfo = new FileInfo(assembly.Location);
+				return fileInfo.LastWriteTime;
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Could not read assembly date for assembly '{0}': {1}", assembly.FullName, ex.Message);
+				return null;
 			}
 		}
 
@@ -58,7 +97,8 @@ namespace Kelp
 		public static List<Assembly> GetAssociatedAssemblies(Assembly source)
 		{
 			var result = new List<Assembly> { source };
-			var files = Directory.GetFiles(ExecutingAssemblyPath, "*.dll", SearchOption.AllDirectories);
+			var files = Directory.GetFiles(
+				Path.GetDirectoryName(Util.ExecutingAssemblyLocation), "*.dll", SearchOption.AllDirectories);
 			
 			result.AddRange(files
 				.Select(Assembly.LoadFrom)

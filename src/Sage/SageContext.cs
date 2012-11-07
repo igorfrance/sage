@@ -271,7 +271,7 @@ namespace Sage
 		public string ApplicationPath { get; internal set; }
 
 		/// <summary>
-		/// Gets the base href value (e.g. http://server:port/appname/") for requests within current context.
+		/// Gets the base <c>href</c> value (e.g. <c>http://server:port/appname/</c>) for requests within current context.
 		/// </summary>
 		public string BaseHref
 		{
@@ -645,7 +645,7 @@ namespace Sage
 		/// &lt;context:switch property="QueryString" key="Test"&gt;
 		///   &lt;context:case test="ABC"&gt;...%lt;/context:case&gt;
 		///   &lt;context:case test="DEF"&gt;...%lt;/context:case&gt;
-		///   &lt;context:default&gt;...%lt;/context:cefault&gt;
+		///   &lt;context:default&gt;...%lt;/context:default&gt;
 		/// &lt;/context:switch&gt;
 		/// </example>
 		[NodeHandler(XmlNodeType.Element, "switch", XmlNamespaces.ContextualizationNamespace)]
@@ -771,14 +771,14 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Insers a <paramref name="context"/> property value specified with <paramref name="variable"/>. 
+		/// Inserts a <paramref name="context"/> property value specified with <paramref name="variable"/>. 
 		/// </summary>
 		/// <param name="context">The current context with which the method is being invoked.</param>
-		/// <param name="variable">The name of the property to emit; supported values are apppath, assetpath, 
-		/// sharedassetpath, modulepath, locale, category, basehref.</param>
+		/// <param name="variable">The name of the property to emit; supported values are <c>apppath</c>, <c>assetpath</c>, 
+		/// <c>sharedassetpath</c>, <c>modulepath</c>, <c>locale</c>, <c>category</c>, <c>basehref</c>.</param>
 		/// <returns>The <paramref name="context"/> property value specified with <paramref name="variable"/></returns>
 		/// <example>
-		/// {basehref}
+		/// <c>{basehref}</c>
 		/// </example>
 		[TextVariable("apppath", "assetpath", "sharedassetpath", "modulepath", "locale", "category", "basehref")]
 		internal static string ResolvePathVariable(SageContext context, string variable)

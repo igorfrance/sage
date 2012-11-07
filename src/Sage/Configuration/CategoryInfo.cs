@@ -57,12 +57,12 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the name of this category.
 		/// </summary>
-		public string Name { get; private set; }
+		public string Name { get; internal set; }
 
 		/// <summary>
 		/// Gets the locales that are applicable to this category.
 		/// </summary>
-		public List<string> Locales { get; private set; }
+		public List<string> Locales { get; internal set; }
 
 		/// <inheritdoc/>
 		public void Parse(XmlElement element)

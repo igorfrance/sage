@@ -30,6 +30,7 @@ namespace Sage
 	using System.Web.Routing;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Extensions;
 
 	using log4net;
@@ -48,11 +49,53 @@ namespace Sage
 	{
 		private const string ConfigWatchName = "ProjectConfigurationChangeWatch";
 		private static readonly ILog log = LogManager.GetLogger(typeof(Project).FullName);
+
+		private static DateTime? assemblyDate;
+		private static ProjectConfiguration configuration = ProjectConfiguration.Create();
+		private static Exception initializationError;
+		private static ProblemInfo initializationProblemInfo;
 		private static List<Assembly> relevantAssemblies;
 
-		private static ProblemInfo initializationProblemInfo;
-		private static Exception initializationError;
-		private static ProjectConfiguration configuration = ProjectConfiguration.Create();
+		/// <summary>
+		/// Gets the last modification date of the current assembly.
+		/// </summary>
+		/// <value>The assembly date.</value>
+		public static DateTime AssemblyDate
+		{
+			get
+			{
+				if (assemblyDate == null)
+					assemblyDate = Util.GetAssemblyDate(typeof(Project).Assembly) ?? new DateTime(DateTime.Now.Ticks);
+
+				return assemblyDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the physical path of the currently executing assembly.
+		/// </summary>
+		public static string AssemblyPath
+		{
+			get
+			{
+				return Path.GetDirectoryName(
+					Assembly.GetExecutingAssembly()
+						.Location
+						.Replace("file:///", string.Empty)
+						.Replace("/", "\\"));
+			}
+		}
+
+		/// <summary>
+		/// Gets the configuration of this project.
+		/// </summary>
+		public static ProjectConfiguration Configuration
+		{
+			get
+			{
+				return configuration;
+			}
+		}
 
 		/// <summary>
 		/// Gets a list with the current assembly and all assemblies loaded from the <see cref="AssemblyPath"/> that 
@@ -87,39 +130,16 @@ namespace Sage
 			}
 		}
 
-		/// <summary>
-		/// Gets the physical path of the currently executing assembly.
-		/// </summary>
-		public static string AssemblyPath
-		{
-			get
-			{
-				return Path.GetDirectoryName(
-					Assembly.GetExecutingAssembly()
-						.CodeBase
-						.Replace("file:///", string.Empty)
-						.Replace("/", "\\"));
-			}
-		}
-
-		/// <summary>
-		/// Gets the configuration of this project.
-		/// </summary>
-		public static ProjectConfiguration Configuration
-		{
-			get
-			{
-				return configuration;
-			}
-		}
-
 		private bool IsRequestAvailable
 		{
 			get
 			{
 				try
 				{
+					// ReSharper disable ConditionIsAlwaysTrueOrFalse
+					// HttpContext might not be nullable, but accessing it may well generate an exception
 					return this.Context != null && this.Context.Request != null;
+					// ReSharper restore ConditionIsAlwaysTrueOrFalse
 				}
 				catch
 				{
@@ -220,44 +240,6 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Handles the Start event of the Application control.
-		/// </summary>
-		protected virtual void Application_Start()
-		{
-			log.InfoFormat("Application started");
-
-			IControllerFactory controllerFactory = new SageControllerFactory();
-			Initialize(controllerFactory, new SageContext(this.Context));
-		}
-
-		/// <summary>
-		/// Handles the End event of the Application control.
-		/// </summary>
-		/// <remarks>
-		/// Logs the application shutdown event, together with the reason and detail of the shutdown.
-		/// </remarks>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected virtual void Application_End(object sender, EventArgs e)
-		{
-			HttpRuntime runtime = (HttpRuntime) typeof(HttpRuntime).InvokeMember(
-				"_theRuntime", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField, null, null, null);
-
-			if (runtime == null)
-				return;
-
-			string shutDownMessage = (string) runtime.GetType().InvokeMember(
-				"_shutDownMessage", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
-
-			string shutDownStack = (string) runtime.GetType().InvokeMember(
-				"_shutDownStack", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
-
-			log.InfoFormat("Application has shut down.");
-			log.DebugFormat("	Shutdown message:{0}", shutDownMessage);
-			log.DebugFormat("	Shutdown stack:\n{0}", shutDownStack);
-		}
-
-		/// <summary>
 		/// Handles the BeginRequest event of the Application control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -293,6 +275,33 @@ namespace Sage
 				log.InfoFormat("Request started (no context)");
 
 			log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+		}
+
+		/// <summary>
+		/// Handles the End event of the Application control.
+		/// </summary>
+		/// <remarks>
+		/// Logs the application shutdown event, together with the reason and detail of the shutdown.
+		/// </remarks>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		protected virtual void Application_End(object sender, EventArgs e)
+		{
+			HttpRuntime runtime = (HttpRuntime) typeof(HttpRuntime).InvokeMember(
+				"_theRuntime", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField, null, null, null);
+
+			if (runtime == null)
+				return;
+
+			string shutDownMessage = (string) runtime.GetType().InvokeMember(
+				"_shutDownMessage", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
+
+			string shutDownStack = (string) runtime.GetType().InvokeMember(
+				"_shutDownStack", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField, null, runtime, null);
+
+			log.InfoFormat("Application has shut down.");
+			log.DebugFormat("	Shutdown message:{0}", shutDownMessage);
+			log.DebugFormat("	Shutdown stack:\n{0}", shutDownStack);
 		}
 
 		/// <summary>
@@ -353,6 +362,17 @@ namespace Sage
 			this.Response.End();
 		}
 
+		/// <summary>
+		/// Handles the Start event of the Application control.
+		/// </summary>
+		protected virtual void Application_Start()
+		{
+			log.InfoFormat("Application started");
+
+			IControllerFactory controllerFactory = new SageControllerFactory();
+			Initialize(controllerFactory, new SageContext(this.Context));
+		}
+
 		private static Dictionary<string, string> GetVirtualDirectories(DirectoryEntry directory, string path)
 		{
 			IEnumerable<DirectoryEntry> directories = directory.Children.Cast<DirectoryEntry>()
@@ -386,10 +406,14 @@ namespace Sage
 				projectConfigPath = projectConfigPathProjDir;
 			}
 
-			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
-				throw new SageHelpException(ProblemType.MissingConfigurationFile);
-
 			var projectConfig = ProjectConfiguration.Create();
+
+			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
+			{
+				//// initializationProblemInfo = new ProblemInfo(ProblemType.MissingConfigurationFile);
+				//// initializationError = new SageHelpException(initializationProblemInfo);
+				return;
+			}
 
 			if (File.Exists(systemConfigPath))
 				projectConfig.Parse(systemConfigPath);

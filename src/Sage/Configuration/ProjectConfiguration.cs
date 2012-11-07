@@ -73,15 +73,24 @@ namespace Sage.Configuration
 			this.ResourceLibraries = new Dictionary<string, ResourceLibraryInfo>();
 
 			this.SharedCategory = "shared";
-			this.DefaultLocale = "default";
+			this.DefaultLocale = "us";
 			this.DefaultCategory = "default";
 			this.AutoInternationalize = true;
 			this.ValidationResult = new ValidationResult();
 			this.Dependencies = new List<string>();
 
-			this.Locales = new Dictionary<string, LocaleInfo>();
+			this.Locales = new Dictionary<string, LocaleInfo> { { "us", new LocaleInfo 
+			{ 
+				Name = "us",
+				DictionaryNames = new List<string> { "us", "en" },
+				ResourceNames = new List<string> { "us", "en", "default" },
+			}}};
+
 			this.Categories = new Dictionary<string, CategoryInfo>();
-			this.Categories[this.DefaultCategory] = new CategoryInfo(this.DefaultCategory);
+			this.Categories[this.DefaultCategory] = new CategoryInfo(this.DefaultCategory) 
+			{ 
+				Locales = this.Locales.Keys.ToList() 
+			};
 
 			this.customElements = new List<XmlElement>();
 		}

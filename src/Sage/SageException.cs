@@ -33,6 +33,7 @@ namespace Sage
 	public class SageException : Exception
 	{
 		private const string DefaultStylesheet = "sageresx://sage/resources/xslt/error.xslt";
+		private Exception actual;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageException"/> class.
@@ -44,15 +45,15 @@ namespace Sage
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageException"/> class, using the specified <paramref name="exception"/>
 		/// </summary>
-		/// <param name="exception">The actual exception that was trown.</param>
+		/// <param name="exception">The actual exception that was thrown.</param>
 		public SageException(Exception exception)
 			: base(exception.Message, exception)
 		{
-			this.Exception = exception;
+			this.actual = exception;
 		}
 
 		/// <summary>
-		/// Gets the path of the XSLT stylesheet that renders this exception.
+		/// Gets the path of the XSLT style sheet that renders this exception.
 		/// </summary>
 		public virtual string StylesheetPath
 		{
@@ -65,7 +66,18 @@ namespace Sage
 		/// <summary>
 		/// Gets or sets the actual exception that occurred.
 		/// </summary>
-		public virtual Exception Exception { get; protected set; }
+		public virtual Exception Exception
+		{
+			get
+			{
+				return actual ?? this;
+			}
+
+			protected set
+			{
+				this.actual = value;
+			}
+		}
 
 		/// <summary>
 		/// Renders the exception to the specified <paramref name="writer"/>
@@ -119,11 +131,11 @@ namespace Sage
 			documentElement.SetAttribute("time", DateTime.Now.ToString("hh:mm:ss"));
 
 			XmlReader xslReader = this.StylesheetPath.StartsWith(EmbeddedResourceResolver.Scheme)
-				? XmlReader.Create(EmbeddedResourceResolver.GetStream(this.StylesheetPath))
+				? XmlReader.Create(EmbeddedResourceResolver.GetStream(this.StylesheetPath), null, this.StylesheetPath)
 				: XmlReader.Create(this.StylesheetPath);
 
 			XslCompiledTransform xslTransform = new XslCompiledTransform();
-			xslTransform.Load(xslReader);
+			xslTransform.Load(xslReader, new XsltSettings(true, true), new UrlResolver());
 
 			XmlWriter xmlwr = XmlWriter.Create(writer, xslTransform.OutputSettings);
 			xslTransform.Transform(document, xmlwr);

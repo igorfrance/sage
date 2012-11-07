@@ -20,6 +20,8 @@ namespace Sage.Views
 	using System.Linq;
 	using System.Xml;
 
+	using Kelp.Http;
+
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
 
@@ -225,11 +227,17 @@ namespace Sage.Views
 				DateTime? lastModified1 = null;
 				DateTime? lastModified2 = null;
 
-				if (this.ViewSource != 0)
-					lastModified1 = context.LmCache.Get(this.ViewPath);
+				if (this.ViewSource == ViewSource.BuiltIn)
+				{
+					lastModified1 = Project.AssemblyDate;
+				}
+				else
+				{
+					lastModified1 = this.context.LmCache.Get(this.ViewPath);
+				}
 
 				if (this.ConfigExists)
-					lastModified2 = context.LmCache.Get(this.ConfigPath);
+					lastModified2 = this.context.LmCache.Get(this.ConfigPath);
 
 				if (lastModified1 == null)
 				{

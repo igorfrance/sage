@@ -20,8 +20,11 @@ namespace Kelp.Test
 	// ReSharper disable UnusedMember.Global
 	// ReSharper disable UnusedMember.Local
 
+	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
+	using System.Reflection;
 
 	using Machine.Specifications;
 
@@ -41,5 +44,21 @@ namespace Kelp.Test
 		It Should_handle_escaped_quotation_as_string = () => arguments.ElementAt(7).ShouldEqual("Igor's World");
 		It Should_handle_escaped_apostrophe_as_string = () => arguments.ElementAt(8).ShouldEqual("Igor's \"World\"");
 		It Should_ignore_unnecessary_escapes = () => arguments.ElementAt(9).ShouldEqual("He said: 'Hello'");
+	}
+
+	[Subject(typeof(Util))]
+	public class When_getting_assembly_date
+	{
+		private static DateTime assemblyDate;
+		private static Action<object> log = o => Console.WriteLine(o == null ? "null" : o.ToString());
+
+		Because of = () =>
+			assemblyDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
+
+		It Should_return_null_for_null_assembly = () => 
+			Util.GetAssemblyDate(null).ShouldEqual(null);
+
+		It Should_return_proper_date_for_executing_assembly = () => 
+			Util.GetAssemblyDate(Assembly.GetExecutingAssembly()).Value.Ticks.ShouldEqual(assemblyDate.Ticks);
 	}
 }

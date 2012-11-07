@@ -35,7 +35,7 @@ namespace Sage
 		private readonly SageContext context;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LastModifiedCache"/> class, usinng the specified
+		/// Initializes a new instance of the <see cref="LastModifiedCache"/> class, using the specified
 		/// <paramref name="context"/>.
 		/// </summary>
 		/// <param name="context">The current context under which this code is being executed.</param>
@@ -85,7 +85,7 @@ namespace Sage
 			this.context.Cache.Insert(itemKey, lastModificationDate, new CacheDependency(files.ToArray()), Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, OnCacheItemExpired);
 		}
 
-		private void OnCacheItemExpired(string key, CacheItemUpdateReason reason, out object expensiveObject, out CacheDependency dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)
+		private static void OnCacheItemExpired(string key, CacheItemUpdateReason reason, out object expensiveObject, out CacheDependency dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)
 		{
 			log.DebugFormat("Cache item '{0}' expired, reason: {1}.", key, reason);
 
