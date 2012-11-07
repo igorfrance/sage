@@ -10,19 +10,19 @@ Proj:   http://csharptest.net/downloads/projects/log4net.config.zip
 Date:   November 7th, 2008
 Rev:    1.01
 Usage:  You only need to add the following to the log4net element:
-        <log4net 
-          xsi:noNamespaceSchemaLocation="http://csharptest.net/downloads/schema/log4net.xsd" 
+        <log4net
+          xsi:noNamespaceSchemaLocation="http://csharptest.net/downloads/schema/log4net.xsd"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 Preface:
-Please be aware that though this xsd attempts to cover most of the usages you 
-will encounter with log4net configurations it is by no means complete.  The 
-primary reason (excuse) for this is that the xml format used by log4net config 
-files does not conform to any real standard.  This is both it's primary 
+Please be aware that though this xsd attempts to cover most of the usages you
+will encounter with log4net configurations it is by no means complete.  The
+primary reason (excuse) for this is that the xml format used by log4net config
+files does not conform to any real standard.  This is both it's primary
 weakness and it's strength.  As such there are a few things you should know
 about how log4net interprets your configuration before creating one.
 
-Firstly most of the elements described in this document are really not needed.  
+Firstly most of the elements described in this document are really not needed.
 This is due to the fact that a <param name='x' ...> can be used in place of
 the element <x ...>.  For instance, the following are equivalent:
     <maximumFileSize value="1MB" />
@@ -30,10 +30,10 @@ the element <x ...>.  For instance, the following are equivalent:
 
 So Why Use This Xsd?:
 This xsd attempts to utilize the former convention and to declare as much as
-possible for the benefit of auto-completion and sanity checking.  However, 
-since most of the param names vary by the containing element's 'type' attribute 
-it is impossible to describe this correctly in xsd (at least to my knowledge).  
-So use this schema if you like and remember that there is life beyond it's 
+possible for the benefit of auto-completion and sanity checking.  However,
+since most of the param names vary by the containing element's 'type' attribute
+it is impossible to describe this correctly in xsd (at least to my knowledge).
+So use this schema if you like and remember that there is life beyond it's
 limited capability.
 
 If you would like to contribute back to this schema you can send email to the

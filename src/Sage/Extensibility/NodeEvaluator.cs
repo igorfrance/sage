@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not useinternal  this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ namespace Sage.Extensibility
 
 		static NodeEvaluator()
 		{
-			const BindingFlags BindingFlags = 
+			const BindingFlags BindingFlags =
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreReturn;
 
 			foreach (Assembly a in Sage.Project.RelevantAssemblies)
@@ -154,7 +154,7 @@ namespace Sage.Extensibility
 		/// </summary>
 		/// <param name="node">The node.</param>
 		/// <returns>A <see cref="NodeHandler"/> for the specified node. If no handler is registered for this node's
-		/// local name and namespace, the default handler is returned; this handler simply continues processing the node 
+		/// local name and namespace, the default handler is returned; this handler simply continues processing the node
 		/// and returns its copy.</returns>
 		internal static NodeHandler GetNodeHandler(XmlNode node)
 		{

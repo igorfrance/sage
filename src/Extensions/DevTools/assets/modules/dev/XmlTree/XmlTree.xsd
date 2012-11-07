@@ -8,7 +8,7 @@
 		xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
 	<xs:import schemaLocation="../../../../../../Sage/Resources/Schemas/Sage.xsd" namespace="http://www.cycle99.com/schemas/sage/sage.xsd"/>
-	
+
 	<xs:element name="XmlTree">
 		<xs:complexType>
 			<xs:sequence>
@@ -58,5 +58,5 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
+
 </xs:schema>

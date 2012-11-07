@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,14 +40,14 @@ namespace Sage.ResourceManagement
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(Internationalizer).FullName);
 
-		private static readonly Dictionary<string, DictionaryFileCollection> dictionaries = 
+		private static readonly Dictionary<string, DictionaryFileCollection> dictionaries =
 			new Dictionary<string, DictionaryFileCollection>();
 
 		private readonly SageContext context;
 		private readonly XsltTransform processor;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Internationalizer"/> class, using the specified 
+		/// Initializes a new instance of the <see cref="Internationalizer"/> class, using the specified
 		/// <paramref name="context"/>.
 		/// </summary>
 		/// <param name="context">The context under which the code is being executed.</param>
@@ -106,7 +106,7 @@ namespace Sage.ResourceManagement
 
 				string outputPath = resource.GetInternationalizedName(locale, true);
 				XmlWriter translateWriter = XmlWriter.Create(outputPath, settings);
-				
+
 				StringBuilder builder = new StringBuilder();
 				XmlWriter diagnoseWriter = XmlWriter.Create(builder, settings);
 
@@ -132,7 +132,7 @@ namespace Sage.ResourceManagement
 
 			summary.Duration = sw.ElapsedMilliseconds;
 
-			log.InfoFormat("Internationalized xml resource '{0}' into {1} locales in {2}ms", 
+			log.InfoFormat("Internationalized xml resource '{0}' into {1} locales in {2}ms",
 				resource.Name.Signature, coll.Locales.Count, sw.ElapsedMilliseconds);
 
 			return summary;

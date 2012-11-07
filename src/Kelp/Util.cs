@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,7 @@ namespace Kelp
 		}
 
 		/// <summary>
-		/// Gets the physical path of the code currently executing assembly in the directory from which it 
+		/// Gets the physical path of the code currently executing assembly in the directory from which it
 		/// was copied to the .net framework temp directory.
 		/// </summary>
 		public static string ExecutingAssemblyCodeBase
@@ -99,7 +99,7 @@ namespace Kelp
 			var result = new List<Assembly> { source };
 			var files = Directory.GetFiles(
 				Path.GetDirectoryName(Util.ExecutingAssemblyLocation), "*.dll", SearchOption.AllDirectories);
-			
+
 			result.AddRange(files
 				.Select(Assembly.LoadFrom)
 				.Where(asmb => asmb
@@ -120,7 +120,7 @@ namespace Kelp
 		}
 
 		/// <summary>
-		/// Tests the specified <paramref name="value"/> against <paramref name="validExpression"/> and 
+		/// Tests the specified <paramref name="value"/> against <paramref name="validExpression"/> and
 		/// returns it, if successful - or returns <paramref name="defaultValue"/> if validation was not
 		/// successful.
 		/// </summary>

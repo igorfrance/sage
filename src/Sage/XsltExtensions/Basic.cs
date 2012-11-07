@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,15 +30,15 @@ namespace Sage.XsltExtensions
 	public class Basic
 	{
 		/// <summary>
-		/// Tests the specified <paramref name="condition"/> and returns <paramref name="result1"/> if 
-		/// <paramref name="condition"/> is <c>true</c>, or <paramref name="result2"/> if 
+		/// Tests the specified <paramref name="condition"/> and returns <paramref name="result1"/> if
+		/// <paramref name="condition"/> is <c>true</c>, or <paramref name="result2"/> if
 		/// <paramref name="condition"/> is <c>false</c>
 		/// </summary>
 		/// <param name="condition">The condition to test</param>
 		/// <param name="result1">The value to return if <paramref name="condition"/> is <c>true</c>.</param>
 		/// <param name="result2">The value to return if <paramref name="condition"/> is <c>false</c>.</param>
 		/// <returns>
-		/// <paramref name="result1"/> if <paramref name="condition"/> is <c>true</c>, or 
+		/// <paramref name="result1"/> if <paramref name="condition"/> is <c>true</c>, or
 		/// <paramref name="result2"/> if <paramref name="condition"/> is <c>false</c></returns>
 		public object iif(bool condition, object result1, object result2)
 		{

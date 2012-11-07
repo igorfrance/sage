@@ -6,9 +6,9 @@
 		xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 		xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	
+
 	<xs:import schemaLocation="../../../../../../Sage/Resources/Schemas/Sage.xsd" namespace="http://www.cycle99.com/schemas/sage/sage.xsd"/>
-	
+
 	<xs:element name="SyntaxHighlighter">
 		<xs:complexType>
 			<xs:sequence>
@@ -110,5 +110,5 @@
 		<xs:attribute name="name" use="required"/>
 		<xs:attribute name="treatAsWord" use="optional" type="xs:boolean" default="true"/>
 	</xs:complexType>
-	
+
 </xs:schema>

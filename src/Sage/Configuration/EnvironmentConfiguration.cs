@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,7 +61,7 @@ namespace Sage.Configuration
 		/// </summary>
 		/// <param name="clientIpAddress">The client IP address to test.</param>
 		/// <returns>
-		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured to be treated as a developer; 
+		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured to be treated as a developer;
 		/// otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsDeveloperIp(string clientIpAddress)
@@ -77,7 +77,7 @@ namespace Sage.Configuration
 		/// </summary>
 		/// <param name="clientIpAddress">The client IP address to test.</param>
 		/// <returns>
-		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured to be blocked; 
+		/// <c>true</c> if the specified <paramref name="clientIpAddress"/> is configured to be blocked;
 		/// otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsBlockedIp(string clientIpAddress)
