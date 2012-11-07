@@ -281,16 +281,16 @@ namespace Sage
 			if (context.LmCache.Get(ConfigWatchName) == null)
 				InitializeConfiguration(context);
 
-			if (Thread.CurrentThread.Name != null)
-				return;
-
-			Thread.CurrentThread.Name = DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture);
 			if (this.Context != null)
 				log.InfoFormat("Request {0} started.", HttpContext.Current.Request.Url);
 			else
 				log.InfoFormat("Request started (no context)");
 
-			log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+			if (Thread.CurrentThread.Name == null)
+			{
+				Thread.CurrentThread.Name = DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture);
+				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+			}
 		}
 
 		/// <summary>
@@ -384,6 +384,11 @@ namespace Sage
 		protected virtual void Application_Start()
 		{
 			log.InfoFormat("Application started");
+			if (Thread.CurrentThread.Name == null)
+			{
+				Thread.CurrentThread.Name = "INIT-" + DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture);
+				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+			}
 
 			IControllerFactory controllerFactory = new SageControllerFactory();
 			Initialize(controllerFactory, new SageContext(this.Context));
