@@ -19,8 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Miscellaneous", "Miscellane
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{1D0D8969-502E-4404-9435-5D15895328F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTools", "Extensions\DevTools\DevTools.csproj", "{4D5A21A6-5313-48B1-933B-A22CDA666944}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.Build", "Sage.Build\Sage.Build.csproj", "{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{AE580666-C369-4543-AC4C-927AC5BA7853}"
@@ -30,7 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{AE580666
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documentation", "Examples\Documentation\Documentation.csproj", "{1C77B540-713B-11E1-AFDF-90264924019B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSide", "Extensions\ClientSide\ClientSide.csproj", "{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.DevTools", "Extensions\Sage.DevTools\Sage.DevTools.csproj", "{4D5A21A6-5313-48B1-933B-A22CDA666944}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.ClientSide", "Extensions\Sage.ClientSide\Sage.ClientSide.csproj", "{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,16 +82,6 @@ Global
 		{543D3F4E-E4E1-4EBF-B7A1-CFED434A3EA6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{543D3F4E-E4E1-4EBF-B7A1-CFED434A3EA6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{543D3F4E-E4E1-4EBF-B7A1-CFED434A3EA6}.Release|x86.ActiveCfg = Release|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|x86.ActiveCfg = Release|Any CPU
 		{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -114,6 +104,16 @@ Global
 		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|x86.ActiveCfg = Release|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Release|x86.ActiveCfg = Release|Any CPU
 		{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
