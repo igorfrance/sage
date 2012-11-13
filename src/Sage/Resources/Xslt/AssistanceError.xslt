@@ -93,6 +93,7 @@
 				<div class="problem-description">
 					<xsl:apply-templates select="." mode="problem-description"/>
 				</div>
+				<xsl:apply-templates select="infoblock"/>
 				<xsl:variable name="problemSuggestionTest">
 					<xsl:apply-templates select="." mode="problem-suggestion"/>
 				</xsl:variable>
@@ -122,6 +123,24 @@
 		<xsl:apply-templates select="exception" mode="problem-message"/>
 	</xsl:template>
 
+	<xsl:template match="exception/infoblock">
+		<div class="infoblock">
+			<h5><xsl:value-of select="@name"/></h5>
+			<dl>
+				<xsl:apply-templates select="line"/>
+			</dl>
+		</div>
+	</xsl:template>
+
+	<xsl:template match="exception/infoblock/line">
+		<xsl:if test="@name">
+			<dt><xsl:value-of select="@name"/></dt>
+		</xsl:if>
+		<dd>
+			<xsl:value-of select="."/>
+		</dd>
+	</xsl:template>
+	
 	<xsl:template match="exception/exception" mode="problem-message">
 		<div class="problem-message inner">
 			(<xsl:value-of select="@htmlDescription" disable-output-escaping="yes"/>)
@@ -181,6 +200,15 @@
 			<xsl:when test="$problemType = 'ExtensionSchemaValidationError'">
 				Extension schema validation error.
 			</xsl:when>
+			<xsl:when test="$problemType = 'ExtensionInstallError'">
+				Extension install error
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingDependency'">
+				Missing project dependency
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingExtensionDependency'">
+				Missing extension dependency.
+			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$problemType"/>				
 			</xsl:otherwise>
@@ -225,19 +253,28 @@
 				A problem happend during the processing of the view configuration.
 			</xsl:when>
 			<xsl:when test="$problemType = 'ResourceProcessingError'">
-				A problem occured during inclusion of resources referenced by modules and/or libraries in use on a view.
+				A problem occurred during inclusion of resources referenced by modules and/or libraries in use on a view.
 			</xsl:when>
 			<xsl:when test="$problemType = 'ViewXmlFilteringError'">
-				A problem occured during applying view filters (postprocessing step, extensibility).
+				A problem occurred during applying view filters (postprocessing step, extensibility).
 			</xsl:when>
 			<xsl:when test="$problemType = 'ViewDocumentInitError'">
-				A problem occured during initialization of the view document.
+				A problem occurred during initialization of the view document.
 			</xsl:when>
 			<xsl:when test="$problemType = 'ProjectSchemaValidationError'">
-				An error occured while validating the project configuration file.
+				An error occurred while validating the project configuration file.
 			</xsl:when>
 			<xsl:when test="$problemType = 'ExtensionSchemaValidationError'">
-				An error occured while validating an extension's configuration file.
+				An error occurred while validating an extension's configuration file.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ExtensionInstallError'">
+				An error occurred during extension installation.
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingDependency'">
+				One or more of the project dependencies is missing.
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingExtensionDependency'">
+				One or more of the project extensions is missing it's own dependencies.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -343,6 +380,15 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'ExtensionSchemaValidationError'">
 				Read the description of the error and try to fix the configuration file to match the schema.
+			</xsl:when>
+			<xsl:when test="$problemType = 'ExtensionInstallError'">
+				Read the description of the error and try to find a solution.
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingDependency'">
+				Make sure that all dependencies of the current project exist in the project's <code>extensions</code> directory.
+			</xsl:when>
+			<xsl:when test="$problemType = 'MissingExtensionDependency'">
+				Make sure that all dependencies used by the extension exist in the project's <code>extensions</code> directory.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>

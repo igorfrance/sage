@@ -89,16 +89,16 @@ namespace Sage.Build
 					catch (XmlException ex)
 					{
 						if (!string.IsNullOrEmpty(ex.SourceUri))
-							Console.WriteLine("An XmlException occured while processing file '{0}':", ex.SourceUri);
+							Console.WriteLine("An XmlException occurred while processing file '{0}':", ex.SourceUri);
 						else
-							Console.WriteLine("An XmlException occured:");
+							Console.WriteLine("An XmlException occurred:");
 
 						Console.WriteLine(ex.Message);
 						return 1;
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine("An unhandled exception occured:");
+						Console.WriteLine("An unhandled exception occurred:");
 						Console.WriteLine(ex.RootTypeName());
 						Console.WriteLine(ex.RootMessage());
 						Console.WriteLine(ex.RootStackTrace());

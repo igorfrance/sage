@@ -78,6 +78,7 @@ namespace Sage.Configuration
 			this.DefaultCategory = "default";
 			this.AutoInternationalize = true;
 			this.ValidationResult = new ValidationResult();
+			this.Files = new List<string>();
 			this.Dependencies = new List<string>();
 
 			this.Locales = new Dictionary<string, LocaleInfo> { { "us", new LocaleInfo 
@@ -128,6 +129,12 @@ namespace Sage.Configuration
 		public string DefaultLocale { get; private set; }
 
 		/// <summary>
+		/// Gets the list of extensions that this project depends on.
+		/// </summary>
+		/// <value>The extensions this project depends on.</value>
+		public List<string> Dependencies { get; private set; } 
+
+		/// <summary>
 		/// Gets the environment configuration.
 		/// </summary>
 		public EnvironmentConfiguration Environment { get; private set; }
@@ -135,7 +142,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets a value indicating whether the current project has been configured for debugging.
 		/// </summary>
-		public bool IsDebugMode { get; private set; }
+		public bool IsDebugEnabled { get; private set; }
 
 		/// <summary>
 		/// Gets the linking configuration.
@@ -182,7 +189,7 @@ namespace Sage.Configuration
 		/// </summary>
 		public string SharedCategory { get; private set; }
 
-		internal List<string> Dependencies
+		internal List<string> Files
 		{
 			get;
 			private set;
@@ -307,7 +314,7 @@ namespace Sage.Configuration
 				result.SetAttribute("defaultCategory", this.DefaultCategory);
 
 			result.SetAttribute("autoInternationalize", this.AutoInternationalize ? "1" : "0");
-			result.SetAttribute("debugMode", this.IsDebugMode ? "1" : "0");
+			result.SetAttribute("debugMode", this.IsDebugEnabled ? "1" : "0");
 
 			result.AppendChild(this.PathTemplates.ToXml(ownerDoc));
 			result.AppendChild(this.Routing.ToXml(ownerDoc));
@@ -365,7 +372,7 @@ namespace Sage.Configuration
 			CacheableXmlDocument document = ResourceManager.LoadXmlDocument(configPath);
 			this.Parse(document.DocumentElement);
 			this.ValidationResult.SourceFile = configPath;
-			this.Dependencies.AddRange(document.Dependencies.Where(d => !this.Dependencies.Contains(d)));
+			this.Files.AddRange(document.Dependencies.Where(d => !this.Files.Contains(d)));
 		}
 
 		internal void Parse(XmlElement configNode)
@@ -382,6 +389,13 @@ namespace Sage.Configuration
 				string.Format("*[namespace-uri() != '{0}']", XmlNamespaces.ProjectConfigurationNamespace)))
 			{
 				this.customElements.Add(child);
+			}
+
+			foreach (XmlElement element in configNode.SelectNodes("p:dependencies/p:extension", nm))
+			{
+				string extensionName = element.GetAttribute("name");
+				if (!this.Dependencies.Contains(extensionName))
+					this.Dependencies.Add(extensionName);
 			}
 
 			XmlNode variablesNode = configNode.SelectSingleNode("p:variables", nm);
@@ -433,7 +447,7 @@ namespace Sage.Configuration
 
 			nodeValue = configNode.GetAttribute("debugMode");
 			if (!string.IsNullOrEmpty(nodeValue))
-				this.IsDebugMode = nodeValue.ContainsAnyOf("yes", "1", "true");
+				this.IsDebugEnabled = nodeValue.ContainsAnyOf("yes", "1", "true");
 
 			if (pathsNode != null)
 			{

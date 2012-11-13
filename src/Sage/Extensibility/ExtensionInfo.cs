@@ -23,7 +23,6 @@ namespace Sage.Extensibility
 	using System.Reflection;
 	using System.Xml;
 
-	using ICSharpCode.SharpZipLib.Core;
 	using ICSharpCode.SharpZipLib.Zip;
 	using Kelp.Extensions;
 	using Kelp.IO;
@@ -68,6 +67,7 @@ namespace Sage.Extensibility
 					this.ArchiveDate = File.GetLastWriteTime(archiveFileName).Max(File.GetCreationTime(archiveFileName));
 					this.ArchiveFileName = archiveFileName;
 					this.InstallLogFile = Path.ChangeExtension(this.ArchiveFileName, ".history.xml");
+					this.ConfigurationFileName = string.Join("/", this.ArchiveFileName, ProjectConfiguration.ExtensionConfigName);
 
 					ExtensionFile configFile = this.ArchiveFiles.FirstOrDefault(file => file.Name.Equals(ProjectConfiguration.ExtensionConfigName));
 					if (configFile != null)
@@ -133,6 +133,14 @@ namespace Sage.Extensibility
 
 		public ProjectConfiguration Config { get; private set; }
 
+		public List<string> Dependencies
+		{
+			get
+			{
+				return this.Config.Dependencies;
+			}
+		}
+
 		public List<Assembly> Assemblies
 		{
 			get
@@ -170,6 +178,8 @@ namespace Sage.Extensibility
 		public string InstallLogFile { get; private set; }
 
 		public string ArchiveFileName { get; private set; }
+
+		public string ConfigurationFileName { get; private set; }
 
 		public bool IsInstalled
 		{

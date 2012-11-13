@@ -19,6 +19,7 @@ namespace Sage
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.IO;
+	using System.Text.RegularExpressions;
 	using System.Xml;
 	using System.Xml.Xsl;
 
@@ -90,12 +91,12 @@ namespace Sage
 			Contract.Requires<ArgumentNullException>(writer != null);
 
 			XmlDocument document = new XmlDocument();
-			XmlElement documentElement = document.AppendElement(this.Exception.ToXml(document));
+			XmlElement documentElement = document.AppendElement(this.ConvertToXml(this.Exception, document));
 			Exception inner = this.Exception.InnerException;
 
 			while (inner != null)
 			{
-				documentElement.AppendChild(inner.ToXml(document));
+				documentElement.AppendChild(this.ConvertToXml(inner, document));
 				inner = inner.InnerException;
 			}
 
@@ -118,12 +119,12 @@ namespace Sage
 			Contract.Requires<ArgumentNullException>(writer != null);
 
 			XmlDocument document = new XmlDocument();
-			XmlElement documentElement = document.AppendElement(this.Exception.ToXml(document));
+			XmlElement documentElement = document.AppendElement(this.ConvertToXml(this.Exception, document));
 			Exception inner = this.Exception.InnerException;
 
 			while (inner != null)
 			{
-				documentElement.AppendChild(inner.ToXml(document));
+				documentElement.AppendChild(this.ConvertToXml(inner, document));
 				inner = inner.InnerException;
 			}
 
@@ -139,6 +140,75 @@ namespace Sage
 
 			XmlWriter xmlwr = XmlWriter.Create(writer, xslTransform.OutputSettings);
 			xslTransform.Transform(document, xmlwr);
+		}
+
+		/// <summary>
+		/// Saves the current <paramref name="instance" /> as an <see cref="XmlElement" />, using the specified
+		/// <paramref name="ownerDocument" /> to create the element.
+		/// </summary>
+		/// <param name="instance">The exception instance.</param>
+		/// <param name="ownerDocument">The document to use to create the element.</param>
+		/// <param name="problemInfo">The problem info associated with the exception.</param>
+		/// <returns>An XML representation of the current exception.</returns>
+		protected internal virtual XmlElement ConvertToXml(Exception instance, XmlDocument ownerDocument, ProblemInfo problemInfo = null)
+		{
+			XmlElement exceptionElement = ownerDocument.CreateElement("exception");
+			exceptionElement.SetAttribute("type", instance.GetType().ToString());
+			exceptionElement.SetAttribute("message", instance.Message);
+			exceptionElement.SetAttribute("htmlDescription", instance.Message
+				.Replace("<", "&lt;")
+				.Replace(">", "&gt;")
+				.Replace("\t", "&#160;&#160;&#160;&#160;")
+				.Replace("\n", "<br/>"));
+
+			XmlElement straceNode = (XmlElement) exceptionElement.AppendChild(ownerDocument.CreateElement("stacktrace"));
+			string[] stackTrace = instance.StackTrace != null
+				? instance.StackTrace.Split(new[] { '\n' })
+				: new[] { string.Empty };
+
+			if (instance.GetType() == typeof(XmlException))
+			{
+				exceptionElement.SetAttribute("sourceuri", ((XmlException) instance).SourceUri);
+				exceptionElement.SetAttribute("linenumber", ((XmlException) instance).LineNumber.ToString());
+				exceptionElement.SetAttribute("lineposition", ((XmlException) instance).LinePosition.ToString());
+			}
+
+			foreach (string t in stackTrace)
+			{
+				XmlElement frameNode = (XmlElement) straceNode.AppendChild(ownerDocument.CreateElement("frame"));
+				Match match;
+				if ((match = Regex.Match(t, "^\\s*at (.*) in (.*):line (\\d+)[\\s\\r]*$")).Success)
+				{
+					frameNode.SetAttribute("text", match.Groups[1].Value);
+					frameNode.SetAttribute("file", match.Groups[2].Value);
+					frameNode.SetAttribute("line", match.Groups[3].Value);
+				}
+				else
+				{
+					frameNode.SetAttribute("text", Regex.Replace(t, "^\\s*at ", string.Empty));
+				}
+			}
+
+			if (problemInfo != null && problemInfo.InfoBlocks.Count != 0)
+			{
+				foreach (KeyValuePair<string, IDictionary<string, string>> infoBlock in problemInfo.InfoBlocks)
+				{
+					XmlElement blockElement = exceptionElement.AppendElement("infoblock");
+					blockElement.SetAttribute("name", infoBlock.Key);
+
+					foreach (string key in infoBlock.Value.Keys)
+					{
+						string value = infoBlock.Value[key];
+						XmlElement lineElement = blockElement.AppendElement("line");
+						if (key != value)
+							lineElement.SetAttribute("name", key);
+
+						lineElement.InnerText = value;
+					}
+				}
+			}
+
+			return exceptionElement;
 		}
 
 		/// <summary>

@@ -84,7 +84,7 @@ namespace Sage.Build.Utilities
 			if (!Path.IsPathRooted(this.sourcePath))
 				this.sourcePath = Path.Combine(Directory.GetCurrentDirectory(), this.sourcePath);
 
-			extensionName = Path.GetFileNameWithoutExtension(this.sourcePath);
+			extensionName = Path.GetFileName(this.sourcePath);
 			string configSourcePath = Path.Combine(this.sourcePath, ProjectConfiguration.ProjectConfigName);
 			string systemConfigPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.SystemConfigName);
 			string configTargetPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.ExtensionConfigName);

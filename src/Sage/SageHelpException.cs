@@ -20,7 +20,7 @@ namespace Sage
 	using System.Xml;
 
 	/// <summary>
-	/// Implements an exception that provides help about the error that occured.
+	/// Implements an exception that provides help about the error that occurred.
 	/// </summary>
 	internal class SageHelpException : SageException
 	{
@@ -29,7 +29,7 @@ namespace Sage
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
 		/// </summary>
-		/// <param name="problemType">The type of problem that occured.</param>
+		/// <param name="problemType">The type of problem that occurred.</param>
 		public SageHelpException(ProblemType problemType)
 		{
 			this.Problem = new ProblemInfo(problemType);
@@ -38,7 +38,7 @@ namespace Sage
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
 		/// </summary>
-		/// <param name="problem">An object that descibes this error.</param>
+		/// <param name="problem">An object that describes this error.</param>
 		public SageHelpException(ProblemInfo problem)
 		{
 			this.Problem = problem;
@@ -47,8 +47,8 @@ namespace Sage
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
 		/// </summary>
-		/// <param name="problem">An object that descibes this error.</param>
-		/// <param name="actual">The actual exception that occured.</param>
+		/// <param name="problem">An object that describes this error.</param>
+		/// <param name="actual">The actual exception that occurred.</param>
 		public SageHelpException(ProblemInfo problem, Exception actual)
 			: base(actual)
 		{
@@ -89,6 +89,11 @@ namespace Sage
 
 			var result = new SageHelpException(problem) { Exception = ex };
 			return result;
+		}
+
+		protected internal override XmlElement ConvertToXml(Exception instance, XmlDocument ownerDocument, ProblemInfo problemInfo = null)
+		{
+			return base.ConvertToXml(instance, ownerDocument, this.Problem);
 		}
 
 		/// <inheritdoc/>

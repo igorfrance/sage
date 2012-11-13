@@ -38,7 +38,7 @@ namespace Sage.Configuration
 		public string SourceFile { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the validation associated with this result succeded.
+		/// Gets or sets a value indicating whether the validation associated with this result succeeded.
 		/// </summary>
 		public bool Success { get; set; }
 

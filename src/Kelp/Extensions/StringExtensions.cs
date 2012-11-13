@@ -102,7 +102,7 @@ namespace Kelp.Extensions
 
 			int count = 0;
 			int index = -1;
-			while ((index = subject.IndexOf(text, index + 1)) != -1)
+			while ((index = subject.IndexOf(text, index + 1, StringComparison.InvariantCultureIgnoreCase)) != -1)
 				count++;
 
 			return count;
@@ -185,7 +185,7 @@ namespace Kelp.Extensions
 		}
 
 		/// <summary>
-		/// Replaces the string mathing the specified regular <paramref name="expression"/> string with the specified 
+		/// Replaces the string matching the specified regular <paramref name="expression"/> string with the specified 
 		/// <paramref name="replacement"/> string.
 		/// </summary>
 		/// <param name="subject">The string to replace.</param>
@@ -203,7 +203,7 @@ namespace Kelp.Extensions
 		}
 
 		/// <summary>
-		/// Replaces the string mathing the specified regular <paramref name="expression"/> string using the specified 
+		/// Replaces the string matching the specified regular <paramref name="expression"/> string using the specified 
 		/// <paramref name="replacement"/> function to further process the match.
 		/// </summary>
 		/// <param name="subject">The string to replace.</param>
@@ -221,7 +221,7 @@ namespace Kelp.Extensions
 		}
 
 		/// <summary>
-		/// Replaces the string mathing the specified regular <paramref name="expression"/> with the specified 
+		/// Replaces the string matching the specified regular <paramref name="expression"/> with the specified 
 		/// <paramref name="replacement"/> string.
 		/// </summary>
 		/// <param name="subject">The string to replace.</param>
@@ -239,7 +239,7 @@ namespace Kelp.Extensions
 		}
 
 		/// <summary>
-		/// Replaces the string mathing the specified regular <paramref name="expression"/> using the specified 
+		/// Replaces the string matching the specified regular <paramref name="expression"/> using the specified 
 		/// <paramref name="replacement"/> function to further process the match.
 		/// </summary>
 		/// <param name="subject">The string to replace.</param>

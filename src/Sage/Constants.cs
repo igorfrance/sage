@@ -33,7 +33,7 @@ namespace Sage
 		Browser,
 
 		/// <summary>
-		/// Signifies a crawler, such as Googlebot.
+		/// Signifies a crawler, such as <c>Googlebot</c>.
 		/// </summary>
 		Crawler,
 	}
@@ -75,6 +75,47 @@ namespace Sage
 		Unknown = 0,
 
 		/// <summary>
+		/// Indicates an error that occurred during initialization of the project configuration.
+		/// </summary>
+		ConfigurationInitializationError,
+
+		/// <summary>
+		/// Indicates a schema validation error within the project configuration.
+		/// </summary>
+		ConfigurationSchemaError,
+
+		/// <summary>
+		/// Indicates an error that occurs during contextualization step of view transform.
+		/// </summary>
+		ContextualizeError,
+
+		/// <summary>
+		/// Indicates that an error occurred during extension installation.
+		/// </summary>
+		ExtensionInstallError,
+
+		/// <summary>
+		/// Indicates an error that occurred while parsing the schema of extension configuration file.
+		/// </summary>
+		ExtensionSchemaValidationError,
+
+		/// <summary>
+		/// Occurs if the expression specified with the <c>xpointer</c> attribute of an 
+		/// <c>xi:include</c> element fails to select something.
+		/// </summary>
+		IncludeFragmentNotFound,
+
+		/// <summary>
+		/// Occurs if the resource specified with an <c>xi:include</c> element can't be found.
+		/// </summary>
+		IncludeNotFound,
+
+		/// <summary>
+		/// Occurs if the expression specified with the <c>xpointer</c> attribute generates a syntax error.
+		/// </summary>
+		IncludeSyntaxError,
+
+		/// <summary>
 		/// Indicates invalid markup in XML
 		/// </summary>
 		InvalidMarkup,
@@ -85,80 +126,24 @@ namespace Sage
 		InvalidHtmlMarkup,
 
 		/// <summary>
-		/// Occurs when a qualified name is used in XML without providing the corresponding namespace declaration.
-		/// </summary>
-		MissingNamespaceDeclaration,
-
-		/// <summary>
 		/// Occurs when the system fails to find any configuration files in a project.
 		/// </summary>
 		MissingConfigurationFile,
 
 		/// <summary>
-		/// Occurs if an exception is raised during the XSLT transform step.
+		/// Indicates that the project is missing an essential dependency.
 		/// </summary>
-		TransformError,
+		MissingDependency,
 
 		/// <summary>
-		/// Occurs if the XSLT transform fails to produce anything.
+		/// Indicates that one of the project extensions is missing an essential dependency.
 		/// </summary>
-		TransformResultMissingRootElement,
+		MissingExtensionDependency,
 
 		/// <summary>
-		/// Occurs if an exception is raised during loading of an XSLT stylesheet.
+		/// Occurs when a qualified name is used in XML without providing the corresponding namespace declaration.
 		/// </summary>
-		XsltLoadError,
-
-		/// <summary>
-		/// Occurs if the resource specified with an <c>xi:include</c> element can't be found.
-		/// </summary>
-		IncludeNotFound,
-
-		/// <summary>
-		/// Occurs if the expression specified with the <c>xpointer</c> attribute of an 
-		/// <c>xi:include</c> element fails to select something.
-		/// </summary>
-		IncludeFragmentNotFound,
-
-		/// <summary>
-		/// Occurs if the expression specified with the <c>xpointer</c> attribute generates a syntax error.
-		/// </summary>
-		IncludeSyntaxError,
-
-		/// <summary>
-		/// Indicates an error that occured during initialization of the project configuration.
-		/// </summary>
-		ConfigurationInitializationError,
-
-		/// <summary>
-		/// Indicates a schema validation error within the project configuration.
-		/// </summary>
-		ConfigurationSchemaError,
-
-		/// <summary>
-		/// Occurs if an exception is raised during initialization of the view document.
-		/// </summary>
-		ViewDocumentInitError,
-
-		/// <summary>
-		/// Indicates an error that occurs during contextualization step of view transform.
-		/// </summary>
-		ContextualizeError,
-
-		/// <summary>
-		/// Indicates an error that occurs during processing of view modules.
-		/// </summary>
-		ViewProcessingError,
-
-		/// <summary>
-		/// Indicates an error that occurs during processing of view modules.
-		/// </summary>
-		ResourceProcessingError,
-
-		/// <summary>
-		/// Indicates an error that occurs during processing of view filters.
-		/// </summary>
-		ViewXmlFilteringError,
+		MissingNamespaceDeclaration,
 
 		/// <summary>
 		/// Indicates a generic error that occurs during the project initialization phase.
@@ -171,33 +156,63 @@ namespace Sage
 		ProjectSchemaValidationError,
 
 		/// <summary>
-		/// Indicates an error that occurred while parsing the schema of extension configuration file.
+		/// Indicates an error that occurs during processing of view modules.
 		/// </summary>
-		ExtensionSchemaValidationError,
+		ResourceProcessingError,
+
+		/// <summary>
+		/// Occurs if an exception is raised during the XSLT transform step.
+		/// </summary>
+		TransformError,
+
+		/// <summary>
+		/// Occurs if the XSLT transform fails to produce anything.
+		/// </summary>
+		TransformResultMissingRootElement,
+
+		/// <summary>
+		/// Occurs if an exception is raised during initialization of the view document.
+		/// </summary>
+		ViewDocumentInitError,
+
+		/// <summary>
+		/// Indicates an error that occurs during processing of view modules.
+		/// </summary>
+		ViewProcessingError,
+
+		/// <summary>
+		/// Indicates an error that occurs during processing of view filters.
+		/// </summary>
+		ViewXmlFilteringError,
+
+		/// <summary>
+		/// Occurs if an exception is raised during loading of an XSLT style-sheet.
+		/// </summary>
+		XsltLoadError,
 	}
 
 	/// <summary>
-	/// Specifies the possible sources of an XSLT view; where a view's stylesheet is loaded from.
+	/// Specifies the possible sources of an XSLT view; where a view's style-sheet is loaded from.
 	/// </summary>
 	public enum ViewSource
 	{
 		/// <summary>
-		/// Indicates the default, built-in XSLT stylesheet.
+		/// Indicates the default, built-in XSLT style-sheet.
 		/// </summary>
 		BuiltIn = 0,
 
 		/// <summary>
-		/// Indicates a specific stylesheet created specifically for the current view.
+		/// Indicates a specific style-sheet created specifically for the current view.
 		/// </summary>
 		Specific = 1,
 
 		/// <summary>
-		/// Indicates a stylesheet that is shared across the whole project category (in a multi-category setup).
+		/// Indicates a style-sheet that is shared across the whole project category (in a multi-category setup).
 		/// </summary>
 		Category = 2,
 
 		/// <summary>
-		/// Indicates a stylesheet that is shared across the project.
+		/// Indicates a style-sheet that is shared across the project.
 		/// </summary>
 		Project = 3,
 	}
@@ -255,7 +270,7 @@ namespace Sage
 		ConfigurationError = 4,
 
 		/// <summary>
-		/// Indicates that an error occured during processing of the module.
+		/// Indicates that an error occurred during processing of the module.
 		/// </summary>
 		ModuleError = 5,
 
@@ -317,7 +332,7 @@ namespace Sage
 		Document = 3,
 
 		/// <summary>
-		/// Indicates an icon resource (usually the favicon.ico)
+		/// Indicates an icon resource (usually the <c>favicon.ico</c>)
 		/// </summary>
 		Icon = 4,
 	}
@@ -328,17 +343,17 @@ namespace Sage
 	public enum ResourceLocation
 	{
 		/// <summary>
-		/// Inidicates that the resource is meant to appear in the input XML document, not in the final HTML directly.
+		/// Indicates that the resource is meant to appear in the input XML document, not in the final HTML directly.
 		/// </summary>
 		Data = 0,
 
 		/// <summary>
-		/// Inidicates that the resource is meant to appear in the HTML &lt;head/&gt; element.
+		/// Indicates that the resource is meant to appear in the HTML &lt;head/&gt; element.
 		/// </summary>
 		Head = 1,
 
 		/// <summary>
-		/// Inidicates that the resource is meant to appear in the HTML &lt;body/&gt; element.
+		/// Indicates that the resource is meant to appear in the HTML &lt;body/&gt; element.
 		/// </summary>
 		Body = 2,
 	}
@@ -349,34 +364,9 @@ namespace Sage
 	public static class XmlNamespaces
 	{
 		/// <summary>
-		/// Defines the prefix for the main Sage namespace.
+		/// Specifies the category configuration namespace.
 		/// </summary>
-		public const string SageNsPrefix = "sage";
-
-		/// <summary>
-		/// Defines the main Sage namespace.
-		/// </summary>
-		public const string SageNamespace = "http://www.cycle99.com/schemas/sage/sage.xsd";
-
-		/// <summary>
-		/// Defines the contextualization namespace prefix.
-		/// </summary>
-		public const string ContextualizationNsPrefix = "context";
-		
-		/// <summary>
-		/// Defines the contextualization namespace.
-		/// </summary>
-		public const string ContextualizationNamespace = "http://www.cycle99.com/schemas/sage/contextualization.xsd";
-
-		/// <summary>
-		/// Specifies the prefix for the project configuration namespace.
-		/// </summary>
-		public const string ProjectConfigurationPrefix = "p";
-
-		/// <summary>
-		/// Specifies the project configuration namespace.
-		/// </summary>
-		public const string ProjectConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/project.xsd";
+		public const string CategoryConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/category.xsd";
 
 		/// <summary>
 		/// Specifies the prefix for the category configuration namespace.
@@ -384,34 +374,24 @@ namespace Sage
 		public const string CategoryConfigurationPrefix = "c";
 
 		/// <summary>
-		/// Specifies the category configuration namespace.
+		/// Defines the contextualization namespace.
 		/// </summary>
-		public const string CategoryConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/category.xsd";
+		public const string ContextualizationNamespace = "http://www.cycle99.com/schemas/sage/contextualization.xsd";
 
 		/// <summary>
-		/// Specifies the prefix for the sitemap configuration namespace.
+		/// Defines the contextualization namespace prefix.
 		/// </summary>
-		public const string SitemapConfigurationPrefix = "s";
+		public const string ContextualizationNsPrefix = "context";
 
 		/// <summary>
-		/// Specifies the sitemap configuration namespace.
+		/// Defines the <c>intenationalization</c> namespace.
 		/// </summary>
-		public const string SitemapConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/sitemap.xsd";
+		public const string InternationalizationNamespace = "http://www.cycle99.com/schemas/sage/internationalization.xsd";
 
 		/// <summary>
-		/// Specifies the prefix for the developer (dev tools) configuration namespace.
+		/// Defines the prefix for the <c>intenationalization</c> namespace.
 		/// </summary>
-		public const string DeveloperConfigurationPrefix = "dev";
-
-		/// <summary>
-		/// Specifies the developer (dev tools) configuration namespace.
-		/// </summary>
-		public const string DeveloperConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/devtools.xsd";
-
-		/// <summary>
-		/// Defines the prefix for the modules namespace.
-		/// </summary>
-		public const string ModulesNsPrefix = "mod";
+		public const string InternationalizationNsPrefix = "intl";
 
 		/// <summary>
 		/// Defines the modules namespace.
@@ -419,19 +399,39 @@ namespace Sage
 		public const string ModulesNamespace = "http://www.cycle99.com/schemas/sage/modules.xsd";
 
 		/// <summary>
-		/// Defines the prefix for the intenationalization namespace.
+		/// Defines the prefix for the modules namespace.
 		/// </summary>
-		public const string InternationalizationNsPrefix = "intl";
+		public const string ModulesNsPrefix = "mod";
 
 		/// <summary>
-		/// Defines the intenationalization namespace.
+		/// Specifies the project configuration namespace.
 		/// </summary>
-		public const string InternationalizationNamespace = "http://www.cycle99.com/schemas/sage/internationalization.xsd";
+		public const string ProjectConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/project.xsd";
 
 		/// <summary>
-		/// Defines the prefix for the standard XHTML namespace.
+		/// Specifies the prefix for the project configuration namespace.
 		/// </summary>
-		public const string XHtmlPrefix = "xhtml";
+		public const string ProjectConfigurationPrefix = "p";
+
+		/// <summary>
+		/// Defines the main Sage namespace.
+		/// </summary>
+		public const string SageNamespace = "http://www.cycle99.com/schemas/sage/sage.xsd";
+
+		/// <summary>
+		/// Defines the prefix for the main Sage namespace.
+		/// </summary>
+		public const string SageNsPrefix = "sage";
+
+		/// <summary>
+		/// Specifies the sitemap configuration namespace.
+		/// </summary>
+		public const string SitemapConfigurationNamespace = "http://www.cycle99.com/schemas/sage/configuration/sitemap.xsd";
+
+		/// <summary>
+		/// Specifies the prefix for the sitemap configuration namespace.
+		/// </summary>
+		public const string SitemapConfigurationPrefix = "s";
 
 		/// <summary>
 		/// Defines the standard XHTML namespace.
@@ -439,14 +439,14 @@ namespace Sage
 		public const string XHtmlNamespace = "http://www.w3.org/1999/xhtml";
 
 		/// <summary>
-		/// Defines the prefix for the standard XSL namespace.
+		/// Defines the prefix for the standard XHTML namespace.
 		/// </summary>
-		public const string XslPrefix = "xsl";
+		public const string XHtmlPrefix = "xhtml";
 
 		/// <summary>
-		/// Defines the standard XSL namespace.
+		/// Defines the standard X-Include namespace.
 		/// </summary>
-		public const string XslNamespace = "http://www.w3.org/1999/XSL/Transform";
+		public const string XIncludeNamespace = "http://www.w3.org/2003/XInclude";
 
 		/// <summary>
 		/// Defines the prefix for the standard X-Include namespace.
@@ -454,9 +454,14 @@ namespace Sage
 		public const string XIncludePrefix = "xi";
 
 		/// <summary>
-		/// Defines the standard X-Include namespace.
+		/// Defines the standard XSL namespace.
 		/// </summary>
-		public const string XIncludeNamespace = "http://www.w3.org/2003/XInclude";
+		public const string XslNamespace = "http://www.w3.org/1999/XSL/Transform";
+
+		/// <summary>
+		/// Defines the prefix for the standard XSL namespace.
+		/// </summary>
+		public const string XslPrefix = "xsl";
 
 		private static volatile XmlNamespaceManager nsman;
 
@@ -484,7 +489,6 @@ namespace Sage
 							tempManager.AddNamespace(ProjectConfigurationPrefix, ProjectConfigurationNamespace);
 							tempManager.AddNamespace(CategoryConfigurationPrefix, CategoryConfigurationNamespace);
 							tempManager.AddNamespace(SitemapConfigurationPrefix, SitemapConfigurationNamespace);
-							tempManager.AddNamespace(DeveloperConfigurationPrefix, DeveloperConfigurationNamespace);
 							tempManager.AddNamespace(InternationalizationNsPrefix, InternationalizationNamespace);
 							tempManager.AddNamespace(ModulesNsPrefix, ModulesNamespace);
 							tempManager.AddNamespace(XHtmlPrefix, XHtmlNamespace);
@@ -507,24 +511,24 @@ namespace Sage
 		public static class Extensions
 		{
 			/// <summary>
-			/// Defines the namespace for the IO extensions.
-			/// </summary>
-			public const string IO = "http://www.cycle99.com/schemas/sage/xslt/extensions/io.xsd";
-
-			/// <summary>
-			/// Defines the namespace for the Regexp extensions.
-			/// </summary>
-			public const string Regex = "http://www.cycle99.com/schemas/sage/xslt/extensions/regex.xsd";
-
-			/// <summary>
 			/// Defines the namespace for the Basic extensions.
 			/// </summary>
 			public const string Basic = "http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd";
 
 			/// <summary>
-			/// Defines the namespace for the String extensions.
+			/// Defines the namespace for the Date extensions.
 			/// </summary>
-			public const string String = "http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd";
+			public const string Date = "http://www.cycle99.com/schemas/sage/xslt/extensions/date.xsd";
+
+			/// <summary>
+			/// Defines the namespace for the IO extensions.
+			/// </summary>
+			public const string IO = "http://www.cycle99.com/schemas/sage/xslt/extensions/io.xsd";
+
+			/// <summary>
+			/// Defines the namespace for regular expression extensions.
+			/// </summary>
+			public const string Regex = "http://www.cycle99.com/schemas/sage/xslt/extensions/regex.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the Set extensions.
@@ -532,9 +536,9 @@ namespace Sage
 			public const string Set = "http://www.cycle99.com/schemas/sage/xslt/extensions/set.xsd";
 
 			/// <summary>
-			/// Defines the namespace for the Date extensions.
+			/// Defines the namespace for the String extensions.
 			/// </summary>
-			public const string Date = "http://www.cycle99.com/schemas/sage/xslt/extensions/date.xsd";
+			public const string String = "http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd";
 		}
 	}
 }
