@@ -143,7 +143,7 @@ namespace Sage.Extensibility
 			}
 		}
 
-		private static List<ExtensionInfo> OrderByDependency(IEnumerable<ExtensionInfo> items)
+		private static IEnumerable<ExtensionInfo> OrderByDependency(IEnumerable<ExtensionInfo> items)
 		{
 			List<ExtensionInfo> ordered = new List<ExtensionInfo>(items);
 

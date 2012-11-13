@@ -40,7 +40,7 @@ namespace Sage.ResourceManagement
 			foreach (Assembly a in Project.RelevantAssemblies)
 			{
 				string resourcePath = new List<string>(a.GetManifestResourceNames())
-					.FirstOrDefault(r => r.ToLower().IndexOf(resourceName) != -1);
+					.FirstOrDefault(r => r.ToLower().IndexOf(resourceName, StringComparison.Ordinal) != -1);
 
 				if (!string.IsNullOrEmpty(resourcePath))
 				{

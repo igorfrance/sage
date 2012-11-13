@@ -232,8 +232,7 @@ namespace Sage.Configuration
 		{
 			Contract.Requires<ArgumentNullException>(configStream != null);
 
-			XmlDocument document = new XmlDocument();
-			document.PreserveWhitespace = true;
+			XmlDocument document = new XmlDocument { PreserveWhitespace = true };
 			document.Load(configStream);
 
 			XmlDocument parentDoc = null;

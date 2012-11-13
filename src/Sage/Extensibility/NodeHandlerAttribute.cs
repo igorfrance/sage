@@ -39,7 +39,7 @@ namespace Sage.Extensibility
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(nodeName));
 
 			this.NodeType = nodeType;
-			this.NodeName = nodeName.Substring(nodeName.IndexOf(":") + 1);
+			this.NodeName = nodeName.Substring(nodeName.IndexOf(":", StringComparison.Ordinal) + 1);
 			this.Namespace = ns;
 		}
 

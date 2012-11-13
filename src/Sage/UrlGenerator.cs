@@ -368,7 +368,7 @@ namespace Sage
 
 				QueryString tempQuery;
 
-				if (parameter.IndexOf("#") == 0)
+				if (parameter.IndexOf("#", StringComparison.Ordinal) == 0)
 				{
 					tempQuery = new QueryString(parameter.Substring(1));
 					hashQuery.Merge(tempQuery);
@@ -393,20 +393,21 @@ namespace Sage
 
 			if (currentUrl.Contains("?"))
 			{
-				paramQuery.Parse(currentUrl.Substring(currentUrl.IndexOf("?") + 1));
-				currentUrl = currentUrl.Substring(0, currentUrl.IndexOf("?"));
+				var questionIndex = currentUrl.IndexOf("?", StringComparison.Ordinal);
+				paramQuery.Parse(currentUrl.Substring(questionIndex + 1));
+				currentUrl = currentUrl.Substring(0, questionIndex);
 			}
 
 			foreach (string argument in arguments)
 			{
 				QueryString tempQuery;
-				if (argument.IndexOf("?") == 0)
+				if (argument.IndexOf("?", StringComparison.Ordinal) == 0)
 				{
 					tempQuery = new QueryString(argument.Substring(1));
 					paramQuery.Merge(tempQuery);
 				}
 
-				if (argument.IndexOf("#") == 0)
+				if (argument.IndexOf("#", StringComparison.Ordinal) == 0)
 				{
 					tempQuery = new QueryString(argument.Substring(1));
 					hashQuery.Merge(tempQuery);

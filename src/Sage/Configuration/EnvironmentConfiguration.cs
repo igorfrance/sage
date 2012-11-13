@@ -91,6 +91,8 @@ namespace Sage.Configuration
 		/// <inheritdoc/>
 		public void Parse(XmlElement configuration)
 		{
+			Contract.Requires<ArgumentNullException>(configuration != null);
+
 			foreach (XmlElement element in configuration.SelectNodes("p:addresses/p:developers/p:ip", XmlNamespaces.Manager))
 			{
 				if (element.GetAttribute("address") == "*")
