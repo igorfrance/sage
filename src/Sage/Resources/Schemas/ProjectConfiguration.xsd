@@ -34,6 +34,17 @@
 					</xs:all>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="extension" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" use="required" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="libraries" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
@@ -131,7 +142,7 @@
 			</xs:element>
 			<xs:any namespace="##other" processContents="skip"/>
 		</xs:choice>
-		<xs:attribute name="name" use="optional" type="xs:Name"/>
+		<xs:attribute name="name" use="optional" type="xs:string"/>
 		<xs:attribute name="autoInternationalize" use="optional" default="true" type="xs:boolean"/>
 		<xs:attribute name="debugMode" use="optional" default="false" type="xs:boolean"/>
 		<xs:attribute name="defaultLocale" use="optional" type="nonEmptyString"/>
@@ -141,6 +152,7 @@
 	
 	<xs:complexType name="config.package">
 		<xs:choice minOccurs="0" maxOccurs="7">
+			<xs:element name="dependencies" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="binaries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="assets" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="modules" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>

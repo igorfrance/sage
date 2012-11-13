@@ -189,7 +189,7 @@ namespace Sage.ResourceManagement
 			
 			bool debugMode = false;
 			if (state.Context != null)
-				debugMode = state.Context.ProjectConfiguration.IsDebugMode;
+				debugMode = state.Context.ProjectConfiguration.IsDebugEnabled;
 
 			XmlDocument elementDocument = contentElement.OwnerDocument;
 			foreach (XmlElement includingElement in includeElements)

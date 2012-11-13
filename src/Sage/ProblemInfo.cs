@@ -16,17 +16,40 @@
 namespace Sage
 {
 	using System;
+	using System.Collections.Generic;
 
-	internal class ProblemInfo
+	/// <summary>
+	/// Contains information about an error that occurred.
+	/// </summary>
+	public class ProblemInfo
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProblemInfo" /> class, using the specified <paramref name="type"/>
+		/// and <paramref name="filePath"/>.
+		/// </summary>
+		/// <param name="type">The problem type associated with this error.</param>
+		/// <param name="filePath">The path to the file where the error occurred.</param>
 		public ProblemInfo(ProblemType type, string filePath = null)
 		{
 			this.Type = type;
 			this.FilePath = filePath;
+			this.InfoBlocks = new Dictionary<string, IDictionary<string, string>>();
 		}
 
-		public string FilePath { get; private set; }
+		/// <summary>
+		/// Gets or sets the path to the file where the error occurred.
+		/// </summary>
+		public string FilePath { get; set; }
 
+		/// <summary>
+		/// Gets or sets the type associated with this error.
+		/// </summary>
+		/// <value>The type.</value>
 		public ProblemType Type { get; set; }
+
+		/// <summary>
+		/// Gets the dictionary of information blocks that can be used for displaying information about the error.
+		/// </summary>
+		public IDictionary<string, IDictionary<string, string>> InfoBlocks { get; internal set; }
 	}
 }

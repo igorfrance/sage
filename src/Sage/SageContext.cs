@@ -533,7 +533,7 @@ namespace Sage
 			resultElement.SetAttribute("locale", this.Locale);
 			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
-			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugMode ? "1" : "0");
+			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugEnabled ? "1" : "0");
 
 			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
 			addressNode.SetAttribute("basehref", this.BaseHref);

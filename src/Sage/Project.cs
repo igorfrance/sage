@@ -431,6 +431,8 @@ namespace Sage
 
 			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
 			{
+				log.Warn("Nither system nor project configuration files found; configuration initialized with default values");
+
 				//// initializationProblemInfo = new ProblemInfo(ProblemType.MissingConfigurationFile);
 				//// initializationError = new SageHelpException(initializationProblemInfo);
 				return;
@@ -464,14 +466,39 @@ namespace Sage
 				log.DebugFormat("Project configuration success: {0}", validationResult.Success);
 
 				var extensionManager = new ExtensionManager();
-				result = extensionManager.Initialize(context);
-				if (result != null && !result.Success)
+				try
 				{
-					initializationError = result.Exception;
-					initializationProblemInfo = new ProblemInfo(ProblemType.ExtensionSchemaValidationError, result.SourceFile);
+					extensionManager.Initialize(context);
 				}
-				else
+				catch (ProjectInitializationException ex)
 				{
+					initializationError = ex;
+					initializationProblemInfo = new ProblemInfo(ex.Reason, ex.SourceFile);
+					if (ex.Reason == ProblemType.MissingExtensionDependency)
+					{
+						initializationProblemInfo.InfoBlocks
+							.Add("Dependencies", ex.Dependencies.ToDictionary(name => name));
+					}
+				}
+
+				if (initializationError == null)
+				{
+					var missingDependencies = projectConfig.Dependencies
+						.Where(name => extensionManager.Count(ex => ex.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) == 0)
+						.ToList();
+
+					if (missingDependencies.Count != 0)
+					{
+						string errorMessage = 
+							string.Format("Project is missing one or more dependencies ({0}) - installation cancelled.",
+							string.Join(", ", missingDependencies));
+
+						initializationError = new ProjectInitializationException(errorMessage);
+						initializationProblemInfo = new ProblemInfo(ProblemType.MissingDependency);
+						initializationProblemInfo.InfoBlocks
+							.Add("Dependencies", missingDependencies.ToDictionary(name => name));
+					}
+
 					foreach (var extension in extensionManager)
 					{
 						Project.RelevantAssemblies.AddRange(extension.Assemblies);
@@ -479,7 +506,7 @@ namespace Sage
 					}
 
 					projectConfig.RegisterRoutes();
-					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Dependencies);
+					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
 				}
 			}
 		}

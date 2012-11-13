@@ -37,14 +37,9 @@ namespace Sage.Configuration
 	public class ProjectConfiguration
 	{
 		/// <summary>
-		/// Specifies the file name of the system configuration document.
+		/// Specifies the path to the configuration schema document.
 		/// </summary>
-		public const string SystemConfigName = "System.config";
-
-		/// <summary>
-		/// Specifies the file name of the project configuration document.
-		/// </summary>
-		public const string ProjectConfigName = "Project.config";
+		public const string ConfigSchemaPath = "sageresx://sage/resources/schemas/projectconfiguration.xsd";
 
 		/// <summary>
 		/// Specifies the file name of the extension configuration document.
@@ -52,12 +47,18 @@ namespace Sage.Configuration
 		public const string ExtensionConfigName = "Extension.config";
 
 		/// <summary>
-		/// Specifies the path to the configuration schema document.
+		/// Specifies the file name of the project configuration document.
 		/// </summary>
-		public const string ConfigSchemaPath = "sageresx://sage/resources/schemas/projectconfiguration.xsd";
+		public const string ProjectConfigName = "Project.config";
+
+		/// <summary>
+		/// Specifies the file name of the system configuration document.
+		/// </summary>
+		public const string SystemConfigName = "System.config";
+
+		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
-		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 
 		private readonly List<XmlElement> customElements;
 
@@ -77,6 +78,7 @@ namespace Sage.Configuration
 			this.DefaultCategory = "default";
 			this.AutoInternationalize = true;
 			this.ValidationResult = new ValidationResult();
+			this.Files = new List<string>();
 			this.Dependencies = new List<string>();
 
 			this.Locales = new Dictionary<string, LocaleInfo> { { "us", new LocaleInfo 
@@ -101,9 +103,9 @@ namespace Sage.Configuration
 		public event EventHandler Changed;
 
 		/// <summary>
-		/// Gets the name of this project.
+		/// Gets the asset path configuration variable; this is the base path for all resources.
 		/// </summary>
-		public string Name { get; private set; }
+		public string AssetPath { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether Sage should automatically globalize any non-globalized XML resources
@@ -112,9 +114,9 @@ namespace Sage.Configuration
 		public bool AutoInternationalize { get; private set; }
 
 		/// <summary>
-		/// Gets the environment configuration.
+		/// Gets the list of categories available within this project.
 		/// </summary>
-		public EnvironmentConfiguration Environment { get; private set; }
+		public Dictionary<string, CategoryInfo> Categories { get; private set; }
 
 		/// <summary>
 		/// Gets the default category to fall back to if the URL doesn't specify a category.
@@ -127,39 +129,20 @@ namespace Sage.Configuration
 		public string DefaultLocale { get; private set; }
 
 		/// <summary>
-		/// Gets the path templates for various system-required files.
+		/// Gets the list of extensions that this project depends on.
 		/// </summary>
-		public PathTemplates PathTemplates { get; private set; }
+		/// <value>The extensions this project depends on.</value>
+		public List<string> Dependencies { get; private set; } 
 
 		/// <summary>
-		/// Gets the routing configuration for the current project.
+		/// Gets the environment configuration.
 		/// </summary>
-		public RoutingConfiguration Routing { get; private set; }
-
-		/// <summary>
-		/// Gets the asset path configuration variable; this is the base path for all resources.
-		/// </summary>
-		public string AssetPath { get; private set; }
-
-		/// <summary>
-		/// Gets the name of the category that is shared (common) with other categories.
-		/// </summary>
-		public string SharedCategory { get; private set; }
+		public EnvironmentConfiguration Environment { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the current project has been configured for debugging.
 		/// </summary>
-		public bool IsDebugMode { get; private set; }
-
-		/// <summary>
-		/// Gets the resource library dictionary.
-		/// </summary>
-		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries { get; private set; }
-
-		/// <summary>
-		/// Gets the list of categories available within this project.
-		/// </summary>
-		public Dictionary<string, CategoryInfo> Categories { get; private set; }
+		public bool IsDebugEnabled { get; private set; }
 
 		/// <summary>
 		/// Gets the linking configuration.
@@ -181,19 +164,36 @@ namespace Sage.Configuration
 		/// </summary>
 		public Dictionary<string, ModuleConfiguration> Modules { get; private set; }
 
-		internal List<string> Dependencies
+		/// <summary>
+		/// Gets the name of this project.
+		/// </summary>
+		public string Name { get; private set; }
+
+		/// <summary>
+		/// Gets the path templates for various system-required files.
+		/// </summary>
+		public PathTemplates PathTemplates { get; private set; }
+
+		/// <summary>
+		/// Gets the resource library dictionary.
+		/// </summary>
+		public Dictionary<string, ResourceLibraryInfo> ResourceLibraries { get; private set; }
+
+		/// <summary>
+		/// Gets the routing configuration for the current project.
+		/// </summary>
+		public RoutingConfiguration Routing { get; private set; }
+
+		/// <summary>
+		/// Gets the name of the category that is shared (common) with other categories.
+		/// </summary>
+		public string SharedCategory { get; private set; }
+
+		internal List<string> Files
 		{
 			get;
 			private set;
 		}
-
-		internal ValidationResult ValidationResult { get; set; }
-
-		/// <summary>
-		/// Gets the element that contains the definition of project-global internationalization variables. Used with
-		/// internationalization.
-		/// </summary>
-		internal XmlNode Variables { get; private set; }
 
 		/// <summary>
 		/// Gets the extension package configuration for packing this project as an extension.
@@ -202,6 +202,14 @@ namespace Sage.Configuration
 		/// This value is only applicable for <see cref="ConfigurationType.Extension"/> type projects.
 		/// </remarks>
 		internal PackageConfiguration Package { get; private set; }
+
+		internal ValidationResult ValidationResult { get; set; }
+
+		/// <summary>
+		/// Gets the element that contains the definition of project-global internationalization variables. Used with
+		/// internationalization.
+		/// </summary>
+		internal XmlNode Variables { get; private set; }
 
 		/// <summary>
 		/// Creates a <see cref="ProjectConfiguration"/> instance with all settings initialized to their defaults.
@@ -275,6 +283,12 @@ namespace Sage.Configuration
 			return result;
 		}
 
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format("Project {0}", this.Name);
+		}
+
 		/// <summary>
 		/// Generates an XML element that represents this instance.
 		/// </summary>
@@ -300,7 +314,7 @@ namespace Sage.Configuration
 				result.SetAttribute("defaultCategory", this.DefaultCategory);
 
 			result.SetAttribute("autoInternationalize", this.AutoInternationalize ? "1" : "0");
-			result.SetAttribute("debugMode", this.IsDebugMode ? "1" : "0");
+			result.SetAttribute("debugMode", this.IsDebugEnabled ? "1" : "0");
 
 			result.AppendChild(this.PathTemplates.ToXml(ownerDoc));
 			result.AppendChild(this.Routing.ToXml(ownerDoc));
@@ -348,29 +362,6 @@ namespace Sage.Configuration
 			return result;
 		}
 
-		/// <inheritdoc/>
-		public override string ToString()
-		{
-			return string.Format("Project {0}", this.Name);
-		}
-
-		internal void RegisterRoutes()
-		{
-			foreach (RouteInfo route in this.Routing.Values)
-			{
-				string[] namespaces = new[] { route.Namespace ?? this.Routing.DefaultNamespace };
-				RouteTable.Routes.MapRouteLowercase(route.Name, route.Path,
-					route.Defaults,
-					route.Constraints,
-					namespaces);
-
-				log.DebugFormat("Automatically registering route '{0}' to {1}.{2}",
-					route.Path,
-					route.Controller,
-					route.Action);
-			}
-		}
-
 		internal void Parse(string configPath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
@@ -381,7 +372,7 @@ namespace Sage.Configuration
 			CacheableXmlDocument document = ResourceManager.LoadXmlDocument(configPath);
 			this.Parse(document.DocumentElement);
 			this.ValidationResult.SourceFile = configPath;
-			this.Dependencies.AddRange(document.Dependencies.Where(d => !this.Dependencies.Contains(d)));
+			this.Files.AddRange(document.Dependencies.Where(d => !this.Files.Contains(d)));
 		}
 
 		internal void Parse(XmlElement configNode)
@@ -398,6 +389,13 @@ namespace Sage.Configuration
 				string.Format("*[namespace-uri() != '{0}']", XmlNamespaces.ProjectConfigurationNamespace)))
 			{
 				this.customElements.Add(child);
+			}
+
+			foreach (XmlElement element in configNode.SelectNodes("p:dependencies/p:extension", nm))
+			{
+				string extensionName = element.GetAttribute("name");
+				if (!this.Dependencies.Contains(extensionName))
+					this.Dependencies.Add(extensionName);
 			}
 
 			XmlNode variablesNode = configNode.SelectSingleNode("p:variables", nm);
@@ -449,7 +447,7 @@ namespace Sage.Configuration
 
 			nodeValue = configNode.GetAttribute("debugMode");
 			if (!string.IsNullOrEmpty(nodeValue))
-				this.IsDebugMode = nodeValue.ContainsAnyOf("yes", "1", "true");
+				this.IsDebugEnabled = nodeValue.ContainsAnyOf("yes", "1", "true");
 
 			if (pathsNode != null)
 			{
@@ -555,6 +553,23 @@ namespace Sage.Configuration
 
 			ProjectConfiguration.extensions[extensionName] = extensionConfig;
 			this.MergeExtension(extensionConfig);
+		}
+
+		internal void RegisterRoutes()
+		{
+			foreach (RouteInfo route in this.Routing.Values)
+			{
+				string[] namespaces = new[] { route.Namespace ?? this.Routing.DefaultNamespace };
+				RouteTable.Routes.MapRouteLowercase(route.Name, route.Path,
+					route.Defaults,
+					route.Constraints,
+					namespaces);
+
+				log.DebugFormat("Automatically registering route '{0}' to {1}.{2}",
+					route.Path,
+					route.Controller,
+					route.Action);
+			}
 		}
 
 		private void MergeExtension(ProjectConfiguration extensionConfig)

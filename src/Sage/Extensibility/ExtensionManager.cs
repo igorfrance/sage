@@ -19,10 +19,11 @@ namespace Sage.Extensibility
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.IO;
-
-	using Sage.Configuration;
+	using System.Linq;
 
 	using log4net;
+
+	using Sage.Configuration;
 	using Sage.ResourceManagement;
 
 	internal class ExtensionManager : List<ExtensionInfo>
@@ -42,31 +43,61 @@ namespace Sage.Extensibility
 			return result;
 		}
 
-		public ValidationResult Initialize(SageContext context)
+		public void Initialize(SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 
+			//// Discover available extensions
 			string pluginPath = context.Path.Resolve(context.Path.ExtensionPath);
 			if (!Directory.Exists(pluginPath))
-				return null;
+				return;
 
 			string[] archives = Directory.GetFiles(pluginPath, "*.zip", SearchOption.TopDirectoryOnly);
-			ExtensionInfo extension = null;
-			string action = null;
-			string extensionPath = null;
-			ValidationResult result = null;
-
-			try
+			List<ExtensionInfo> extensions = new List<ExtensionInfo>();
+			foreach (string archive in archives)
 			{
-				foreach (string archive in archives)
+				try
 				{
-					extensionPath = archive;
-					extension = new ExtensionInfo(archive, context);
-					this.Add(extension);
+					extensions.Add(new ExtensionInfo(archive, context));
+				}
+				catch (Exception ex)
+				{
+					log.ErrorFormat("Error initializing extension from archive {0}: {1}", archive, ex.Message);
+				}
+			}
 
-					result = extension.Config.ValidationResult;
+			//// Add the extensions, ordered by dependency
+			this.AddRange(ExtensionManager.OrderByDependency(extensions));
+
+			//// Attempt to install all extensions			
+			string action = null;
+			List<string> installed = new List<string>();
+			foreach (ExtensionInfo extension in this)
+			{
+				try
+				{
+					ValidationResult result = extension.Config.ValidationResult;
+
 					if (extension.Config.ValidationResult.Success)
 					{
+						var missingDependencies = extension.Config.Dependencies
+							.Where(name => this.Count(ex => ex.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) == 0)
+							.ToList();
+
+						if (missingDependencies.Count != 0)
+						{
+							string errorMessage = string.Format("Extension {0} is missing the following dependencies: {1} - installation cancelled.", 
+								extension.Name, string.Join(", ", missingDependencies));
+
+							log.ErrorFormat(errorMessage);
+							throw new ProjectInitializationException(errorMessage)
+							{
+								Reason = ProblemType.MissingExtensionDependency, 
+								SourceFile = extension.ArchiveFileName,
+								Dependencies = missingDependencies,
+							};
+						}
+
 						if (!extension.IsInstalled)
 						{
 							action = "installing";
@@ -82,28 +113,72 @@ namespace Sage.Extensibility
 							action = "refreshing";
 							extension.Refresh();
 						}
+
+						installed.Add(extension.Name);
 					}
 					else
 					{
-						return result;
+						string errorMessage = string.Format("Configuration error for extension {0}: {1}", extension.Name, result.Exception.Message);
+						log.Error(errorMessage);
+
+						throw new ProjectInitializationException(errorMessage, result.Exception) 
+						{ 
+							SourceFile = extension.ConfigurationFileName,
+							Reason = ProblemType.ExtensionSchemaValidationError 
+						};
 					}
 				}
-			}
-			catch (Exception ex)
-			{
-				if (extension != null)
+				catch (Exception ex)
 				{
-					log.ErrorFormat("Error {0} extension '{1}': {2}", action, extension.Name, ex.Message);
+					string errorMessage = string.Format("Error {0} extension '{1}': {2}", action,
+						Path.GetFileNameWithoutExtension(extension.ArchiveFileName), ex.Message);
+
+					log.ErrorFormat(errorMessage);
+					throw new ProjectInitializationException(errorMessage, ex)
+					{ 
+						Reason = ProblemType.ExtensionInstallError, 
+						SourceFile = extension.ArchiveFileName
+					};
+				}
+			}
+		}
+
+		private static List<ExtensionInfo> OrderByDependency(IEnumerable<ExtensionInfo> items)
+		{
+			List<ExtensionInfo> ordered = new List<ExtensionInfo>(items);
+
+			int index = 0;
+			while (index != ordered.Count - 1)
+			{
+				var curr = ordered[index];
+				var swapIndex = -1;
+
+				if (curr.Config.Dependencies.Count == 0)
+				{
+					index += 1;
+					continue;
+				}
+
+				for (int i = index + 1; i < ordered.Count; i++)
+				{
+					if (curr.Config.Dependencies.Contains(ordered[i].Name))
+					{
+						swapIndex = i;
+						break;
+					}
+				}
+
+				if (swapIndex != -1)
+				{
+					var swap = ordered[swapIndex];
+					ordered.RemoveAt(swapIndex);
+					ordered.Insert(index, swap);
 				}
 				else
-				{
-					log.ErrorFormat("Error initializing extension '{0}': {1}", Path.GetFileNameWithoutExtension(extensionPath), ex.Message);
-				}
-
-				throw;
+					index += 1;
 			}
 
-			return result;
+			return ordered;
 		}
 	}
 }

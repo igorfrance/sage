@@ -88,7 +88,7 @@ namespace Sage.ResourceManagement
 			}
 
 			CodeFile file = CodeFile.Create(sourcePathAbsolute, sourcePathRelative, context.MapPath);
-			if (context.ProjectConfiguration.IsDebugMode)
+			if (context.ProjectConfiguration.IsDebugEnabled)
 			{
 				try
 				{

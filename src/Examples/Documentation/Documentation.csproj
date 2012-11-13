@@ -69,8 +69,6 @@
     <Content Include="assets\modules\documentation\RelatedArticles\RelatedArticles.xsl" />
     <Content Include="assets\scripts\dashboard.js" />
     <Content Include="assets\scripts\lib\jquery\shadowbox.js" />
-    <Content Include="assets\views\dev\inspect.html" />
-    <Content Include="assets\views\dev\log.html" />
     <Content Include="assets\views\home\index.html" />
     <Content Include="assets\xslt\default.xslt" />
     <Content Include="Global.asax" />

@@ -31,7 +31,7 @@
 	</xsl:template>
 
 	<xsl:template match="exception" mode="standard">
-		<xsl:text>An error occured during processing of your request.</xsl:text>
+		<xsl:text>An error occurred during processing of your request.</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="exception" mode="developer">
