@@ -21,15 +21,23 @@ namespace Kelp.Test
 	internal static class Categories
 	{
 		/// <summary>
-		/// Indicates the Resource Handling category
+		/// Resource Handling
 		/// </summary>
 		public const string ResourceHandling = "Resource Handling";
 		
 		/// <summary>
-		/// Indicates the Syntax Highlighting category
+		/// Syntax Highlighting
 		/// </summary>
 		public const string SyntaxHighlighting = "Syntax Highlighting";
 
+		/// <summary>
+		/// Core
+		/// </summary>
 		public const string Core = "Core";
+
+		/// <summary>
+		/// Utilities
+		/// </summary>
+		public const string Utilities = "Utilities";
 	}
 }

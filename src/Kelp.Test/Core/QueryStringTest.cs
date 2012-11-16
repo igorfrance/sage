@@ -44,13 +44,19 @@ namespace Kelp.Test.Core
 	}
 
 	[Subject(typeof(QueryString)), Tags(Categories.Core)]
-	public class When_converting_a_querystring_to_string
+	public class When_converting_to_string
 	{
-		private It Should_serialize_this_correctly = () => 
-			(new QueryString { { "a", "1" }, { "b", "2" }, { "c", "3" } }).ToString(false).ShouldEqual("a=1&b=2&c=3");
+		private It Should_correctly_serialize_instance_initialized_from_string = () => 
+			new QueryString("a=1&b=2&c=3").ToString().ShouldEqual("a=1&b=2&c=3");
 
-		private It Should_also_serialize_this_correctly = () => 
-			(new QueryString { { "a", "1" }, { "b", "2" }, { "c", "3" }, { "c", "4" } }).ToString(false).ShouldEqual("a=1&b=2&c=3,4");
+		private It Should_correctly_use_alternative_pair_separator = () => 
+			new QueryString("a=1&b=2&c=3").ToString(string.Empty, ',').ShouldEqual("a=1,b=2,c=3");
+
+		private It Should_correctly_use_alternative_pair_and_key_value_separators = () =>
+			new QueryString("a=1&b=2&c=3").ToString(string.Empty, ',', '~').ShouldEqual("a~1,b~2,c~3");
+
+		private It Should_correctly_serialize_instance_initialized_from_collection = () =>
+			(new QueryString { { "a", "1" }, { "b", "2" }, { "c", "3" } }).ToString().ShouldEqual("a=1&b=2&c=3");
 	}
 
 	[Subject(typeof(QueryString)), Tags(Categories.Core)]
@@ -59,7 +65,7 @@ namespace Kelp.Test.Core
 		private static QueryString coll = new QueryString();
 
 		private It Should_serialize_correctly_again =
-			() => coll.Parse("color=red&name=Igor").ToString(false).ShouldEqual("color=red&name=Igor");
+			() => coll.Parse("color=red&name=Igor").ToString().ShouldEqual("color=red&name=Igor");
 
 		private It Should_return_the_correct_properties =
 			() => coll.Parse("color=blue")["color"].ShouldEqual("blue");
@@ -70,8 +76,17 @@ namespace Kelp.Test.Core
 		private It Should_have_zero_entries_for_semi_empty_strings =
 			() => coll.Parse("=&=").Count.ShouldEqual(0);
 
-		private It Should_serialize_to_an_empty_String_for_semi_empty_strings =
+		private It Should_serialize_to_an_empty_string_for_semi_empty_strings =
 			() => coll.Parse("=&=").ToString().ShouldEqual(string.Empty);
+
+		private It Should_parse_properly_when_using_alternate_separator =
+			() => coll.Parse("a,b,c+d", new[] { ',', '+' }).ToString().ShouldEqual("a&b&c&d");
+
+		private It Should_convert_duplicates_initialized_from_collection_into_a_list = () =>
+			(new QueryString { { "a", "1" }, { "b", "2" }, { "c", "3" }, { "c", "4" } }).ToString().ShouldEqual("a=1&b=2&c=3,4");
+
+		private It Should_convert_duplicates_initialized_from_string_into_a_list = () =>
+			new QueryString("a=1&b=2&c=3&c=4").ToString().ShouldEqual("a=1&b=2&c=3,4");
 	}
 
 	[Subject(typeof(QueryString)), Tags(Categories.Core)]
@@ -82,7 +97,7 @@ namespace Kelp.Test.Core
 		private Because of = () => q.Remove("a");
 
 		private It Should_be_empty = () => q.ToString().ShouldBeEmpty();
-		private It Should_be_empty_when_passing_true_to_the_to_string_method = () => q.ToString(true).ShouldBeEmpty();
+		private It Should_be_empty_even_if_prefix_is_given = () => q.ToString("?").ShouldBeEmpty();
 	}
 
 	[Subject(typeof(QueryString)), Tags(Categories.Core)]
