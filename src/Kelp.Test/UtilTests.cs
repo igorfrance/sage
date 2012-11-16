@@ -28,7 +28,7 @@ namespace Kelp.Test
 
 	using Machine.Specifications;
 
-	[Subject(typeof(Util))]
+	[Subject(typeof(Util)), Tags(Categories.Utilities)]
 	public class When_splitting_arguments
 	{
 		private static IEnumerable<string> arguments;
@@ -46,7 +46,7 @@ namespace Kelp.Test
 		It Should_ignore_unnecessary_escapes = () => arguments.ElementAt(9).ShouldEqual("He said: 'Hello'");
 	}
 
-	[Subject(typeof(Util))]
+	[Subject(typeof(Util)), Tags(Categories.Utilities)]
 	public class When_getting_assembly_date
 	{
 		private static DateTime assemblyDate;

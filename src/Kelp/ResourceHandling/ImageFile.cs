@@ -101,7 +101,7 @@ namespace Kelp.ResourceHandling
 		{
 			get
 			{
-				return string.Concat(absolutePath, filter.Query.ToString(true))
+				return string.Concat(absolutePath, filter.Query.ToString("?"))
 						.Replace('/', '_')
 						.Replace('\\', '_')
 						.Replace(':', '_')
