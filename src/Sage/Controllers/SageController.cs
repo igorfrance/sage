@@ -228,7 +228,25 @@ namespace Sage.Controllers
 			{
 				if (input != null && input.ConfigNode != null)
 				{
-					var inputResources = input.Resources.Where(r => r.IsValidFor(Context.UserAgentID)).ToList();
+					//// make sure resources are ordered properly:
+					////  1. by resource type (icon, style, script)
+					////  2. by project dependency
+					////  3. by module dependency
+					var installOrder = Project.InstallOrder;
+					var inputResources = input.Resources
+						.Where(r => r.IsValidFor(this.Context.UserAgentID))
+						.OrderBy((r1, r2) =>
+							{
+								if (r1.Type != r2.Type)
+									return r1.Type.CompareTo(r2.Type);
+
+								if (r1.ProjectId == r2.ProjectId)
+									return input.Resources.IndexOf(r1).CompareTo(input.Resources.IndexOf(r2));
+
+								return installOrder.IndexOf(r1.ProjectId).CompareTo(installOrder.IndexOf(r2.ProjectId));
+							})
+						.ToList();
+
 					if (inputResources.Count != 0)
 					{
 						XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);

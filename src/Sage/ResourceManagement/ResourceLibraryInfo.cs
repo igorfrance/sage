@@ -39,13 +39,15 @@ namespace Sage.ResourceManagement
 		private List<Regex> includePaths;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ResourceLibraryInfo"/> class.
+		/// Initializes a new instance of the <see cref="ResourceLibraryInfo" /> class.
 		/// </summary>
 		/// <param name="configElem">The configuration element that represents this resource library.</param>
-		public ResourceLibraryInfo(XmlElement configElem)
+		/// <param name="projectId">The identification string of the project this library belongs to.</param>
+		public ResourceLibraryInfo(XmlElement configElem, string projectId)
 		{
 			Contract.Requires<ArgumentNullException>(configElem != null);
 
+			this.ProjectId = projectId;
 			this.Parse(configElem);
 		}
 
@@ -58,6 +60,11 @@ namespace Sage.ResourceManagement
 		/// Gets a value indicating whether this library should be included on all views.
 		/// </summary>
 		public bool IncludeAlways { get; private set; }
+
+		/// <summary>
+		/// Gets the identification string of the project this library belongs to.
+		/// </summary>
+		public string ProjectId { get; private set; }
 
 		/// <summary>
 		/// Gets the resource that this library consists of.
@@ -86,7 +93,7 @@ namespace Sage.ResourceManagement
 			this.includePaths = new List<Regex>();
 
 			foreach (XmlElement resourceElem in element.SelectNodes("p:resources/p:resource", nm))
-				this.Resources.Add(new Resource(resourceElem));
+				this.Resources.Add(new Resource(resourceElem, this.ProjectId));
 
 			foreach (XmlElement dependencyElement in element.SelectNodes("p:dependencies/p:library", nm))
 				this.LibraryDependencies.Add(dependencyElement.GetAttribute("ref"));

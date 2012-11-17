@@ -17,11 +17,8 @@ namespace Sage.Modules
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Reflection;
 	using System.Xml;
-
-	using Sage.Configuration;
 
 	using log4net;
 
@@ -49,7 +46,7 @@ namespace Sage.Modules
 					{
 						lock (log)
 						{
-							var temp = DiscoverAvailableModules();
+							var temp = new Dictionary<string, ModuleConfiguration>();
 							foreach (ModuleConfiguration config in Project.Configuration.Modules.Values)
 							{
 								if (config.Type == null)
@@ -101,25 +98,25 @@ namespace Sage.Modules
 			return Modules[tagName];
 		}
 
-		private static Dictionary<string, ModuleConfiguration> DiscoverAvailableModules()
-		{
-			var types = new Dictionary<string, ModuleConfiguration>();
-			foreach (var asm in Project.RelevantAssemblies)
-			{
-				var modules = asm.GetTypes().Where(t => 
-					typeof(IModule).IsAssignableFrom(t) && !t.IsInterface && t != typeof(NullModule));
+		////private static Dictionary<string, ModuleConfiguration> DiscoverAvailableModules()
+		////{
+		////	var types = new Dictionary<string, ModuleConfiguration>();
+		////	foreach (var asm in Project.RelevantAssemblies)
+		////	{
+		////		var modules = asm.GetTypes().Where(t => 
+		////			typeof(IModule).IsAssignableFrom(t) && !t.IsInterface && t != typeof(NullModule));
 
-				foreach (var type in modules)
-				{
-					var config = new ModuleConfiguration(type);
-					foreach (string tagName in config.TagNames)
-					{
-						types.Add(tagName, config);
-					}
-				}
-			}
+		////		foreach (var type in modules)
+		////		{
+		////			var config = new ModuleConfiguration(type);
+		////			foreach (string tagName in config.TagNames)
+		////			{
+		////				types.Add(tagName, config);
+		////			}
+		////		}
+		////	}
 
-			return types;
-		}
+		////	return types;
+		////}
 	}
 }

@@ -192,6 +192,22 @@ namespace Sage
 	}
 
 	/// <summary>
+	/// Defines the project types.
+	/// </summary>
+	public enum ProjectType
+	{
+		/// <summary>
+		/// Represents the master project.
+		/// </summary>
+		Project = 0,
+
+		/// <summary>
+		/// Represents an extension project.
+		/// </summary>
+		Extension = 1,
+	}
+
+	/// <summary>
 	/// Specifies the possible sources of an XSLT view; where a view's style-sheet is loaded from.
 	/// </summary>
 	public enum ViewSource
@@ -317,9 +333,9 @@ namespace Sage
 		Undefined = 0,
 
 		/// <summary>
-		/// Indicates a script resource.
+		/// Indicates an icon resource (usually the <c>favicon.ico</c>)
 		/// </summary>
-		Script = 1,
+		Icon = 1,
 
 		/// <summary>
 		/// Indicates a style resource.
@@ -327,14 +343,14 @@ namespace Sage
 		Style = 2,
 
 		/// <summary>
-		/// Indicates an XML document resource.
+		/// Indicates a script resource.
 		/// </summary>
-		Document = 3,
+		Script = 3,
 
 		/// <summary>
-		/// Indicates an icon resource (usually the <c>favicon.ico</c>)
+		/// Indicates an XML document resource.
 		/// </summary>
-		Icon = 4,
+		Document = 4,
 	}
 
 	/// <summary>

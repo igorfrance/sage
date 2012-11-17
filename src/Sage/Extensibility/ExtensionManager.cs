@@ -29,6 +29,7 @@ namespace Sage.Extensibility
 	internal class ExtensionManager : List<ExtensionInfo>
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionManager).FullName);
+		private readonly List<string> installOrder = new List<string>();
 
 		public List<CacheableXmlDocument> GetDictionaries(SageContext context, string locale)
 		{

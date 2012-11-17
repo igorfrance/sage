@@ -55,6 +55,7 @@ namespace Sage
 		private static Exception initializationError;
 		private static ProblemInfo initializationProblemInfo;
 		private static List<Assembly> relevantAssemblies;
+		private static IList<string> installOrder;
 
 		/// <summary>
 		/// Gets the last modification date of the current assembly.
@@ -143,6 +144,14 @@ namespace Sage
 				}
 
 				return relevantAssemblies;
+			}
+		}
+
+		internal static IList<string> InstallOrder
+		{
+			get
+			{
+				return Project.installOrder;
 			}
 		}
 
@@ -438,6 +447,8 @@ namespace Sage
 				return;
 			}
 
+			installOrder = new List<string>();
+
 			if (File.Exists(systemConfigPath))
 				projectConfig.Parse(systemConfigPath);
 
@@ -501,10 +512,12 @@ namespace Sage
 
 					foreach (var extension in extensionManager)
 					{
+						installOrder.Add(extension.Config.Id);
 						Project.RelevantAssemblies.AddRange(extension.Assemblies);
 						projectConfig.RegisterExtension(extension.Config);
 					}
 
+					installOrder.Add(projectConfig.Id);
 					projectConfig.RegisterRoutes();
 					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
 				}
