@@ -25,7 +25,7 @@ namespace Sage.Extensibility
 	public class TextFunctionAttribute : Attribute
 	{
 		/// <summary>
-		/// Specifis the name of this function; <code>name();</code>
+		/// Specifies the name of this function; <code>name();</code>
 		/// </summary>
 		public string Name { get; set; }
 	}
