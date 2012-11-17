@@ -35,6 +35,7 @@ namespace Sage
 	/// </summary>
 	public class UrlGenerator
 	{
+		private static readonly char[] parameterSeparators = new[] { '&', ',' };
 		private static readonly Regex linkPlaceholder = new Regex(@"(?!>^|[^{])\{([^{}]+)\}(?!\})");
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlGenerator).FullName);
@@ -100,7 +101,7 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the dictionary of formmat strings.
+		/// Gets the dictionary of format strings.
 		/// </summary>
 		internal ReadOnlyDictionary<string, string> Formats
 		{
@@ -174,7 +175,7 @@ namespace Sage
 		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query"/>.</returns>
 		public string GetUrl(string linkName, string query, bool includeActiveQuery)
 		{
-			return this.FormatAndRewriteUrl(linkName, new QueryString(query), includeActiveQuery);
+			return this.FormatAndRewriteUrl(linkName, new QueryString(query, parameterSeparators), includeActiveQuery);
 		}
 
 		/// <summary>
@@ -236,7 +237,7 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Resolves a link href based on the attributes of the specified <paramref name="linkElement"/>.
+		/// Resolves a link <c>href</c> based on the attributes of the specified <paramref name="linkElement"/>.
 		/// </summary>
 		/// <param name="linkElement">The element that contains attributes that define the link to resolve.</param>
 		/// <returns>The URL from the configuration file, with values and encoding as specified by the element</returns>
@@ -370,12 +371,12 @@ namespace Sage
 
 				if (parameter.IndexOf("#", StringComparison.Ordinal) == 0)
 				{
-					tempQuery = new QueryString(parameter.Substring(1));
+					tempQuery = new QueryString(parameter.Substring(1), parameterSeparators);
 					hashQuery.Merge(tempQuery);
 				}
 				else 
 				{
-					tempQuery = new QueryString(parameter.Substring(1));
+					tempQuery = new QueryString(parameter.Substring(1), parameterSeparators);
 					paramQuery.Merge(tempQuery);
 				}
 			}
@@ -394,7 +395,7 @@ namespace Sage
 			if (currentUrl.Contains("?"))
 			{
 				var questionIndex = currentUrl.IndexOf("?", StringComparison.Ordinal);
-				paramQuery.Parse(currentUrl.Substring(questionIndex + 1));
+				paramQuery.Parse(currentUrl.Substring(questionIndex + 1), parameterSeparators);
 				currentUrl = currentUrl.Substring(0, questionIndex);
 			}
 
@@ -403,13 +404,13 @@ namespace Sage
 				QueryString tempQuery;
 				if (argument.IndexOf("?", StringComparison.Ordinal) == 0)
 				{
-					tempQuery = new QueryString(argument.Substring(1));
+					tempQuery = new QueryString(argument.Substring(1), parameterSeparators);
 					paramQuery.Merge(tempQuery);
 				}
 
 				if (argument.IndexOf("#", StringComparison.Ordinal) == 0)
 				{
-					tempQuery = new QueryString(argument.Substring(1));
+					tempQuery = new QueryString(argument.Substring(1), parameterSeparators);
 					hashQuery.Merge(tempQuery);
 				}
 			}
@@ -436,7 +437,7 @@ namespace Sage
 
 			string linkPattern = this.Links[linkName];
 
-			QueryString query = new QueryString(context.Query);
+			QueryString query = new QueryString(context.Query.ToString());
 			QueryString formatValues = new QueryString { { "locale", context.Locale }, { "category", context.Category } };
 			if (parameters != null)
 				formatValues.Merge(parameters);
