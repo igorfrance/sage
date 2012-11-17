@@ -26,5 +26,6 @@ namespace Sage.Test
 		public const string Configuration = "Configuration";
 		public const string ResourceManagement = "Resource Management";
 		public const string Extensibility = "Extensibility";
+		public const string TestBench = "TestBench";
 	}
 }
