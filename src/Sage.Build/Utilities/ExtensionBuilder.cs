@@ -184,7 +184,7 @@ namespace Sage.Build.Utilities
 		private static XmlDocument CreateExtensionConfigurationDocument(string extensionName)
 		{
 			XmlDocument result = new XmlDocument();
-			result.LoadXml(string.Format("<project xmlns='{0}' name='{1}'/>",
+			result.LoadXml(string.Format("<extension xmlns='{0}' name='{1}'/>",
 				XmlNamespaces.ProjectConfigurationNamespace, extensionName));
 
 			return result;
