@@ -18,7 +18,6 @@ namespace Sage.Configuration
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Xml;
 
@@ -27,7 +26,7 @@ namespace Sage.Configuration
 	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
-	/// Provides environment configuration options, such as ip address ranges.
+	/// Provides environment configuration options, such as IP address ranges.
 	/// </summary>
 	public class EnvironmentConfiguration : IXmlConvertible
 	{
@@ -91,8 +90,6 @@ namespace Sage.Configuration
 		/// <inheritdoc/>
 		public void Parse(XmlElement configuration)
 		{
-			Contract.Requires<ArgumentNullException>(configuration != null);
-
 			foreach (XmlElement element in configuration.SelectNodes("p:addresses/p:developers/p:ip", XmlNamespaces.Manager))
 			{
 				if (element.GetAttribute("address") == "*")
