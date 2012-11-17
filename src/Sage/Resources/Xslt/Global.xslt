@@ -71,7 +71,7 @@
 
 	<xsl:template match="xhtml:head">
 		<xsl:variable name="styles" select="$response/sage:resources/sage:head/xhtml:link | xhtml:link"/>
-		<xsl:variable name="scripts" select="xhtml:script | $response/sage:resources/sage:head/xhtml:script"/>
+		<xsl:variable name="scripts" select="$response/sage:resources/sage:head/xhtml:script | xhtml:script"/>
 		<head>
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="node()[local-name() != 'script' and local-name() != 'link']"/>
