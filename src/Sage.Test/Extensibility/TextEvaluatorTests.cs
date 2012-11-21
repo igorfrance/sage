@@ -152,4 +152,20 @@ namespace Sage.Test.Extensibility
 			return "coconut";
 		}
 	}
+
+	[Subject(typeof(TextEvaluator)), Tags(Categories.Extensibility)]
+	public class When_extracting_parameters
+	{
+		It Should_select_the_matching_entry_if_index_is_within_bounds = () =>
+			TextEvaluator.ExtractParameter(new[] { "A", "B", "C" }, 2).ShouldEqual("C");
+
+		It Should_return_null_if_index_is_less_than_length_of_parameters = () =>
+			TextEvaluator.ExtractParameter(new[] { "A", "B", "C" }, -2).ShouldBeNull();
+
+		It Should_return_null_if_index_is_greater_than_length_of_parameters = () =>
+			TextEvaluator.ExtractParameter(new[] { "A", "B", "C" }, 7).ShouldBeNull();
+		
+		It Should_return_default_value_if_index_is_outside_of_bounds = () =>
+			TextEvaluator.ExtractParameter(new[] { "A", "B", "C" }, 7, "XYZ").ShouldEqual("XYZ");
+	}
 }
