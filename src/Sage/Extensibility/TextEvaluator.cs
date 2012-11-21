@@ -30,6 +30,8 @@ namespace Sage.Extensibility
 	/// </summary>
 	public class TextEvaluator
 	{
+		//// TODO: Introduce strict namespaces on functions and variables
+		//// TODO: Support registration of variables with just the namespace, and no name (ns:*)
 		private const string Undefined = "undefined";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TextEvaluator).FullName);
@@ -106,6 +108,23 @@ namespace Sage.Extensibility
 			{
 				return variables.Keys;
 			}
+		}
+
+		/// <summary>
+		/// Gets the entry with the specified <paramref name="index"/> from the specified <paramref name="parameters"/> list.
+		/// </summary>
+		/// <param name="parameters">The list parameters.</param>
+		/// <param name="index">The index.</param>
+		/// <param name="defaultValue">The default value.</param>
+		/// <returns>The entry with the specified <paramref name="index"/> from the specified <paramref name="parameters"/> list,
+		/// or the <paramref name="defaultValue"/> if index is outside of parameters bounds.</returns>
+		public static string ExtractParameter(IEnumerable<string> parameters, int index, string defaultValue = null)
+		{
+			var enumerable = parameters as string[] ?? parameters.ToArray();
+			if (parameters == null || index < 0 || index > enumerable.Count() - 1)
+				return defaultValue;
+
+			return enumerable.ElementAt(index);
 		}
 
 		/// <summary>
