@@ -22,6 +22,119 @@
 				</header>
 				<article>
 
+					<summary>
+						<dfn>
+							<span class="accent">Text functions</span> are registered names that can be used as functions in <a href="${url:link(text-expressions)}">text expressions</a> to generate dynamic values. They are implemented by delegate methods that are invoked during text processing when the associated placeholder string is matched.
+						</dfn>
+					</summary>
+
+					<section class="topic">
+						<header>Placeholder patern</header>
+						<article>
+							<ul class="notes indent">
+								<li>
+									A valid placeholder is <code>\${str:toUpper(var:first)}</code>
+								</li>
+								<li>
+									Arguments are not limited to static valus only; they can be <a href="${url:link(extensibility-text-variables)}">text variables</a>, as well as other functions.
+								</li>
+								<li>
+									Quotation marks around string arguments are <span class="accent">optional</span>; you can use both single and double quotes, but you can also omit them. One case where you would have to use quotes is when you want to preserve white-space; for instance: <code>\${str:join(' ', Hello, World!)}</code>
+								</li>
+								<li>
+									Using a function that doesn't exist yields the string <code>undefined</code>.
+								</li>
+								<li>
+									To escape a text expression, prefix it with a backslash: <code>\\${str:trim(var:first)}</code>
+								</li>
+							</ul>
+						</article>
+					</section>
+
+					<section class="topic">
+						<header>Delegate signature</header>
+						<article>
+							<p>
+								The text function delegate is invoked with an instance of <code>SageContext</code>, containing all the necessary context information about the current project, request etc; and a variable-length array of arguments that were used in the function call.
+							</p>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											XmlNode|SageContext
+										</mod:group>
+										<mod:group name="delegate">
+											TextVariable
+										</mod:group>
+									</mod:keywords>
+									<mod:code>
+
+										delegate string TextFunction(SageContext context, params string[] arguments);
+
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+						</article>
+					</section>
+
+					<section class="topic">
+						<header>Delegate registration</header>
+						<article>
+							<p>
+								To enable Sage to discover the designated text function delegate, it needs to be decorated by the <code>TextFunction</code> attribute. The <code>TextFunctionAttribute</code> constructor takes a single arguments, the name of the function that the delegate should be registered for.
+							</p>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											TextFunction|SageContext
+										</mod:group>
+									</mod:keywords>
+									<mod:code>
+
+										[TextFunction(Name = "url:link")]
+										internal static string GetLinkFunction(SageContext context, params string[] parameters)
+										{
+											//// ...
+										}
+
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+							<p>
+								NOTE: The designated method <span class="accent">must be static</span> in order to be used.
+							</p>
+						</article>
+					</section>
+
+					<section class="topic">
+						<header>Text functions provided by Sage</header>
+						<article>
+							<p>
+								The following table lists all text functions provided by Sage out of the box.
+							</p>
+							<table class="definition">
+								<colgroup>
+									<col width="300"/>
+									<col/>
+								</colgroup>
+								<tr valign="top">
+									<th><code>url:link(linkId, [parameters], [hash])</code></th>
+									<td>
+										Returns a <a href="${url:link(linking)}">fully resolved link</a>, as configured in the <a href="${url:link(configuration-project-linking)}">linking configuration</a>, using the specified query string parameters and hash if supplied.
+									</td>
+								</tr>
+								<tr valign="top">
+									<th><code>url:self([parameters], [hash])</code></th>
+									<td>
+										Returns the current url, using the specified query string parameters and hash if supplied.
+									</td>
+								</tr>
+							</table>
+						</article>
+					</section>
 
 				</article>
 			</section>
