@@ -402,9 +402,14 @@ namespace Sage.Configuration
 			if (!this.ValidationResult.Success)
 				return;
 
-			this.Type = (ProjectType) Enum.Parse(typeof(ProjectType), configNode.Name, true);
+			var nm = XmlNamespaces.Manager;
+			var packageElement = configNode.SelectSingleNode("p:package", nm);
 
-			XmlNamespaceManager nm = XmlNamespaces.Manager;
+			this.Type = (ProjectType) Enum.Parse(typeof(ProjectType), configNode.Name, true);
+			if (this.Type == ProjectType.Project && packageElement != null)
+			{
+				this.Type = ProjectType.ExtensionProject;
+			}
 
 			foreach (XmlElement child in configNode.SelectNodes(
 				string.Format("*[namespace-uri() != '{0}']", XmlNamespaces.ProjectConfigurationNamespace)))
@@ -559,7 +564,7 @@ namespace Sage.Configuration
 				this.MetaViews[name] = info;
 			}
 
-			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));
+			this.Package = new PackageConfiguration(packageElement);
 
 			if (this.Changed != null)
 				this.Changed(this, EventArgs.Empty);

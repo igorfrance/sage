@@ -204,7 +204,12 @@ namespace Sage
 		/// <summary>
 		/// Represents an extension project.
 		/// </summary>
-		Extension = 1,
+		ExtensionProject = 1,
+
+		/// <summary>
+		/// Represents a packaged extension.
+		/// </summary>
+		Extension = 2,
 	}
 
 	/// <summary>
