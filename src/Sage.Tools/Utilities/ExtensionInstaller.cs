@@ -1,4 +1,4 @@
-﻿namespace Sage.Build.Utilities
+﻿namespace Sage.Tools.Utilities
 {
 	using System;
 	using System.Collections.Generic;

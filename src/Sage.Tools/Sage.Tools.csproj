@@ -8,8 +8,8 @@
     <ProjectGuid>{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sage.Build</RootNamespace>
-    <AssemblyName>Sage.Build</AssemblyName>
+    <RootNamespace>Sage.Tools</RootNamespace>
+    <AssemblyName>Sage.Tools</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -40,7 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Sage.Build.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Sage.Tools.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -55,7 +55,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\Sage.Build.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Sage.Tools.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

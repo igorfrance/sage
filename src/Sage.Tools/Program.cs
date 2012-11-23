@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Sage.Build
+namespace Sage.Tools
 {
 	using System;
 	using System.Collections.Generic;
@@ -27,8 +27,8 @@ namespace Sage.Build
 	using Kelp.Extensions;
 	using Kelp.HttpMock;
 
-	using Sage.Build.Utilities;
 	using Sage.Configuration;
+	using Sage.Tools.Utilities;
 
 	internal class Program
 	{

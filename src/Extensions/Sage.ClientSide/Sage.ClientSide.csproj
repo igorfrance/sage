@@ -219,7 +219,7 @@
       <Project>{aa487e40-4f39-46bf-a8fd-e15a146f32ba}</Project>
       <Name>Kelp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Sage.Build\Sage.Build.csproj">
+    <ProjectReference Include="..\..\Sage.Tools\Sage.Tools.csproj">
       <Project>{41ea3eca-f83d-4cc3-812b-1b10c96f3a1f}</Project>
       <Name>Sage.Build</Name>
     </ProjectReference>
