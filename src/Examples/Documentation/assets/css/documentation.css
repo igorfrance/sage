@@ -1,7 +1,7 @@
 ﻿@import url(gradients.css);
 
 body
-	{ background: #fff; color: #4f4f4f; font-size: 14px; font-family: Century Gothic, Verdana, Sans-Serif; }
+	{ background: #fff; color: #4f4f4f; font-size: .93em; font-family: Century Gothic, Verdana, Sans-Serif; }
 a,
 a code,
 a:visited
@@ -83,7 +83,7 @@ h5.section
 h5.caption
 	{ font-size: 100%; font-weight: normal; border-bottom: 1px solid #ddd; margin: 40px 0 5px 0; overflow: hidden; }
 h6.caption
-	{ font-size: 100%; font-weight: normal; border-bottom: 1px solid #ddd; margin: 20px 0 5px 0; overflow: hidden; }
+	{ font-size: 85%; font-weight: normal; border-bottom: 1px solid #ddd; margin: 20px 0 5px 0; overflow: hidden; }
 
 h5.remarks
 	{ font-size: 90%; font-weight: bold; color: #000; margin-bottom: 5px; text-decoration: underline; overflow: hidden; }
@@ -122,18 +122,23 @@ dfn
 code, pre
 	{ color: #000; font-size: 95%; font-family: Consolas, Courier; }
 
+span.accent
+	{ color: #000; }
+
 code.example,
 pre.example
 	{ display: block; margin: 10px 0 10px  40px; }
 code.important
 	{ display: inline-block; padding: 2px; background: #efefef; border: 1px solid #ccc; }
 code.accent
-	{ display: inline-block; background: #f2f2ff; padding: 2px; font-style: italic; }
+	{ display: inline-block; background: #f2f2ff; padding: 2px; }
 code.principal
 	{ display: inline-block; margin: 5px 0; padding: 5px 10px; background: #efefef; border: 1px solid #E6E6E6;
 	  border-radius: 3px; }
 code.principal code.accent
-	{ background: transparent; padding: 0px; text-decoration: underline; }
+	{ background: transparent; padding: 0px; font-weight: bold; background: #ddd; font-size: 100%; }
+br + code.principal
+	{ margin-top: 0; }
 
 dl
 	{}
@@ -184,6 +189,11 @@ ul.notes
 	{ padding-left: 0; }
 ul.notes > li
 	{ background: url(../images/sagebullet.png) no-repeat 0 1px; padding-left: 20px; margin-bottom: 1px; }
+
+ul.bulleted
+	{ padding-left: 20px; }
+ul.bulleted > li
+	{ background: url(../images/bullet.png) no-repeat 0px 8px; padding-left: 12px; margin-bottom: 0px; }
 
 
 
@@ -236,9 +246,9 @@ table.definition td
 table.definition thead th
 	{ background: #ccc; padding: 5px 2px 0 1px; }
 table.definition tbody th
-	{ text-align: right; padding-left: 20px; padding-right: 5px; color: #000; font-weight: normal; vertical-align: top; }
+	{ padding-left: 20px; padding-right: 5px; color: #000; font-weight: normal; vertical-align: top; }
 table.definition tbody th.right
-	{ text-align: right; }
+	{ float: none; text-align: right; }
 
 .section
 	{ margin-top: 30px; }
@@ -256,33 +266,33 @@ table.definition tbody th.right
 /**
  * generic
  */
-.block
+.page .block
 	{ display: block; }
-.left
+.page .left
 	{ float: left; }
-.right
+.page .right
 	{ float: right; }
-.clear
+.page .clear
 	{ clear: both; }
-.small
+.page .small
 	{ font-size: 85%; }
-.center
+.page .center
 	{ text-align: center; }
-.indent
+.page .indent
 	{ margin-left: 16px; }
-.indent2
+.page .indent2
 	{ margin-left: 32px; }
-.valign
+.page .valign
 	{ width: 100%; height: 100%; display: table; }
-.vcell
+.page .vcell
 	{ width: 100%; height: 100%; display: table-cell; vertical-align: middle; }
-.nowrap
+.page .nowrap
 	{ white-space: nowrap; }
-.marginframe
+.page .marginframe
 	{ margin: 20px 0; }
-.error
-	{ color: red; font-weight: bold; }
-.todo
+.page .error
+	{ co2lor: red; font-we2ight: bold; }
+.page .todo
 	{ color: #c00; font-size: 120%; display: block; border: 1px solid #c00; border-width: 1px 0; background: #ffdddd;
 	  padding: 3px 0; text-decoration: underline; }
 
@@ -432,13 +442,22 @@ html.dashboard .view-inspector .contenttoolbar {
  * Syntaxbox
  */
 .syntaxbox
-	{ margin-bottom: 20px; }
+	{ margin-bottom: 20px; font-size: 90%; }
 
 /**
  * Xmltree
  */
 .xmltree + *
 	{ margin-top: 20px; }
+.xmltree,
+.xmltree pre
+	{ font-size: 90%; }
+.xmlroot .attrValue
+	{ font-weight: normal;  }
+.xmlroot .element.ce > .children
+	{ margin-left: 20px; }
+.xmlroot.wrap .element.ce > .children > .close
+	{ margin-left: -20px; }
 
 /**
  * moreinfo section
@@ -485,7 +504,15 @@ section.content > article
 section.content > article > summary
 	{ display: block; font-size: 105%; margin-bottom: 15px; }
 section.content > article > summary dfn
-	{ padding: 15px; background: #CCDCFF; border-radius: 3px; margin: 0 0 20px 0; }
+	{ padding: 10px; bord2er-radius: 3px; margin: 0 0 20px 0; border: 3px solid #ccc; }
+section.content > article > summary dfn p
+	{ margin: 0; }
+section.content > article > summary dfn p + p
+	{ margin-top: 15px; }
+section.content > article > summary dfn dt
+	{ margin: 0; }
+section.content > article > summary dfn dd
+	{ margin-left: 20px; }
 
 
 /**
@@ -512,11 +539,9 @@ section.topic > article > summary
 
 
 section.howitworks
-	{	margin-bottom: 30px; }
+	{	padding-left: 0; margin-top: 30px; }
 section.howitworks > header
-	{ text-align: right; font-style: italic; color: #0080c0; font-size: 150%; font-weight: normal;
-	  border-bottom: 1px solid #0080c0; margin: 60px 10px 20px 0; padding-right: 10px;
-		text-shadow: 1px 1px 3px #919191; }
+	{ color: #000; font-style: italic; margin-bottom: 5px; border-bottom: 1px solid #ddd; }
 
 
 /**
@@ -570,6 +595,29 @@ section.element + section.element
 	{ margin-top: 20px; }
 
 /**
+ * function section
+ */
+section.function > header
+	{ padding: 15px; background: #ededed; border-radius: 5px; margin: 20px 0;
+	  font-size: 100%; font-weight: bold; margin: 0; overflow: hidden; color: #24477b; }
+section.function > header h5
+	{ font-size: 90%; font-weight: bold; margin: 0; overflow: hidden; color: #24477b; }
+section.function > article
+	{ display: block; margin-left: 20px; padding-left: 10px; border-left: 1px solid #eee;
+	  background: url(../images/line.png) no-repeat left bottom; }
+section.function > article .sectionblock p
+	{ margin-bottom: 0; }
+section.function > article p + *
+	{ margin-top: 15px; }
+section.function > article > summary
+	{ display: block; margin: 5px 0 5px -17px; padding-bottom: 12px; background: #fff; }
+section.function ul.properties
+	{ padding: 0; }
+
+section.function + section.function
+	{ margin-top: 20px; }
+
+/**
  * properties section
  */
 section.properties
@@ -615,6 +663,16 @@ section.properties.example > article > summary
  */
 section.properties.children
 	{ padding-bottom: 0; }
+
+/**
+ * notes section
+ */
+section.notes
+	{ margin: 20px; font-size: 85%;}
+section.notes > article
+	{ padding: 5px 10px; }
+section.notes > article ul
+	{ margin: 0; }
 
 /**
  * flow section

@@ -116,7 +116,7 @@
 						<header>Sage Node handlers</header>
 						<article>
 							<summary>
-								Reference to the node handlers provided by Sage:
+								List of node handlers provided by Sage:
 							</summary>
 							<table class="definition">
 								<colgroup>
@@ -144,6 +144,12 @@
 										</td>
 									</tr>
 									<tr valign="top">
+										<th><a href="${url:link(sage-namespaces-sage,#attrib-attribute)}"><code>&lt;sage:basehref/&gt;</code></a></th>
+										<td>
+											Replaces the element with html <code>base</code> element, and sets it's <code>href</code> attribute to the current base href (server name + application path, eg: <code>http://www.myserver.com/myapp/</code>.
+										</td>
+									</tr>
+									<tr valign="top">
 										<th><a href="${url:link(sage-namespaces-contextualization,#switch-element)}"><code>&lt;context:switch/&gt;</code></a></th>
 										<td>Context switch element</td>
 									</tr>
@@ -158,12 +164,6 @@
 									<tr valign="top">
 										<th><code>&lt;xhtml:body/&gt;</code></th>
 										<td>XHTML body element</td>
-									</tr>
-									<tr valign="top">
-										<th><a href="${url:link(sage-namespaces-sage,#attrib-attribute)}"><code>@sage:attrib</code></a></th>
-										<td>
-										This universal attribute is used to instruct Sage to generate the value of another attribute. The value of the attribute is.
-										</td>
 									</tr>
 								</tbody>
 							</table>

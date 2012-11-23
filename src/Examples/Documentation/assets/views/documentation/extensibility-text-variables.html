@@ -23,34 +23,34 @@
 				<article>
 
 					<summary>
-						Sage text handlers are registered delegates that are invoked during the
-						<a href="${url:link(xml-flow-copy-tree)}">contextualization step</a> when tree processing matches the registered
-						text variable in either text nodes or attribute values.
+						<dfn>
+							<span class="accent">Text variables</span> are registered names that can be used in <a href="${url:link(text-expressions)}">text expressions</a> to generate dynamic values. They are implemented by delegate methods that are invoked during text processing when the associated placeholder string is matched.
+						</dfn>
 					</summary>
 
 					<section class="topic">
+						<header>Placeholder patern</header>
 						<article>
-							<p>
-								As each element, attribute and text node in an XML document are processed, their text is sought
-								for placeholders for registered variables and the matches are replaces by invoking their corresponding
-								Text handler delegate.
-							</p>
-
 							<ul class="notes indent">
 								<li>
-									A valid placeholder is both:
-									<code class="important">${variable}</code> and <code class="important">{variable}</code>
+									For standalone variables, a valid placeholder is both <code>\${var:varname}</code> and <code>\${varname}</code>
 								</li>
 								<li>
-									To escape a registered variable name, use double quotes around the variable name:
-									<code class="important">{{{assetpath}}}</code>
+									Within complex expressions, the <code>var:</code> prefix is mandatory: <code>\${str:join(',', var:first, var:second, var:third}</code>
 								</li>
 								<li>
-									Variable names are case-insensitive.
+									To escape a text expression, prefix it with a backslash: <code>\\${var:varname}</code>
 								</li>
 							</ul>
+						</article>
+					</section>
 
-							<h6 class="caption">Text handler signature</h6>
+					<section class="topic">
+						<header>Delegate signature</header>
+						<article>
+							<p>
+								The text variable delegate is invoked with an instance of <code>SageContext</code>, containing all the necessary context information about the current project, request etc; and <code>variableName</code>, the  name of the variable that was matched - this enables reusing the same function for multiple variables. The string that this function returns is the value that will be used to replace the variable placeholder with.
+							</p>
 							<mod:SyntaxHighlighter>
 								<mod:config>
 									<mod:language>csharp</mod:language>
@@ -58,37 +58,13 @@
 										<mod:group name="type">
 											XmlNode|SageContext
 										</mod:group>
-									</mod:keywords>
-									<mod:code>
-
-										delegate string TextHandler(string variableName, SageContext context);
-
-									</mod:code>
-								</mod:config>
-							</mod:SyntaxHighlighter>
-
-							<h6 class="caption">TextHandler delegate implementation and registration</h6>
-							<mod:SyntaxHighlighter>
-								<mod:config>
-									<mod:language>csharp</mod:language>
-									<mod:keywords>
-										<mod:group name="type">
-											TextHandler|SageContext|XmlNode
-										</mod:group>
-										<mod:group name="enum">
-											XmlNodeType
-										</mod:group>
-										<mod:group name="value">
-											Element
+										<mod:group name="delegate">
+											TextVariable
 										</mod:group>
 									</mod:keywords>
 									<mod:code>
 
-										[TextHandler("assetpath", "sharedassetpath", "modulepath")]
-										internal static string ResolveVariable(string variable, SageContext context)
-										{
-											//// ...
-										}
+										delegate string TextVariable(SageContext context, string variableName);
 
 									</mod:code>
 								</mod:config>
@@ -97,46 +73,79 @@
 					</section>
 
 					<section class="topic">
-						<header>Text handlers provided by Sage</header>
+						<header>Delegate registration</header>
 						<article>
+							<p>
+								To enable Sage to discover the designated text variable delegate, it needs to be decorated by the <code>TextVariable</code> attribute. The <code>TextVariableAttribute</code> constructor takes a variable number of string arguments, each specifying the name of one variable for which this method is being registered. In the following example, the <code>GetContextVariable</code> method is registered to handle <code>assetpath</code>, <code>sharedassetpath</code> and <code>modulepath</code> variables.
+							</p>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											TextVariable|SageContext
+										</mod:group>
+									</mod:keywords>
+									<mod:code>
+
+										[TextVariable("assetpath", "sharedassetpath", "modulepath")]
+										internal static string ResolvePathVariable(SageContext context, string variableName)
+										{
+											//// ...
+										}
+
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+							<p>
+								NOTE: The designated method <span class="accent">must be static</span> in order to be used.
+							</p>
+						</article>
+					</section>
+
+					<section class="topic">
+						<header>Text variables provided by Sage</header>
+						<article>
+							<p>
+								The following table lists all text variables provided by Sage out of the box. Hover above variable names to reveal their values in the current application.
+							</p>
 							<table class="definition">
 								<colgroup>
 									<col width="160"/>
 									<col/>
 								</colgroup>
 								<tr valign="top">
-									<th><code>{{assetpath}}</code></th>
+									<th class="right" title="${assetpath}"><code>\${assetpath}</code></th>
 									<td>
-										Inserts the web-relative resolved value of the asset path configuration property. See <a href="${url:link(configuration-project-paths)}">paths (project configuration)</a>.
+										Inserts the fully resolved, web-relative value of the <a href="${url:link(configuration-project-paths)}">asset path</a> configuration property.
 									</td>
 								</tr>
 								<tr valign="top">
-									<th><code>{{sharedassetpath}}</code></th>
+									<th class="right" title="${sharedassetpath}"><code>\${sharedassetpath}</code></th>
 									<td>
-										Inserts the web-relative resolved value of the shared asset path configuration property. See
-										<a href="${url:link(configuration-project)}">project configuration</a> and <a href="${url:link(configuration-project-paths)}">paths (project configuration)</a>.
+										Inserts the fully resolved, web-relative value of the <a href="${url:link(configuration-project-paths)}">shared asset path</a> configuration property.
 									</td>
 								</tr>
 								<tr valign="top">
-									<th><code>{{modulepath}}</code></th>
+									<th class="right" title="${modulepath}"><code>\${modulepath}</code></th>
 									<td>
-										Inserts the web-relative resolved value of the module path configuration property. See <a href="${url:link(configuration-project-paths)}">paths (project configuration)</a>.
+										Inserts the fully resolved, web-relative value of the <a href="${url:link(configuration-project-paths)}">module path</a> configuration property.
 									</td>
 								</tr>
 								<tr valign="top">
-									<th><code>{{basehref}}</code></th>
+									<th class="right" title="${basehref}"><code>\${basehref}</code></th>
 									<td>
-										Inserts the fully qualified URL of the current web application. For example: 'http//sage.cycle99.com'.
+										Inserts the fully qualified URL of the current web application. For example: <code>http//sage.cycle99.com</code>
 									</td>
 								</tr>
 								<tr valign="top">
-									<th><code>{{locale}}</code></th>
+									<th class="right" title="${locale}"><code>\${locale}</code></th>
 									<td>
 										Inserts the name of the current locale.
 									</td>
 								</tr>
 								<tr valign="top">
-									<th><code>{{category}}</code></th>
+									<th class="right" title="${category}"><code>\${category}</code></th>
 									<td>
 										Inserts the name of the current category.
 									</td>

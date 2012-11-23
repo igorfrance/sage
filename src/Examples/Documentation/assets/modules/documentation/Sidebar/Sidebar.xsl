@@ -148,12 +148,12 @@
 		<xsl:variable name="currentHref" select="normalize-space($config/mod:current/text())"/>
 		<xsl:variable name="currentLink" select="$navigation//x:a[@href=$currentHref]"/>
 
-		<xsl:variable name="headers" select="//xhtml:*[@data-index]"/>
+		<xsl:variable name="headers" select="//xhtml:*[@data-index='yes']"/>
 		<xsl:choose>
 			<xsl:when test="count($headers)">
 				<section class="pageindex">
 					<header>
-						Page index
+						On this page
 					</header>
 					<article>
 						<ul>
@@ -161,7 +161,8 @@
 								<xsl:variable name="headerid">
 									<xsl:apply-templates select="." mode="page-index-generate-id"/>
 								</xsl:variable>
-								<li class="level{basic:isnull(@data-level, 1)}">
+								<xsl:variable name="level" select="basic:isnull(@data-level, count(ancestor-or-self::*[@data-index='yes']))"/>
+								<li class="level{$level}">
 									<a href="{concat($request/sage:address/@url, '#', $headerid)}">
 										<xsl:choose>
 											<xsl:when test="@data-text">
