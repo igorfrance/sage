@@ -45,6 +45,74 @@ namespace Kelp.Extensions
 		public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> list, Comparison<T> comparison)
 		{
 			return list.OrderBy(t => t, new ComparisonComparer<T>(comparison));
-		}		
+		}
+
+		/// <summary>
+		/// Executes the specified <paramref name="action"/> on each item in the <paramref name="list"/>.
+		/// </summary>
+		/// <typeparam name="T">The underlying list type</typeparam>
+		/// <param name="list">The list to operate on.</param>
+		/// <param name="action">The action to execute.</param>
+		/// <returns>A copy of the original list.</returns>
+		public static IEnumerable<T> Each<T>(this IEnumerable<T> list, Action<T> action)
+		{
+			var result = list as T[] ?? list.ToArray();
+			var array = list as T[] ?? result.ToArray();
+			foreach (T item in array)
+				action(item);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Executes the specified <paramref name="action"/> on each item in the <paramref name="list"/>, passing it the item index.
+		/// </summary>
+		/// <typeparam name="T">The underlying list type</typeparam>
+		/// <param name="list">The list to operate on.</param>
+		/// <param name="action">The action to execute.</param>
+		/// <returns>A copy of the original list.</returns>
+		public static IEnumerable<T> Each<T>(this IEnumerable<T> list, Action<T, int> action)
+		{
+			var result = list as T[] ?? list.ToArray();
+			var array = list as T[] ?? result.ToArray();
+			for (int i = 0; i < array.Length; i++)
+				action(array[i], i);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Executes the specified <paramref name="function"/> on each item in the <paramref name="list"/>, and
+		/// replaces the original item with the result of that function.
+		/// </summary>
+		/// <typeparam name="T">The underlying list type</typeparam>
+		/// <param name="list">The list to operate on.</param>
+		/// <param name="function">The function to execute.</param>
+		/// <returns>The modified list.</returns>
+		public static IEnumerable<T> Each<T>(this IEnumerable<T> list, Func<T, T> function)
+		{
+			var array = list as T[] ?? list.ToArray();
+			for (int i = 0; i < array.Length; i++)
+				array[i] = function(array[i]);
+
+			return array;
+		}
+
+		/// <summary>
+		/// Executes the specified <paramref name="function"/> on each item in the <paramref name="list"/>, passing it the item index, and
+		/// replaces the original item with the result of that function.
+		/// </summary>
+		/// <typeparam name="T">The underlying list type</typeparam>
+		/// <param name="list">The list to operate on.</param>
+		/// <param name="function">The function to execute.</param>
+		/// <returns>The modified list.</returns>
+		public static IEnumerable<T> Each<T>(this IEnumerable<T> list, Func<T, int, T> function)
+		{
+			var array = list as T[] ?? list.ToArray();
+			for (int i = 0; i < array.Length; i++)
+				array[i] = function(array[i], i);
+
+			return array;
+		}
 	}
 }
