@@ -29,7 +29,6 @@ namespace Sage.Extensibility
 	internal class ExtensionManager : List<ExtensionInfo>
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionManager).FullName);
-		private readonly List<string> installOrder = new List<string>();
 
 		public List<CacheableXmlDocument> GetDictionaries(SageContext context, string locale)
 		{
@@ -144,7 +143,7 @@ namespace Sage.Extensibility
 			}
 		}
 
-		private static IEnumerable<ExtensionInfo> OrderByDependency(IEnumerable<ExtensionInfo> items)
+		internal static IEnumerable<ExtensionInfo> OrderByDependency(IEnumerable<ExtensionInfo> items)
 		{
 			List<ExtensionInfo> ordered = new List<ExtensionInfo>(items);
 
