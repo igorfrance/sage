@@ -19,6 +19,7 @@ namespace Sage
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Xml;
@@ -35,6 +36,7 @@ namespace Sage
 	/// </summary>
 	public class UrlGenerator
 	{
+		private static readonly char[] parameterSeparators = new[] { '&', ';' };
 		private static readonly Regex linkPlaceholder = new Regex(@"(?!>^|[^{])\{([^{}]+)\}(?!\})");
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(UrlGenerator).FullName);
@@ -81,13 +83,22 @@ namespace Sage
 		/// <summary>
 		/// Gets the full url of the current request (taking any rewriting into account).
 		/// </summary>
-		/// <returns></returns>
 		public string RawUrl
 		{
 			get
 			{
-				string pathAndQuery = context.Request.ServerVariables["HTTP_X_REWRITE_URL"] ?? context.Request.RawUrl;
-				return string.Concat(ServerPrefix, pathAndQuery);
+				return string.Concat(this.ServerPrefix, this.RawPathAndQuery);
+			}
+		}
+
+		/// <summary>
+		/// Gets the path-and-query part of current URL (taking any rewriting into account).
+		/// </summary>
+		public string RawPathAndQuery
+		{
+			get
+			{
+				return context.Request.ServerVariables["HTTP_X_REWRITE_URL"] ?? context.Request.RawUrl;
 			}
 		}
 
@@ -100,7 +111,7 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the dictionary of formmat strings.
+		/// Gets the dictionary of format strings.
 		/// </summary>
 		internal ReadOnlyDictionary<string, string> Formats
 		{
@@ -108,60 +119,16 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the link with the specified link name.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <returns>The URL with the specified name.</returns>
-		public string GetUrl(string linkName)
-		{
-			return this.GetUrl(linkName, false);
-		}
-
-		/// <summary>
-		/// Gets the link with the specified link name.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <param name="includeActiveQuery">If set to <c>true</c>, the resulting URL will include the query string from
-		/// the active <see cref="SageContext"/>.</param>
-		/// <returns>The URL with the specified name.</returns>
-		public string GetUrl(string linkName, bool includeActiveQuery)
-		{
-			return this.FormatAndRewriteUrl(linkName, null, includeActiveQuery);
-		}
-
-		/// <summary>
-		/// Generates the specified link, using the name/value pairs from the specified <paramref name="query"/> to format it.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <param name="query">The query to use for formatting the link.</param>
-		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query"/>.</returns>
-		public string GetUrl(string linkName, NameValueCollection query)
-		{
-			return this.GetUrl(linkName, query, false);
-		}
-
-		/// <summary>
-		/// Generates the specified link, using the name/value pairs from the specified <paramref name="query"/> to format it.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <param name="query">The query to use for formatting the link.</param>
-		/// <param name="includeActiveQuery">If set to <c>true</c>, the resulting link will include the query string from
-		/// the active <see cref="SageContext"/>.</param>
-		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query"/>.</returns>
-		public string GetUrl(string linkName, NameValueCollection query, bool includeActiveQuery)
-		{
-			return this.FormatAndRewriteUrl(linkName, query, includeActiveQuery);
-		}
-
-		/// <summary>
-		/// Generates the specified link, using the name/value pairs from the specified <paramref name="query"/> to format it.
+		/// Generates the specified link, using the name/value pairs from the specified <paramref name="query" /> to format it.
 		/// </summary>
 		/// <param name="linkName">The name of the link to generate.</param>
 		/// <param name="query">The query to use for formatting the link.</param>
-		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query"/>.</returns>
-		public string GetUrl(string linkName, string query)
+		/// <param name="hashString">The browser hash string to append to the end of the URL.</param>
+		/// <param name="qualify">If set to <c>true</c> the resulting URL will be prefixed with <see cref="ServerPrefix"/>.</param>
+		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query" />.</returns>
+		public string GetUrl(string linkName, string query, string hashString = null, bool qualify = false)
 		{
-			return this.GetUrl(linkName, query, false);
+			return this.GetUrl(linkName, new QueryString(query, parameterSeparators), hashString, qualify);
 		}
 
 		/// <summary>
@@ -169,74 +136,16 @@ namespace Sage
 		/// </summary>
 		/// <param name="linkName">The name of the link to get.</param>
 		/// <param name="query">The query to use for formatting the link.</param>
-		/// <param name="includeActiveQuery">If set to <c>true</c>, the resulting link will include the query string from
-		/// the active <see cref="SageContext"/>.</param>
+		/// <param name="hashString">The browser hash string to append to the end of the URL.</param>
+		/// <param name="qualify">If set to <c>true</c> the resulting URL will be prefixed with <see cref="ServerPrefix"/>.</param>
 		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query"/>.</returns>
-		public string GetUrl(string linkName, string query, bool includeActiveQuery)
+		public string GetUrl(string linkName, NameValueCollection query = null, string hashString = null, bool qualify = false)
 		{
-			return this.FormatAndRewriteUrl(linkName, new QueryString(query), includeActiveQuery);
+			return this.FormatAndRewriteUrl(linkName, query, hashString, qualify);
 		}
 
 		/// <summary>
-		/// Generates the specified link, using the specified <paramref name="name"/>/<paramref name="value"/> pair to format it.
-		/// </summary>
-		/// <param name="linkName">The name of the URL to generate.</param>
-		/// <param name="name">The name of a single format parameter from the URL to generate.</param>
-		/// <param name="value">The value of the parameter specified with <paramref name="name"/>.</param>
-		/// <returns>The URL with the specified name, with placeholder named <paramref name="name"/> replaced with 
-		/// <paramref name="value"/>.</returns>
-		public string GetUrl(string linkName, string name, string value)
-		{
-			return this.GetUrl(linkName, name, value, false);
-		}
-
-		/// <summary>
-		/// Generates the specified link, using the specified <paramref name="name"/>/<paramref name="value"/> pair to format it.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <param name="name">The name of a single format parameter from the link to generate.</param>
-		/// <param name="value">The value of the parameter specified with <paramref name="name"/>.</param>
-		/// <param name="includeActiveQuery">If set to <c>true</c>, the resulting link will include the query string from
-		/// the active <see cref="SageContext"/>.</param>
-		/// <returns>The URL with the specified name, with placeholder named <paramref name="name"/> replaced with 
-		/// <paramref name="value"/>.</returns>
-		public string GetUrl(string linkName, string name, string value, bool includeActiveQuery)
-		{
-			return this.FormatAndRewriteUrl(linkName, new QueryString { { name, value } }, includeActiveQuery);
-		}
-
-		/// <summary>
-		/// Generates the specified link, using the specified 2 name/value pairs to format it.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <param name="name1">The name of a first format parameter from the link to generate.</param>
-		/// <param name="value1">The value of the parameter specified with <paramref name="name1"/>.</param>
-		/// <param name="name2">The name of a second format parameter from the link to generate.</param>
-		/// <param name="value2">The value of the parameter specified with <paramref name="name2"/>.</param>
-		/// <returns>The URL with the specified name, with 2 specified placeholders replaced with 2 specified values.</returns>
-		public string GetUrl(string linkName, string name1, string value1, string name2, string value2)
-		{
-			return GetUrl(linkName, name1, value1, name2, value2, false);
-		}
-
-		/// <summary>
-		/// Generates the specified link, using the specified 2 name/value pairs to format it.
-		/// </summary>
-		/// <param name="linkName">The name of the link to get.</param>
-		/// <param name="name1">The name of a first format parameter from the link to generate.</param>
-		/// <param name="value1">The value of the parameter specified with <paramref name="name1"/>.</param>
-		/// <param name="name2">The name of a second format parameter from the link to generate.</param>
-		/// <param name="value2">The value of the parameter specified with <paramref name="name2"/>.</param>
-		/// <param name="includeActiveQuery">If set to <c>true</c>, the resulting link will include the query string from
-		/// the active <see cref="SageContext"/>.</param>
-		/// <returns>The URL with the specified name, with 2 specified placeholders replaced with 2 specified values.</returns>
-		public string GetUrl(string linkName, string name1, string value1, string name2, string value2, bool includeActiveQuery)
-		{
-			return this.FormatAndRewriteUrl(linkName, new QueryString { { name1, value1 }, { name2, value2 } }, includeActiveQuery);
-		}
-
-		/// <summary>
-		/// Resolves a link href based on the attributes of the specified <paramref name="linkElement"/>.
+		/// Resolves a link <c>href</c> based on the attributes of the specified <paramref name="linkElement"/>.
 		/// </summary>
 		/// <param name="linkElement">The element that contains attributes that define the link to resolve.</param>
 		/// <returns>The URL from the configuration file, with values and encoding as specified by the element</returns>
@@ -274,13 +183,23 @@ namespace Sage
 		{
 			string linkName = linkElement.GetAttribute("ref");
 			string linkValues = linkElement.GetAttribute("values");
+			string linkHash = linkElement.GetAttribute("hash");
 			bool urlEncode = linkElement.GetAttribute("encode").ContainsAnyOf("yes", "true", "1");
+			bool qualify = linkElement.GetAttribute("absolute").ContainsAnyOf("yes", "true", "1");
 
 			string linkHref = null;
 
 			if (!string.IsNullOrEmpty(linkName))
 			{
-				linkHref = this.GetUrl(linkName, linkValues);
+				linkHref = this.GetUrl(linkName, linkValues, linkHash, qualify);
+				if (!string.IsNullOrWhiteSpace(linkHash))
+				{
+					int hashIndex = linkHref.IndexOf("#", System.StringComparison.Ordinal);
+					if (hashIndex != -1)
+						linkHref = linkHref.Substring(0, hashIndex);
+
+					linkHref = string.Concat(linkHref, "#", linkHash.Trim('#'));
+				}
 			}
 
 			if (urlEncode && !string.IsNullOrEmpty(linkHref))
@@ -306,6 +225,19 @@ namespace Sage
 				return url;
 
 			return string.Concat(this.ServerPrefix.TrimEnd('/'), "/", url.TrimStart('/'));
+		}
+
+		[NodeHandler(XmlNodeType.Element, "basehref", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageBaseHrefElement(SageContext context, XmlNode node)
+		{
+			Contract.Requires<ArgumentNullException>(node != null);
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
+
+			XmlElement result = node.OwnerDocument.CreateElement("base", XmlNamespaces.XHtmlNamespace);
+			result.SetAttribute("href", context.BaseHref);
+
+			return result;
 		}
 
 		[NodeHandler(XmlNodeType.Element, "link", XmlNamespaces.SageNamespace)]
@@ -356,76 +288,56 @@ namespace Sage
 		}
 
 		[TextFunction(Name = "url:link")]
-		internal static string GetLinkFunction(SageContext context, params string[] parameters)
+		internal static string GetLinkFunction(SageContext context, params string[] arguments)
 		{
-			string linkName = parameters[0].Trim();
-			QueryString paramQuery = new QueryString();
-			QueryString hashQuery = new QueryString();
+			var linkArguments = new LinkArguments(arguments, true, "encode", "absolute");
+			var qualify = linkArguments.Switches["absolute"];
 
-			for (int i = 1; i < parameters.Length; i++)
-			{
-				string parameter = parameters[i].Trim();
+			var result = context.Url.GetUrl(linkArguments.LinkName, linkArguments.QueryString, linkArguments.HashString, qualify);
+			if (linkArguments.Switches["encode"] && !string.IsNullOrEmpty(result))
+				result = HttpUtility.UrlEncode(result);
 
-				QueryString tempQuery;
-
-				if (parameter.IndexOf("#") == 0)
-				{
-					tempQuery = new QueryString(parameter.Substring(1));
-					hashQuery.Merge(tempQuery);
-				}
-				else 
-				{
-					tempQuery = new QueryString(parameter.Substring(1));
-					paramQuery.Merge(tempQuery);
-				}
-			}
-
-			string linkHref = context.Url.GetUrl(linkName, paramQuery);
-			return string.Concat(linkHref, paramQuery.ToString("?"), hashQuery.ToString("#"));
+			return result;
 		}
 
 		[TextFunction(Name = "url:self")]
 		internal static string GetSelfFunction(SageContext context, params string[] arguments)
 		{
-			string currentUrl = context.Url.RawUrl;
-			QueryString paramQuery = new QueryString();
-			QueryString hashQuery = new QueryString();
+			var linkArguments = new LinkArguments(arguments, false, "encode", "absolute");
+			var currentUrl = linkArguments.Switches["absolute"] 
+				? context.Url.RawUrl
+				: context.Url.RawPathAndQuery;
 
+			var paramQuery = new QueryString();
 			if (currentUrl.Contains("?"))
 			{
-				paramQuery.Parse(currentUrl.Substring(currentUrl.IndexOf("?") + 1));
-				currentUrl = currentUrl.Substring(0, currentUrl.IndexOf("?"));
+				var questionIndex = currentUrl.IndexOf("?", StringComparison.Ordinal);
+				paramQuery.Parse(currentUrl.Substring(questionIndex + 1), parameterSeparators);
+				currentUrl = currentUrl.Substring(0, questionIndex);
 			}
 
-			foreach (string argument in arguments)
-			{
-				QueryString tempQuery;
-				if (argument.IndexOf("?") == 0)
-				{
-					tempQuery = new QueryString(argument.Substring(1));
-					paramQuery.Merge(tempQuery);
-				}
+			paramQuery.Merge(linkArguments.QueryString);
+			var result = string.Concat(currentUrl, paramQuery.ToString("?"), string.IsNullOrEmpty(linkArguments.HashString)
+				? string.Empty
+				: string.Concat("#", linkArguments.HashString));
 
-				if (argument.IndexOf("#") == 0)
-				{
-					tempQuery = new QueryString(argument.Substring(1));
-					hashQuery.Merge(tempQuery);
-				}
-			}
+			if (linkArguments.Switches["encode"] && !string.IsNullOrEmpty(result))
+				result = HttpUtility.UrlEncode(result);
 
-			return string.Concat(currentUrl, paramQuery.ToString("?"), hashQuery.ToString("#"));
+			return result;
 		}
 
 		/// <summary>
-		/// Formats and rewrites the link pattern with the specified <paramref name="linkName"/>.
+		/// Formats and rewrites the link pattern with the specified <paramref name="linkName" />.
 		/// </summary>
 		/// <param name="linkName">Name of the link.</param>
 		/// <param name="parameters">The parameters.</param>
-		/// <param name="includeActiveQuery">if set to <c>true</c> active query parameters are also appended.</param>
+		/// <param name="hashString">The hash string.</param>
+		/// <param name="qualify">If set to <c>true</c> the resulting URL will be prefixed with <see cref="ServerPrefix"/>.</param>
 		/// <returns>The full rewritten Url, ready to use</returns>
 		/// <exception cref="ConfigurationError">Current configuration doesn't contain a link with name specified with
-		/// <paramref name="linkName"/>.</exception>
-		internal string FormatAndRewriteUrl(string linkName, NameValueCollection parameters, bool includeActiveQuery)
+		/// <paramref name="linkName" />.</exception>
+		internal string FormatAndRewriteUrl(string linkName, NameValueCollection parameters, string hashString = null, bool qualify = false)
 		{
 			if (!this.Links.ContainsKey(linkName))
 			{
@@ -435,7 +347,6 @@ namespace Sage
 
 			string linkPattern = this.Links[linkName];
 
-			QueryString query = new QueryString(context.Query);
 			QueryString formatValues = new QueryString { { "locale", context.Locale }, { "category", context.Category } };
 			if (parameters != null)
 				formatValues.Merge(parameters);
@@ -445,19 +356,21 @@ namespace Sage
 			formatValues.Remove("locale");
 			formatValues.Remove("category");
 
-			QueryString resultQuery = new QueryString(formatValues);
-			if (includeActiveQuery)
-				resultQuery.Merge(query);
-
-			string queryString = resultQuery.ToString();
+			string queryString = formatValues.ToString();
 			if (queryString != string.Empty)
 			{
 				string join = resultUrl.Contains("?") ? "&" : "?";
 				resultUrl = string.Concat(resultUrl, join, queryString);
 			}
 
-			if (resultUrl.StartsWith("#"))
-				return string.Concat(ServerPrefix, resultUrl);
+			if (!string.IsNullOrWhiteSpace(hashString))
+			{
+				string join = resultUrl.Contains("#") ? string.Empty : "#";
+				resultUrl = string.Concat(resultUrl, join, hashString);
+			}
+
+			if (qualify)
+				resultUrl = string.Concat(this.ServerPrefix, resultUrl);
 
 			return resultUrl;
 		}
@@ -480,8 +393,69 @@ namespace Sage
 					return this.FormatPattern(this.Formats[key], parameters, visited.ToArray());
 				}
 
-				return parameters[key] ?? string.Empty;
+				if (parameters[key] != null)
+				{
+					string value = parameters[key];
+					parameters.Remove(key);
+					return value;
+				}
+
+				return string.Empty;
 			});
+		}
+
+		private class LinkArguments
+		{
+			//// TODO: Add option to include the current querystring
+			//// TODO: Figure out a neat way to provide names arguments
+			public LinkArguments(IEnumerable<string> arguments, bool useLinkName, params string[] switches)
+				: this()
+			{
+				foreach (string sw in switches)
+					this.Switches.Add(sw, false);
+
+				List<string> parameters = arguments.ToArray().ToList();
+				if (useLinkName)
+				{
+					this.LinkName = parameters.ElementAt(0);
+					parameters.RemoveAt(0);
+				}
+
+				foreach (string parameter in parameters)
+				{
+					var temp = new QueryString(parameter);
+					if (temp.Count == 1 && switches.Contains(temp.Keys.Get(0)))
+					{
+						string name = temp.Keys.Get(0);
+						this.Switches[name] = temp[name].ToLower().ContainsAnyOf("yes", "true", "1");
+					}
+
+					if (this.QueryString.Count != 0 && this.HashString == null)
+					{
+						this.HashString = parameter.Trim('#');
+						break;
+					}
+
+					if (parameter.IndexOf("#") == 0)
+						this.HashString = parameter.Trim('#');
+					else
+						this.QueryString.Merge(new QueryString(parameter, UrlGenerator.parameterSeparators));
+				}
+			}
+
+			private LinkArguments()
+			{
+				this.QueryString = new QueryString();
+				this.Switches = new Dictionary<string, bool>();
+			}
+
+			public string LinkName { get; private set; }
+
+			public QueryString QueryString { get; private set; }
+
+			public string HashString { get; private set; }
+
+			public IDictionary<string, bool> Switches { get; private set; }
 		}
 	}
 }

@@ -104,7 +104,7 @@ namespace Sage.Rewriters
 					query.Remove(MetaViewDictionary.ParamNameMetaView);
 					query.Add(MetaViewDictionary.ParamNameMetaView, view);
 
-					string newUri = new Uri(path + query.ToString(true), UriKind.RelativeOrAbsolute).ToString();
+					string newUri = new Uri(path + query.ToString("?"), UriKind.RelativeOrAbsolute).ToString();
 					log.DebugFormat("Rewriting the context path from '{0}' to '{1}'.", context.Request.Path, newUri);
 					application.Context.RewritePath(newUri);
 				}

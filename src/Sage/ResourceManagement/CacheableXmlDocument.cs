@@ -62,7 +62,7 @@ namespace Sage.ResourceManagement
 		/// Gets the last modification date associated with this document.
 		/// </summary>
 		/// <remarks>
-		/// The last modification date will be the latests modification date of all constituent files referenced with
+		/// The last modification date will be the latest modification date of all constituent files referenced with
 		/// <see cref="Dependencies"/>.
 		/// </remarks>
 		public DateTime LastModified
@@ -84,7 +84,7 @@ namespace Sage.ResourceManagement
 		public ReadOnlyCollection<string> Dependencies { get; private set; }
 
 		/// <summary>
-		/// Creates <see cref="XmlReaderSettings"/> and assings it the specified <paramref name="resolver"/>.
+		/// Creates <see cref="XmlReaderSettings"/> and assigns it the specified <paramref name="resolver"/>.
 		/// </summary>
 		/// <param name="resolver">The resolver to use with this settings..</param>
 		/// <returns>An <see cref="XmlReaderSettings"/> instance, with common options set, and with the specified
@@ -280,8 +280,14 @@ namespace Sage.ResourceManagement
 				directory = Path.GetDirectoryName(this.BaseURI);
 			}
 
-			if (UrlResolver.GetScheme(includePath) == "file" && !Path.IsPathRooted(includePath) && !string.IsNullOrWhiteSpace(directory))
-				includePath = Path.Combine(directory, includePath);
+			if (UrlResolver.GetScheme(includePath) == "file")
+			{
+				if (includePath.StartsWith("~/"))
+					includePath = state.Context.Path.Resolve(includePath);
+
+				if (!Path.IsPathRooted(includePath) && !string.IsNullOrWhiteSpace(directory))
+					includePath = Path.Combine(directory, includePath);
+			}
 
 			IDictionary<string, XmlNode> cacheEntry;
 			if (state.VisitedNodes.ContainsKey(includePath))

@@ -44,6 +44,73 @@ namespace Sage.Build.Utilities
 		private SageContext context;
 		private NameValueCollection arguments;
 
+		public string CommandName
+		{
+			get
+			{
+				return "globalize";
+			}
+		}
+
+		public string GetUsage()
+		{
+			StringBuilder result = new StringBuilder();
+			result.AppendLine("Batch-processes all globalizable resources within the specified category,");
+			result.AppendLine("optionally replacing them with their internationalized versions.\n");
+			result.AppendFormat("Usage: {0} {1} -targetpath:<path> -category:<name> [-summary:<path>] [-merge:<0|1>] [-emitsummary:<0|1>]\n", Program.Name, this.CommandName);
+			result.AppendLine("  -targetpath:<path>	 The path to the directory that contains the resources to process.");
+			result.AppendLine("  -category:<name>    The name of the category being processed.");
+			result.AppendLine("  -reportpath:<path>	 The path to the directory in which to save the report files (html and xml).");
+			result.AppendLine("  -emitsummary:<1|0>  Unless set to 0, the program will emit a summary document for each globalized resource.\n");
+			result.AppendLine("  -merge:<1|0>        If set to 1, the original templates will be replaced with their internationalized versions.\n");
+
+			return result.ToString();
+		}
+
+		public bool ParseArguments(string[] args)
+		{
+			arguments = new NameValueCollection();
+			foreach (string arg in args)
+			{
+				if (arg.StartsWith("-targetpath:"))
+				{
+					arguments["targetPath"] = arg.Substring(12).Trim('"');
+				}
+
+				if (arg.StartsWith("-category:"))
+				{
+					arguments["category"] = arg.Substring(10).Trim('"');
+				}
+
+				if (arg.StartsWith("-reportpath:"))
+				{
+					arguments["reportpath"] = arg.Substring(12).Trim('"');
+				}
+
+				if (arg.StartsWith("-emitsummary:"))
+				{
+					arguments["emitSummary"] = arg.Substring(13) == "1" ? "1" : "0";
+				}
+
+				if (arg.StartsWith("-merge:"))
+				{
+					arguments["mergeAssets"] = arg.Substring(7).ContainsAnyOf("yes", "1", "true") ? "1" : "0";
+				}
+			}
+
+			if (arguments["targetPath"] != null && arguments["category"] != null)
+			{
+				HttpContextMock httpContext = new HttpContextMock("sage");
+
+				this.context = new SageContext(httpContext, arguments["category"], this.MapPath);
+				this.categoryPath = context.Path.GetPhysicalCategoryPath(arguments["category"]);
+
+				return true;
+			}
+
+			return false;
+		}
+
 		public void Run()
 		{
 			if (!Directory.Exists(arguments["targetPath"]))
@@ -159,7 +226,7 @@ namespace Sage.Build.Utilities
 			log.InfoFormat("Done");
 		}
 
-		private string SummarizeOverview(XmlDocument resultDoc, string outputPath)
+		private void SummarizeOverview(XmlDocument resultDoc, string outputPath)
 		{
 			XmlElement resultElement = resultDoc.SelectSingleElement("/internationalization/result");
 			foreach (XmlElement categoryElem in resultElement.SelectNodes("category"))
@@ -211,7 +278,7 @@ namespace Sage.Build.Utilities
 				catch (Exception ex)
 				{
 					Console.WriteLine("Failed to create report directory location '{0}': {1}", outputPath, ex.Message);
-					return resultPath;
+					return;
 				}
 			}
 
@@ -223,7 +290,7 @@ namespace Sage.Build.Utilities
 			catch (Exception ex)
 			{
 				Console.WriteLine("Failed to write the result summary to the target location '{0}': {1}", reportPath, ex.Message);
-				return resultPath;
+				return;
 			}
 
 			try
@@ -234,10 +301,10 @@ namespace Sage.Build.Utilities
 			catch (Exception ex)
 			{
 				Console.WriteLine("Failed to save the summary xml document to the target location '{0}': {1}", resultPath, ex.Message);
-				return resultPath;
+				return;
 			}
 
-			return reportPath;
+			return;
 		}
 
 		private string MapPath(string childPath)
@@ -268,73 +335,6 @@ namespace Sage.Build.Utilities
 			}
 
 			return result;
-		}
-
-		public bool ParseArguments(string[] args)
-		{
-			arguments = new NameValueCollection();
-			foreach (string arg in args)
-			{
-				if (arg.StartsWith("-targetpath:"))
-				{
-					arguments["targetPath"] = arg.Substring(12).Trim('"');
-				}
-
-				if (arg.StartsWith("-category:"))
-				{
-					arguments["category"] = arg.Substring(10).Trim('"');
-				}
-
-				if (arg.StartsWith("-reportpath:"))
-				{
-					arguments["reportpath"] = arg.Substring(12).Trim('"');
-				}
-
-				if (arg.StartsWith("-emitsummary:"))
-				{
-					arguments["emitSummary"] = arg.Substring(13) == "1" ? "1" : "0";
-				}
-
-				if (arg.StartsWith("-merge:"))
-				{
-					arguments["mergeAssets"] = arg.Substring(7).ContainsAnyOf("yes", "1", "true") ? "1" : "0";
-				}
-			}
-
-			if (arguments["targetPath"] != null && arguments["category"] != null)
-			{
-				HttpContextMock httpContext = new HttpContextMock("sage");
-
-				this.context = new SageContext(httpContext, arguments["category"], this.MapPath);
-				this.categoryPath = context.Path.GetPhysicalCategoryPath(arguments["category"]);
-
-				return true;
-			}
-
-			return false;
-		}
-
-		public string GetUsage()
-		{
-			StringBuilder result = new StringBuilder();
-			result.AppendLine("Batch-processes all globalizable resources within the specified category,");
-			result.AppendLine("optionally replacing them with their internationalized versions.\n");
-			result.AppendFormat("Usage: {0} {1} -targetpath:<path> -category:<name> [-summary:<path>] [-merge:<0|1>] [-emitsummary:<0|1>]\n", Program.Name, this.CommandName);
-			result.AppendLine("  -targetpath:<path>	 The path to the directory that contains the resources to process.");
-			result.AppendLine("  -category:<name>    The name of the category being processed.");
-			result.AppendLine("  -reportpath:<path>	 The path to the directory in which to save the report files (html and xml).");
-			result.AppendLine("  -emitsummary:<1|0>  Unless set to 0, the program will emit a summary document for each globalized resource.\n");
-			result.AppendLine("  -merge:<1|0>        If set to 1, the original templates will be replaced with their internationalized versions.\n");
-
-			return result.ToString();
-		}
-
-		public string CommandName
-		{
-			get
-			{
-				return "globalize";
-			}
 		}
 	}
 }

@@ -74,16 +74,16 @@ namespace Sage.Extensibility
 			foreach (string exclude in this.Excludes)
 			{
 				if ((match = wildcardFolder.Match(exclude)).Success)
-					result = this.ExcludeAllFilesInDirectory(result, context, match.Groups[1].Value);
+					result = ExcludeAllFilesInDirectory(result, context, match.Groups[1].Value);
 
 				else if ((match = wildcardFileType.Match(exclude)).Success)
-					result = this.ExcludeAllFilesOfTypeInDirectory(result, context, match.Groups[1].Value, match.Groups[2].Value);
+					result = ExcludeAllFilesOfTypeInDirectory(result, context, match.Groups[1].Value, match.Groups[2].Value);
 
 				else if ((match = wildcardFilePath.Match(exclude)).Success)
-					result = this.ExcludeAllFilesStartingWithInDirectory(result, context, match.Groups[1].Value);
+					result = ExcludeAllFilesStartingWithInDirectory(result, context, match.Groups[1].Value);
 
 				else
-					result = this.ExcludeAllFilesFrom(result, context, exclude);
+					result = ExcludeAllFilesFrom(result, context, exclude);
 			}
 
 			return result;
@@ -139,7 +139,7 @@ namespace Sage.Extensibility
 			return includes.Where(include => !excludes.Contains(include)).ToList();
 		}
 
-		private static List<string> GetAllFilesInDirectory(SageContext context, string directory)
+		private static IEnumerable<string> GetAllFilesInDirectory(SageContext context, string directory)
 		{
 			string resolved = context.Path.Resolve(directory);
 			if (!Directory.Exists(resolved))
@@ -148,7 +148,7 @@ namespace Sage.Extensibility
 			return Directory.GetFiles(resolved, "*.*", SearchOption.AllDirectories).ToList();
 		}
 
-		private static List<string> GetAllFilesOfTypeInDirectory(SageContext context, string directory, string filter)
+		private static IEnumerable<string> GetAllFilesOfTypeInDirectory(SageContext context, string directory, string filter)
 		{
 			string resolved = context.Path.Resolve(directory);
 			if (!Directory.Exists(resolved))
@@ -157,7 +157,7 @@ namespace Sage.Extensibility
 			return new List<string>(Directory.GetFiles(resolved, filter, SearchOption.AllDirectories));
 		}
 
-		private static List<string> GetAllFilesStartingWithInDirectory(SageContext context, string startsWith)
+		private static IEnumerable<string> GetAllFilesStartingWithInDirectory(SageContext context, string startsWith)
 		{
 			string directory = Path.GetDirectoryName(startsWith);
 			string filter = Path.GetFileName(startsWith).ToLower();
@@ -171,7 +171,7 @@ namespace Sage.Extensibility
 					.Where(f => f.ToLower().StartsWith(filter)));
 		}
 
-		private static List<string> GetAllFilesFrom(SageContext context, string filepath)
+		private static IEnumerable<string> GetAllFilesFrom(SageContext context, string filepath)
 		{
 			List<string> result = new List<string>();
 
@@ -188,13 +188,13 @@ namespace Sage.Extensibility
 			return result;
 		}
 
-		private List<string> ExcludeAllFilesInDirectory(IEnumerable<string> files, SageContext context, string directory)
+		private static List<string> ExcludeAllFilesInDirectory(IEnumerable<string> files, SageContext context, string directory)
 		{
 			string resolved = context.Path.Resolve(directory).ToLower();
 			return files.Where(f => !f.ToLower().StartsWith(resolved)).ToList();
 		}
 
-		private List<string> ExcludeAllFilesOfTypeInDirectory(IEnumerable<string> files, SageContext context, string directory, string filter)
+		private static List<string> ExcludeAllFilesOfTypeInDirectory(IEnumerable<string> files, SageContext context, string directory, string filter)
 		{
 			string resolved = context.Path.Resolve(directory).ToLower();
 			string extension = filter.Replace("*", string.Empty).ToLower();
@@ -202,7 +202,7 @@ namespace Sage.Extensibility
 			return files.Where(f => !(f.ToLower().StartsWith(resolved) && f.ToLower().EndsWith(extension))).ToList();
 		}
 
-		private List<string> ExcludeAllFilesStartingWithInDirectory(IEnumerable<string> files, SageContext context, string startsWith)
+		private static List<string> ExcludeAllFilesStartingWithInDirectory(IEnumerable<string> files, SageContext context, string startsWith)
 		{
 			string directory = Path.GetDirectoryName(startsWith);
 			string filter = Path.GetFileName(startsWith).ToLower();
@@ -212,9 +212,9 @@ namespace Sage.Extensibility
 			return files.Where(f => !(f.ToLower().StartsWith(resolved) && Path.GetFileName(f).ToLower().StartsWith(filter))).ToList();
 		}
 
-		private List<string> ExcludeAllFilesFrom(IEnumerable<string> files, SageContext context, string filepath)
+		private static List<string> ExcludeAllFilesFrom(IEnumerable<string> files, SageContext context, string filepath)
 		{
-			List<string> excludeFiles = GetAllFilesFrom(context, filepath);
+			IEnumerable<string> excludeFiles = GetAllFilesFrom(context, filepath);
 
 			return files.Where(f => excludeFiles.Count(e => e.ToLower() == f.ToLower()) == 0).ToList();
 		}

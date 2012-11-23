@@ -144,9 +144,8 @@ namespace Sage.Views
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(stylesheetPath));
 
-			XsltTransform cachedItem;
 			string key = string.Format(CacheKeyFormat, stylesheetPath);
-			cachedItem = context.Cache.Get(key) as XsltTransform;
+			XsltTransform cachedItem = context.Cache.Get(key) as XsltTransform;
 
 			if (cachedItem != null)
 				return cachedItem;

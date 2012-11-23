@@ -159,10 +159,6 @@ namespace Sage.ResourceManagement
 			OrderedDictionary<string, List<CacheableXmlDocument>> allDictionaries = new OrderedDictionary<string, List<CacheableXmlDocument>>();
 			foreach (string locale in names)
 			{
-				if (!context.ProjectConfiguration.Locales.ContainsKey(locale))
-					throw new ConfigurationError(string.Format("Dictionary name '{0}' is invalid because it doesn't match any of the configured locales. Valid names are: {1}", 
-						locale, string.Join(",", context.ProjectConfiguration.Locales.Keys)));
-
 				List<CacheableXmlDocument> langDictionaries = new List<CacheableXmlDocument>();
 				string documentPath = context.Path.GetDictionaryPath(locale, context.Category);
 

@@ -19,20 +19,20 @@ namespace Sage.Extensibility
 
 	internal class PackageConfiguration
 	{
-		private static readonly XmlNamespaceManager Nm = XmlNamespaces.Manager;
+		private static readonly XmlNamespaceManager nm = XmlNamespaces.Manager;
 
 		public PackageConfiguration(XmlNode configurationElement)
 		{
 			if (configurationElement != null)
 			{
-				this.Assets = new PackageGroup(configurationElement.SelectSingleNode("p:assets", Nm));
-				this.Binaries = new PackageGroup(configurationElement.SelectSingleNode("p:binaries", Nm));
-				this.Modules = new PackageGroup(configurationElement.SelectSingleNode("p:modules", Nm));
-				this.Routes = new PackageGroup(configurationElement.SelectSingleNode("p:routes", Nm));
-				this.Libraries = new PackageGroup(configurationElement.SelectSingleNode("p:libraries", Nm));
-				this.Links = new PackageGroup(configurationElement.SelectSingleNode("p:linking/p:links", Nm));
-				this.Formats = new PackageGroup(configurationElement.SelectSingleNode("p:linking/p:formats", Nm));
-				this.MetaViews = new PackageGroup(configurationElement.SelectSingleNode("p:metaViews", Nm));
+				this.Assets = new PackageGroup(configurationElement.SelectSingleNode("p:assets", nm));
+				this.Binaries = new PackageGroup(configurationElement.SelectSingleNode("p:binaries", nm));
+				this.Modules = new PackageGroup(configurationElement.SelectSingleNode("p:modules", nm));
+				this.Routes = new PackageGroup(configurationElement.SelectSingleNode("p:routes", nm));
+				this.Libraries = new PackageGroup(configurationElement.SelectSingleNode("p:libraries", nm));
+				this.Links = new PackageGroup(configurationElement.SelectSingleNode("p:linking/p:links", nm));
+				this.Formats = new PackageGroup(configurationElement.SelectSingleNode("p:linking/p:formats", nm));
+				this.MetaViews = new PackageGroup(configurationElement.SelectSingleNode("p:metaViews", nm));
 			}
 			else
 			{

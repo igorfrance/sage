@@ -42,10 +42,9 @@ namespace Sage
 	public class SageContext : IXmlConvertible
 	{
 		/// <summary>
-		/// The name of the query string variable that instructs the system to load the latest resources
-		/// without considering the cache.
+		/// The name of the query string variable that specifies the current category.
 		/// </summary>
-		public const string RefreshVariableName = "refresh";
+		public const string CategoryVariableName = "category";
 
 		/// <summary>
 		/// The name of the query string variable that specifies the current locale.
@@ -53,19 +52,19 @@ namespace Sage
 		public const string LocaleVariableName = "locale";
 
 		/// <summary>
-		/// The name of the query string variable that specifies the current category.
+		/// The name of the query string variable that instructs the system to load the latest resources
+		/// without considering the cache.
 		/// </summary>
-		public const string CategoryVariableName = "category";
+		public const string RefreshVariableName = "refresh";
 
 		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'[\w\.:$\-]*)=(?'AttribValue'.*)$", RegexOptions.Compiled);
-
-		private static readonly ILog log = LogManager.GetLogger(typeof(SageContext).FullName);
 		private static readonly Dictionary<string, CategoryConfiguration> categoryConfigurations =
 			new Dictionary<string, CategoryConfiguration>();
 
+		private static readonly ILog log = LogManager.GetLogger(typeof(SageContext).FullName);
+		private readonly NodeEvaluator nodeEvaluator;
 		private readonly Func<string, string> pathMapper;
 		private readonly TextEvaluator textEvaluator;
-		private readonly NodeEvaluator nodeEvaluator;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
@@ -284,40 +283,10 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the project configuration.
-		/// </summary>
-		public ProjectConfiguration ProjectConfiguration { get; internal set; }
-
-		/// <summary>
-		/// Gets the last modification date cache.
-		/// </summary>
-		public LastModifiedCache LmCache { get; private set; }
-
-		/// <summary>
-		/// Gets the id of the current user agent.
-		/// </summary>
-		public string UserAgentID { get; private set; }
-
-		/// <summary>
-		/// Gets the type of the current user agent.
-		/// </summary>
-		public UserAgentType UserAgentType { get; private set; }
-
-		/// <summary>
 		/// Gets the current <see cref="Cache"/>.
 		/// </summary>
 		/// <value>The cache.</value>
 		public CacheWrapper Cache { get; private set; }
-
-		/// <summary>
-		/// Gets the current route.
-		/// </summary>
-		public RouteBase Route { get; private set; }
-
-		/// <summary>
-		/// Gets the collection of current route's route values.
-		/// </summary>
-		public NameValueCollection RouteValues { get; private set; }
 
 		/// <summary>
 		/// Gets the currently applicable category.
@@ -379,6 +348,11 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Gets the last modification date cache.
+		/// </summary>
+		public LastModifiedCache LmCache { get; private set; }
+
+		/// <summary>
 		/// Gets the currently applicable locale.
 		/// </summary>
 		public string Locale { get; private set; }
@@ -406,6 +380,11 @@ namespace Sage
 		public string PhysicalApplicationPath { get; private set; }
 
 		/// <summary>
+		/// Gets the project configuration.
+		/// </summary>
+		public ProjectConfiguration ProjectConfiguration { get; internal set; }
+
+		/// <summary>
 		/// Gets the query string active within the current context.
 		/// </summary>
 		public QueryString Query { get; private set; }
@@ -427,6 +406,11 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Gets <see cref="ResourceManager"/> to be used with the current context.
+		/// </summary>
+		public ResourceManager Resources { get; private set; }
+
+		/// <summary>
 		/// Gets the current <see cref="HttpResponseBase"/>.
 		/// </summary>
 		public HttpResponseBase Response
@@ -438,9 +422,14 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets <see cref="ResourceManager"/> to be used with the current context.
+		/// Gets the current route.
 		/// </summary>
-		public ResourceManager Resources { get; private set; }
+		public RouteBase Route { get; private set; }
+
+		/// <summary>
+		/// Gets the collection of current route's route values.
+		/// </summary>
+		public NameValueCollection RouteValues { get; private set; }
 
 		/// <summary>
 		/// Gets the current <see cref="HttpSessionStateBase"/>.
@@ -457,6 +446,35 @@ namespace Sage
 		/// Gets <see cref="UrlGenerator"/> to be used with the current context.
 		/// </summary>
 		public UrlGenerator Url { get; private set; }
+
+		/// <summary>
+		/// Gets the id of the current user agent.
+		/// </summary>
+		public string UserAgentID { get; private set; }
+
+		/// <summary>
+		/// Gets the type of the current user agent.
+		/// </summary>
+		public UserAgentType UserAgentType { get; private set; }
+
+		/// <summary>
+		/// Returns an absolute URL, fully expanded to a path within the current application.
+		/// </summary>
+		/// <param name="path">The path to expand</param>
+		/// <returns>The specified path, fully expanded to a path within the current application.</returns>
+		/// <exception cref="ArgumentNullException">
+		/// If the <paramref name="path"/> argument is empty or a <c>null</c>.
+		/// </exception>
+		public string ExpandUrl(string path)
+		{
+			if (string.IsNullOrEmpty(path))
+				throw new ArgumentNullException("path");
+
+			if (path.Contains("://"))
+				return path;
+
+			return BaseHref.TrimEnd('/') + '/' + path.TrimStart('/');
+		}
 
 		/// <summary>
 		/// Maps the supplied relative <paramref name="path"/> to the actual, physical location of the file.
@@ -482,29 +500,32 @@ namespace Sage
 			return this.pathMapper.Invoke(path);
 		}
 
-		/// <summary>
-		/// Returns an absolute URL, fully expanded to a path within the current application.
-		/// </summary>
-		/// <param name="path">The path to expand</param>
-		/// <returns>The specified path, fully expanded to a path within the current application.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// If the <paramref name="path"/> argument is empty or a <c>null</c>.
-		/// </exception>
-		public string ExpandUrl(string path)
-		{
-			if (string.IsNullOrEmpty(path))
-				throw new ArgumentNullException("path");
-
-			if (path.Contains("://"))
-				return path;
-
-			return BaseHref.TrimEnd('/') + '/' + path.TrimStart('/');
-		}
-
 		/// <inheritdoc/>
 		public void Parse(XmlElement element)
 		{
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Recursively processes all nodes in the specified <paramref name="node"/>, applying any registered text and node
+		/// handlers on the way, and returns the result.
+		/// </summary>
+		/// <param name="node">The node to process.</param>
+		/// <returns>The processed version of the node.</returns>
+		public XmlNode ProcessNode(XmlNode node)
+		{
+			return this.nodeEvaluator.Process(node);
+		}
+
+		/// <summary>
+		/// Replaces any function or variable expression with the result of invoking it's corresponding 
+		/// handler function.
+		/// </summary>
+		/// <param name="text">The text to process.</param>
+		/// <returns>The processed version of the text.</returns>
+		public string ProcessText(string text)
+		{
+			return this.textEvaluator.Process(text);
 		}
 
 		/// <summary>
@@ -613,28 +634,6 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Replaces any function or variable expression with the result of invoking it's corresponding 
-		/// handler function.
-		/// </summary>
-		/// <param name="text">The text to process.</param>
-		/// <returns>The processed version of the text.</returns>
-		public string ProcessText(string text)
-		{
-			return this.textEvaluator.Process(text);
-		}
-
-		/// <summary>
-		/// Recursively processes all nodes in the specified <paramref name="node"/>, applying any registered text and node
-		/// handlers on the way, and returns the result.
-		/// </summary>
-		/// <param name="node">The node to process.</param>
-		/// <returns>The processed version of the node.</returns>
-		public XmlNode ProcessNode(XmlNode node)
-		{
-			return this.nodeEvaluator.Process(node);
-		}
-
-		/// <summary>
 		/// Selects the case that matches the condition specified with the <paramref name="switchNode"/> and returns it's contents.
 		/// </summary>
 		/// <param name="context">The current context with which the method is being invoked.</param>
@@ -737,16 +736,6 @@ namespace Sage
 			return node;
 		}
 
-		[NodeHandler(XmlNodeType.Element, "version", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageVersionNode(SageContext context, XmlNode node)
-		{
-			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return node;
-
-			string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			return node.OwnerDocument.CreateTextNode(version);
-		}
-
 		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessSageAttribute(SageContext context, XmlNode node)
 		{
@@ -768,6 +757,16 @@ namespace Sage
 			}
 
 			return node;
+		}
+
+		[NodeHandler(XmlNodeType.Element, "version", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessSageVersionNode(SageContext context, XmlNode node)
+		{
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
+
+			string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			return node.OwnerDocument.CreateTextNode(version);
 		}
 
 		/// <summary>

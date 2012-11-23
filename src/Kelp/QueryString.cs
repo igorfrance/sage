@@ -19,6 +19,7 @@ namespace Kelp
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web;
@@ -29,6 +30,9 @@ namespace Kelp
 	/// </summary>
 	public class QueryString : NameValueCollection, IXmlConvertible
 	{
+		private const char KeyValueSeparator = '=';
+		private static readonly char[] PairSeparators = new[] { '&' };
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QueryString"/> class.
 		/// </summary>
@@ -86,6 +90,18 @@ namespace Kelp
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="QueryString" /> class, and populates it with
+		/// values parsed the specified <paramref name="queryString" />.
+		/// </summary>
+		/// <param name="queryString">The query string that contains the name/value pairs to use.</param>
+		/// <param name="splitChars">The character to use to split the key/value pairs.</param>
+		public QueryString(string queryString, char[] splitChars)
+		{
+			if (!string.IsNullOrEmpty(queryString))
+				this.Parse(queryString, splitChars, QueryString.KeyValueSeparator);
+		}
+
+		/// <summary>
 		/// Converts any characters invalid for an xml node name with an underscore character.
 		/// </summary>
 		/// <param name="name">Original node name.</param>
@@ -105,31 +121,66 @@ namespace Kelp
 		}
 
 		/// <summary>
-		/// Parses the specified query string, adds the resulting values as key/value pairs and returns this instance.
+		/// Parses the specified query string into this instance and returns this instance.
 		/// </summary>
 		/// <param name="queryString">The query string to parse.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="queryString"/> argument is <c>null</c>.</exception>
-		/// <example>
+		/// <example><c>
 		/// var coll = new <see cref="NameValueCollection"/>();
 		/// coll.ParseQueryString("a=12&amp;c=56&amp;color=red");
-		/// </example>
+		/// </c></example>
 		/// <returns>The current instance.</returns>
 		public QueryString Parse(string queryString)
 		{
+			return this.Parse(queryString, QueryString.PairSeparators, QueryString.KeyValueSeparator);
+		}
+
+		/// <summary>
+		/// Parses the specified query string into this instance and returns this instance.
+		/// </summary>
+		/// <param name="queryString">The query string to parse.</param>
+		/// <param name="pairSplitChars">The character(s) to use to split the pairs.</param>
+		/// <returns>The current instance.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="queryString" /> argument is <c>null</c>.</exception>
+		/// <example><c>
+		/// var coll = new <see cref="NameValueCollection" />();
+		/// coll.ParseQueryString("a=12&amp;c=56&amp;color=red");
+		/// </c></example>
+		public QueryString Parse(string queryString, char[] pairSplitChars)
+		{
+			return this.Parse(queryString, pairSplitChars, QueryString.KeyValueSeparator);
+		}
+
+		/// <summary>
+		/// Parses the specified query string into this instance and returns this instance.
+		/// </summary>
+		/// <param name="queryString">The query string to parse.</param>
+		/// <param name="pairSplitChars">The character(s) to use to split the pairs.</param>
+		/// <param name="keyValueSplitChar">The character(s) to use to split keys and values.</param>
+		/// <returns>The current instance.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="queryString" /> argument is <c>null</c>.</exception>
+		/// <example><c>
+		/// var coll = new <see cref="NameValueCollection" />();
+		/// coll.ParseQueryString("a=12&amp;c=56&amp;color=red");
+		/// </c></example>
+		public QueryString Parse(string queryString, char[] pairSplitChars, char keyValueSplitChar)
+		{
 			Contract.Requires<ArgumentNullException>(queryString != null);
+			Contract.Requires<ArgumentNullException>(pairSplitChars != null);
+			Contract.Requires<ArgumentException>(pairSplitChars.Length > 0);
 
 			this.Clear();
 
 			if (queryString.IndexOf('?') == 0)
 				queryString = queryString.Substring(1);
 
-			string[] values = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] values = queryString.Split(pairSplitChars, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string t in values)
 			{
 				if (t == string.Empty)
 					continue;
 
-				int index = t.IndexOf('=');
+				int index = t.IndexOf(keyValueSplitChar);
 				if (index != -1)
 				{
 					string name = t.Substring(0, index);
@@ -561,27 +612,19 @@ namespace Kelp
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return this.ToString(false);
+			return this.ToString(string.Empty);
 		}
 
 		/// <summary>
-		/// Returns a <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.
+		/// Returns a <see cref="String" /> that contains this collection's name/value pairs packed as a URL query string and prepended
+		/// with the specified <paramref name="symbolToPrepend" />.
 		/// </summary>
-		/// <param name="prependQuestionMark">If set to <c>true</c>, and if collection is not empty, the resulting string will be 
-		/// prepended a '?' symbol.</param>
-		/// <returns>A <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.</returns>
-		public string ToString(bool prependQuestionMark)
-		{
-			return this.ToString("?");
-		}
-
-		/// <summary>
-		/// Returns a <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string and prepended 
-		/// with the specified <paramref name="symbolToPrepend"/>.
-		/// </summary>
-		/// <param name="symbolToPrepend">The symbol (typically '?' or '#' to prepend the querystring wuth</param>
-		/// <returns>A <see cref="String"/> that contains this collection's name/value pairs packed as a URL query string.</returns>
-		public string ToString(string symbolToPrepend)
+		/// <param name="symbolToPrepend">The symbol (typically '?' or '#' to prepend the query string with. For no prefix, pass
+		/// an empty string.</param>
+		/// <param name="keyValueSeparator">The key/value separator.</param>
+		/// <param name="pairSeparator">The pair separator.</param>
+		/// <returns>A <see cref="String" /> that contains this collection's name/value pairs packed as a URL query string.</returns>
+		public string ToString(string symbolToPrepend, char pairSeparator = '&', char keyValueSeparator = '=')
 		{
 			string[] pairs = new string[this.Count];
 
@@ -592,10 +635,10 @@ namespace Kelp
 				if (value == null)
 					pairs[i] = key;
 				else
-					pairs[i] = string.Concat(key, "=", value);
+					pairs[i] = string.Concat(key, keyValueSeparator, value);
 			}
 
-			string result = string.Join("&", pairs);
+			string result = string.Join(pairSeparator.ToString(CultureInfo.InvariantCulture), pairs);
 			if (result.Length != 0)
 				return symbolToPrepend + result;
 

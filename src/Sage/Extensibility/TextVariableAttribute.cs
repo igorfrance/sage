@@ -19,24 +19,12 @@ namespace Sage.Extensibility
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using Sage.ResourceManagement;
-
 	/// <summary>
 	/// Indicates that the method this attribute decorates should be used as a variable handler for the specified variable name(s).
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class TextVariableAttribute : Attribute
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TextVariableAttribute"/> class.
-		/// </summary>
-		/// <param name="variable">The name of a variable handled by the method this attribute decorates.</param>
-		public TextVariableAttribute(string variable)
-			: this()
-		{
-			this.Variables.Add(variable);
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TextVariableAttribute"/> class.
 		/// </summary>

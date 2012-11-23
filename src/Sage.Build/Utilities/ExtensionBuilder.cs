@@ -38,8 +38,6 @@ namespace Sage.Build.Utilities
 
 		private readonly ZipEntryFactory zipEntryFactory = new ZipEntryFactory();
 		private NameValueCollection arguments;
-		private string sourcePath;
-		private string extensionName;
 
 		public string CommandName
 		{
@@ -80,25 +78,30 @@ namespace Sage.Build.Utilities
 
 		public void Run()
 		{
-			this.sourcePath = this.arguments["source"];
-			if (!Path.IsPathRooted(this.sourcePath))
-				this.sourcePath = Path.Combine(Directory.GetCurrentDirectory(), this.sourcePath);
+			this.BuildExtension(this.arguments["source"], this.arguments["target"]);
+		}
 
-			extensionName = Path.GetFileName(this.sourcePath);
-			string configSourcePath = Path.Combine(this.sourcePath, ProjectConfiguration.ProjectConfigName);
+		internal void BuildExtension(string sourcePath, string targetPath = null)
+		{
+			if (!Path.IsPathRooted(sourcePath))
+				sourcePath = Path.Combine(Directory.GetCurrentDirectory(), sourcePath);
+
+			string extensionName = Path.GetFileName(sourcePath);
+			string configSourcePath = Path.Combine(sourcePath, ProjectConfiguration.ProjectConfigName);
 			string systemConfigPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.SystemConfigName);
 			string configTargetPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.ExtensionConfigName);
+			string extensionPath = targetPath;
 
-			string targetPath = this.arguments["target"] ??
-				Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(this.extensionName, "zip"));
+			if (string.IsNullOrWhiteSpace(extensionPath))
+				extensionPath = Path.Combine(Path.GetDirectoryName(sourcePath), Path.ChangeExtension(extensionName, "zip"));
 
-			if (!Path.IsPathRooted(targetPath))
-				targetPath = Path.Combine(Directory.GetCurrentDirectory(), targetPath);
+			if (!Path.IsPathRooted(extensionPath))
+				extensionPath = Path.Combine(Directory.GetCurrentDirectory(), extensionPath);
 
-			if (!Directory.Exists(this.sourcePath))
+			if (!Directory.Exists(sourcePath))
 			{
 				throw new FileNotFoundException(
-					string.Format("The specified extension source path '{0}' doesn't exist", this.sourcePath));
+					string.Format("The specified extension source path '{0}' doesn't exist", sourcePath));
 			}
 
 			if (!File.Exists(configSourcePath))
@@ -115,25 +118,37 @@ namespace Sage.Build.Utilities
 				throw config.ValidationResult.Exception;
 
 			XmlElement configRoot = config.ToXml(extensionConfig);
-			if (arguments["target"] == null && !string.IsNullOrWhiteSpace(config.Name))
+			if (targetPath == null && !string.IsNullOrWhiteSpace(config.Name))
 			{
 				extensionName = config.Name;
-				targetPath = Path.Combine(Path.GetDirectoryName(this.sourcePath), Path.ChangeExtension(config.Name, "zip"));
+				extensionPath = Path.Combine(Path.GetDirectoryName(sourcePath), Path.ChangeExtension(config.Name, "zip"));
 			}
 
-			log.InfoFormat("Building extension '{0}'.", this.extensionName);
-			log.DebugFormat("     (source: {0})", this.sourcePath);
-			log.DebugFormat("     (target: {0})", targetPath);
+			log.InfoFormat("Building extension '{0}'.", extensionName);
+			log.DebugFormat("     (source: {0})", sourcePath);
+			log.DebugFormat("     (target: {0})", extensionPath);
 
-			if (File.Exists(targetPath))
-				File.Delete(targetPath);
+			if (File.Exists(extensionPath))
+				File.Delete(extensionPath);
 
-			string targetDir = Path.GetDirectoryName(targetPath);
+			string targetDir = Path.GetDirectoryName(extensionPath);
 
 			Directory.CreateDirectory(targetDir);
-			SageContext context = Program.CreateSageContext("/", this.MapPath, config);
+			SageContext context = Program.CreateSageContext("/", path =>
+			{
+				if (path == "/")
+					path = "~/";
 
-			using (ZipOutputStream zipfile = new ZipOutputStream(File.Create(targetPath)))
+				string result = path
+					.Replace("~", sourcePath)
+					.Replace("//", "/")
+					.Replace("/", "\\");
+
+				return new FileInfo(result).FullName;
+			},
+				config);
+
+			using (ZipOutputStream zipfile = new ZipOutputStream(File.Create(extensionPath)))
 			{
 				// Disable Zip64 for Mac compatibility
 				zipfile.UseZip64 = UseZip64.Off;
@@ -155,19 +170,19 @@ namespace Sage.Build.Utilities
 					this.PackFile(zipfile, file, "bin/" + childPath);
 				}
 
-				XmlElement linkingElement = 
+				XmlElement linkingElement =
 					extensionConfig.CreateElement("p:linking", XmlNamespaces.ProjectConfigurationNamespace);
 
 				// libraries, modules, links, metaviews, routes
-				this.CopyConfiguration(config.Package.Links, "p:link", "p:link", linkingElement, extensionRoot);
-				this.CopyConfiguration(config.Package.Formats, "p:formats", "p:format", linkingElement, extensionRoot);
+				CopyConfiguration(config.Package.Links, "p:link", "p:link", linkingElement, extensionRoot);
+				CopyConfiguration(config.Package.Formats, "p:formats", "p:format", linkingElement, extensionRoot);
 				if (linkingElement.SelectNodes("*").Count != 0)
 					extensionRoot.AppendElement(linkingElement);
 
-				this.CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:metaView", configRoot, extensionRoot);
-				this.CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
-				this.CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
-				this.CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:metaView", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
+				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
 				extensionConfig.Save(configTargetPath);
 
@@ -184,13 +199,13 @@ namespace Sage.Build.Utilities
 		private static XmlDocument CreateExtensionConfigurationDocument(string extensionName)
 		{
 			XmlDocument result = new XmlDocument();
-			result.LoadXml(string.Format("<project xmlns='{0}' name='{1}'/>",
+			result.LoadXml(string.Format("<extension xmlns='{0}' name='{1}'/>",
 				XmlNamespaces.ProjectConfigurationNamespace, extensionName));
 
 			return result;
 		}
 
-		private void CopyConfiguration(PackageGroup group, string parentName, string childName, XmlElement source, XmlElement target)
+		private static void CopyConfiguration(PackageGroup group, string parentName, string childName, XmlElement source, XmlElement target)
 		{
 			string aggregateXpath = string.Format("{0}/{1}/@name", parentName, childName);
 			List<string> names = group.FilterNames(source.Aggregate(aggregateXpath, XmlNamespaces.Manager));
@@ -219,19 +234,6 @@ namespace Sage.Build.Utilities
 				StreamUtils.Copy(streamReader, zipfile, new byte[4096]);
 
 			zipfile.CloseEntry();
-		}
-
-		private string MapPath(string path)
-		{
-			if (path == "/")
-				path = "~/";
-
-			string result = path.Replace(
-				"~", this.sourcePath).Replace(
-				"//", "/").Replace(
-				"/", "\\");
-
-			return new FileInfo(result).FullName;
 		}
 	}
 }

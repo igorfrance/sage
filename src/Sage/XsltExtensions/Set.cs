@@ -18,6 +18,7 @@ namespace Sage.XsltExtensions
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 	using System.Xml;
 	using System.Xml.XPath;
 
@@ -31,6 +32,9 @@ namespace Sage.XsltExtensions
 		Justification = "This is an XSLT extension class, these methods are not intended for use from C#.")]
 	public class Set
 	{
+		private const int MinAscii = 97; // a
+		private const int MaxAscii = 122; // z
+
 		private static readonly XmlDocument document = new XmlDocument();
 		private static readonly XPathNavigator empty = document.CreateNavigator();
 
@@ -48,7 +52,7 @@ namespace Sage.XsltExtensions
 		/// <summary>
 		/// Selects nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
 		/// </summary>
-		/// <param name="nodeset">The nodeset that contains the nodes to filter.</param>
+		/// <param name="nodeset">The <c>nodeset</c> that contains the nodes to filter.</param>
 		/// <param name="xpath">The xpath to use to select the value that should be unique between nodes.</param>
 		/// <returns>
 		/// The nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
@@ -61,7 +65,7 @@ namespace Sage.XsltExtensions
 		/// <summary>
 		/// Selects nodes from the specified <paramref name="nodeset"/> that have unique values selected with <paramref name="xpath"/>.
 		/// </summary>
-		/// <param name="nodeset">The nodeset that contains the nodes to filter.</param>
+		/// <param name="nodeset">The <c>nodeset</c> that contains the nodes to filter.</param>
 		/// <param name="xpath">The xpath to use to select the value that should be unique between nodes.</param>
 		/// <param name="includeNullEntries">If set to <c>true</c>, nodes that fail to select the specified <paramref name="xpath"/> will be included too.</param>
 		/// <returns>
@@ -97,10 +101,7 @@ namespace Sage.XsltExtensions
 
 			if (result.Count > 0)
 			{
-				List<string> distinct = new List<string>();
-				for (int i = 0; i < result.Count; i++)
-					distinct.Add(result[i].XPath);
-
+				List<string> distinct = result.Select(t => t.XPath).ToList();
 				return result[0].Root.Select(string.Join(" | ", distinct), NodeInfo.GetNamespaceManager(result));
 			}
 
@@ -132,10 +133,10 @@ namespace Sage.XsltExtensions
 						name = string.Concat(prefix, ":", node.LocalName);
 					}
 
-					if (node.NodeType == XPathNodeType.Attribute)
-						xpathParts.Add(string.Format(AttributeXPath, name));
-					else
-						xpathParts.Add(string.Format(ElementXPath, name, GetNodeIndex(node)));
+					xpathParts.Add(
+						node.NodeType == XPathNodeType.Attribute
+							? string.Format(AttributeXPath, name)
+							: string.Format(ElementXPath, name, this.GetNodeIndex(node)));
 
 					this.Root = node;
 				}
@@ -149,7 +150,7 @@ namespace Sage.XsltExtensions
 
 			public string XPath { get; private set; }
 
-			public static XmlNamespaceManager GetNamespaceManager(List<NodeInfo> nodes)
+			public static XmlNamespaceManager GetNamespaceManager(IEnumerable<NodeInfo> nodes)
 			{
 				XmlNamespaceManager nm = new XmlNamespaceManager(new NameTable());
 				foreach (NodeInfo info in nodes)
@@ -188,16 +189,13 @@ namespace Sage.XsltExtensions
 				}
 				else
 				{
-					int minAscii = 97;  // a
-					int maxAscii = 122; // z
-
 					Random random = new Random();
 					while (prefix == string.Empty || namespaces.ContainsKey(prefix))
 					{
 						prefix = string.Concat(
-							(char) (minAscii + random.Next(maxAscii - minAscii)),
-							(char) (minAscii + random.Next(maxAscii - minAscii)),
-							(char) (minAscii + random.Next(maxAscii - minAscii)));
+							(char)(MinAscii + random.Next(MaxAscii - MinAscii)),
+							(char)(MinAscii + random.Next(MaxAscii - MinAscii)),
+							(char)(MinAscii + random.Next(MaxAscii - MinAscii)));
 					}
 				}
 

@@ -57,9 +57,7 @@ namespace Sage.Configuration
 		public const string SystemConfigName = "System.config";
 
 		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
-
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
-
 		private readonly List<XmlElement> customElements;
 
 		private ProjectConfiguration()
@@ -72,6 +70,7 @@ namespace Sage.Configuration
 			this.Routing = new RoutingConfiguration();
 			this.PathTemplates = new PathTemplates();
 			this.ResourceLibraries = new Dictionary<string, ResourceLibraryInfo>();
+			this.Type = ProjectType.Project;
 
 			this.SharedCategory = "shared";
 			this.DefaultLocale = "us";
@@ -140,6 +139,22 @@ namespace Sage.Configuration
 		public EnvironmentConfiguration Environment { get; private set; }
 
 		/// <summary>
+		/// Gets the identification string of the project this configuration represents.
+		/// </summary>
+		/// <value>
+		/// The project identification string is used to identify resource origin and be able to
+		/// subsequently order them on project dependency. The format of the identifier is: 
+		/// <code>[ProjectType].[ProjectName]</code>
+		/// </value>
+		public string Id
+		{
+			get
+			{
+				return string.Concat(this.Type.ToString(), ".", this.Name);
+			}
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the current project has been configured for debugging.
 		/// </summary>
 		public bool IsDebugEnabled { get; private set; }
@@ -189,6 +204,11 @@ namespace Sage.Configuration
 		/// </summary>
 		public string SharedCategory { get; private set; }
 
+		/// <summary>
+		/// Gets the type of project that this configuration defines.
+		/// </summary>
+		public ProjectType Type { get; private set; }
+
 		internal List<string> Files
 		{
 			get;
@@ -232,8 +252,7 @@ namespace Sage.Configuration
 		{
 			Contract.Requires<ArgumentNullException>(configStream != null);
 
-			XmlDocument document = new XmlDocument();
-			document.PreserveWhitespace = true;
+			XmlDocument document = new XmlDocument { PreserveWhitespace = true };
 			document.Load(configStream);
 
 			XmlDocument parentDoc = null;
@@ -383,7 +402,14 @@ namespace Sage.Configuration
 			if (!this.ValidationResult.Success)
 				return;
 
-			XmlNamespaceManager nm = XmlNamespaces.Manager;
+			var nm = XmlNamespaces.Manager;
+			var packageElement = configNode.SelectSingleNode("p:package", nm);
+
+			this.Type = (ProjectType) Enum.Parse(typeof(ProjectType), configNode.Name, true);
+			if (this.Type == ProjectType.Project && packageElement != null)
+			{
+				this.Type = ProjectType.ExtensionProject;
+			}
 
 			foreach (XmlElement child in configNode.SelectNodes(
 				string.Format("*[namespace-uri() != '{0}']", XmlNamespaces.ProjectConfigurationNamespace)))
@@ -475,13 +501,13 @@ namespace Sage.Configuration
 
 			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
 			{
-				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode);
+				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode, this.Id);
 				this.Modules.Add(moduleConfig.Name, moduleConfig);
 			}
 
 			foreach (XmlElement libraryNode in configNode.SelectNodes("p:libraries/p:library", nm))
 			{
-				ResourceLibraryInfo info = new ResourceLibraryInfo(libraryNode);
+				ResourceLibraryInfo info = new ResourceLibraryInfo(libraryNode, this.Id);
 				this.ResourceLibraries.Add(info.Name, info);
 			}
 
@@ -538,7 +564,7 @@ namespace Sage.Configuration
 				this.MetaViews[name] = info;
 			}
 
-			this.Package = new PackageConfiguration(configNode.SelectSingleNode("p:package", nm));
+			this.Package = new PackageConfiguration(packageElement);
 
 			if (this.Changed != null)
 				this.Changed(this, EventArgs.Empty);

@@ -124,6 +124,8 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\ComparisonComparer.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\XmlNamespaceManagerExtensions.cs" />
     <Compile Include="Imaging\Filters\QueryFilterFactoryAttribute.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />

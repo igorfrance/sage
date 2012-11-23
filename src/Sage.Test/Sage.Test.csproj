@@ -95,8 +95,8 @@
     <Compile Include="ResourceManagement\ResourceManagerTest.cs" />
     <Compile Include="ResourceManagement\ResourceNameTest.cs" />
     <Compile Include="ResourceManagement\XmlResourceTest.cs" />
-    <Compile Include="SageContextTests.cs" />
     <Compile Include="TestBench.cs" />
+    <Compile Include="UrlGeneratorTests.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="XsltRegistryTest.cs" />
   </ItemGroup>

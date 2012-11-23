@@ -22,9 +22,11 @@ namespace Sage.Test
 		public const string General = "General";
 		public const string Controllers = "Controllers";
 		public const string Modules = "Modules";
+		public const string Extensions = "Extensions";
 		public const string Core = "Core";
 		public const string Configuration = "Configuration";
 		public const string ResourceManagement = "Resource Management";
 		public const string Extensibility = "Extensibility";
+		public const string TestBench = "TestBench";
 	}
 }

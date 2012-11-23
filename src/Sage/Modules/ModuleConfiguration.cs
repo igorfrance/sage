@@ -65,13 +65,15 @@ namespace Sage.Modules
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ModuleConfiguration"/> class, using the specified
-		/// <paramref name="configElement"/>.
+		/// Initializes a new instance of the <see cref="ModuleConfiguration" /> class, using the specified
+		/// <paramref name="configElement" />.
 		/// </summary>
 		/// <param name="configElement">The module configuration element.</param>
-		internal ModuleConfiguration(XmlElement configElement)
+		/// <param name="projectId">The identification string of the project this library belongs to.</param>
+		internal ModuleConfiguration(XmlElement configElement, string projectId)
 			: this()
 		{
+			this.ProjectId = projectId;
 			this.Parse(configElement);
 		}
 
@@ -84,6 +86,36 @@ namespace Sage.Modules
 			this.LibraryDependencies = new List<string>();
 			this.AutoLocation = ModuleAutoLocation.None;
 		}
+
+		/// <summary>
+		/// Gets the location where this module should be automatically inserted in, if any.
+		/// </summary>
+		public ModuleAutoLocation AutoLocation { get; private set; }
+
+		/// <summary>
+		/// Gets the category of this module.
+		/// </summary>
+		public string Category { get; private set; }
+
+		/// <summary>
+		/// Gets the list of names of libraries this module uses or depends on.
+		/// </summary>
+		public List<string> LibraryDependencies { get; private set; }
+
+		/// <summary>
+		/// Gets the list of other modules that this module uses / depends on.
+		/// </summary>
+		public IList<string> ModuleDependencies { get; private set; }
+
+		/// <summary>
+		/// Gets the name of this module.
+		/// </summary>
+		public string Name { get; private set; }
+
+		/// <summary>
+		/// Gets the identification string of the project this library belongs to.
+		/// </summary>
+		public string ProjectId { get; private set; }
 
 		/// <summary>
 		/// Gets the list of resources this module uses / depends on.
@@ -111,24 +143,14 @@ namespace Sage.Modules
 		}
 
 		/// <summary>
-		/// Gets the list of names of libaries this module uses / depends on.
+		/// Gets the XSLT style-sheets this module uses.
 		/// </summary>
-		public List<string> LibraryDependencies { get; private set; }
+		public IList<string> Stylesheets { get; private set; }
 
 		/// <summary>
-		/// Gets the name of this module.
+		/// Gets the tag names associated with this module.
 		/// </summary>
-		public string Name { get; private set; }
-
-		/// <summary>
-		/// Gets the category of this module.
-		/// </summary>
-		public string Category { get; private set; }
-
-		/// <summary>
-		/// Gets the location where this module should be automatically inserted in, if any.
-		/// </summary>
-		public ModuleAutoLocation AutoLocation { get; private set; }
+		public IList<string> TagNames { get; private set; }
 
 		/// <summary>
 		/// Gets the type that implements this module.
@@ -160,21 +182,6 @@ namespace Sage.Modules
 		/// Gets the name of the type that implements this module.
 		/// </summary>
 		public string TypeName { get; private set; }
-
-		/// <summary>
-		/// Gets the tag names associated with this module.
-		/// </summary>
-		public IList<string> TagNames { get; private set; }
-
-		/// <summary>
-		/// Gets the XSLT stylesheets this module uses.
-		/// </summary>
-		public IList<string> Stylesheets { get; private set; }
-
-		/// <summary>
-		/// Gets the list of other modules that this module uses / depends on.
-		/// </summary>
-		public IList<string> ModuleDependencies { get; private set; }
 
 		/// <inheritdoc/>
 		public void Parse(XmlElement element)
@@ -213,7 +220,7 @@ namespace Sage.Modules
 			var resourceNodes = element.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
 			foreach (XmlElement scriptNode in resourceNodes)
 			{
-				this.resources.Add(new ModuleResource(scriptNode, this.Name));
+				this.resources.Add(new ModuleResource(scriptNode, this.Name, this.ProjectId));
 			}
 
 			var stylesheetNodes = element.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);
@@ -230,6 +237,12 @@ namespace Sage.Modules
 					element.GetAttribute("auto"),
 					true);
 			}
+		}
+
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format("{0} ({1}) ({2})", this.Name, string.Join(",", this.TagNames), this.Type);
 		}
 
 		/// <inheritdoc/>
@@ -274,12 +287,6 @@ namespace Sage.Modules
 				result.SetAttribute("auto", this.AutoLocation.ToString().ToLower());
 
 			return result;
-		}
-
-		/// <inheritdoc/>
-		public override string ToString()
-		{
-			return string.Format("{0} ({1}) ({2})", this.Name, string.Join(",", this.TagNames), this.Type);
 		}
 
 		[XmlProvider("modules.xslt")]
@@ -339,23 +346,6 @@ namespace Sage.Modules
 			return null;
 		}
 
-		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
-		{
-			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
-			foreach (string name in config.ModuleDependencies)
-			{
-				ModuleConfiguration reference;
-				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
-				{
-					result.Add(reference);
-					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
-					result.AddRange(innerDependencies.Where(innerConfig => !result.Contains(innerConfig)));
-				}
-			}
-
-			return result;
-		}
-
 		private static void CopyXslElements(SageContext context, string stylesheetPath, CacheableXmlDocument targetDocument)
 		{
 			CacheableXmlDocument fromDocument = context.Resources.LoadXml(stylesheetPath);
@@ -403,6 +393,23 @@ namespace Sage.Modules
 
 			foreach (XmlAttribute attrNode in fromDocument.DocumentElement.Attributes)
 				targetDocument.DocumentElement.SetAttribute(attrNode.Name, attrNode.InnerText);
+		}
+
+		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
+		{
+			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
+			foreach (string name in config.ModuleDependencies)
+			{
+				ModuleConfiguration reference;
+				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
+				{
+					result.Add(reference);
+					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
+					result.AddRange(innerDependencies.Where(innerConfig => !result.Contains(innerConfig)));
+				}
+			}
+
+			return result;
 		}
 	}
 }

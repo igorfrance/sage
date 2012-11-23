@@ -30,6 +30,8 @@ namespace Sage.Extensibility
 	/// </summary>
 	public class TextEvaluator
 	{
+		//// TODO: Introduce strict namespaces on functions and variables
+		//// TODO: Support registration of variables with just the namespace, and no name (ns:*)
 		private const string Undefined = "undefined";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TextEvaluator).FullName);
@@ -109,6 +111,23 @@ namespace Sage.Extensibility
 		}
 
 		/// <summary>
+		/// Gets the entry with the specified <paramref name="index"/> from the specified <paramref name="parameters"/> list.
+		/// </summary>
+		/// <param name="parameters">The list parameters.</param>
+		/// <param name="index">The index.</param>
+		/// <param name="defaultValue">The default value.</param>
+		/// <returns>The entry with the specified <paramref name="index"/> from the specified <paramref name="parameters"/> list,
+		/// or the <paramref name="defaultValue"/> if index is outside of parameters bounds.</returns>
+		public static string ExtractParameter(IEnumerable<string> parameters, int index, string defaultValue = null)
+		{
+			var enumerable = parameters as string[] ?? parameters.ToArray();
+			if (parameters == null || index < 0 || index > enumerable.Count() - 1)
+				return defaultValue;
+
+			return enumerable.ElementAt(index);
+		}
+
+		/// <summary>
 		/// Registers a variable <paramref name="handler"/> with the specified <paramref name="name"/>.
 		/// </summary>
 		/// <param name="name">Name of the variable.</param>
@@ -165,14 +184,14 @@ namespace Sage.Extensibility
 		/// <param name="context">The context to use when invoking the function.</param>
 		/// <param name="name">The name of the function to invoke.</param>
 		/// <param name="arguments">The arguments to use when invoking the function.</param>
-		/// <returns>The result of function invokation.</returns>
+		/// <returns>The result of function invocation.</returns>
 		public static string InvokeFunction(SageContext context, string name, string arguments)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(name));
 
 			if (!functions.ContainsKey(name))
-				throw new ArgumentException("The function with name '{0}' is undefined.", name);
+				throw new ArgumentException(string.Format("The function with name '{0}' is undefined.", name), "name");
 
 			string[] args = Util.SplitArguments(',', arguments).ToArray();
 			return functions[name](context, args);
@@ -184,14 +203,14 @@ namespace Sage.Extensibility
 		/// </summary>
 		/// <param name="context">The context to use when invoking the variable.</param>
 		/// <param name="name">The name of the variable to invoke.</param>
-		/// <returns>The result of variable invokation.</returns>
+		/// <returns>The result of variable invocation.</returns>
 		public static string InvokeVariable(SageContext context, string name)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(name));
 
 			if (!variables.ContainsKey(name))
-				throw new ArgumentException("The variable with name '{0}' is undefined.", name);
+				throw new ArgumentException(string.Format("The variable with name '{0}' is undefined.", name), "name");
 
 			return variables[name](context, name);
 		}

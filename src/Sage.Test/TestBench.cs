@@ -21,20 +21,16 @@
 namespace Sage.Test
 {
 	using System;
-	using System.Collections;
 	using System.Collections.Generic;
-	using System.Diagnostics;
 	using System.Linq;
-	using System.Text;
 	using Machine.Specifications;
-
-	using Sage.ResourceManagement;
 
 	using log4net;
 
 	/// <summary>
 	/// This class serves to hold temporary code snippets that can be run using the test runner.
 	/// </summary>
+	[Tags(Categories.TestBench)]
 	public class TestBench
 	{
 		static readonly ILog log = LogManager.GetLogger(typeof(TestBench).FullName);

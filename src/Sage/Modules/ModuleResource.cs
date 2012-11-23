@@ -31,8 +31,9 @@ namespace Sage.Modules
 		/// </summary>
 		/// <param name="resourceNode">The XML configuration node that represent this resource.</param>
 		/// <param name="moduleName">The name of the module this resource belongs to.</param>
-		public ModuleResource(XmlElement resourceNode, string moduleName)
-			: base(resourceNode)
+		/// <param name="projectId">The identification string of the project this library belongs to.</param>
+		public ModuleResource(XmlElement resourceNode, string moduleName, string projectId)
+			: base(resourceNode, projectId)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(moduleName));
 

@@ -31,12 +31,19 @@ namespace Kelp.Test.Extensions
 			x = new DateTime(2000, 1, 1);
 		};
 
-		private Because of = () => x.Offset("+2d");
+		private It Should_correctly_add_two_days = () => 
+			x.Offset("+2d").Day.ShouldEqual(3);
 
-		private It Should_correctly_add_two_days = () => x.Offset("+2d").Day.ShouldEqual(3);
-		private It Should_correctly_add_two_years = () => x.Offset("+2y").Year.ShouldEqual(2002);
-		private It Should_correctly_substract_four_months = () => x.Offset("-4M").Month.ShouldEqual(9);
-		private It Should_correctly_substract_four_months_and_change_the_year = () => x.Offset("-4M").Year.ShouldEqual(1999);
-		private It Should_correctly_add_1000_years = () => x.Offset("1000y").Year.ShouldEqual(3000);
+		private It Should_correctly_add_two_years = () => 
+			x.Offset("+2y").Year.ShouldEqual(2002);
+
+		private It Should_correctly_substract_four_months = () => 
+			x.Offset("-4M").Month.ShouldEqual(9);
+
+		private It Should_correctly_substract_four_months_and_change_the_year = () => 
+			x.Offset("-4M").Year.ShouldEqual(1999);
+
+		private It Should_correctly_add_1000_years = () => 
+			x.Offset("1000y").Year.ShouldEqual(3000);
 	}
 }

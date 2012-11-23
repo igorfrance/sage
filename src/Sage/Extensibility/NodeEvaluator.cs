@@ -167,8 +167,9 @@ namespace Sage.Extensibility
 
 		private static string QualifyName(XmlNodeType type, string name, string ns)
 		{
-			if (name.IndexOf(":") >= 0)
-				name = name.Substring(name.IndexOf(":") + 1);
+			var colonIndex = name.IndexOf(":", StringComparison.Ordinal);
+			if (colonIndex >= 0)
+				name = name.Substring(colonIndex + 1);
 
 			if (string.IsNullOrEmpty(ns))
 				return string.Concat((int) type, "_", name);

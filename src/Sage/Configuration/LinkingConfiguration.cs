@@ -31,8 +31,11 @@ namespace Sage.Configuration
 	/// </summary>
 	public class LinkingConfiguration : IXmlConvertible
 	{
+		//// TODO: Remove the HostingEnvironment.ApplicationVirtualPath property
+		//// TODO: Add option to fully qualify URL's or not
 		private readonly Dictionary<string, string> links = new Dictionary<string, string>();
 		private readonly Dictionary<string, string> formats = new Dictionary<string, string>();
+		private string applicationPath = HostingEnvironment.ApplicationVirtualPath ?? "/";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkingConfiguration"/> class.
@@ -66,7 +69,7 @@ namespace Sage.Configuration
 		}
 
 		/// <summary>
-		/// Gets the dictionary of formmat strings.
+		/// Gets the dictionary of format strings.
 		/// </summary>
 		public ReadOnlyDictionary<string, string> Formats
 		{
@@ -141,10 +144,10 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(linkUrl));
 
 			if (linkUrl.StartsWith("~/"))
-				linkUrl = linkUrl.Replace("~/", HostingEnvironment.ApplicationVirtualPath.TrimEnd('/') + "/");
+				linkUrl = linkUrl.Replace("~/", applicationPath.TrimEnd('/') + "/");
 
 			if (!linkUrl.StartsWith("/") && !linkUrl.Contains("://"))
-				linkUrl = string.Concat(HostingEnvironment.ApplicationVirtualPath.TrimEnd('/'), "/", linkUrl);
+				linkUrl = string.Concat(applicationPath.TrimEnd('/'), "/", linkUrl);
 
 			this.links[linkName] = linkUrl;
 		}
@@ -160,6 +163,13 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(formatValue));
 
 			this.formats[formatName] = formatValue;
+		}
+
+		internal void SetApplicationPath(string applicationPath)
+		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(applicationPath));
+
+			this.applicationPath = applicationPath;
 		}
 	}
 }
