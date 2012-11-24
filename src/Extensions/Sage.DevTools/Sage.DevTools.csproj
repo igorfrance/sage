@@ -162,7 +162,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Sage.Tools\Sage.Tools.csproj">
       <Project>{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}</Project>
-      <Name>Sage.Build</Name>
+      <Name>Sage.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Sage\Sage.csproj">
       <Project>{E647EBD1-64CF-48EB-B20D-0133C24899F6}</Project>

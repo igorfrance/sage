@@ -121,14 +121,17 @@ sage.dev.ViewInspector = function ViewInspector()
 		return $url.serializeParams(state);
 	}
 
-	function setHashInspectorState()
+	function setHashInspectorState(state)
 	{
-		var state = getHashInspectorState();
-		var currentState = $url.getHashParam(stateParamName);
-		var updatedState = escape(state);
+		var target = {};
+		target.url = state.url || currentState.url;
+		target.inspector = state.inspector || currentState.inspector;
 
-		if (currentState != updatedState)
-			$url.setHashParam(stateParamName, updatedState);
+		var hashTarget = $url.serializeParams(target);
+		var currentHash = $url.getHashParam(stateParamName);
+
+		if (currentHash != hashTarget)
+			$url.setHashParam(stateParamName, escape(hashTarget));
 	}
 
 	function clearViewInspectorState()
@@ -282,7 +285,6 @@ sage.dev.ViewInspector = function ViewInspector()
 					button.removeClass("disabled");
 				}
 
-				console.log(commandName + " state: " + state);
 				if ((state & buttonState.ACTIVE) != 0)
 				{
 					button.addClass("active");
@@ -657,8 +659,6 @@ sage.dev.ViewInspector = function ViewInspector()
 			executeCommand("doubleFrame");
 
 		setViewInspectorState({ inspector: viewName });
-
-		loadMetaView(viewName);
 	};
 
 	commands.viewMeta.getState = function viewMeta$getState(viewName)
@@ -675,8 +675,7 @@ sage.dev.ViewInspector = function ViewInspector()
 		if (currentLayout == layoutType.SINGLE)
 			executeCommand("doubleFrame");
 
-		currentState.inspector = "log";
-		loadLogView();
+		setViewInspectorState({ inspector: "log" });
 	};
 
 	commands.viewLog.getState = function viewLog$getState()
