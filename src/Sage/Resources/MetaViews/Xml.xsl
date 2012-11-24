@@ -6,7 +6,7 @@
 	<xsl:output method="xml" indent="yes" omit-xml-declaration="no" version="1.0" encoding="utf-8"/>
 
 	<xsl:template match="xhtml:*">
-		<xsl:element name="{name()}">
+		<xsl:element name="{local-name()}">
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="node()"/>
 		</xsl:element>
