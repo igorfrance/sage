@@ -49,7 +49,7 @@ namespace Sage.Controllers
 
 		private readonly ControllerMessages messages = new ControllerMessages();
 		private readonly IModuleFactory moduleFactory = new SageModuleFactory();
-		private readonly Dictionary<string, ViewInfo> viewInfo = new Dictionary<string, ViewInfo>();
+		private readonly Dictionary<string, ViewInfo> viewInfos = new Dictionary<string, ViewInfo>();
 
 		static SageController()
 		{
@@ -117,9 +117,9 @@ namespace Sage.Controllers
 		/// Gets a value indicating whether this is a shared controller.
 		/// </summary>
 		/// <remarks>
-		/// Shared controller is useful with multi-ategory projects. A shared controller's view are opened from
+		/// Shared controller is useful with multi-category projects. A shared controller's view are opened from
 		/// <see cref="PathResolver.SharedViewPath"/> instead of from <see cref="PathResolver.ViewPath"/>. This makes
-		/// it possible to have create views that are shared across all gategories in a multi-category project.
+		/// it possible to have create views that are shared across all categories in a multi-category project.
 		/// </remarks>
 		internal bool IsShared { get; private set; }
 
@@ -162,7 +162,7 @@ namespace Sage.Controllers
 		/// </returns>
 		public virtual ViewInput ProcessView(string viewName)
 		{
-			return ProcessView(new ViewInfo(this, viewName));
+			return this.ProcessView(new ViewInfo(this, viewName));
 		}
 
 		/// <summary>
@@ -337,15 +337,15 @@ namespace Sage.Controllers
 		/// <param name="viewName">The name of the view for which to get the info.</param>
 		/// <returns>
 		/// An object that contains information about the view template and configuration file that correspond to 
-		/// this controller and the vew with the specified <paramref name="viewName"/>.
+		/// this controller and the view with the specified <paramref name="viewName"/>.
 		/// </returns>
 		public virtual ViewInfo GetViewInfo(string viewName)
 		{
-			if (!viewInfo.ContainsKey(viewName))
-				viewInfo.Add(viewName,
+			if (!this.viewInfos.ContainsKey(viewName))
+				this.viewInfos.Add(viewName,
 					new ViewInfo(this, viewName));
 
-			return viewInfo[viewName];
+			return this.viewInfos[viewName];
 		}
 
 		/// <summary>
@@ -356,7 +356,7 @@ namespace Sage.Controllers
 		/// send the last modification date that they received the last time they got that file, in order for the
 		/// server to figure out whether to send a new version. With sage controllers views, the last modification
 		/// date is actually the latest modification date of possibly a whole series of files. Those files could be
-		/// the XSLT stylesheet itself or any one of its includes, or the XML configuration file or any one of its
+		/// the XSLT style-sheet itself or any one of its includes, or the XML configuration file or any one of its
 		/// includes. Therefore it is necessary to have this extra piece of logic to effectively determine what that
 		/// latest modification date is.
 		/// </remarks>

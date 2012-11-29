@@ -28,9 +28,9 @@ namespace Sage.Rewriters
 		private static readonly ILog log = LogManager.GetLogger(typeof(LocalizePathRewriter).FullName);
 
 		/// <summary>
-		/// Inits the specified application.
+		/// Initializes the rewriter, using specified application.
 		/// </summary>
-		/// <param name="application">The application.</param>
+		/// <param name="application">The current web application.</param>
 		public void Init(HttpApplication application)
 		{
 			application.BeginRequest += (sender, e) => RewritePath((HttpApplication) sender);

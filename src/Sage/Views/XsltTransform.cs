@@ -134,7 +134,7 @@ namespace Sage.Views
 		/// specified <paramref name="stylesheetPath"/>.
 		/// </summary>
 		/// <param name="context">The context under which this code is executing.</param>
-		/// <param name="stylesheetPath">The path to the stylesheet.</param>
+		/// <param name="stylesheetPath">The path to the <c>XSLT stylesheet</c>.</param>
 		/// <returns>
 		/// An <see cref="XsltTransform"/> instance initialized with the document loaded from the 
 		/// specified <paramref name="stylesheetPath"/>.
@@ -269,7 +269,7 @@ namespace Sage.Views
 	/// <summary>
 	/// Provides code contracts for <see cref="XsltTransform"/>.
 	/// </summary>
-	[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed. Suppression is OK here.")]
+	[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "OK")]
 	[ContractClassFor(typeof(XsltTransform))]
 	public abstract class XsltTransformContract : XsltTransform
 	{

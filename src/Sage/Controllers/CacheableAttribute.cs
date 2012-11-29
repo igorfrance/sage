@@ -27,7 +27,7 @@ namespace Sage.Controllers
 	/// </summary>
 	/// <remarks>
 	/// The MVC's <see cref="OutputCacheAttribute"/> doesn't work well in a clustered setup, 
-	/// since it generates different ETags and Last-Modified's for different servers, thereby potentially
+	/// since it generates different ETags and Last-Modified for different servers, thereby potentially
 	/// confusing both Akamai and browsers. 
 	/// <para>This attribute ensures that the same ETags and Last-Modified response headers get set across
 	/// different servers.</para>
@@ -239,10 +239,7 @@ namespace Sage.Controllers
 			var lastModified = GetLastModified(filterContext);
 
 			response.Cache.SetCacheability(HttpCacheability.Public);
-			if (lastModified != null)
-				response.Cache.SetLastModified(lastModified.Value);
-			else
-				response.Cache.SetLastModified(DateTime.Now);
+			response.Cache.SetLastModified(lastModified != null ? lastModified.Value : DateTime.Now);
 
 			if (context.IsDebuggingEnabled)
 				response.AddHeader("X-Processed-By", this.GetType().FullName);
