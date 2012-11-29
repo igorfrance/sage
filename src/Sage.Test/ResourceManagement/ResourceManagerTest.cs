@@ -31,9 +31,17 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(ResourceManager)), Tags(Categories.ResourceManagement)]
 	public class When_loading_xml_documents
 	{
-		static readonly SageContext context = Mother.CreateSageContext("default", "uk");
-		static readonly string filePath= context.MapPath("~/assets/default/views/gallery/index.xml");
-		static readonly string filePathMissing = context.MapPath("~/assets/file/that/doesnt/exist.xml");
+		static SageContext context;
+		static string filePath;
+		static string filePathMissing;
+
+		Establish ctx = () =>
+		{
+			Project.Start(Mother.CreateHttpContext("/"));
+			context = Mother.CreateSageContext("default", "uk");
+			filePath = context.MapPath("~/assets/default/views/gallery/index.xml");
+			filePathMissing = context.MapPath("~/assets/file/that/doesnt/exist.xml");
+		};
 
 		It Should_throw_ArgumentNullException_with_null_filepath = () =>
 			Catch.Exception(() => ResourceManager.LoadXmlDocument(string.Empty, null)).ShouldBeOfType(typeof(ArgumentNullException));
@@ -61,7 +69,7 @@ namespace Sage.Test.ResourceManagement
 				.DocumentElement.InnerText.Trim().ShouldEqual("Embedded resource.");
 
 		It Should_correctly_load_and_globalize_embedded_xml_document = () =>
-			ResourceManager.LoadXmlDocument("sageresx://sage.test/resources/index.xml", Mother.CreateSageContext("default", "uk"))
+			ResourceManager.LoadXmlDocument("sageresx://sage.test/resources/index.xml", Mother.CreateSageContext("default", "us"))
 				.DocumentElement.InnerText.Trim().ShouldContain("english");
 
 		It Should_correctly_load_xincluding_xml_document = () =>

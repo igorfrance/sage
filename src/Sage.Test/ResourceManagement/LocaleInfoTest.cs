@@ -25,6 +25,8 @@ namespace Sage.Test.ResourceManagement
 	using System;
 	using System.Xml;
 
+	using Kelp.Extensions;
+
 	using Machine.Specifications;
 	using Sage.Configuration;
 
@@ -36,14 +38,16 @@ namespace Sage.Test.ResourceManagement
 
 		private Establish ctx = () =>
 			{
-				xmlDocument.LoadXml(@"
-					<internationalization>
+				xmlDocument.LoadXml(string.Format(@"
+					<internationalization xmlns='{0}'>
 						<locale name=""uk"" dictionaryNames=""en-UK,en"" resourceNames=""en-UK,en,default"">
 							<format culture=""en-uk"" shortDate=""d"" longDate=""D""/>
 						</locale>
-					</internationalization>");
+					</internationalization>", XmlNamespaces.ProjectConfigurationNamespace));
 
-				localeInfo = new LocaleInfo((XmlElement) xmlDocument.SelectSingleNode("/internationalization/locale"));
+				XmlNamespaceManager nm = XmlNamespaces.Manager;
+				XmlElement localeNode = xmlDocument.SelectSingleElement("//p:locale", nm);
+				localeInfo = new LocaleInfo(localeNode);
 			};
 
 		private It Should_have_the_correct_name = () => 
@@ -55,7 +59,7 @@ namespace Sage.Test.ResourceManagement
 		private It Should_have_the_same_resource_name_as_the_dictionary_name = () => 
 			localeInfo.ResourceNames[0].ShouldEqual(localeInfo.DictionaryNames[0]);
 
-		private It Should_have_the_deffault_fallback_resource_name = () => 
+		private It Should_have_the_default_fallback_resource_name = () => 
 			localeInfo.ResourceNames[2].ShouldEqual("default");
 	}
 

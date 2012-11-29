@@ -31,37 +31,66 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(PathResolver)), Tags(Categories.ResourceManagement)]
 	public class When_initialized_with_setup1
 	{
-		private static readonly SageContext context1 = Mother.CreateSageContext("/");
-		private static readonly SageContext context2 = Mother.CreateSageContext("alternate", "uk");
+		private static string physicalPath;
+		private static string physicalViewPath1;
+		private static string physicalViewPath2;
+		private static string physicalSharedViewPath;
 
-		private static string physicalPath = context1.MapPath("/");
-		private static string physicalViewPath1 = Path.Combine(physicalPath, "assets\\default\\views\\");
-		private static string physicalViewPath2 = Path.Combine(physicalPath, "assets\\alternate\\views\\");
-		private static string physicalSharedViewPath = Path.Combine(physicalPath, "assets\\shared\\views\\");
+		private static SageContext context1;
+		private static SageContext context2;
 
-		It Should_return_proper_asset_path_for_default_category = () => context1.Path.AssetPath.ShouldEqual("~/assets/default");
-		It Should_return_proper_asset_path_for_alternate_category = () => context2.Path.AssetPath.ShouldEqual("~/assets/alternate");
+		Establish ctx = () =>
+		{
+			Project.Start(Mother.CreateHttpContext("/"));
 
-		It Should_return_proper_shared_asset_path_for_default_category = () => context1.Path.SharedAssetPath.ShouldEqual("~/assets/shared");
-		It Should_return_proper_shared_asset_path_for_alternate_category = () => context2.Path.SharedAssetPath.ShouldEqual("~/assets/shared");
+			context1 = Mother.CreateSageContext("/");
+			context2 = Mother.CreateSageContext("alternate", "uk");
 
-		It Should_return_proper_module_path_for_default_category = () => context1.Path.ModulePath.ShouldEqual("~/assets/default/modules/");
-		It Should_return_proper_module_path_for_alternate_category = () => context2.Path.ModulePath.ShouldEqual("~/assets/alternate/modules/");
+			physicalPath = context1.MapPath("/");
+			physicalViewPath1 = Path.Combine(physicalPath, @"assets\default\views\");
+			physicalViewPath2 = Path.Combine(physicalPath, @"assets\alternate\views\");
+			physicalSharedViewPath = Path.Combine(physicalPath, @"assets\shared\views\");
+		};
 
-		It Should_return_proper_view_path_for_default_category = () => context1.Path.ViewPath.ShouldEqual("~/assets/default/views/");
-		It Should_return_proper_view_path_for_alternate_category = () => context2.Path.ViewPath.ShouldEqual("~/assets/alternate/views/");
+		It Should_return_proper_asset_path_for_default_category = () => 
+			context1.Path.AssetPath.ShouldEqual("~/assets/default");
+		It Should_return_proper_asset_path_for_alternate_category = () => 
+			context2.Path.AssetPath.ShouldEqual("~/assets/alternate");
 
-		It Should_return_proper_shared_view_path_for_default_category = () => context1.Path.SharedViewPath.ShouldEqual("~/assets/shared/views/");
-		It Should_return_proper_shared_view_path_for_alternate_category = () => context2.Path.SharedViewPath.ShouldEqual("~/assets/shared/views/");
+		It Should_return_proper_shared_asset_path_for_default_category = () => 
+			context1.Path.SharedAssetPath.ShouldEqual("~/assets/shared");
+		It Should_return_proper_shared_asset_path_for_alternate_category = () => 
+			context2.Path.SharedAssetPath.ShouldEqual("~/assets/shared");
 
-		It Should_return_proper_physical_view_path_for_default_category = () => context1.Path.PhysicalViewPath.ShouldEqual(physicalViewPath1);
-		It Should_return_proper_physical_view_path_for_alternate_category = () => context2.Path.PhysicalViewPath.ShouldEqual(physicalViewPath2);
+		It Should_return_proper_module_path_for_default_category = () => 
+			context1.Path.ModulePath.ShouldEqual("~/assets/default/modules/");
+		It Should_return_proper_module_path_for_alternate_category = () => 
+			context2.Path.ModulePath.ShouldEqual("~/assets/alternate/modules/");
 
-		It Should_return_proper_physical_shared_view_path_for_default_category = () => context1.Path.PhysicalSharedViewPath.ShouldEqual(physicalSharedViewPath);
-		It Should_return_proper_physical_shared_view_path_for_alternate_category = () => context2.Path.PhysicalSharedViewPath.ShouldEqual(physicalSharedViewPath);
+		It Should_return_proper_view_path_for_default_category = () => 
+			context1.Path.ViewPath.ShouldEqual("~/assets/default/views/");
+		It Should_return_proper_view_path_for_alternate_category = () => 
+			context2.Path.ViewPath.ShouldEqual("~/assets/alternate/views/");
 
-		It Should_properly_substitute_template_path_for_default_category = () => context1.Path.Substitute("{assetpath}/{category}/{locale}").ShouldEqual("~/assets/default/default/com");
-		It Should_properly_substitute_template_path_for_alternate_category = () => context2.Path.Substitute("{assetpath}/{category}/{locale}").ShouldEqual("~/assets/alternate/alternate/uk");
+		It Should_return_proper_shared_view_path_for_default_category = () => 
+			context1.Path.SharedViewPath.ShouldEqual("~/assets/shared/views/");
+		It Should_return_proper_shared_view_path_for_alternate_category = () => 
+			context2.Path.SharedViewPath.ShouldEqual("~/assets/shared/views/");
+
+		It Should_return_proper_physical_view_path_for_default_category = () => 
+			context1.Path.PhysicalViewPath.ShouldEqual(physicalViewPath1);
+		It Should_return_proper_physical_view_path_for_alternate_category = () => 
+			context2.Path.PhysicalViewPath.ShouldEqual(physicalViewPath2);
+
+		It Should_return_proper_physical_shared_view_path_for_default_category = () => 
+			context1.Path.PhysicalSharedViewPath.ShouldEqual(physicalSharedViewPath);
+		It Should_return_proper_physical_shared_view_path_for_alternate_category = () => 
+			context2.Path.PhysicalSharedViewPath.ShouldEqual(physicalSharedViewPath);
+
+		It Should_properly_substitute_template_path_for_default_category = () => 
+			context1.Path.Substitute("{assetpath}/{category}/{locale}").ShouldEqual("~/assets/default/default/com");
+		It Should_properly_substitute_template_path_for_alternate_category = () => 
+			context2.Path.Substitute("{assetpath}/{category}/{locale}").ShouldEqual("~/assets/alternate/alternate/uk");
 		It Should_properly_substitute_template_path_for_default_category_using_alternate_context = () =>
 			context1.Path.Substitute("{assetpath}/{category}/{locale}", context2).ShouldEqual("~/assets/alternate/alternate/com");
 

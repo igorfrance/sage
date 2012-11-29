@@ -34,12 +34,16 @@ namespace Sage.Test.Configuration
 	{
 		private static ProjectConfiguration config;
 
-		private Because of = () => config = Project.Configuration;
+		private Establish context = () =>
+		{
+			Project.Start(Mother.CreateHttpContext("/"));
+			config = Project.Configuration;
+		};
 
 		private It Should_return_true_for_local_adresses1 = () => config.Environment.IsDeveloperIp("127.0.0.1").ShouldBeTrue();
 		private It Should_return_true_for_local_adresses2 = () => config.Environment.IsDeveloperIp("::1").ShouldBeTrue();
 		private It Should_return_true_for_lan_adresses1 = () => config.Environment.IsDeveloperIp("172.16.4.12").ShouldBeTrue();
-		private It Should_return_true_for_lan_adresses32 = () => config.Environment.IsDeveloperIp("10.180.5.4").ShouldBeTrue();
+		private It Should_return_true_for_lan_adresses2 = () => config.Environment.IsDeveloperIp("10.180.5.4").ShouldBeTrue();
 	}
 
 	[Subject(typeof(ProjectConfiguration)), Tags(Categories.Configuration)]
@@ -52,7 +56,7 @@ namespace Sage.Test.Configuration
 			config = ProjectConfiguration.Create(new XmlDocument { InnerXml =
 				@"<project xmlns='http://www.cycle99.com/schemas/sage/configuration/project.xsd' defaultLocale='en'>
 					<internationalization>
-						<locale name='us' dictionaryNames='us,en' resourceNames='us,en,default'>
+						<locale name='us' language='en' dictionaryNames='us,en' resourceNames='us,en,default'>
 							<format culture='en-us' shortDate='MMMM d, yyyy' longDate='D'/>
 						</locale>
 					</internationalization>

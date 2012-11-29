@@ -98,7 +98,7 @@
     <Compile Include="TestBench.cs" />
     <Compile Include="UrlGeneratorTests.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="XsltRegistryTest.cs" />
+    <Compile Include="XsltTransformTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kelp\Kelp.csproj">
@@ -136,6 +136,7 @@
     <Content Include="Resources\TestSite\assets\default\views\home\index-fr.xml" />
     <Content Include="Resources\TestSite\assets\default\views\home\index.xml" />
     <Content Include="Resources\TestSite\assets\default\views\home\index.xsl" />
+    <Content Include="Resources\TestSite\assets\default\views\images\index.html" />
     <Content Include="Resources\TestSite\assets\default\xslt\global.xsl">
       <SubType>Designer</SubType>
     </Content>

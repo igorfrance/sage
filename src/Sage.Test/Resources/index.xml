@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<document xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd" xmlns:xi="http://www.w3.org/2003/XInclude">
+<document 
+	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd" 
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd">
+	
 	Embedded resource. <intl:phrase ref="test.gallery.TestPhrase"/>
-	<xi:include href="sageresx://sage.test/resources/included.xml"/>
+	<sage:include href="sageresx://sage.test/resources/included.xml"/>
+	
 </document>
 
