@@ -30,8 +30,11 @@ namespace Sage.Tools
 	using Sage.Configuration;
 	using Sage.Tools.Utilities;
 
+	using log4net;
+
 	internal class Program
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(Program).FullName);
 		private static readonly Dictionary<string, IUtility> utilities;
 
 		static Program()
@@ -60,15 +63,15 @@ namespace Sage.Tools
 			}
 		}
 		
-		internal static int Main(string[] args)
+		internal static int Main(string[] arguments)
 		{
-			if (args.Length == 0)
+			if (arguments.Length == 0)
 				return ShowUsage();
 
-			string commandName = args[0];
+			string commandName = arguments[0];
 			if (commandName == "help")
 			{
-				if (args.Length > 1 && utilities.ContainsKey(commandName))
+				if (arguments.Length > 1 && utilities.ContainsKey(commandName))
 				{
 					IUtility utility = utilities[commandName];
 					Console.Write(utility.GetUsage());
@@ -76,10 +79,16 @@ namespace Sage.Tools
 				}
 			}
 
+			if (commandName == "help" && arguments.Length > 1)
+			{
+				string programName = arguments[1];
+				return ShowUsage(programName);
+			}
+
 			if (utilities.ContainsKey(commandName))
 			{
 				IUtility utility = utilities[commandName];
-				if (utility.ParseArguments(args))
+				if (utility.ParseArguments(arguments))
 				{
 					try
 					{
@@ -89,19 +98,19 @@ namespace Sage.Tools
 					catch (XmlException ex)
 					{
 						if (!string.IsNullOrEmpty(ex.SourceUri))
-							Console.WriteLine("An XmlException occurred while processing file '{0}':", ex.SourceUri);
+							log.ErrorFormat("An XmlException occurred while processing file '{0}':", ex.SourceUri);
 						else
-							Console.WriteLine("An XmlException occurred:");
+							log.Error("An XmlException occurred:");
 
-						Console.WriteLine(ex.Message);
+						log.Warn(ex.Message);
 						return 1;
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine("An unhandled exception occurred:");
-						Console.WriteLine(ex.RootTypeName());
-						Console.WriteLine(ex.RootMessage());
-						Console.WriteLine(ex.RootStackTrace());
+						log.Error("An unhandled exception occurred:");
+						log.Warn(ex.RootTypeName());
+						log.Warn(ex.RootMessage());
+						log.Warn(ex.RootStackTrace());
 						return 1;
 					}
 				}
@@ -145,22 +154,35 @@ namespace Sage.Tools
 			return context;
 		}
 
-		private static int ShowUsage()
+		private static int ShowUsage(string programName = null)
 		{
 			StringBuilder usage = new StringBuilder();
-			usage.AppendLine("Provides several command-line utilities for working with Sage projects");
-			usage.AppendLine("The available commands are:");
-
-			foreach (string command in utilities.Keys)
+			if (programName != null && utilities.ContainsKey(programName))
 			{
-				usage.AppendFormat("  - {0}\n", command);
+				IUtility utility = utilities[programName];
+				usage.AppendLine(utility.GetUsage());
+			}
+			else
+			{
+				if (programName != null)
+				{
+					usage.AppendLine(string.Format("'{0}' is an unknown command.", programName));
+				}
+				else
+				{
+					usage.AppendLine("Sage.Tools");
+					usage.AppendLine("Provide several command-line utilities for working with Sage and Sage projects");
+				}
+
+				usage.AppendLine("The available commands are:");
+				foreach (string command in utilities.Keys)
+					usage.AppendFormat("  - {0}\n", command);
+
+				usage.AppendLine();
+				usage.AppendFormat("Type {0} help <command> to get more information about that command.\n", Program.Name);
 			}
 
-			usage.AppendLine();
-			usage.AppendFormat("Type {0} help <command> to get more information about that command.\n", Program.Name);
-
 			Console.Write(usage.ToString());
-
 			return 1;
 		}
 	}

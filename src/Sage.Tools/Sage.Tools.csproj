@@ -127,6 +127,7 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Utilities\BatchGlobalizer.cs" />
+    <Compile Include="Utilities\Debug.cs" />
     <Compile Include="Utilities\ExtensionInstaller.cs" />
     <Compile Include="Utilities\FileMonitor.cs" />
     <Compile Include="Utilities\IUtility.cs" />

@@ -43,7 +43,7 @@ namespace Sage.Tools.Utilities
 		{
 			get
 			{
-				return "extension";
+				return "build-extension";
 			}
 		}
 

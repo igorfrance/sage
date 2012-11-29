@@ -40,7 +40,8 @@
 		public string GetUsage()
 		{
 			StringBuilder result = new StringBuilder();
-			result.AppendLine("Looks for sage extension projects at any level within the specified directory, builds and installs them in dependent projects.\n");
+			result.AppendLine("Scans the specified directory for sage extension projects,");
+			result.AppendLine("then builds and installs them as extensions in any project that depend on them.\n");
 			result.AppendFormat("Usage: {0} {1} -directory:<path>\n", Program.Name, this.CommandName);
 			result.AppendLine("  -directory:<path>	 The path to the directory that in which to look for extensions.");
 
@@ -71,9 +72,11 @@
 			var builder = new ExtensionBuilder();
 			foreach (var projectFile in projectFiles)
 			{
-				var absolutePath = new FileInfo(projectFile).FullName;
-				var projectConfig = ProjectConfiguration.Create(absolutePath);
-				var projectName = projectConfig.Name; 
+				var fileInfo = new FileInfo(projectFile);
+				var projectConfig = ProjectConfiguration.Create(fileInfo.FullName); 
+				var projectName = projectConfig.Name ??
+					string.Format("Project.{0}.{1}", fileInfo.Directory.Name, projects.Count + 1);
+
 				var projectPath = Path.GetDirectoryName(projectFile);
 
 				if (projectConfig.Type == ProjectType.ExtensionProject)
@@ -91,28 +94,36 @@
 				});
 			}
 
+			List<string> visitedProjects = new List<string>();
+
 			Action<ProjectInfo> copyDependencies = null;
-			copyDependencies = pi =>
+			copyDependencies = projectInfo =>
 			{
-				foreach (string extensionName in pi.Dependencies)
+				if (visitedProjects.Contains(projectInfo.Name))
+					return;
+
+				foreach (string extensionName in projectInfo.Dependencies)
 				{
 					if (!extensions.ContainsKey(extensionName))
 					{
-						log.ErrorFormat("Extension {0} (dependency of project {1}) could not be found", extensionName, pi.Name);
+						log.ErrorFormat("Extension {0} (dependency of project {1}) could not be found", extensionName, projectInfo.Name);
 						continue;
 					}
 
 					string extensionFile = extensions[extensionName];
-					string targetPath = Path.Combine(pi.Path, "extensions");
-					if (!Directory.Exists(targetPath))
-						Directory.CreateDirectory(targetPath);
+					string targetPath = Path.Combine(projectInfo.Path, "extensions", Path.GetFileName(extensionFile));
+					if (!Directory.Exists(Path.GetDirectoryName(targetPath)))
+						Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
 
 					File.Copy(extensionFile, targetPath, true);
-					log.InfoFormat("Copied extension {0} to project {1} ({2}).", extensionName, pi.Name, targetPath);
+					log.InfoFormat("Copied extension {0} to project {1}", extensionName, projectInfo.Name);
+					log.DebugFormat("\t({0})", targetPath);
 
 					ProjectInfo info = projects[extensionName];
 					copyDependencies(info);
 				}
+
+				visitedProjects.Add(projectInfo.Name);
 			};
 
 			projects.Values.Each(copyDependencies);

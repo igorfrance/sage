@@ -121,7 +121,11 @@ namespace Sage.Tools.Utilities
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine(e.Message);
+					Console.ForegroundColor = ConsoleColor.White;
+					Console.BackgroundColor = ConsoleColor.DarkRed;
+					Console.WriteLine("EXIT: " + e.Message);
+					Console.ForegroundColor = foregroundColor;
+					Console.BackgroundColor = backgroundColor;
 					keepLooping = false;
 				}
 
@@ -178,31 +182,30 @@ namespace Sage.Tools.Utilities
 
 			public Line(string text)
 			{
-				Match match;
-
 				this.Text = text;
-				if ((match = lineCheck.Match(text)).Success)
+
+				Match match;
+				if (!(match = lineCheck.Match(text)).Success)
+					return;
+
+				switch (match.Groups[1].Value)
 				{
-					this.Text = match.Groups[0].Value;
-					switch (match.Groups[1].Value)
-					{
-						case "INFO":
-							this.Color = ConsoleColor.DarkGreen;
-							break;
+					case "INFO":
+						this.Color = ConsoleColor.DarkGreen;
+						break;
 
-						case "WARN":
-							this.Color = ConsoleColor.DarkYellow;
-							break;
+					case "WARN":
+						this.Color = ConsoleColor.DarkYellow;
+						break;
 
-						case "ERROR":
-							this.Color = ConsoleColor.Red;
-							break;
+					case "ERROR":
+						this.Color = ConsoleColor.Red;
+						break;
 
-						case "FATAL":
-							this.Color = ConsoleColor.White;
-							this.BgColor = ConsoleColor.Red;
-							break;
-					}
+					case "FATAL":
+						this.Color = ConsoleColor.White;
+						this.BgColor = ConsoleColor.Red;
+						break;
 				}
 			}
 
