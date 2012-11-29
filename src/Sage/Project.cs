@@ -49,6 +49,7 @@ namespace Sage
 	{
 		private const string ConfigWatchName = "ProjectConfigurationChangeWatch";
 		private static readonly ILog log = LogManager.GetLogger(typeof(Project).FullName);
+		private static readonly string[] threadNamePrefixes = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 
 		private static DateTime? assemblyDate;
 		private static ProjectConfiguration configuration = ProjectConfiguration.Create();
@@ -56,6 +57,8 @@ namespace Sage
 		private static ProblemInfo initializationProblemInfo;
 		private static List<Assembly> relevantAssemblies;
 		private static IList<string> installOrder;
+
+		private static int threadPrefixIndex;
 
 		/// <summary>
 		/// Gets the last modification date of the current assembly.
@@ -264,42 +267,26 @@ namespace Sage
 				new Dictionary<string, object> { { "controller", "Generic" }, { "action", "Action" } });
 		}
 
-		/// <summary>
-		/// Handles the BeginRequest event of the Application control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected virtual void Application_BeginRequest(object sender, EventArgs e)
+		internal static void Start(HttpContextBase httpContext)
 		{
-			if (initializationError != null)
-			{
-				StringBuilder html = new StringBuilder();
-				using (TextWriter writer = new StringWriter(html))
-				{
-					SageHelpException helpException = new SageHelpException(initializationProblemInfo, initializationError);
-					helpException.Render(writer, new SageContext(this.Context));
-				}
-
-				this.Response.Write(html.ToString());
-				this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-				this.Response.Cache.SetNoStore();
-				this.Response.End();
-			}
-
-			var context = new SageContext(this.Context);
-			if (context.LmCache.Get(ConfigWatchName) == null)
-				InitializeConfiguration(context);
-
-			if (this.Context != null)
-				log.InfoFormat("Request {0} started.", HttpContext.Current.Request.Url);
-			else
-				log.InfoFormat("Request started (no context)");
-
 			if (Thread.CurrentThread.Name == null)
 			{
-				Thread.CurrentThread.Name = DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture);
+				Thread.CurrentThread.Name = Project.GenerateThreadId(true);
 				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
 			}
+
+			log.InfoFormat("Application started");
+
+			IControllerFactory controllerFactory = new SageControllerFactory();
+			Initialize(controllerFactory, new SageContext(httpContext));
+		}
+
+		/// <summary>
+		/// Handles the Start event of the Application control.
+		/// </summary>
+		protected virtual void Application_Start()
+		{
+			Project.Start(new HttpContextWrapper(this.Context));
 		}
 
 		/// <summary>
@@ -330,6 +317,44 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Handles the BeginRequest event of the Application control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		protected virtual void Application_BeginRequest(object sender, EventArgs e)
+		{
+			if (Thread.CurrentThread.Name == null)
+			{
+				Thread.CurrentThread.Name = Project.GenerateThreadId();
+				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+			}
+
+			if (initializationError != null)
+			{
+				StringBuilder html = new StringBuilder();
+				using (TextWriter writer = new StringWriter(html))
+				{
+					SageHelpException helpException = new SageHelpException(initializationProblemInfo, initializationError);
+					helpException.Render(writer, new SageContext(this.Context));
+				}
+
+				this.Response.Write(html.ToString());
+				this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+				this.Response.Cache.SetNoStore();
+				this.Response.End();
+			}
+
+			var context = new SageContext(this.Context);
+			if (context.LmCache.Get(ConfigWatchName) == null)
+				InitializeConfiguration(context);
+
+			if (this.Context != null)
+				log.InfoFormat("Request {0} started.", HttpContext.Current.Request.Url);
+			else
+				log.InfoFormat("Request started (no context)");
+		}
+
+		/// <summary>
 		/// Handles the EndRequest event of the Application control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -339,7 +364,7 @@ namespace Sage
 			if (string.IsNullOrWhiteSpace(Thread.CurrentThread.Name))
 				return;
 
-			var startTime = long.Parse(Thread.CurrentThread.Name);
+			var startTime = long.Parse(Thread.CurrentThread.Name.ReplaceAll(@"[^\d]|", string.Empty));
 			var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
 
 			log.InfoFormat("Request completed in {0}ms.", elapsed.Milliseconds);
@@ -385,22 +410,6 @@ namespace Sage
 			this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 			this.Response.Cache.SetNoStore();
 			this.Response.End();
-		}
-
-		/// <summary>
-		/// Handles the Start event of the Application control.
-		/// </summary>
-		protected virtual void Application_Start()
-		{
-			log.InfoFormat("Application started");
-			if (Thread.CurrentThread.Name == null)
-			{
-				Thread.CurrentThread.Name = "INIT-" + DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture);
-				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
-			}
-
-			IControllerFactory controllerFactory = new SageControllerFactory();
-			Initialize(controllerFactory, new SageContext(this.Context));
 		}
 
 		private static Dictionary<string, string> GetVirtualDirectories(DirectoryEntry directory, string path)
@@ -522,6 +531,24 @@ namespace Sage
 					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
 				}
 			}
+		}
+
+		private static string GenerateThreadId(bool appStart = false)
+		{
+			string prefix;
+			if (appStart)
+				prefix = "INIT";
+			else
+			{
+				if (Project.threadPrefixIndex < threadNamePrefixes.Length - 1)
+					Project.threadPrefixIndex += 1;
+				else
+					Project.threadPrefixIndex = 0;
+
+				prefix = threadNamePrefixes[Project.threadPrefixIndex];
+			}
+
+			return string.Format("{0}-{1}", prefix, DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture));
 		}
 	}
 }
