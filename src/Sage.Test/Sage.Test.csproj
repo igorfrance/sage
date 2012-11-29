@@ -98,7 +98,6 @@
     <Compile Include="TestBench.cs" />
     <Compile Include="UrlGeneratorTests.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="XsltTransformTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kelp\Kelp.csproj">
