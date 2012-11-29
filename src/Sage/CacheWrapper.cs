@@ -20,6 +20,8 @@ namespace Sage
 	using System.Web;
 	using System.Web.Caching;
 
+	using log4net;
+
 	/// <summary>
 	/// Provides a wrapper around the current <see cref="System.Web.Caching.Cache"/>, as well as a plain
 	/// key/value dictionary, so that if <see cref="System.Web.Caching.Cache"/> is <c>null</c> (as in unit 
@@ -27,6 +29,7 @@ namespace Sage
 	/// </summary>
 	public class CacheWrapper
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(CacheWrapper).FullName);
 		private readonly Cache cache;
 		private readonly Dictionary<string, object> dictionary;
 
@@ -45,8 +48,18 @@ namespace Sage
 		public CacheWrapper(HttpContextBase context)
 			: this()
 		{
-			if (context != null)
-				this.cache = context.Cache;
+			if (context != null && context.Cache != null)
+			{
+				try
+				{
+					log.DebugFormat("The context cache has {0} items in it", context.Cache.Count);
+					this.cache = context.Cache;
+				}
+				catch (Exception ex)
+				{
+					log.ErrorFormat("The context cache hasn't been initialized fully: {0}", ex.Message);
+				}
+			}
 		}
 
 		/// <summary>
