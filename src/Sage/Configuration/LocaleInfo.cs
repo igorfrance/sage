@@ -35,6 +35,7 @@ namespace Sage.Configuration
 	public class LocaleInfo : IXmlConvertible
 	{
 		internal const string DefaultLocale = "en-us";
+		internal const string DefaultLanguage = "en";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(LocaleInfo).FullName);
 
@@ -48,6 +49,7 @@ namespace Sage.Configuration
 		public LocaleInfo()
 		{
 			this.Name = DefaultLocale;
+			this.Language = DefaultLanguage;
 			this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
 			this.shortDateFormat = "d";
 			this.longDateFormat = "D";
@@ -73,6 +75,11 @@ namespace Sage.Configuration
 		/// Gets the name of this locale.
 		/// </summary>
 		public string Name { get; internal set; }
+
+		/// <summary>
+		/// Gets the language of this locale.
+		/// </summary>
+		public string Language { get; internal set; }
 
 		/// <summary>
 		/// Gets the <see cref="CultureInfo"/> associated with this locale.
@@ -205,9 +212,10 @@ namespace Sage.Configuration
 		/// <inheritdoc/>
 		public void Parse(XmlElement element)
 		{
-			XmlElement formatElement = element.SelectSingleElement("p:format", XmlNamespaces.Manager);
 			this.Name = element.GetAttribute("name");
+			this.Language = element.GetAttribute("language");
 
+			XmlElement formatElement = element.SelectSingleElement("p:format", XmlNamespaces.Manager);
 			try
 			{
 				this.culture = new CultureInfo(formatElement.GetAttribute("culture"));
@@ -242,6 +250,7 @@ namespace Sage.Configuration
 			XmlElement formatElem = result.AppendElement(document.CreateElement("format", Ns));
 
 			result.SetAttribute("name", this.Name);
+			result.SetAttribute("language", this.Language);
 			result.SetAttribute("dictionaryNames", string.Join(",", this.DictionaryNames));
 			result.SetAttribute("resourceNames", string.Join(",", this.ResourceNames));
 

@@ -27,7 +27,7 @@ namespace Sage.Configuration
 			"The locale '{0}' hasn't been configured.\n" +
 			"Make sure to add the locale within the main configuration file's <globalization/> section, " +
 			"for instance:\n\n" +
-			"<locale name=\"{0}\" dictionaryNames=\"{0},en\" resourceNames=\"{0},default\"/>";
+			"<locale name=\"{0}\" language=\"(specify)\" dictionaryNames=\"{0},en\" resourceNames=\"{0},default\"/>";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConfigurationError"/> class.

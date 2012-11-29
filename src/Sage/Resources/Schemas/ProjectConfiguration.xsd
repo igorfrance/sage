@@ -426,6 +426,7 @@
 			<xs:element name="format" type="config.format" minOccurs="1" maxOccurs="1"/>
 		</xs:all>
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
+		<xs:attribute name="language" use="required" type="nonEmptyString"/>
 		<xs:attribute name="dictionaryNames" use="required" type="nonEmptyString"/>
 		<xs:attribute name="resourceNames" use="required" type="nonEmptyString"/>
 	</xs:complexType>

@@ -17,6 +17,8 @@
 	<xsl:variable name="response" select="$view/sage:response"/>
 	<xsl:variable name="address" select="$view/sage:request/sage:address"/>
 	<xsl:variable name="useragent" select="$view/sage:request/sage:useragent"/>
+	<xsl:variable name="isDebugRequest" select="$view/sage:request/@debug = 1"/>
+	<xsl:variable name="isDeveloperRequest" select="$view/sage:request/@developer = 1"/>
 
 	<xsl:output method="xml" version="1.0" standalone="yes" omit-xml-declaration="yes"
 		encoding="utf-8" media-type="text/xml" indent="yes"
@@ -61,6 +63,9 @@
 					<xsl:text> </xsl:text>
 					<xsl:value-of select="@class"/>
 				</xsl:if>
+			</xsl:attribute>
+			<xsl:attribute name="lang">
+				<xsl:value-of select="$request/@language"/>
 			</xsl:attribute>
 			<xsl:attribute name="data-thread">
 				<xsl:value-of select="$request/@thread" />
@@ -162,13 +167,19 @@
 	</xsl:template>
 
 	<xsl:template match="@*">
-		<xsl:attribute name="{name()}">
+		<xsl:attribute name="{name()}" namespace="{namespace-uri()}">
 			<xsl:value-of select="."/>
 		</xsl:attribute>
 	</xsl:template>
 
 	<xsl:template match="text()">
 		<xsl:value-of select="."/>
+	</xsl:template>
+
+	<xsl:template match="comment()">
+		<xsl:comment>
+			<xsl:value-of select="."/>
+		</xsl:comment>
 	</xsl:template>
 
 	<xsl:template match="*" mode="copy">

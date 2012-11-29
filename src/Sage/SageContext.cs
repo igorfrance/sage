@@ -552,6 +552,7 @@ namespace Sage
 
 			resultElement.SetAttribute("category", this.Category);
 			resultElement.SetAttribute("locale", this.Locale);
+			resultElement.SetAttribute("language", this.LocaleInfo.Language);
 			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
 			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugEnabled ? "1" : "0");
