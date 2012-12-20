@@ -57,7 +57,6 @@ namespace Sage
 		/// </summary>
 		public const string RefreshVariableName = "refresh";
 
-		private static readonly Regex attribSpec = new Regex(@"^(?'AttribName'[\w\.:$\-]*)=(?'AttribValue'.*)$", RegexOptions.Compiled);
 		private static readonly Dictionary<string, CategoryConfiguration> categoryConfigurations =
 			new Dictionary<string, CategoryConfiguration>();
 
@@ -737,29 +736,6 @@ namespace Sage
 			return node;
 		}
 
-		[NodeHandler(XmlNodeType.Attribute, "attrib", XmlNamespaces.SageNamespace)]
-		internal static XmlNode ProcessSageAttribute(SageContext context, XmlNode node)
-		{
-			Contract.Requires<ArgumentNullException>(node != null);
-			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
-				return node;
-
-			Match match;
-
-			if ((match = attribSpec.Match(node.InnerText)).Success)
-			{
-				string attribName = match.Groups["AttribName"].Value;
-				string attribValue = match.Groups["AttribValue"].Value;
-
-				XmlAttribute result = node.OwnerDocument.CreateAttribute(attribName);
-				result.InnerText = context.ProcessText(attribValue);
-
-				return result;
-			}
-
-			return node;
-		}
-
 		[NodeHandler(XmlNodeType.Element, "version", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessSageVersionNode(SageContext context, XmlNode node)
 		{
@@ -768,6 +744,17 @@ namespace Sage
 
 			string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			return node.OwnerDocument.CreateTextNode(version);
+		}
+
+		[NodeHandler(XmlNodeType.Element, "basehref", XmlNamespaces.SageNamespace)]
+		internal static XmlNode ProcessBaseHrefNode(SageContext context, XmlNode node)
+		{
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
+
+			XmlElement result = node.OwnerDocument.CreateElement("base", XmlNamespaces.XHtmlNamespace);
+			result.SetAttribute("href", context.BaseHref);
+			return result;
 		}
 
 		/// <summary>

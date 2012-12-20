@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html
-	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -10,12 +9,9 @@
 	</head>
 	<body>
 
-		<xi:include href="sageres://views/shared/elements.html"
-		            xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class]) "/>
-
 		<mod:ViewInspector>
 			<mod:config>
-				<mod:path>tests/index.html</mod:path>
+				<mod:path>${apppath}tests/index.html</mod:path>
 			</mod:config>
 		</mod:ViewInspector>
 

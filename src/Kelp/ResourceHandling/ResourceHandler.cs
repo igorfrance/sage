@@ -23,7 +23,7 @@ namespace Kelp.ResourceHandling
 	using Kelp.Http;
 
 	/// <summary>
-	/// Implements an <see cref="IHttpHandler"/> for handling image, script and css requests.
+	/// Implements an <see cref="IHttpHandler"/> for handling image, script and CSS requests.
 	/// </summary>
 	public class ResourceHandler : IHttpHandler
 	{
@@ -31,7 +31,7 @@ namespace Kelp.ResourceHandling
 		/// The name of the query string property that instructs <see cref="ResourceHandler"/> to return 
 		/// only the raw content, without processing the includes.
 		/// </summary>
-		/// <example>?noprocess=1</example>
+		/// <example><c>?noprocess=1</c></example>
 		public const string SkipProcessingKey = "noprocess";
 		
 		/// <summary>
@@ -39,7 +39,7 @@ namespace Kelp.ResourceHandling
 		/// that instructs <see cref="ResourceHandler"/> to return only the raw content, without 
 		/// processing the includes.
 		/// </summary>
-		/// <example>?noprocess=1</example>
+		/// <example><c>?noprocess=1</c></example>
 		public const string SkipProcessingValue = "1";
 
 		/// <summary>
@@ -62,6 +62,8 @@ namespace Kelp.ResourceHandling
 			}
 		}
 
+		internal static string TemporaryDirectory { get; private set; }
+
 		/// <summary>
 		/// Enables processing of HTTP Web requests by a custom HTTP handler that implements the <see cref="IHttpHandler"/> interface.
 		/// </summary>
@@ -69,42 +71,30 @@ namespace Kelp.ResourceHandling
 		/// Request, Response, Session, and Server) used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context)
 		{
-			ProcessRequest(new HttpContextWrapper(context), context.Server.MapPath);
-		}
-
-		/// <summary>
-		/// Enables processing of HTTP Web requests by a custom HTTP handler that implements the <see cref="IHttpHandler"/> interface.
-		/// </summary>
-		/// <param name="context">An <see cref="HttpContext"/> object that provides references to the intrinsic server objects (for example,
-		/// Request, Response, Session, and Server) used to service HTTP requests.</param>
-		/// <param name="mapPath">The function to use to map virtual paths to absolute.</param>
-		/// <exception cref="ArgumentNullException"><c>context</c> or <c>mapPath</c> is <c>null</c>.</exception>
-		public void ProcessRequest(HttpContextBase context, Func<string, string> mapPath)
-		{
 			Contract.Requires<ArgumentNullException>(context != null);
-			Contract.Requires<ArgumentNullException>(mapPath != null);
 
 			string absolutePath = context.Request.PhysicalPath;
 			string extension = Path.GetExtension(absolutePath);
+			HttpContextWrapper wrapped = new HttpContextWrapper(context);
 
 			if (File.Exists(absolutePath))
 			{
 				if (CodeFile.IsFileExtensionSupported(extension))
 				{
-					ProcessCodeFileRequest(context, mapPath);
+					ProcessCodeFileRequest(wrapped);
 				}
 				else if (ImageFile.IsFileExtensionSupported(extension))
 				{
-					ProcessImageFileRequest(context, mapPath);
+					ProcessImageFileRequest(wrapped);
 				}
 				else
 				{
-					SendContent(context, absolutePath);
+					SendContent(wrapped, absolutePath);
 				}
 			}
 			else
 			{
-				Util.SendFileNotFound(context);
+				Util.SendFileNotFound(wrapped);
 			}
 		}
 
@@ -113,7 +103,6 @@ namespace Kelp.ResourceHandling
 		/// </summary>
 		/// <param name="context">An <see cref="HttpContext"/> object that provides references to the intrinsic server objects (for example,
 		/// Request, Response, Session, and Server) used to service HTTP requests.</param>
-		/// <param name="mapPath">The function to use to map virtual paths to absolute.</param>
 		/// <exception cref="ArgumentNullException"><c>context</c> or <c>mapPath</c> is <c>null</c>.</exception>
 		/// <remarks>
 		/// The logic of getting and serving a resource file, in a nutshell is similar to:
@@ -125,13 +114,12 @@ namespace Kelp.ResourceHandling
 		/// <item>5) Send content down the wire</item>
 		/// </list>
 		/// </remarks>
-		private static void ProcessCodeFileRequest(HttpContextBase context, Func<string, string> mapPath)
+		private static void ProcessCodeFileRequest(HttpContextBase context)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
-			Contract.Requires<ArgumentNullException>(mapPath != null);
 
 			// 1
-			CodeFile file = CodeFile.Create(context.Request.PhysicalPath, context.Request.Path, mapPath);
+			CodeFile file = CodeFile.Create(context.Request.PhysicalPath, context.Request.Path, GetTemporaryDirectory(context));
 
 			// 2 & 3
 			if (!Util.IsNoCacheRequest(context) && Util.IsCachedRequest(context) && !Util.IsFileUpdatedSinceCached(context, file.LastModified))
@@ -150,16 +138,14 @@ namespace Kelp.ResourceHandling
 		/// </summary>
 		/// <param name="context">An <see cref="HttpContext"/> object that provides references to the intrinsic server objects (for example,
 		/// Request, Response, Session, and Server) used to service HTTP requests.</param>
-		/// <param name="mapPath">The function to use to map virtual paths to absolute.</param>
 		/// <exception cref="ArgumentNullException"><c>context</c> or <c>mapPath</c> is <c>null</c>.</exception>
-		private static void ProcessImageFileRequest(HttpContextBase context, Func<string, string> mapPath)
+		private static void ProcessImageFileRequest(HttpContextBase context)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
-			Contract.Requires<ArgumentNullException>(mapPath != null);
 
 			// 1
 			ImageFile file = ImageFile.Create(
-				context.Request.PhysicalPath, new QueryString(context.Request.QueryString), mapPath);
+				context.Request.PhysicalPath, new QueryString(context.Request.QueryString), GetTemporaryDirectory(context));
 
 			// 2 & 3
 			if (!Util.IsNoCacheRequest(context) && Util.IsCachedRequest(context) && !Util.IsFileUpdatedSinceCached(context, file.LastModified))
@@ -210,6 +196,25 @@ namespace Kelp.ResourceHandling
 			context.Response.Cache.SetCacheability(HttpCacheability.Public);
 			context.Response.Cache.SetLastModified(file.LastModified);
 			context.Response.BinaryWrite(file.Bytes);
+		}
+
+		private static string GetTemporaryDirectory(HttpContextBase context)
+		{
+			if (ResourceHandler.TemporaryDirectory != null)
+				return ResourceHandler.TemporaryDirectory;
+
+			string path = Configuration.Current.TemporaryDirectory;
+			if (Path.IsPathRooted(path) && !path.StartsWith("/"))
+				ResourceHandler.TemporaryDirectory = path;
+			else
+			{
+				if (!path.StartsWith("/") && !path.StartsWith("~/"))
+					path = "~/" + path;
+
+				ResourceHandler.TemporaryDirectory = context.Server.MapPath(path);
+			}
+
+			return ResourceHandler.TemporaryDirectory;
 		}
 	}
 }

@@ -75,7 +75,7 @@ namespace Kelp.Test.ResourceHandling
 		};
 		private static CodeFile CreateInstance()
 		{
-			return CodeFile.Create(Utilities.GetScriptPath("script1.js"), "script1.js", Utilities.MapPath);
+			return CodeFile.Create(Utilities.GetScriptPath("script1.js"), "script1.js");
 		}
 	}
 
@@ -84,7 +84,7 @@ namespace Kelp.Test.ResourceHandling
 	{
 		private static string content;
 		private static ScriptFile subject = (ScriptFile)
-				CodeFile.Create(Utilities.GetScriptPath("script2.js"), "script2.js", Utilities.MapPath);
+				CodeFile.Create(Utilities.GetScriptPath("script2.js"), "script2.js");
 
 		private It Should_throw_an_InvalidOperationException = () =>
 			Catch.Exception(() => content = subject.Content).ShouldBeOfType<InvalidOperationException>();
@@ -95,7 +95,7 @@ namespace Kelp.Test.ResourceHandling
 	{
 		private static string content;
 		private static ScriptFile subject = (ScriptFile)
-				CodeFile.Create(Utilities.GetScriptPath("script3.js"), "script3.js", Utilities.MapPath);
+				CodeFile.Create(Utilities.GetScriptPath("script3.js"), "script3.js");
 
 		private It Should_throw_an_InvalidOperationException = () =>
 			Catch.Exception(() => content = subject.Content).ShouldBeOfType<InvalidOperationException>();
@@ -105,7 +105,7 @@ namespace Kelp.Test.ResourceHandling
 	public class When_minifying_script_files
 	{
 		private static ScriptFile subject = (ScriptFile) CodeFile.Create(
-			Utilities.GetScriptPath("compression1.js"), "compression.js", Utilities.MapPath);
+			Utilities.GetScriptPath("compression1.js"), "compression.js");
 
 		private It Multiline_strings_should_be_concatenated = () =>
 			subject.Minify(Utilities.GetScriptContents("multiline-string1.js")).ShouldNotContain("\n");
@@ -138,7 +138,7 @@ namespace Kelp.Test.ResourceHandling
 		{
 			Utilities.ClearTemporaryDirectory();
 
-			subject = new ScriptFile(scriptPath, scriptName, Utilities.MapPath);
+			subject = (ScriptFile) CodeFile.Create(scriptPath, scriptName);
 			contents = subject.Content;
 		};
 
@@ -151,7 +151,8 @@ namespace Kelp.Test.ResourceHandling
 				writer.Close();
 			}
 
-			new ScriptFile(scriptPath, scriptName, Utilities.MapPath).Content.ShouldContain("Cached line");
+			subject = (ScriptFile) CodeFile.Create(scriptPath, scriptName);
+			subject.Content.ShouldContain("Cached line");
 		};
 
 		private It Should_use_original_instead_of_cache_file_if_original_was_changed = () =>
@@ -160,7 +161,7 @@ namespace Kelp.Test.ResourceHandling
 			File.SetLastWriteTime(subject.CacheName, DateTime.Now.AddDays(-1));
 			Thread.Sleep(1000);
 
-			new ScriptFile(scriptPath, scriptName, Utilities.MapPath).Content.ShouldNotContain("Cached line");
+			new ScriptFile(scriptPath, scriptName).Content.ShouldNotContain("Cached line");
 		};
 	}
 
@@ -179,7 +180,7 @@ namespace Kelp.Test.ResourceHandling
 			if (Directory.Exists(tempDirectory))
 				Directory.Delete(tempDirectory, true);
 
-			proc = new ScriptFile(scriptPath, ScriptName, Utilities.MapPath);
+			proc = new ScriptFile(scriptPath, ScriptName);
 			proc.DebugModeOn = true;
 		};
 
@@ -200,7 +201,7 @@ namespace Kelp.Test.ResourceHandling
 		{
 			Utilities.ClearTemporaryDirectory();
 
-			proc = new ScriptFile(scriptPath, ScriptName, Utilities.MapPath);
+			proc = new ScriptFile(scriptPath, ScriptName);
 			proc.DebugModeOn = true;
 		};
 

@@ -41,12 +41,18 @@ namespace Sage.DevTools.Controllers
 			return this.SageView("log");
 		}
 
+		[Cacheable(Seconds = 0)]
 		public ActionResult Inspect(string path)
 		{
 			if (!Context.IsDeveloperRequest)
 				return PageNotFound();
 
 			return this.SageView("inspect");
+		}
+
+		public override DateTime? GetLastModificationDate(string viewName)
+		{
+			return base.GetLastModificationDate(viewName);
 		}
 	}
 }

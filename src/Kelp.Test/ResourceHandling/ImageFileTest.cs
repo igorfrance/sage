@@ -30,12 +30,14 @@ namespace Kelp.Test.ResourceHandling
 	public class When_opening_a_file_with_many_querystring_parameters
 	{
 		private static ImageFile subject;
+		private static int byteCount;
 		private static string imagePath = Utilities.GetImagePath("illustration4.jpg");
 		private static string queryString = "rs=410,310,0&cp=0,0,400,300&bt=1&ct=1&gm=1&mh=1&mv=1&gs=1&hsl=1,2,3&rgb=4,5,6&se=1&sx=1";
 
 		Because bcs = () =>
 		{
-			subject = ImageFile.Create(Utilities.GetImagePath("illustration4.jpg"), queryString, Utilities.MapPath);
+			subject = ImageFile.Create(Utilities.GetImagePath("illustration4.jpg"), queryString);
+			byteCount = subject.Bytes.Length;
 		};
 
 		It Should_contain_brightness_filter = () => subject.Filter.Filters.Count(f => f is BrightnessMatrix).ShouldEqual(1);

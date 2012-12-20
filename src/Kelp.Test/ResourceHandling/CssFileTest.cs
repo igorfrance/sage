@@ -35,7 +35,7 @@ namespace Kelp.Test.ResourceHandling
 			if (Directory.Exists(tempDirectory))
 				Directory.Delete(tempDirectory, true);
 
-			proc = new CssFile(scriptPath, "stylesheet1.css", Utilities.MapPath);
+			proc = new CssFile(scriptPath, "stylesheet1.css");
 		};
 
 		private Because of = () => contents = proc.Content;
@@ -59,7 +59,7 @@ namespace Kelp.Test.ResourceHandling
 			if (Directory.Exists(tempDirectory))
 				Directory.Delete(tempDirectory, true);
 
-			proc = new CssFile(scriptPath, "stylesheet1.css", Utilities.MapPath);
+			proc = new CssFile(scriptPath, "stylesheet1.css");
 		};
 
 		private Because of = () => contents = proc.Content;

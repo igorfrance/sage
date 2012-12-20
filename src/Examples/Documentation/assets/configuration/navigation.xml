@@ -107,11 +107,8 @@
 							<a href="${url:link(sage-uri-schemes)}">Available URI schemes</a>
 						</li>
 						<li>
-							<a href="${url:link(sage-namespaces)}">Namespaces</a>
+							<a href="${url:link(sage-namespaces)}">Elements</a>
 							<ul>
-								<li>
-									<a href="${url:link(sage-namespaces-xinclude)}">X-Include</a>
-								</li>
 								<li>
 									<a href="${url:link(sage-namespaces-internationalization)}">Internationalization</a>
 								</li>
@@ -131,6 +128,14 @@
 											<a href="${url:link(sage-namespaces-sage-input-document)}">Input document</a>
 										</li>
 									</ul>
+								</li>
+							</ul>
+						</li>
+						<li>
+							<a href="${url:link(reference-functions)}">Functions</a>
+							<ul>
+								<li>
+									<a href="${url:link(reference-functions-linking)}">Linking functions</a>
 								</li>
 							</ul>
 						</li>

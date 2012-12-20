@@ -35,19 +35,7 @@ namespace Kelp.ResourceHandling
 		/// <param name="absolutePath">The path of the file to load.</param>
 		/// <param name="relativePath">The relative path of the file to load.</param>
 		public CssFile(string absolutePath, string relativePath)
-			: this(absolutePath, relativePath, null)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CssFile"/> class, using the specified absolute and relative paths, 
-		/// and the <paramref name="mappingFunction"/>.
-		/// </summary>
-		/// <param name="absolutePath">The absolute path of the file to load.</param>
-		/// <param name="relativePath">The relative path of the file to load.</param>
-		/// <param name="mappingFunction">The function to use to map relative and virtual paths to absolute.</param>
-		public CssFile(string absolutePath, string relativePath, Func<string, string> mappingFunction)
-			: base(absolutePath, relativePath, mappingFunction)
+			: base(absolutePath, relativePath)
 		{
 			this.ContentType = "text/css";
 		}
@@ -79,7 +67,7 @@ namespace Kelp.ResourceHandling
 		/// Minifies the specified <paramref name="sourceCode"/>, according to the specified minification <paramref name="settings"/>.
 		/// </summary>
 		/// <param name="sourceCode">The source code string to minify.</param>
-		/// <param name="settings">The object that specifis the minification settings for this file.</param>
+		/// <param name="settings">The object that specifies the minification settings for this file.</param>
 		/// <returns>
 		/// The minified version of this file's content.
 		/// </returns>

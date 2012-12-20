@@ -68,9 +68,9 @@ namespace Kelp.ResourceHandling
 		}
 
 		/// <summary>
-		/// Gets the delegate method that handles resolving (mapping) or relative paths.
+		/// Gets the path to the temporary directory in which to save the cached versions of the image.
 		/// </summary>
-		public Func<string, string> MapPath { get; private set; }
+		public string TemporaryDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the query filter associated with this image.
@@ -80,17 +80,6 @@ namespace Kelp.ResourceHandling
 			get
 			{
 				return filter;
-			}
-		}
-
-		/// <summary>
-		/// Gets the temporary directory in which to store the processed version of this image file instance.
-		/// </summary>
-		public string CacheDirectory
-		{
-			get
-			{
-				return MapPath(Configuration.Current.TemporaryDirectory);
 			}
 		}
 
@@ -118,10 +107,10 @@ namespace Kelp.ResourceHandling
 		{
 			get
 			{
-				if (this.CacheDirectory == null)
+				if (this.TemporaryDirectory == null)
 					return null;
 
-				return Path.Combine(CacheDirectory, CacheName);
+				return Path.Combine(TemporaryDirectory, CacheName);
 			}
 		}
 
@@ -141,7 +130,7 @@ namespace Kelp.ResourceHandling
 		}
 
 		/// <summary>
-		/// Gets the modificaition date of this image file instance.
+		/// Gets the modification date of this image file instance.
 		/// </summary>
 		public DateTime LastModified
 		{
@@ -180,11 +169,13 @@ namespace Kelp.ResourceHandling
 		/// <param name="absolutePath">The absolute path of the image.</param>
 		/// <param name="parameters">The query string parameters of the <see cref="QueryFilter"/> associated 
 		/// with the <see cref="ImageFile"/> that will be created.</param>
-		/// <param name="mappingFunction">The mapping function to use when resolving temporary directory location.</param>
+		/// <param name="temporaryDirectory">The temporary directory in which to save the caches.</param>
 		/// <returns>A new <see cref="ImageFile"/> instance matching the specified absolute path by extension.</returns>
-		public static ImageFile Create(string absolutePath, string parameters, Func<string, string> mappingFunction)
+		public static ImageFile Create(string absolutePath, string parameters, string temporaryDirectory = null)
 		{
-			return Create(absolutePath, new QueryString(parameters), mappingFunction);
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(absolutePath));
+
+			return Create(absolutePath, new QueryString(parameters), temporaryDirectory);
 		}
 
 		/// <summary>
@@ -193,10 +184,13 @@ namespace Kelp.ResourceHandling
 		/// <param name="absolutePath">The absolute path of the image.</param>
 		/// <param name="parameters">The query string parameters of the <see cref="QueryFilter"/> associated 
 		/// with the <see cref="ImageFile"/> that will be created.</param>
-		/// <param name="mappingFunction">The mapping function to use when resolving temporary directory location.</param>
+		/// <param name="temporaryDirectory">The temporary directory in which to save the caches.</param>
 		/// <returns>A new <see cref="ImageFile"/> instance matching the specified absolute path by extension.</returns>
-		public static ImageFile Create(string absolutePath, QueryString parameters, Func<string, string> mappingFunction)
+		public static ImageFile Create(string absolutePath, QueryString parameters, string temporaryDirectory = null)
 		{
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(absolutePath));
+			Contract.Requires<ArgumentNullException>(parameters != null);
+
 			ImageFile instance;
 			if (absolutePath.ToLower().EndsWith("png"))
 				instance = new PngFile(absolutePath);
@@ -205,7 +199,7 @@ namespace Kelp.ResourceHandling
 			else
 				instance = new JpegFile(absolutePath);
 
-			instance.MapPath = mappingFunction;
+			instance.TemporaryDirectory = temporaryDirectory ?? Configuration.Current.TemporaryDirectory;
 			instance.filter = new QueryFilter(parameters);
 			instance.parameters = parameters;
 			return instance;

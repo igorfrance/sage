@@ -34,18 +34,7 @@ namespace Kelp.ResourceHandling
 		/// <param name="absolutePath">The path of the file to load.</param>
 		/// <param name="relativePath">The relative path of the file to load.</param>
 		public ScriptFile(string absolutePath, string relativePath)
-			: this(absolutePath, relativePath, null)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ScriptFile"/> class, using the specified absolute and relative paths, and the path mapper function.
-		/// </summary>
-		/// <param name="absolutePath">The path of the file to load.</param>
-		/// <param name="relativePath">The relative path of the file to load.</param>
-		/// <param name="mappingFunction">The function to use to map relative and virtual paths to absolute.</param>
-		public ScriptFile(string absolutePath, string relativePath, Func<string, string> mappingFunction)
-			: base(absolutePath, relativePath, mappingFunction)
+			: base(absolutePath, relativePath)
 		{
 			this.ContentType = "text/javascript";
 		}

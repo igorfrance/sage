@@ -28,64 +28,10 @@
 						<article>http://www.cycle99.com/schemas/sage/sage.xsd</article>
 					</section>
 
-					<section class="topic" id="attributes" data-index="yes" data-level="1">
-						<header>Attributes</header>
-						<article>
-							<section class="element" id="attrib-attribute" data-index="yes" data-level="2">
-								<header>sage:attrib attribute</header>
-								<article>
-									<summary>
-										This attribute, when processed, subtitutes itself with another attribute, created according to the specification.
-									</summary>
-									<section class="properties syntax">
-										<header>Syntax</header>
-										<article>
-											<code class="principal">sage:attrib="&lt;AttribName>=&lt;AttribValueExpression>"</code>
-											<dl>
-												<dt><code>&lt;AttribName&gt;</code></dt>
-												<dd>The name of the attribute to create.</dd>
-												<dt><code>&lt;AttribValueExpression&gt;</code></dt>
-												<dd>The expression to evaluate and set the value of the attribute with. The expression is evaluated in the same way as the content of the <a href="${url:self(#expression-element)}">expression element</a>; any embedded <a href="${url:link(extensibility-text-functions)}">text function expressions</a> will be invoked and substituted by the result of that invokation.</dd>
-											</dl>
-										</article>
-									</section>
-
-									<section class="properties example">
-										<header>Example</header>
-										<article>
-											<summary>Before processing:</summary>
-											<mod:XmlTree>
-												<mod:data>
-													<sage:literal>
-														<form sage:attrib="action=${url:link(customer-service, section=faq)}">...</form>
-													</sage:literal>
-												</mod:data>
-											</mod:XmlTree>
-											<summary>After processing:</summary>
-											<mod:XmlTree>
-												<mod:data>
-													<sage:literal>
-														<form action="feedback/customer-service/faq/">...</form>
-													</sage:literal>
-												</mod:data>
-											</mod:XmlTree>
-										</article>
-									</section>
-									<section class="properties implementation">
-										<header>Implemented as:</header>
-										<article>
-											<a href="${url:link(extensibility-node-handlers)}">Node handler</a>
-										</article>
-									</section>
-								</article>
-							</section>
-						</article>
-					</section>
-
 					<section class="topic" id="elements" data-index="yes" data-level="1">
 						<header>Elements</header>
 						<article>
-							<section class="element" id="version-element" data-index="yes" data-level="2">
+							<section class="element" id="sage:version" data-index="yes" data-level="2">
 								<header>sage:version element</header>
 								<article>
 									<summary>Inserts the Sage version as a text node, replacing the original element.</summary>
@@ -113,7 +59,7 @@
 									</section>
 								</article>
 							</section>
-							<section class="element" id="link-element" data-index="yes" data-level="2">
+							<section class="element" id="sage:link" data-index="yes" data-level="2">
 								<header>sage:link element</header>
 								<article>
 									<summary>Provides a generic element referring to a link that Sage resolves and appends as an <code>href</code> attribute during runtime. <a href="${url:link(linking)}">Read more</a>.</summary>
@@ -156,7 +102,7 @@
 									</section>
 								</article>
 							</section>
-							<section class="element" id="url-element" data-index="yes" data-level="2">
+							<section class="element" id="sage:url" data-index="yes" data-level="2">
 								<header>sage:url element</header>
 								<article>
 									<summary>Provides a generic element that refers to a predefined link that Sage resolves, replacing the element with the resolved link URL. <a href="${url:link(linking)}">Read more</a>.</summary>
@@ -199,7 +145,7 @@
 									</section>
 								</article>
 							</section>
-							<section class="element" id="literal-element" data-index="yes" data-level="2">
+							<section class="element" id="sage:literal" data-index="yes" data-level="2">
 								<header>sage:literal element</header>
 								<article>
 									<summary>This element is used to wrap markup that should be preserved as-is; that is, no preprocessing (xml inclusions, phrase or variable substitution etc) will be done on it; it's content will be served as specified, and the <code>sage:literal</code> element itself will be filtered out from the final output. The main usage of this element is to illustrate example usage.</summary>
@@ -223,7 +169,7 @@
 									</section>
 								</article>
 							</section>
-							<section class="element" id="include-element" data-index="yes" data-level="2">
+							<section class="element" id="sage:include" data-index="yes" data-level="2">
 								<header>sage:include element</header>
 								<article>
 									<summary>Includes another document or document fragment as either <code>xml</code> or <code>text</code> within the current document, replacing the including element with the included content.</summary>

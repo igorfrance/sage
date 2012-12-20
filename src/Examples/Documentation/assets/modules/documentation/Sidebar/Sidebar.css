@@ -20,6 +20,8 @@ section.sidebar .current
 
 section.sidebar article .level.current
 	{ color: #000; font-weight: bold; }
+section.sidebar article .listEnd
+	{ margin-bottom: 6px; }
 section.sidebar article .level1
 	{ padding-left: 0; }
 section.sidebar article .level2

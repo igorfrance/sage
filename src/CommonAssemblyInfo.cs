@@ -18,4 +18,4 @@ using System.Reflection;
 [assembly: AssemblyCompany("Cycle 99")]
 [assembly: AssemblyProduct("Sage")]
 [assembly: AssemblyCopyright("Copyright © Igor France")]
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.1.0.0")]

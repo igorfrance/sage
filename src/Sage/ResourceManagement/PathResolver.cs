@@ -232,7 +232,7 @@ namespace Sage.ResourceManagement
 		}
 
 		/// <summary>
-		/// Gets the default stylesheet path.
+		/// Gets the default style-sheet path.
 		/// </summary>
 		public string DefaultStylesheetPath
 		{
@@ -262,7 +262,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The physical path to the assets folder of the specified <paramref name="category"/></returns>
 		public string GetAssetPath(string category)
 		{
-			return this.config.AssetPath.Replace("{category}", category);
+			return this.config.AssetPath.Replace("{category}", category).TrimEnd('/');
 		}
 
 		/// <summary>
@@ -299,7 +299,7 @@ namespace Sage.ResourceManagement
 				return this.context.MapPath(childPath);
 
 			string currentModulePath = this.ModulePath;
-			ModuleConfiguration moduleConfig = null;
+			ModuleConfiguration moduleConfig;
 			if (config.Modules.TryGetValue(moduleName, out moduleConfig))
 			{
 				currentModulePath += moduleConfig.Category.Trim('/') + "/";
@@ -399,12 +399,13 @@ namespace Sage.ResourceManagement
 		/// <summary>
 		/// Converts, if possible, an absolute path to it's equivalent web accessible location (relative to the application path).
 		/// </summary>
-		/// <param name="path">The path to convert, for instance 'c:\Inetpub\wwwroot\mysite\static\resource.xml'</param>
+		/// <param name="path">The path to convert, for instance <c>c:\Inetpub\wwwroot\mysite\static\resource.xml</c></param>
 		/// <param name="prependApplicationPath">if set to <c>true</c>, the path returned will be prefixed with the 
 		/// application path, if the path doesn't start with it already.</param>
 		/// <returns>
 		/// The specified absolute path, converted to a web-accessible location. For the example above
-		/// that could be something similar to 'static/resource' (assuming that the project is running within c:\Inetpub\wwwroot\mysite.
+		/// that could be something similar to <c>static/resource</c> (assuming that the project is running within 
+		/// <c>c:\Inetpub\wwwroot\mysite</c>.
 		/// </returns>
 		public string GetRelativeWebPath(string path, bool prependApplicationPath = false)
 		{
@@ -513,10 +514,12 @@ namespace Sage.ResourceManagement
 		public string Expand(string relativePath, string category)
 		{
 			var categoryAssetPath = GetAssetPath(category);
-			var templatePath = relativePath.StartsWith(categoryAssetPath) ? relativePath : Path.Combine(categoryAssetPath, relativePath);
-			var substituted = Substitute(templatePath, new QueryString { { "category", category } });
+			var templatePath = Path.IsPathRooted(relativePath) || relativePath.StartsWith(categoryAssetPath)
+				? relativePath
+				: Path.Combine(categoryAssetPath, relativePath);
 
-			return context.MapPath(substituted);
+			var substituted = Substitute(templatePath, new QueryString { { "category", category } });
+			return this.context.MapPath(substituted);
 		}
 
 		/// <summary>
@@ -704,7 +707,7 @@ namespace Sage.ResourceManagement
 			values.Add("category", category);
 			values.Add("resourcepath", GetAssetPath(category));
 
-			return Substitute(templatePath, values);
+			return this.Substitute(templatePath, values);
 		}
 
 		/// <summary>
@@ -722,11 +725,11 @@ namespace Sage.ResourceManagement
 			Contract.Requires<ArgumentNullException>(values != null);
 
 			if (values["category"] == null)
-				values.Add("category", context.Category);
+				values.Add("category", this.context.Category);
 			if (values["locale"] == null)
-				values.Add("locale", context.Locale);
+				values.Add("locale", this.context.Locale);
 			if (values["assetpath"] == null)
-				values.Add("assetpath", GetAssetPath(values["category"]));
+				values.Add("assetpath", this.GetAssetPath(values["category"]));
 
 			string result = templatePath;
 			foreach (string key in values)

@@ -32,7 +32,7 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	/// <remarks>
 	/// In order to hook into this resolver and provide custom resources that can be referred to in
-	/// url's, create a method that matches <see cref="XmlProvider"/> delegate and tag it with
+	/// a URI, create a method that matches <see cref="XmlProvider"/> delegate and tag it with
 	/// <see cref="XmlProviderAttribute"/>. The name that you specify in the constructor for
 	/// <c>XmlProviderAttribute</c> is the string that follows <c>sageres://</c>.
 	/// </remarks>
@@ -115,7 +115,7 @@ namespace Sage.ResourceManagement
 
 		private string GetResourceName(string uri)
 		{
-			return uri.Replace(GetResourcePrefix(), string.Empty).Trim('/', '\\');
+			return uri.Replace(GetResourcePrefix(), string.Empty).TrimEnd('/', '\\');
 		}
 
 		private string GetResourcePrefix()

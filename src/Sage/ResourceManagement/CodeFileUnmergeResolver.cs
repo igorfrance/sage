@@ -27,7 +27,7 @@ namespace Sage.ResourceManagement
 	using Sage.Extensibility;
 
 	/// <summary>
-	/// Implements an <see cref="XmlResolver"/> that reads the contents of special 'global' and 'category' css
+	/// Implements an <see cref="XmlResolver"/> that reads the contents of special 'global' and 'category' CSS
 	/// and script files, and provides a reader around a document generated with elements representing the 
 	/// the included files.
 	/// </summary>
@@ -58,7 +58,7 @@ namespace Sage.ResourceManagement
 			string sourcePath = uri.Replace(Scheme + "://", string.Empty);
 			EntityResult result = null;
 			Stopwatch sw = new Stopwatch();
-			long time = sw.TimeMilliseconds(() => result = GetClientResourceReader(context, sourcePath));
+			long time = sw.TimeMilliseconds(() => result = this.GetClientResourceReader(context, sourcePath));
 			log.DebugFormat("Time taken to get resource reader for '{0}': {1}ms", uri, time);
 			
 			return result;
@@ -87,7 +87,7 @@ namespace Sage.ResourceManagement
 				return new EntityResult { Entity = reader, Dependencies = new List<string>() };
 			}
 
-			CodeFile file = CodeFile.Create(sourcePathAbsolute, sourcePathRelative, context.MapPath);
+			CodeFile file = CodeFile.Create(sourcePathAbsolute, sourcePathRelative);
 			if (context.ProjectConfiguration.IsDebugEnabled)
 			{
 				try

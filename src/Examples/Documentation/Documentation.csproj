@@ -75,7 +75,9 @@
     <Content Include="license.txt" />
     <Content Include="log4net.xml" />
     <Content Include="Sitemap.config" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Project.config">

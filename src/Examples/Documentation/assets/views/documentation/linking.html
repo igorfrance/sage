@@ -36,46 +36,15 @@
 							<blockquote>
 								<small>Using one of the <a href="${url:link(extensibility-text-functions)}">text functions</a>:</small>
 								<div class="indent small">
-									<code class="principal">${<a href="${url:self(#url:link)}">url:link</a>(linkId[, queryParameters][, hashString][, encode])}</code><br/>
-									<code class="principal">${<a href="${url:self(#url:self)}">url:self</a>([queryParameters][, hashString][, encode])}</code>
+									<code class="principal">${<a href="${url:link(reference-functions-linking, #url:link)}">url:link</a>(linkId[, queryParameters][, hashString][, encode])}</code><br/>
+									<code class="principal">${<a href="${url:link(reference-functions-linking, #url:self)}">url:self</a>([queryParameters][, hashString][, encode])}</code>
 								</div>
 								<small>Using one of the <a href="${url:link(extensibility-node-handlers)}">node handlers</a>:</small>
 								<div class="indent small">
-									<code class="principal">&lt;<a href="${url:self(#sage:link)}">sage:link</a> ref="linkId"[ values="queryParameters"][ hash="hashString"][ encode="true|false"]/&gt;</code><br/>
-									<code class="principal">&lt;<a href="${url:self(#sage:url)}">sage:url</a> ref="linkId"[ values="queryParameters"][ hash="hashString"][ encode="true|false"]/&gt;</code>
+									<code class="principal">&lt;<a href="${url:link(sage-namespaces-sage, #sage:link)}">sage:link</a> ref="linkId"[ values="queryParameters"][ hash="hashString"][ encode="true|false"]/&gt;</code><br/>
+									<code class="principal">&lt;<a href="${url:link(sage-namespaces-sage, #sage:url)}">sage:url</a> ref="linkId"[ values="queryParameters"][ hash="hashString"][ encode="true|false"]/&gt;</code>
 								</div>
 							</blockquote>
-							<ul class="bulleted">
-								<li>
-									The <code class="accent">url:link</code> function generates an HTML A element with its <code>href</code> attribute set to the fully resolved URL for the link with the specified <code>linkId</code>.
-								</li>
-								<li>
-									The <code class="accent">url:self</code> function generates a qualified URL for the current view.
-								</li>
-								<li>
-									The <code class="accent">sage:link</code> element sets its <code>href</code> attribute to the qualified URL for the link with the specified <code>linkId</code>.
-								</li>
-								<li>
-									The <code class="accent">sage:url</code> element replaces itself with the qualified URL for the link with the specified <code>linkId</code>.
-								</li>
-							</ul>
-							<p>
-								All of the above methods also accept the optional arguments <code>queryParameters</code>, <code>hashString</code> and <code>encode</code>.
-							</p>
-							<ul class="bulleted">
-								<li>
-									The <code>linkId</code> argument specifies the <code>id</code> of the link to generate.
-								</li>
-								<li>
-									The <code>queryParameters</code> argument specifies the list of name/value pairs of substitution values to use when generating the URL. The names are separated from values with the <code>=</code> symbol, and the name/value pairs are separated with either an ampersand, comma or a semicolon (eg. <code>param1=value1;param2=value2;param3=value3</code>).
-								</li>
-								<li>
-									The <code>hashString</code> argument specifies the string to add to add to the end of the URL as hash.
-								</li>
-								<li>
-									To URL-encode the generated URL specify <code>true</code> as the value of the <code>encode</code> argument.
-								</li>
-							</ul>
 						</article>
 					</section>
 
@@ -283,32 +252,6 @@
 									</mod:XmlTree>
 								</div>
 							</blockquote>
-						</article>
-					</section>
-
-					<section class="topic" data-index="yes">
-						<header>Usage</header>
-						<article>
-							<section class="topic" data-index="yes" id="url:link">
-								<header>url:link function</header>
-								<article>
-								</article>
-							</section>
-							<section class="topic" data-index="yes" id="url:self">
-								<header>url:self function</header>
-								<article>
-								</article>
-							</section>
-							<section class="topic" data-index="yes" id="sage:link">
-								<header>sage:link element</header>
-								<article>
-								</article>
-							</section>
-							<section class="topic" data-index="yes" id="sage:url">
-								<header>sage:url element</header>
-								<article>
-								</article>
-							</section>
 						</article>
 					</section>
 

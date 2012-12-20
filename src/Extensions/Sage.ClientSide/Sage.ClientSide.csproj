@@ -54,6 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\scripts\lib\aeon.2\aeon.js" />
+    <Content Include="assets\scripts\lib\aeon.2\core\Base.js" />
+    <Content Include="assets\scripts\lib\aeon.2\core\Dispatcher.js" />
     <Content Include="assets\scripts\lib\aeon\aeon.js" />
     <Content Include="assets\scripts\lib\aeon\aeon.solo.js" />
     <Content Include="assets\scripts\lib\aeon\aeon\animation\Alpha.js" />
@@ -221,7 +224,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Sage.Tools\Sage.Tools.csproj">
       <Project>{41ea3eca-f83d-4cc3-812b-1b10c96f3a1f}</Project>
-      <Name>Sage.Build</Name>
+      <Name>Sage.Tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Sage\Sage.csproj">
       <Project>{e647ebd1-64cf-48eb-b20d-0133c24899f6}</Project>

@@ -87,14 +87,14 @@
 	</xsl:template>
 
 	<xsl:template match="*" mode="breadcrumb-tree">
-		<xsl:element name="{name()}">
+		<xsl:element name="{name()}" namespace="{namespace-uri()}">
 			<xsl:apply-templates select="@*" mode="breadcrumb-tree"/>
 			<xsl:apply-templates select="node()" mode="breadcrumb-tree"/>
 		</xsl:element>
 	</xsl:template>
 
 	<xsl:template match="@*" mode="breadcrumb-tree">
-		<xsl:attribute name="{name()}">
+		<xsl:attribute name="{name()}" namespace="{namespace-uri()}">
 			<xsl:value-of select="."/>
 		</xsl:attribute>
 	</xsl:template>

@@ -42,6 +42,7 @@ namespace Sage.Views
 		private readonly SageContext context;
 		private CacheableXmlDocument configDoc;
 		private XsltTransform processor;
+		private bool? isNoCacheView;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewInfo"/> class, using the specified 
@@ -193,13 +194,18 @@ namespace Sage.Views
 		{
 			get
 			{
+				if (isNoCacheView != null)
+					return this.isNoCacheView.Value;
+
 				if (!this.ConfigExists)
-					return false;
+					return (this.isNoCacheView = false).Value;
 
 				XmlNamespaceManager nm = XmlNamespaces.Manager;
-				return
-					ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='cache-control' and @content='no-cache']", nm) != null ||
-					ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='pragma' and @content='no-cache']", nm) != null;
+				this.isNoCacheView =
+					this.ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='cache-control' and @content='no-cache']", nm) != null ||
+					this.ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='pragma' and @content='no-cache']", nm) != null;
+
+				return this.isNoCacheView.Value;
 			}
 		}
 

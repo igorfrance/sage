@@ -57,7 +57,7 @@ namespace Sage.Rewriters
 		}
 
 		/// <summary>
-		/// Inits the specified application.
+		/// Initializes the specified application.
 		/// </summary>
 		/// <param name="application">The application.</param>
 		public void Init(HttpApplication application)

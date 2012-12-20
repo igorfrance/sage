@@ -103,7 +103,7 @@
 					<xsl:comment> File not found: <xsl:value-of select="@path"/> </xsl:comment>
 				</xsl:when>
 				<xsl:otherwise>
-					<script type="text/javascript" language="javascript" src="{@src}"></script>
+					<script type="text/javascript" src="{@src}"></script>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:for-each>
@@ -132,7 +132,7 @@
 	</xsl:template>
 
 	<xsl:template match="sage:resource[@type='script']">
-		<script type="text/javascript" language="javascript" src="{@path}"></script>
+		<script type="text/javascript" src="{@path}"></script>
 	</xsl:template>
 
 	<xsl:template match="sage:resource[@type='style']">

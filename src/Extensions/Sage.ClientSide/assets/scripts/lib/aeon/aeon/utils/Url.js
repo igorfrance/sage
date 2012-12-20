@@ -120,7 +120,7 @@ aeon.utils.Url.getQuery = function Url$getQuery()
  */
 aeon.utils.Url.setHashParam = function Url$setHashParam()
 {
-	var url = new $url(location);
+	var url = new $url(location.href);
 	if (arguments.length == 2)
 	{
 		url.setHashParam(arguments[0], arguments[1]);
@@ -147,7 +147,7 @@ aeon.utils.Url.setHash = function Url$setHash(hash)
 	if (hash == String.EMPTY)
 		hash = aeon.utils.Url.EMPTY_HASH;
 
-  location.hash = hash;
+	location.hash = hash;
 };
 
 aeon.utils.Url.removeHashParam = function Url$removeHashParam(name)

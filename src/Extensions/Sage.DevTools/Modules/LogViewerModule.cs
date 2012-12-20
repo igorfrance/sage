@@ -35,8 +35,6 @@ namespace Sage.DevTools.Modules
 
 	public class LogViewerModule : IModule
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(LogViewerModule));
-
 		private const string DefaultLoggerName = "MainLogger";
 		private const string LineFindExpression = @"\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d+ \[{0}\][\s\S]*?(?=(?:\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d+)|$)";
 		private const string LinePartsExpression = @"(?'Date'(?'YY'\d\d\d\d)-(?'MM'\d\d)-(?'DD'\d\d)) +(?'Time'(?'HH'\d\d):(?'MIN'\d\d):(?'SEC'\d\d),(?'MILLI'\d+)) +\[(?'Thread'\S+)\] +(?'Severity'\S+) +(?'Logger'\S+) - (?'Message'[\s\S]*)";
@@ -55,6 +53,8 @@ namespace Sage.DevTools.Modules
 
 		#endregion
 
+		private static readonly ILog log = LogManager.GetLogger(typeof(LogViewerModule));
+
 		private static readonly Regex logLineExpr = new Regex(LinePartsExpression);
 		private static readonly Regex logTimeExpr = new Regex(TimingExpression);
 
@@ -71,7 +71,7 @@ namespace Sage.DevTools.Modules
 			XmlNamespaceManager nm = XmlNamespaces.Manager;
 
 			bool isPublic = moduleElement.GetBoolean("mod:config/mod:public", nm);
-			long threadName = moduleElement.GetLong("mod:config/mod:thread", 0, nm);
+			string threadName = moduleElement.GetString("mod:config/mod:thread", nm);
 			string loggerName = moduleElement.GetString("mod:config/mod:logger", DefaultLoggerName, nm);
 
 			SageContext context = configuration.Context;
@@ -81,9 +81,9 @@ namespace Sage.DevTools.Modules
 				return null;
 			}
 
-			if (threadName == 0)
+			if (string.IsNullOrEmpty(threadName))
 			{
-				log.Warn("Thread name parameter is missing. Set mod:config/mod:thread be a non-empty string that parses as long integer.");
+				log.Warn("Thread name parameter is missing. Set mod:config/mod:thread be a non-empty string.");
 				return new ModuleResult(ModuleResultStatus.MissingParameters);
 			}
 
@@ -111,13 +111,13 @@ namespace Sage.DevTools.Modules
 			return result;
 		}
 
-		private static XmlElement CreateLogElement(XmlDocument ownerDoc, FileAppender appender, long threadName)
+		private static XmlElement CreateLogElement(XmlDocument ownerDoc, FileAppender appender, string threadName)
 		{
 			XmlElement logNode = ownerDoc.CreateElement("mod:log", XmlNamespaces.ModulesNamespace);
 			IEnumerable<string> logLines = GetThreadLogs(appender, threadName.ToString());
 			if (logLines != null)
 			{
-				long requestStart = threadName;
+				long requestStart = 0;
 				foreach (string t in logLines)
 				{
 					Match match;
@@ -132,6 +132,9 @@ namespace Sage.DevTools.Modules
 						int milli = int.Parse(match.Groups["MILLI"].Value);
 
 						DateTime logTime = new DateTime(yy, mm, dd, hh, min, sec, milli);
+						if (requestStart == 0)
+							requestStart = logTime.Ticks;
+
 						long difference = logTime.Ticks - requestStart;
 
 						TimeSpan elapsed = new TimeSpan(difference > 0 ? difference : 0);

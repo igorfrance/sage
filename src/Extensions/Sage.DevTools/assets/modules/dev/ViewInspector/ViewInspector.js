@@ -49,7 +49,7 @@ sage.dev.ViewInspector = function ViewInspector()
 	var metaViews = ["xml", "xmlx", "htmlx", "json"];
 	var currentState = { url: "about:blank", inspector: null };
 	var stateParamName = "sage:vi";
-	var logUrl = "{0}dev/log/{1}";
+	var logUrl = "{0}dev/log/{1}/?devtools=0";
 	var baseHref;
 
 	this.init = function ViewInspector$init()

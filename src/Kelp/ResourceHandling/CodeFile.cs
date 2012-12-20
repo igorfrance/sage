@@ -25,6 +25,7 @@ namespace Kelp.ResourceHandling
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
 
 	using Kelp.Extensions;
 	using Kelp.Http;
@@ -52,8 +53,11 @@ namespace Kelp.ResourceHandling
 		/// </summary>
 		protected string rawContent = string.Empty;
 
+		private const int MaxLoadAttempts = 5;
+		private const int RetryWaitInterval = 100;
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(CodeFile).FullName);
-		private static readonly Regex instructionExpression = new Regex(@"^/\*# (?'name'\w+):\s*(?'value'.*?) \*/");
+		private static readonly Regex instructionExpression = new Regex(@"^\s*/\*#\s*(?'name'\w+):\s*(?'value'.*?) \*/");
 		private readonly OrderedDictionary<string, CodeFile> includes = new OrderedDictionary<string, CodeFile>();
 		private readonly OrderedDictionary<string, string> references = new OrderedDictionary<string, string>();
 		private readonly Stopwatch sw = new Stopwatch();
@@ -62,6 +66,7 @@ namespace Kelp.ResourceHandling
 		private bool initialized;
 		private bool loaded;
 		private bool isFromCache;
+		private int retryCount = 0;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CodeFile"/> class.
@@ -73,20 +78,7 @@ namespace Kelp.ResourceHandling
 			this.AbsolutePath = absolutePath;
 			this.relativePath = relativePath;
 			this.parent = null;
-			this.MapPath = input => input;
 			this.CachedConfigurationSettings = string.Empty;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CodeFile"/> class.
-		/// </summary>
-		/// <param name="absolutePath">The physical path of this code file.</param>
-		/// <param name="relativePath">The relative path of this code file.</param>
-		/// <param name="mappingFunction">The delegate method that handles resolving (mapping) or relative paths.</param>
-		protected CodeFile(string absolutePath, string relativePath, Func<string, string> mappingFunction)
-			: this(absolutePath, relativePath)
-		{
-			this.MapPath = mappingFunction;
 		}
 
 		/// <summary>
@@ -99,7 +91,7 @@ namespace Kelp.ResourceHandling
 			: this(absolutePath, relativePath)
 		{
 			this.parent = parent;
-			this.MapPath = parent.MapPath;
+			this.TemporaryDirectory = parent.TemporaryDirectory;
 		}
 
 		/// <summary>
@@ -163,18 +155,7 @@ namespace Kelp.ResourceHandling
 		/// <summary>
 		/// Gets the temporary directory in which to store the processed version of this file.
 		/// </summary>
-		public string CacheDirectory
-		{
-			get
-			{
-				return Configuration.Current.TemporaryDirectory;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the delegate method that handles resolving (mapping) or relative paths.
-		/// </summary>
-		public Func<string, string> MapPath { get; set; }
+		public string TemporaryDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the recursive list of files this file includes either directly or through it's includes.
@@ -209,7 +190,7 @@ namespace Kelp.ResourceHandling
 		/// Gets the last modified Date and Time of this <see cref="CodeFile"/>
 		/// </summary>
 		/// <remarks>
-		/// This is done by getting the latest last modified datetime from all depend files.
+		/// This is done by getting the latest modification time from all files this code file depends on.
 		/// </remarks> 
 		public DateTime LastModified
 		{
@@ -289,11 +270,11 @@ namespace Kelp.ResourceHandling
 		{
 			get
 			{
-				if (this.CacheDirectory == null)
+				if (this.TemporaryDirectory == null)
 					return null;
 
 				string fileName = AbsolutePath.Replace('/', '_').Replace('\\', '_').Replace(':', '_');
-				return MapPath(Path.Combine(CacheDirectory, fileName));
+				return Path.Combine(TemporaryDirectory, fileName);
 			}
 		}
 
@@ -311,7 +292,8 @@ namespace Kelp.ResourceHandling
 		/// </summary>
 		/// <value><c>true</c> if the cached file is out of date; otherwise, <c>false</c>.</value>
 		/// <remarks>
-		/// The cached file is considered out-of-date when any of the included files has a last-modified datetime greater than the cached file.
+		/// The cached file is considered out-of-date when any of the included files has a last-modified-date 
+		/// greater than the cached file.
 		/// </remarks>
 		protected virtual bool NeedsRefresh
 		{
@@ -356,35 +338,21 @@ namespace Kelp.ResourceHandling
 		}
 
 		/// <summary>
-		/// Creates a <see cref="CodeFile"/> for the specified <paramref name="absolutePath"/> and <paramref name="relativePath"/>
-		/// </summary>
-		/// <param name="absolutePath">The physical path of this code file.</param>
-		/// <param name="relativePath">The relative path of this code file.</param>
-		/// <returns>A code file appropriate for the specified <paramref name="absolutePath"/> and <paramref name="relativePath"/>
-		/// If the extension of the specified <paramref name="absolutePath"/> is <c>css</c>, the resulting value will be a 
-		/// new <see cref="CssFile"/>. In all other cases the resulting value is a <see cref="ScriptFile"/>.</returns>
-		public static CodeFile Create(string absolutePath, string relativePath)
-		{
-			return Create(absolutePath, relativePath, (CodeFile) null);
-		}
-
-		/// <summary>
 		/// Creates a code file for the specified <paramref name="absolutePath"/>.
 		/// </summary>
 		/// <param name="absolutePath">The physical path of this code file.</param>
 		/// <param name="relativePath">The relative path of this code file.</param>
-		/// <param name="mapPath">The function to use to map relative paths to absolute.</param>
+		/// <param name="temporaryDirectory">The temporary directory in which to save the caches.</param>
 		/// <returns>A code file appropriate for the specified <paramref name="absolutePath"/>.
 		/// If the extension of the specified <paramref name="absolutePath"/> is <c>css</c>, the resulting value will be a 
 		/// new <see cref="CssFile"/>. In all other cases the resulting value is a <see cref="ScriptFile"/>.</returns>
-		public static CodeFile Create(string absolutePath, string relativePath, Func<string, string> mapPath)
+		public static CodeFile Create(string absolutePath, string relativePath, string temporaryDirectory = null)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(absolutePath));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(relativePath));
-			Contract.Requires<ArgumentNullException>(mapPath != null);
 
-			CodeFile result = Create(absolutePath, relativePath);
-			result.MapPath = mapPath;
+			CodeFile result = Create(absolutePath, relativePath, (CodeFile) null);
+			result.TemporaryDirectory = temporaryDirectory ?? Configuration.Current.TemporaryDirectory;
 
 			return result;
 		}
@@ -411,7 +379,7 @@ namespace Kelp.ResourceHandling
 
 			instance.parent = parent;
 			if (parent != null)
-				instance.MapPath = parent.MapPath;
+				instance.TemporaryDirectory = parent.TemporaryDirectory;
 
 			return instance;
 		}
@@ -471,15 +439,7 @@ namespace Kelp.ResourceHandling
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException("path");
 
-			if (Path.IsPathRooted(path) || path.StartsWith("~"))
-			{
-				if ((path.StartsWith("/") || path.StartsWith("~")) && MapPath != null)
-					return MapPath(path);
-
-				return path;
-			}
-
-			return Path.Combine(Path.GetDirectoryName(AbsolutePath), path);
+			return Path.Combine(Path.GetDirectoryName(this.AbsolutePath), path);
 		}
 
 		/// <summary>
@@ -516,6 +476,27 @@ namespace Kelp.ResourceHandling
 		/// </summary>
 		protected void Initialize()
 		{
+			while (true)
+			{
+				try
+				{
+					this.InitializeActual();
+					break;
+				}
+				catch (IOException)
+				{
+					if (++this.retryCount == MaxLoadAttempts)
+						throw;
+
+					Thread.Sleep(TimeSpan.FromMilliseconds(RetryWaitInterval));
+				}
+			}
+
+			this.retryCount = 0;
+		}
+
+		private void InitializeActual()
+		{
 			if (this.initialized)
 				return;
 
@@ -544,16 +525,15 @@ namespace Kelp.ResourceHandling
 			if (!string.IsNullOrEmpty(this.CacheName))
 			{
 				string tempName = this.CacheName;
-				string tempDirectory = this.MapPath(this.CacheDirectory);
-				if (!Directory.Exists(tempDirectory))
+				if (!Directory.Exists(this.TemporaryDirectory))
 				{
 					try
 					{
-						Directory.CreateDirectory(tempDirectory);
+						Directory.CreateDirectory(this.TemporaryDirectory);
 					}
 					catch (Exception ex)
 					{
-						log.ErrorFormat("Could not create temporary directory '{0}': {1}", tempDirectory, ex.Message);
+						log.ErrorFormat("Could not create temporary directory '{0}': {1}", this.TemporaryDirectory, ex.Message);
 					}
 				}
 
@@ -590,7 +570,6 @@ namespace Kelp.ResourceHandling
 			if (!File.Exists(this.AbsolutePath))
 				return;
 
-
 			this.rawContent = File.ReadAllText(this.AbsolutePath);
 			this.loaded = true;
 		}
@@ -607,9 +586,9 @@ namespace Kelp.ResourceHandling
 			StringBuilder contents = new StringBuilder();
 			string[] lines = sourceCode.Replace("\r", string.Empty).Split(new[] { '\n' });
 
-			Match match;
 			foreach (string line in lines)
 			{
+				Match match;
 				if ((match = instructionExpression.Match(line)).Success)
 				{
 					string name = match.Groups["name"].Value;
@@ -661,7 +640,6 @@ namespace Kelp.ResourceHandling
 								{
 									this.AddReference(absPath, inner.References[absPath]);
 								}
-
 							}
 							else
 							{
