@@ -71,8 +71,6 @@ namespace Kelp.ResourceHandling
 		/// Request, Response, Session, and Server) used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context)
 		{
-			Contract.Requires<ArgumentNullException>(context != null);
-
 			string absolutePath = context.Request.PhysicalPath;
 			string extension = Path.GetExtension(absolutePath);
 			HttpContextWrapper wrapped = new HttpContextWrapper(context);

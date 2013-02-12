@@ -30,51 +30,34 @@ namespace Kelp.ResourceHandling
 			new Regex(@"(url\s*\((?:""|')?)(.*?)((?:""|')?\))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CssFile"/> class, using the specified absolute and relative paths.
+		/// Initializes a new instance of the <see cref="CssFile" /> class, using the specified absolute and relative paths,
+		/// and the specified <paramref name="configuration"/>.
 		/// </summary>
 		/// <param name="absolutePath">The path of the file to load.</param>
 		/// <param name="relativePath">The relative path of the file to load.</param>
-		public CssFile(string absolutePath, string relativePath)
-			: base(absolutePath, relativePath)
+		/// <param name="configuration">The processing configuration for this file.</param>
+		public CssFile(string absolutePath, string relativePath, FileTypeConfiguration configuration)
+			: base(absolutePath, relativePath, configuration)
 		{
 			this.ContentType = "text/css";
 		}
 
-		internal override string ConfigurationSettings
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CssFile" /> class, using the specified absolute and relative paths.
+		/// </summary>
+		/// <param name="absolutePath">The path of the file to load.</param>
+		/// <param name="relativePath">The relative path of the file to load.</param>
+		public CssFile(string absolutePath, string relativePath)
+			: this(absolutePath, relativePath, ResourceHandling.Configuration.Current.Css)
 		{
-			get
-			{
-				return Configuration.Current.Css.ToString();
-			}
-		}
-
-		/// <inheritdoc/>
-		protected override bool MinificationEnabled
-		{
-			get
-			{
-				return Configuration.Current.Css.Enabled;
-			}
 		}
 
 		/// <inheritdoc/>
 		public override string Minify(string sourceCode)
 		{
-			return Minify(sourceCode, Configuration.Current.Css.Settings);
-		}
-
-		/// <summary>
-		/// Minifies the specified <paramref name="sourceCode"/>, according to the specified minification <paramref name="settings"/>.
-		/// </summary>
-		/// <param name="sourceCode">The source code string to minify.</param>
-		/// <param name="settings">The object that specifies the minification settings for this file.</param>
-		/// <returns>
-		/// The minified version of this file's content.
-		/// </returns>
-		public string Minify(string sourceCode, CssSettings settings)
-		{
 			Minifier min = new Minifier();
-			return min.MinifyStyleSheet(sourceCode, settings);
+			CssFileConfiguration cssConfiguration = (CssFileConfiguration) this.Configuration;
+			return min.MinifyStyleSheet(sourceCode, cssConfiguration.Settings);
 		}
 
 		/// <inheritdoc/>

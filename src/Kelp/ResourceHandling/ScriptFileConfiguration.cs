@@ -21,7 +21,10 @@ namespace Kelp.ResourceHandling
 
 	using Microsoft.Ajax.Utilities;
 
-	internal class ScriptFileConfiguration : FileTypeConfiguration
+	/// <summary>
+	/// Represents the processing configuration for script files.
+	/// </summary>
+	public class ScriptFileConfiguration : FileTypeConfiguration
 	{
 		private readonly List<string> byteProps = new List<string> { "IndentSize" };
 
@@ -48,9 +51,11 @@ namespace Kelp.ResourceHandling
 			"OutputMode",
 		};
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScriptFileConfiguration" /> class.
+		/// </summary>
 		public ScriptFileConfiguration()
 		{
-			this.Enabled = true;
 			this.Settings = new CodeSettings
 			{
 				MinifyCode = true,
@@ -58,24 +63,35 @@ namespace Kelp.ResourceHandling
 			};
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScriptFileConfiguration" /> class,
+		/// using the specified <paramref name="configurationElement"/>
+		/// </summary>
+		/// <param name="configurationElement">The configuration element.</param>
 		public ScriptFileConfiguration(XmlElement configurationElement)
 			: this()
 		{
 			this.Parse(configurationElement, typeof(CodeSettings), this.Settings);
 		}
 
+		/// <summary>
+		/// Gets the <see cref="CodeSettings"/> associated with this instance.
+		/// </summary>
 		public CodeSettings Settings { get; private set; }
 
+		/// <inheritdoc/>
 		protected override List<string> BoolProps
 		{
 			get { return boolProps; }
 		}
 
+		/// <inheritdoc/>
 		protected override List<string> ByteProps
 		{
 			get { return byteProps; }
 		}
 
+		/// <inheritdoc/>
 		protected override List<string> EnumProps
 		{
 			get { return enumProps; }

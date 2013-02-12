@@ -67,31 +67,27 @@ namespace Kelp.ResourceHandling
 		private bool loaded;
 		private bool isFromCache;
 		private int retryCount = 0;
+		private readonly FileTypeConfiguration configuration;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CodeFile"/> class.
 		/// </summary>
 		/// <param name="absolutePath">The physical path of this code file.</param>
 		/// <param name="relativePath">The relative path of this code file.</param>
-		protected CodeFile(string absolutePath, string relativePath)
+		/// <param name="configuration">The processing configuration for this file.</param>
+		/// <param name="parent">The script processor creating this instance (used when processing includes)</param>
+		protected CodeFile(string absolutePath, string relativePath, FileTypeConfiguration configuration, CodeFile parent = null)
 		{
 			this.AbsolutePath = absolutePath;
 			this.relativePath = relativePath;
 			this.parent = null;
 			this.CachedConfigurationSettings = string.Empty;
-		}
+			this.configuration = configuration;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CodeFile"/> class.
-		/// </summary>
-		/// <param name="absolutePath">The physical path of this code file.</param>
-		/// <param name="relativePath">The relative path of this code file.</param>
-		/// <param name="parent">The script processor creating this instance (used when processing includes)</param>
-		protected CodeFile(string absolutePath, string relativePath, CodeFile parent)
-			: this(absolutePath, relativePath)
-		{
-			this.parent = parent;
-			this.TemporaryDirectory = parent.TemporaryDirectory;
+			if (parent != null)
+			{
+				this.parent = parent;
+			}
 		}
 
 		/// <summary>
@@ -151,11 +147,6 @@ namespace Kelp.ResourceHandling
 				return resultPath.Replace("\\", "/");
 			}
 		}
-
-		/// <summary>
-		/// Gets the temporary directory in which to store the processed version of this file.
-		/// </summary>
-		public string TemporaryDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the recursive list of files this file includes either directly or through it's includes.
@@ -270,11 +261,11 @@ namespace Kelp.ResourceHandling
 		{
 			get
 			{
-				if (this.TemporaryDirectory == null)
+				if (this.Configuration.TemporaryDirectory == null)
 					return null;
 
 				string fileName = AbsolutePath.Replace('/', '_').Replace('\\', '_').Replace(':', '_');
-				return Path.Combine(TemporaryDirectory, fileName);
+				return Path.Combine(this.Configuration.TemporaryDirectory, fileName);
 			}
 		}
 
@@ -283,7 +274,16 @@ namespace Kelp.ResourceHandling
 		/// </summary>
 		internal string ContentType { get; set; }
 
-		internal abstract string ConfigurationSettings { get; }
+		/// <summary>
+		/// Gets the configuration associated with this <see refe="CodeFile"/>'s file type.
+		/// </summary>
+		public FileTypeConfiguration Configuration
+		{
+			get
+			{
+				return this.configuration;
+			}
+		}
 
 		internal string CachedConfigurationSettings { get; private set; }
 
@@ -299,7 +299,8 @@ namespace Kelp.ResourceHandling
 		{
 			get
 			{
-				if (this.CachedConfigurationSettings != this.ConfigurationSettings)
+				var currentSettings = this.Configuration.ToString();
+				if (this.CachedConfigurationSettings != currentSettings)
 					return true;
 
 				if (!File.Exists(this.CacheName))
@@ -352,8 +353,6 @@ namespace Kelp.ResourceHandling
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(relativePath));
 
 			CodeFile result = Create(absolutePath, relativePath, (CodeFile) null);
-			result.TemporaryDirectory = temporaryDirectory ?? Configuration.Current.TemporaryDirectory;
-
 			return result;
 		}
 
@@ -373,14 +372,19 @@ namespace Kelp.ResourceHandling
 
 			CodeFile instance;
 			if (absolutePath.ToLower().EndsWith("css"))
-				instance = new CssFile(absolutePath, relativePath);
+			{
+				instance = parent != null 
+					? new CssFile(absolutePath, relativePath, parent.configuration) 
+					: new CssFile(absolutePath, relativePath);
+			}
 			else
-				instance = new ScriptFile(absolutePath, relativePath);
+			{
+				instance = parent != null
+					? new ScriptFile(absolutePath, relativePath, parent.configuration)
+					: new ScriptFile(absolutePath, relativePath);
+			}
 
 			instance.parent = parent;
-			if (parent != null)
-				instance.TemporaryDirectory = parent.TemporaryDirectory;
-
 			return instance;
 		}
 
@@ -525,22 +529,23 @@ namespace Kelp.ResourceHandling
 			if (!string.IsNullOrEmpty(this.CacheName))
 			{
 				string tempName = this.CacheName;
-				if (!Directory.Exists(this.TemporaryDirectory))
+				string tempDirectory = this.Configuration.TemporaryDirectory;
+				if (!Directory.Exists(tempDirectory))
 				{
 					try
 					{
-						Directory.CreateDirectory(this.TemporaryDirectory);
+						Directory.CreateDirectory(tempDirectory);
 					}
 					catch (Exception ex)
 					{
-						log.ErrorFormat("Could not create temporary directory '{0}': {1}", this.TemporaryDirectory, ex.Message);
+						log.ErrorFormat("Could not create temporary directory '{0}': {1}", tempDirectory, ex.Message);
 					}
 				}
 
 				try
 				{
 					StringBuilder persistContent = new StringBuilder();
-					persistContent.AppendLine(string.Format("/*# Configuration: {0} */", this.ConfigurationSettings));
+					persistContent.AppendLine(string.Format("/*# Configuration: {0} */", this.Configuration));
 					foreach (string includePath in this.references.Keys)
 						persistContent.AppendLine(string.Format("/*# Reference: {0} | {1} */", includePath, this.references[includePath]));
 

@@ -16,6 +16,7 @@
 namespace Kelp.ResourceHandling
 {
 	using System;
+	using System.Diagnostics.Contracts;
 	using System.Text;
 
 	using log4net;
@@ -29,52 +30,34 @@ namespace Kelp.ResourceHandling
 		private static readonly ILog log = LogManager.GetLogger(typeof(ScriptFile));
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ScriptFile"/> class, using the specified absolute and relative paths.
+		/// Initializes a new instance of the <see cref="ScriptFile" /> class, using the specified absolute and 
+		/// relative paths, and the specified <paramref name="configuration"/>.
 		/// </summary>
 		/// <param name="absolutePath">The path of the file to load.</param>
 		/// <param name="relativePath">The relative path of the file to load.</param>
-		public ScriptFile(string absolutePath, string relativePath)
-			: base(absolutePath, relativePath)
+		/// <param name="configuration">The processing configuration for this file.</param>
+		public ScriptFile(string absolutePath, string relativePath, FileTypeConfiguration configuration)
+			: base(absolutePath, relativePath, configuration)
 		{
 			this.ContentType = "text/javascript";
 		}
 
-
-		internal override string ConfigurationSettings
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScriptFile" /> class, using the specified absolute and relative paths.
+		/// </summary>
+		/// <param name="absolutePath">The path of the file to load.</param>
+		/// <param name="relativePath">The relative path of the file to load.</param>
+		public ScriptFile(string absolutePath, string relativePath)
+			: this(absolutePath, relativePath, ResourceHandling.Configuration.Current.Script)
 		{
-			get 
-			{
-				return Configuration.Current.Script.ToString(); 
-			}
-		}
-
-		/// <inheritdoc/>
-		protected override bool MinificationEnabled
-		{
-			get
-			{
-				return Configuration.Current.Script.Enabled;
-			}
 		}
 
 		/// <inheritdoc/>
 		public override string Minify(string sourceCode)
 		{
-			return Minify(sourceCode, Configuration.Current.Script.Settings);
-		}
-
-		/// <summary>
-		/// Minifies the specified <paramref name="sourceCode"/>, according to the specified minification <paramref name="settings"/>.
-		/// </summary>
-		/// <param name="sourceCode">The source code string to minify.</param>
-		/// <param name="settings">The object that specifis the minification settings for this file.</param>
-		/// <returns>
-		/// The minified version of this file's content.
-		/// </returns>
-		public string Minify(string sourceCode, CodeSettings settings)
-		{
 			Minifier min = new Minifier();
-			string minified = min.MinifyJavaScript(sourceCode, settings);
+			ScriptFileConfiguration scriptConfiguration = (ScriptFileConfiguration) this.Configuration;
+			string minified = min.MinifyJavaScript(sourceCode, scriptConfiguration.Settings);
 
 			if (min.ErrorList.Count == 0)
 			{

@@ -21,7 +21,10 @@ namespace Kelp.ResourceHandling
 
 	using Microsoft.Ajax.Utilities;
 
-	internal class CssFileConfiguration : FileTypeConfiguration
+	/// <summary>
+	/// Represents the processing configuration for css files.
+	/// </summary>
+	public class CssFileConfiguration : FileTypeConfiguration
 	{
 		private readonly List<string> byteProps = new List<string> { "IndentSize" };
 		private readonly List<string> boolProps = new List<string>
@@ -34,6 +37,9 @@ namespace Kelp.ResourceHandling
 			"ColorNames", "CommentMode"
 		};
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CssFileConfiguration" /> class.
+		/// </summary>
 		public CssFileConfiguration()
 		{
 			this.Settings = new CssSettings
@@ -42,25 +48,35 @@ namespace Kelp.ResourceHandling
 			};
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CssFileConfiguration" /> class,
+		/// using the specified <paramref name="configurationElement"/>
+		/// </summary>
+		/// <param name="configurationElement">The configuration element.</param>
 		public CssFileConfiguration(XmlElement configurationElement)
 			: this()
 		{
-			this.Enabled = configurationElement == null || configurationElement.GetAttribute("Enabled") == "true";
 			this.Parse(configurationElement, typeof(CssSettings), this.Settings);
 		}
 
+		/// <summary>
+		/// Gets the <see cref="CssSettings"/> associated with this instance.
+		/// </summary>
 		public CssSettings Settings { get; private set; }
 
+		/// <inheritdoc/>
 		protected override List<string> BoolProps
 		{
 			get { return boolProps; }
 		}
 
+		/// <inheritdoc/>
 		protected override List<string> ByteProps
 		{
 			get { return byteProps; }
 		}
 
+		/// <inheritdoc/>
 		protected override List<string> EnumProps
 		{
 			get { return enumProps; }

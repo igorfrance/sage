@@ -23,63 +23,108 @@ namespace Kelp.ResourceHandling
 
 	using log4net;
 
-	internal abstract class FileTypeConfiguration
+	/// <summary>
+	/// Represents the processing configuration for a file type.
+	/// </summary>
+	public abstract class FileTypeConfiguration
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FileTypeConfiguration).FullName);
 		private const BindingFlags Flags = BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public;
+		private string temporaryDirectory;
 
-		public virtual bool Enabled { get; protected set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether minification is enabled for this file type.
+		/// </summary>
+		/// <value><c>true</c> if minification is enabled; otherwise, <c>false</c>.</value>
+		public virtual bool MinificationEnabled { get; set; }
 
+		/// <summary>
+		/// Gets or sets the temporary directory in which to save the processed files.
+		/// </summary>
+		public string TemporaryDirectory
+		{
+			get
+			{
+				return temporaryDirectory ?? Configuration.Current.TemporaryDirectory;
+			}
+
+			set
+			{
+				temporaryDirectory = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets configuration options that should be parsed as <see cref="Byte"/> values.
+		/// </summary>
 		protected abstract List<string> ByteProps { get; }
 
+		/// <summary>
+		/// Gets configuration options that should be parsed as <see cref="Boolean"/> values.
+		/// </summary>
 		protected abstract List<string> BoolProps { get; }
 
+		/// <summary>
+		/// Gets configuration options that should be parsed as <see cref="Enum"/> values.
+		/// </summary>
 		protected abstract List<string> EnumProps { get; }
 
+		/// <summary>
+		/// Parses the specified configuration element.
+		/// </summary>
+		/// <param name="configurationElement">The configuration element to parse.</param>
+		/// <param name="self">The (derived) type of the <paramref name="target"/>.</param>
+		/// <param name="target">The target instance to parse the configuration into.</param>
 		protected void Parse(XmlElement configurationElement, Type self, object target)
 		{
-			if (configurationElement != null)
+			if (configurationElement == null)
+				return;
+
+			this.MinificationEnabled = configurationElement.GetAttribute("Enabled") == "true";
+			foreach (XmlAttribute attrib in configurationElement.Attributes)
 			{
-				this.Enabled = configurationElement.GetAttribute("Enabled") == "true";
-				foreach (XmlAttribute attrib in configurationElement.Attributes)
+				string attribName = attrib.LocalName;
+				string attribValue = attrib.InnerText;
+				PropertyInfo property = self.GetProperty(attribName, Flags);
+				if (property == null || !property.CanWrite)
+					continue;
+
+				byte byteValue;
+				if (this.ByteProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && byte.TryParse(attribValue, out byteValue))
 				{
-					string attribName = attrib.LocalName;
-					string attribValue = attrib.InnerText;
-					PropertyInfo property = self.GetProperty(attribName, Flags);
-					if (property == null || !property.CanWrite)
-						continue;
+					property.SetValue(target, byteValue, null);
+				}
 
-					byte byteValue;
-					if (ByteProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && byte.TryParse(attribValue, out byteValue))
+				bool boolValue;
+				if (this.BoolProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && bool.TryParse(attribValue, out boolValue))
+				{
+					property.SetValue(target, boolValue, null);
+				}
+
+				if (this.EnumProps.Contains(attribName, StringComparer.OrdinalIgnoreCase))
+				{
+					try
 					{
-						property.SetValue(target, byteValue, null);
+						property.SetValue(target, Enum.Parse(property.PropertyType, attribValue), null);
 					}
-
-					bool boolValue;
-					if (BoolProps.Contains(attribName, StringComparer.OrdinalIgnoreCase) && bool.TryParse(attribValue, out boolValue))
+					catch (Exception ex)
 					{
-						property.SetValue(target, boolValue, null);
-					}
-
-					if (EnumProps.Contains(attribName, StringComparer.OrdinalIgnoreCase))
-					{
-						try
-						{
-							property.SetValue(target, System.Enum.Parse(property.PropertyType, attribValue), null);
-						}
-						catch (Exception ex)
-						{
-							log.ErrorFormat("Could not set the enum value '{0}' of property '{1} ({2}): {3}'",
-								attribValue, attribName, property.PropertyType.Name, ex.Message);
-						}
+						log.ErrorFormat("Could not set the enum value '{0}' of property '{1} ({2}): {3}'",
+							attribValue, attribName, property.PropertyType.Name, ex.Message);
 					}
 				}
 			}
 		}
 
+		/// <summary>
+		/// Converts the values of <paramref name="sourceObject"/> to a string.
+		/// </summary>
+		/// <param name="t">The derived type of the sourceObject.</param>
+		/// <param name="sourceObject">The source object to serialize.</param>
+		/// <returns>The string representation of the <paramref name="sourceObject"/>.</returns>
 		protected string Serialize(Type t, object sourceObject)
 		{
-			List<string> result = new List<string> { "Enabled=" + this.Enabled.ToString() };
+			List<string> result = new List<string> { "Enabled=" + this.MinificationEnabled };
 			foreach (string prop in BoolProps)
 			{
 				PropertyInfo property = t.GetProperty(prop, Flags);
