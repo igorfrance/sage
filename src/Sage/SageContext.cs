@@ -22,7 +22,6 @@ namespace Sage
 	using System.Globalization;
 	using System.IO;
 	using System.Reflection;
-	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Hosting;
 	using System.Web.Mvc;
@@ -746,7 +745,6 @@ namespace Sage
 			return node.OwnerDocument.CreateTextNode(version);
 		}
 
-		[NodeHandler(XmlNodeType.Element, "basehref", XmlNamespaces.SageNamespace)]
 		internal static XmlNode ProcessBaseHrefNode(SageContext context, XmlNode node)
 		{
 			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
