@@ -55,9 +55,13 @@ namespace Sage
 					log.DebugFormat("The context cache has {0} items in it", context.Cache.Count);
 					this.cache = context.Cache;
 				}
+				catch (NullReferenceException)
+				{
+					//// when running without a real web context, this is expected, we fall back to the dictionay object
+				}
 				catch (Exception ex)
 				{
-					log.ErrorFormat("The context cache hasn't been initialized fully: {0}", ex.Message);
+					log.WarnFormat("The context cache hasn't been initialized fully: {0}", ex.Message);
 				}
 			}
 		}
