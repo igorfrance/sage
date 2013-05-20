@@ -141,7 +141,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kelp\Kelp.csproj">
+    <ProjectReference Include="..\Kelp\Kelp\Kelp.csproj">
       <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
       <Name>Kelp</Name>
     </ProjectReference>

@@ -70,7 +70,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kelp\Kelp.csproj">
+    <ProjectReference Include="..\..\Kelp\Kelp\Kelp.csproj">
       <Project>{aa487e40-4f39-46bf-a8fd-e15a146f32ba}</Project>
       <Name>Kelp</Name>
     </ProjectReference>

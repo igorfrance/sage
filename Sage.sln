@@ -1,8 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp", "Kelp\Kelp.csproj", "{AA487E40-4F39-46BF-A8FD-E15A146F32BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp", "Kelp\Kelp\Kelp.csproj", "{AA487E40-4F39-46BF-A8FD-E15A146F32BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp.Test", "Kelp.Test\Kelp.Test.csproj", "{500E8A15-7A75-4F62-BFFA-49784CC4E851}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp.Test", "Kelp\Kelp.Test\Kelp.Test.csproj", "{500E8A15-7A75-4F62-BFFA-49784CC4E851}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage", "Sage\Sage.csproj", "{E647EBD1-64CF-48EB-B20D-0133C24899F6}"
 EndProject

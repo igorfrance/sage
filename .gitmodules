@@ -1,0 +1,3 @@
+[submodule "Kelp"]
+	path = Kelp
+	url = https://github.com/igorfrance/kelp.git
