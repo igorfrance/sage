@@ -4,6 +4,8 @@
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=D35949B0ACDE9445B0ECF57DE4FEDCFA/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileD35949B0ACDE9445B0ECF57DE4FEDCFA/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileD35949B0ACDE9445B0ECF57DE4FEDCFA/RelativePriority/@EntryValue">2</s:Double>
+	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File_003A_003AG_003A_005Ccycle99_005Cprojects_005Cgit_005Csage_005CResharper_002EDotSettings/@KeyIndexDefined">True</s:Boolean>
+	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File_003A_003AG_003A_005Ccycle99_005Cprojects_005Cgit_005Csage_005CResharper_002EDotSettings/RelativePriority/@EntryValue">4</s:Double>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File_003A_003AG_003A_005Ccycle99_005Cprojects_005Cgit_005Csage_005Csrc_005CResharper_002EDotSettings/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File_003A_003AG_003A_005Ccycle99_005Cprojects_005Cgit_005Csage_005Csrc_005CResharper_002EDotSettings/RelativePriority/@EntryValue">3</s:Double>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File_003A_003AG_003A_005Ccycle99_005Cprojects_005Cweb_005Csage_005Csrc_005CResharper_002EDotSettings/@KeyIndexDefined">True</s:Boolean>
