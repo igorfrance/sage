@@ -202,17 +202,18 @@ namespace Kelp.ResourceHandling
 				return ResourceHandler.TemporaryDirectory;
 
 			string path = Configuration.Current.TemporaryDirectory;
-			if (Path.IsPathRooted(path) && !path.StartsWith("/"))
-				ResourceHandler.TemporaryDirectory = path;
-			else
+			if (!Path.IsPathRooted(path))
 			{
 				if (!path.StartsWith("/") && !path.StartsWith("~/"))
 					path = "~/" + path;
 
-				ResourceHandler.TemporaryDirectory = context.Server.MapPath(path);
+				path = context.Server.MapPath(path);
 			}
 
+			ResourceHandler.TemporaryDirectory = 
+				Path.Combine(path, context.Request.ApplicationPath.Trim('/').Replace('/', '\\'));
 			return ResourceHandler.TemporaryDirectory;
+
 		}
 	}
 }

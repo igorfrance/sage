@@ -32,6 +32,7 @@ namespace Sage
 		private static readonly ILog log = LogManager.GetLogger(typeof(CacheWrapper).FullName);
 		private readonly Cache cache;
 		private readonly Dictionary<string, object> dictionary;
+		private int initialCount = 0;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CacheWrapper"/> class.
@@ -52,7 +53,7 @@ namespace Sage
 			{
 				try
 				{
-					log.DebugFormat("The context cache has {0} items in it", context.Cache.Count);
+					initialCount = context.Cache.Count;
 					this.cache = context.Cache;
 				}
 				catch (NullReferenceException)

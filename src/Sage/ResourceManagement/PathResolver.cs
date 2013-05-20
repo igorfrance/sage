@@ -412,14 +412,14 @@ namespace Sage.ResourceManagement
 			if (string.IsNullOrEmpty(path))
 				throw new ArgumentNullException(path);
 
-			path = path.ToLower().TrimEnd('\\');
+			path = path.TrimEnd('\\');
 			if (path.Contains("\\"))
 			{
 				bool replaced = false;
 				foreach (string key in this.VirtualDirectories.Keys)
 				{
 					string directoryPath = this.VirtualDirectories[key];
-					if (path.Contains(directoryPath))
+					if (path.IndexOf(directoryPath, StringComparison.InvariantCultureIgnoreCase) != -1)
 					{
 						path = path.Replace(directoryPath, key).Replace("\\", "/");
 						replaced = true;

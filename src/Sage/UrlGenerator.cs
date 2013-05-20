@@ -63,6 +63,17 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Gets the root physical URL of the application.
+		/// </summary>
+		public string ApplicationRoot
+		{
+			get
+			{
+				return this.ServerPrefix + this.Context.ApplicationPath;
+			}
+		}
+
+		/// <summary>
 		/// Gets the server prefix part of the url.
 		/// </summary>
 		/// <value>
@@ -285,6 +296,21 @@ namespace Sage
 
 			node.InnerText = context.ProcessText(node.InnerText);
 			return node;
+		}
+
+		[TextFunction(Name = "url:project")]
+		[TextFunction(Name = "url:application")]
+		internal static string GetProjectLinkFunction(SageContext context, params string[] arguments)
+		{
+			var linkArguments = new LinkArguments(arguments, false, "encode", "absolute");
+			var result = linkArguments.Switches["absolute"]
+				? context.Url.ApplicationRoot
+				: context.Request.ApplicationPath;
+
+			if (linkArguments.Switches["encode"] && !string.IsNullOrEmpty(result))
+				result = HttpUtility.UrlEncode(result);
+
+			return result + (result.EndsWith("/") ? string.Empty : "/");
 		}
 
 		[TextFunction(Name = "url:link")]

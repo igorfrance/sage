@@ -30,29 +30,12 @@ namespace Kelp.ResourceHandling
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FileTypeConfiguration).FullName);
 		private const BindingFlags Flags = BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public;
-		private string temporaryDirectory;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether minification is enabled for this file type.
 		/// </summary>
 		/// <value><c>true</c> if minification is enabled; otherwise, <c>false</c>.</value>
 		public virtual bool MinificationEnabled { get; set; }
-
-		/// <summary>
-		/// Gets or sets the temporary directory in which to save the processed files.
-		/// </summary>
-		public string TemporaryDirectory
-		{
-			get
-			{
-				return temporaryDirectory ?? Configuration.Current.TemporaryDirectory;
-			}
-
-			set
-			{
-				temporaryDirectory = value;
-			}
-		}
 
 		/// <summary>
 		/// Gets configuration options that should be parsed as <see cref="Byte"/> values.

@@ -261,11 +261,11 @@ namespace Kelp.ResourceHandling
 		{
 			get
 			{
-				if (this.Configuration.TemporaryDirectory == null)
+				if (this.TemporaryDirectory == null)
 					return null;
 
 				string fileName = AbsolutePath.Replace('/', '_').Replace('\\', '_').Replace(':', '_');
-				return Path.Combine(this.Configuration.TemporaryDirectory, fileName);
+				return Path.Combine(this.TemporaryDirectory, fileName);
 			}
 		}
 
@@ -286,6 +286,8 @@ namespace Kelp.ResourceHandling
 		}
 
 		internal string CachedConfigurationSettings { get; private set; }
+
+		internal string TemporaryDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the cached <see cref="CodeFile"/> needs to be refreshed.
@@ -353,6 +355,7 @@ namespace Kelp.ResourceHandling
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(relativePath));
 
 			CodeFile result = Create(absolutePath, relativePath, (CodeFile) null);
+			result.TemporaryDirectory = temporaryDirectory;
 			return result;
 		}
 
@@ -385,6 +388,9 @@ namespace Kelp.ResourceHandling
 			}
 
 			instance.parent = parent;
+			if (parent != null)
+				instance.TemporaryDirectory = parent.TemporaryDirectory;
+
 			return instance;
 		}
 
@@ -529,16 +535,15 @@ namespace Kelp.ResourceHandling
 			if (!string.IsNullOrEmpty(this.CacheName))
 			{
 				string tempName = this.CacheName;
-				string tempDirectory = this.Configuration.TemporaryDirectory;
-				if (!Directory.Exists(tempDirectory))
+				if (!Directory.Exists(this.TemporaryDirectory))
 				{
 					try
 					{
-						Directory.CreateDirectory(tempDirectory);
+						Directory.CreateDirectory(this.TemporaryDirectory);
 					}
 					catch (Exception ex)
 					{
-						log.ErrorFormat("Could not create temporary directory '{0}': {1}", tempDirectory, ex.Message);
+						log.ErrorFormat("Could not create temporary directory '{0}': {1}", this.TemporaryDirectory, ex.Message);
 					}
 				}
 

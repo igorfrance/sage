@@ -86,6 +86,7 @@ namespace Sage
 					Assembly.GetExecutingAssembly()
 						.CodeBase
 						.Replace("file:///", string.Empty)
+						.Replace("file://", @"\\")
 						.Replace("/", "\\"));
 			}
 		}
@@ -134,6 +135,7 @@ namespace Sage
 							var currentAssembly = Assembly.GetExecutingAssembly();
 							relevantAssemblies = new List<Assembly> { currentAssembly };
 							var files = Directory.GetFiles(AssemblyCodeBaseDirectory, "*.dll", SearchOption.AllDirectories);
+							log.DebugFormat("Scanning for dependent assmblies in '{0}'", AssemblyCodeBaseDirectory);
 							foreach (string path in files)
 							{
 								Assembly asmb = Assembly.LoadFrom(path);

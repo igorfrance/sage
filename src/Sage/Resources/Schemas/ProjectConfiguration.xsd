@@ -381,7 +381,11 @@
 
 	<xs:complexType name="config.resource">
 		<xs:attribute name="type" type="p:resourceType" use="required"/>
-		<xs:attribute name="name" type="xs:string" use="optional"/>
+		<xs:attribute name="name" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The resource name is useful with xml document resources.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="location" type="p:resourceLocation" use="required"/>
 		<xs:attribute name="path" type="xs:string" use="required"/>
 		<xs:attribute name="limitTo" type="xs:string" use="optional"/>

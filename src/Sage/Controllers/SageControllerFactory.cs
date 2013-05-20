@@ -44,7 +44,7 @@ namespace Sage.Controllers
 			{
 				Route route = (Route) requestContext.RouteData.Route;
 
-				if (route.DataTokens["namespaces"] != null && route.DataTokens["namespaces"] is string[])
+				if (route.DataTokens["namespaces"] is string[])
 				{
 					string controllerName = string.Concat(route.Defaults["controller"], "Controller");
 					string controllerNs = ((string[]) route.DataTokens["namespaces"])[0];

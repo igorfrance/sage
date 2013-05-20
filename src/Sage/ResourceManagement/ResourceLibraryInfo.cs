@@ -24,8 +24,6 @@ namespace Sage.ResourceManagement
 	using Kelp;
 	using Kelp.Extensions;
 
-	using Sage.Modules;
-
 	using log4net;
 
 	using XmlNamespaces = Sage.XmlNamespaces;

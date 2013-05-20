@@ -91,6 +91,7 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\EnvironmentConfiguration.cs" />
+    <Compile Include="Extensibility\IOFunctions.cs" />
     <Compile Include="ProjectInitializationException.cs" />
     <Compile Include="Extensibility\NodeEvaluator.cs" />
     <Compile Include="Extensibility\TextEvaluator.cs" />

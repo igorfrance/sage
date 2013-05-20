@@ -178,7 +178,7 @@ namespace Sage.Tools.Utilities
 
 		private class Line
 		{
-			private static readonly Regex lineCheck = new Regex(@"\b(WARN|ERROR|INFO|FATAL)\b", RegexOptions.Compiled);
+			private static readonly Regex lineCheck = new Regex(@"\b(WARN|WARNING|ERROR|INFO|FATAL|NOTICE)\b", RegexOptions.Compiled);
 
 			public Line(string text)
 			{
@@ -195,6 +195,7 @@ namespace Sage.Tools.Utilities
 						break;
 
 					case "WARN":
+					case "WARNING":
 						this.Color = ConsoleColor.DarkYellow;
 						break;
 

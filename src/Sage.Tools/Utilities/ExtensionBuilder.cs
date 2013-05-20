@@ -66,19 +66,28 @@ namespace Sage.Tools.Utilities
 		{
 			StringBuilder result = new StringBuilder();
 			result.AppendLine("Packs a sage project into a distributable extension package.\n");
-			result.AppendFormat("Usage: {0} {1} -source:<path> [-name:<name>]", Program.Name, this.CommandName);
-			result.AppendLine("  -source:<path>	 The path to the directory that contains the extension to package.");
-			result.AppendLine("    -name:<name>	 The file name of the extension package that will be created."); 
+			result.AppendFormat("Usage: {0} {1} -source:<path> [-name:<name>]\n\n", Program.Name, this.CommandName);
+			result.AppendLine("  -source:<path>  The path to the directory that contains the extension to pack.");
+			result.AppendLine("    -name:<name>  The file name of the extension package that will be created."); 
 			result.AppendLine("                  If omitted, an attempt will be made to get that name from the"); 
-			result.AppendLine("                  Project.config in the source directory, if it exists, and finally"); 
-			result.AppendLine("                  if this fails to the name will default to the name of source directory."); 
+			result.AppendLine("                  Project.config in the source directory, and if it doesn't exist"); 
+			result.AppendLine("                  the name will default to the name of source directory."); 
 
 			return result.ToString();
 		}
 
 		public void Run()
 		{
-			this.BuildExtension(this.arguments["source"], this.arguments["target"]);
+			var sourcePath = this.arguments["source"];
+			var targetPath = this.arguments["target"];
+
+			if (sourcePath != null)
+				sourcePath = sourcePath.Trim();
+
+			if (targetPath != null)
+				targetPath = sourcePath.Trim();
+
+			this.BuildExtension(sourcePath, targetPath);
 		}
 
 		internal void BuildExtension(string sourcePath, string targetPath = null)
@@ -110,6 +119,8 @@ namespace Sage.Tools.Utilities
 					string.Format("The specified project configuration path '{0}' doesn't exist", configSourcePath));
 			}
 
+			sourcePath = new DirectoryInfo(sourcePath).FullName;
+
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = extensionConfig.DocumentElement;
 
@@ -121,7 +132,8 @@ namespace Sage.Tools.Utilities
 			if (targetPath == null && !string.IsNullOrWhiteSpace(config.Name))
 			{
 				extensionName = config.Name;
-				extensionPath = Path.Combine(Path.GetDirectoryName(sourcePath), Path.ChangeExtension(config.Name, "zip"));
+				extensionPath = Path.Combine(Path.GetDirectoryName(sourcePath), config.Name + ".zip");
+				extensionPath = new FileInfo(extensionPath).FullName;
 			}
 
 			log.InfoFormat("Building extension '{0}'.", extensionName);
