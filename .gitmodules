@@ -1,3 +1,6 @@
 [submodule "Kelp"]
 	path = Kelp
 	url = https://github.com/igorfrance/kelp.git
+[submodule "Extensions/Sage.ClientSide/assets/lib/aeon"]
+	path = Extensions/Sage.ClientSide/assets/lib/aeon
+	url = https://github.com/igorfrance/aeon.git
