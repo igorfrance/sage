@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>Dragger tests</title>
+		<style>
+
+			.testing-area
+				{ height: 200px; }
+			.testing-area .drag1
+				{ position: absolute; top: 10px; left: 10px; width: 150px; height: 50px;
+				  background: #fc0; opacity: .7; cursor: move; z-index: 1; }
+			.testing-area .drag2
+				{ position: absolute; top: 30px; left: 70px; width: 150px; height: 50px;
+				  background: #cf0; opacity: .7; cursor: move; z-index: 1; }
+			.testing-area .drag3
+				{ position: absolute; top: 20px; left: 50px; width: 150px; height: 50px;
+				  background: #c0f; opacity: .7; cursor: move; z-index: 1; }
+			.testing-area .log
+				{ position: absolute; z-index: 0; width: 200px; height: 18px; padding: 1px 2px;
+				  right: 10px; bottom: 10px; border: 1px solid #ccc; font-size: 12px; }
+
+		</style>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="container">
+				<hgroup class="title">
+					<h1><a href="~/">Sage.ClientSide</a></h1>
+				</hgroup>
+				<div id="qunit-fixture"></div>
+				<h1 id="qunit-header">Scroller control tests</h1>
+				<h2 id="qunit-banner"></h2>
+				<div class="testing-area">
+					<div class="drag drag1"></div>
+					<div class="drag drag2"></div>
+					<div class="drag drag3"></div>
+					<div class="log"></div>
+				</div>
+				<div id="qunit-testrunner-toolbar"></div>
+				<h2 id="qunit-userAgent"></h2>
+				<p id="qunit-testresult"></p>
+				<ol id="qunit-tests"></ol>
+				<script>
+
+					$(".drag")
+						.on("mousedown", function onMouseDown(e)
+						{
+							this.currentZ = $(this).css("zIndex");
+							$(this).css("zIndex", Math.max.apply(this,
+								$(".drag").map(function () { return parseInt($(this).css("zIndex")) || 0; })) + 1
+							);
+
+							aeon.drag.start(e, this, true, true);
+						})
+						.on("mouseup", function onMouseUp(e)
+						{
+							$(this).css("zIndex", this.currentZ);
+						});
+
+						aeon.drag.on("start", function ()
+						{
+							$(".log").text("Start drag");
+						});
+
+						aeon.drag.on("stop", function ()
+						{
+							$(".log").text("Stop drag");
+						});
+
+						aeon.drag.on("move", function (e)
+						{
+							$(".log").text("Drag move: {0}x{1}".format(e.data.left, e.data.top));
+						});
+
+				</script>
+				<script><!--
+
+
+					aeon.init.on("done", function runTests()
+					{
+						test("scroller initialization and api", function testTooltip()
+						{
+							var log = $(".log");
+							var d1 = $(".drag1");
+
+							d1.mousedown();
+							equal(log.text(), "Start drag");
+							d1.mouseup();
+						});
+					});
+
+				--></script>
+			</div>
+		</div>
+	</body>
+</html>

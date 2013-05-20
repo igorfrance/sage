@@ -1,0 +1,23 @@
+.scrollable
+	{ overflow: hidden; position: relative; }
+.scrollable .aeon-scroller
+	{ position: absolute; left: 0; top: 0; bottom: 0; right: -30px; padding: 0 30px 0 0; overflow-x: hidden;
+		overflow-y: scroll; }
+.scrollable.horizontal .aeon-scroller
+	{ position: absolute; left: 0; top: 0; right: 0; bottom: -30px; padding: 0 0 30px 0; overflow-y: hidden;
+		overflow-x: scroll; }
+.scrollable .aeon-scrolltrack
+	{ position: absolute; left: auto; top: 0; bottom: 0px; right: 0px; width: 16px; height: auto; border: 1px solid #ccc;
+	  border-width: 0 0 0 1px; background: #fff; }
+.scrollable.horizontal .aeon-scrolltrack
+	{ position: absolute; left: 0; top: auto; left: 0; bottom: 0px; right: 0px; width: auto; height: 16px;
+		border-width: 1px 0 0 0; display: none; }
+.scrollable .aeon-scrollgrip
+	{ position: absolute; left: 1px; top: 1px; right: 1px; bottom: auto; width: 14px; height: 14px; background: #ccc; }
+.scrollable.horizontal .aeon-scrollgrip
+	{ position: absolute; left: 1px; top: 1px; right: auto; bottom: 1px; width: 14px; height: 14px; background: #ccc; }
+
+.scrollable .aeon-scroller > .aeon-scrollcontent
+	{ overflow: hidden; }
+.scrollable.horizontal .aeon-scroller > .aeon-scrollcontent
+	{ width: 5000px; }

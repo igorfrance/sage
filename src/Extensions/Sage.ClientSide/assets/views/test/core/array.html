@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>aeon.array tests</title>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="container">
+				<div id="home_perspective">
+					<hgroup class="title">
+						<h1><a href="~/">Sage.ClientSide</a></h1>
+					</hgroup>
+					<div id="qunit"></div>
+					<div id="qunit-fixture"></div>
+					<script>
+
+						var result;
+
+						test("aeon.array.fromArguments", function testMakeDate()
+						{
+							result = aeon.array.fromArguments([1]);
+							deepEqual(result, [1]);
+
+							result = aeon.array.fromArguments([1, 3, 4, 6]);
+							deepEqual(result, [1, 3, 4, 6]);
+
+							result = aeon.array.fromArguments([1, 3, 4, 6], 1, 2);
+							deepEqual(result, [3, 4]);
+
+							result = aeon.array.fromArguments([[1, 3, 4, 6], 2, 3, 4]);
+							deepEqual(result, [[1, 3, 4, 6], 2, 3, 4]);
+
+							result = aeon.array.fromArguments([[1, 3, 4, 6], 2, 3, 4], 0, 0);
+							deepEqual(result, [1, 3, 4, 6]);
+						});
+
+						test("aeon.array.flatten", function testMakeDate()
+						{
+							result = aeon.array.flatten([1]);
+							deepEqual(result, [1]);
+
+							result = aeon.array.flatten([1, 3, 4, 6]);
+							deepEqual(result, [1, 3, 4, 6]);
+
+							result = aeon.array.flatten([[1, 3, 4, 6], 2, 3, 4]);
+							deepEqual(result, [1, 3, 4, 6, 2, 3, 4]);
+
+							result = aeon.array.flatten([[1, 3, 4, 6], 2, 3, 4], 0, 1);
+							deepEqual(result, [1, 3, 4, 6, 2, 3, 4, 0, 1]);
+						});
+
+					</script>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

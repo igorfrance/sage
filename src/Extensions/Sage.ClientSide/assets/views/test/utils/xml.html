@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>Xml utility tests</title>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="container">
+				<div id="home_perspective">
+					<hgroup class="title">
+						<h1><a href="~/">Sage.ClientSide</a></h1>
+					</hgroup>
+					<div id="qunit"></div>
+					<div id="qunit-fixture"></div>
+<!--
+<root>
+	<group name="G1">
+		<child id="A"/>
+		<child id="B"/>
+		<child/>
+	</group>
+	<group name="G2">
+		<child id="C"/>
+		<child id="D"/>
+		<child>JavaScript</child>
+		<child id="Z"/>
+	</group>
+	<group>
+		<child id="XYZ"/>
+	</group>
+</root>
+-->
+
+<!--
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+	<xsl:template match="root">
+		<hello>
+			<xsl:apply-templates select="*"/>
+		</hello>
+	</xsl:template>
+
+	<xsl:template match="group">
+		<world>!</world>
+	</xsl:template>
+
+</xsl:stylesheet>
+-->
+					<script><!--
+
+						var xml = aeon.xml;
+
+						function runAllTests()
+						{
+							var result;
+							var comments = xml.select("//comment()");
+							var subject = xml.document(xml.text(comments[0]));
+							var transform = xml.processor(xml.text(comments[1]));
+
+							test("xml", function testXml()
+							{
+								result = xml("<root/>");
+								equal(result.nodeType, xml.nodeType.DOCUMENT,
+									"Calling xml() using a valid xml string should produce xml document");
+
+								result = xml(result.documentElement);
+								equal(result.nodeType, 1,
+									"Calling xml() using an existing xml node should return that node");
+
+								throws(function throwing()	{ xml("<invalid>"); },
+									"Calling xml() using an invalid xml string should throw an exception");
+							});
+
+							test("xml.fromDocument", function testXmlFromDocument()
+							{
+								result = xml.fromDocument();
+								equal(result.nodeType, xml.nodeType.DOCUMENT,
+									"Calling xml.fromDocument() using a valid xml string should produce xml document");
+
+								equal(result.childNodes[0].nodeType, xml.nodeType.ELEMENT,
+									"Calling xml.fromDocument() using a valid xml string should produce xml document");
+							});
+
+							test("xml.select", function testXmlSelectNodes()
+							{
+								result = xml.select(subject, "//root");
+								equal(result.length == 1 && result[0].nodeType == xml.nodeType.ELEMENT && result[0].nodeName == "root", true,
+									"Selecting using the specified xpath expression should select the appropriate node");
+
+								result = xml.select(subject, "//group[1]");
+								equal(result.length == 1 && result[0].nodeType == xml.nodeType.ELEMENT && result[0].nodeName == "group", true,
+									"Selecting using the specified xpath expression should select the appropriate node");
+
+								result = xml.select(subject, "//group[@name='G2']");
+								equal(result.length == 1 && result[0].nodeType == xml.nodeType.ELEMENT && result[0].nodeName == "group", true,
+									"Selecting using the specified xpath expression should select the appropriate node");
+
+								result = xml.select(subject, "//group[2]");
+								equal(result.length == 1 && result[0].nodeType == xml.nodeType.ELEMENT && result[0].getAttribute("name") == "G2", true,
+									"Selecting using the specified xpath expression should select the appropriate node");
+
+								result = xml.select(subject, "//group[not(@name)]");
+								equal(result.length == 1 && result[0].nodeType == xml.nodeType.ELEMENT && result[0].nodeName == "group", true,
+									"Selecting using the specified xpath expression should select the appropriate node");
+							});
+
+							test("xml.text", function testXmlText()
+							{
+								ok(1);
+							});
+
+							test("xml.toString", function testXmlToString()
+							{
+								ok(1);
+							});
+
+							test("xml.toObject", function testXmlToObject()
+							{
+								ok(1);
+							});
+
+							test("xml.load", function testXmlLoad()
+							{
+								ok(1);
+							});
+
+							test("xml.document", function testXmlDocument()
+							{
+								equal(subject.nodeType, xml.nodeType.DOCUMENT,
+									"Calling document using a valid xml text fragment should create a valid document");
+							});
+
+							test("xml.processor", function testXmlProcessor()
+							{
+								ok(1);
+							});
+
+							test("xml.transform", function testXmlTransform()
+							{
+								ok(1);
+							});
+						}
+
+						window.onload = runAllTests;
+
+					--></script>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

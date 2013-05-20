@@ -1,0 +1,42 @@
+html
+	{ overflow: auto; }
+html, body
+	{ height: 100%; }
+body
+	{ margin: 0; font-family: 'Ubuntu', sans-serif; line-height: 1.25; }
+body
+	{ background: url(../images/sage.png) right bottom no-repeat; }
+
+hgroup.title
+	{ margin-bottom: 20px; }
+hgroup.title h1
+	{ margin-top: 0; margin-bottom: 3px; font-size: 105%; font-weight: normal;  }
+hgroup.title h2
+	{ margin-top: 0; margin-bottom: 3px; font-size: 85%; font-weight: normal; color: #004080; }
+
+h1, h2, h3, h4, h5, h6
+	{ font-weight: normal; font-size: 100%; margin-bottom: 5px; }
+
+hr
+	{ border: 0; border-top: 1px solid #ccc; }
+
+div.overview,
+p.overview
+	{ background: #e2e2e2; padding: 10px 5px; border-radius: 5px; }
+
+div#wrapper
+	{ position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 10px; }
+div#container
+	{ position: relative; }
+
+.testing-area
+	{ border: 1px solid #EEEEEE; padding: 10px; cursor: default; position: relative; overflow: hidden; }
+.testing-area h4
+	{ margin-top: 5px; }
+
+.column-container
+	{ overflow: hidden; }
+.column-container .column-33
+	{ overflow: hidden; float: left; width: 33%; }
+
+

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<title>Thumbstrip control tests</title>
+		<sage:basehref/>
+		<script type="text/javascript" src="assets/lib/aeon/controls/thumbstrip/thumbstrip.js"></script>
+		<style>
+
+			.testing-area
+				{ height: 200px; }
+			.testing-area .group1
+				{ float: left; width: 50%; height: 100%; overflow: hidden; border: 1px solid #666; margin-right: 50px; }
+			.testing-area .group2
+				{ float: left; width: 100px; height: 100%; overflow: hidden; border: 1px solid #666; }
+			.testing-area .group2 img
+				{ width: 100px; }
+
+		</style>
+	</head>
+	<body>
+		<div id="wrapper">
+			<div id="container">
+				<hgroup class="title">
+					<h1><a href="~/">Sage.ClientSide</a></h1>
+				</hgroup>
+				<div id="qunit-fixture"></div>
+				<h1 id="qunit-header">Thumbstrip control tests</h1>
+				<h2 id="qunit-banner"></h2>
+				<div class="testing-area">
+					<div class="group1">
+						<div class="thumbstrip">
+							<img src="assets/images/dogs/underwater-01.jpg"/>
+							<img src="assets/images/dogs/underwater-02.jpg"/>
+							<img src="assets/images/dogs/underwater-03.jpg"/>
+							<img src="assets/images/dogs/underwater-04.jpg"/>
+							<img src="assets/images/dogs/underwater-05.jpg"/>
+							<img src="assets/images/dogs/underwater-06.jpg"/>
+							<img src="assets/images/dogs/underwater-07.jpg"/>
+							<img src="assets/images/dogs/underwater-08.jpg"/>
+							<img src="assets/images/dogs/underwater-09.jpg"/>
+							<img src="assets/images/dogs/underwater-10.jpg"/>
+							<img src="assets/images/dogs/underwater-11.jpg"/>
+							<img src="assets/images/dogs/underwater-12.jpg"/>
+							<img src="assets/images/dogs/underwater-13.jpg"/>
+							<img src="assets/images/dogs/underwater-14.jpg"/>
+							<img src="assets/images/dogs/underwater-15.jpg"/>
+						</div>
+					</div>
+					<div class="group2">
+						<div class="thumbstrip vertical">
+							<img src="assets/images/dogs/underwater-01.jpg"/>
+							<img src="assets/images/dogs/underwater-02.jpg"/>
+							<img src="assets/images/dogs/underwater-03.jpg"/>
+							<img src="assets/images/dogs/underwater-04.jpg"/>
+							<img src="assets/images/dogs/underwater-05.jpg"/>
+							<img src="assets/images/dogs/underwater-06.jpg"/>
+							<img src="assets/images/dogs/underwater-07.jpg"/>
+							<img src="assets/images/dogs/underwater-08.jpg"/>
+							<img src="assets/images/dogs/underwater-09.jpg"/>
+							<img src="assets/images/dogs/underwater-10.jpg"/>
+							<img src="assets/images/dogs/underwater-11.jpg"/>
+							<img src="assets/images/dogs/underwater-12.jpg"/>
+							<img src="assets/images/dogs/underwater-13.jpg"/>
+							<img src="assets/images/dogs/underwater-14.jpg"/>
+							<img src="assets/images/dogs/underwater-15.jpg"/>
+						</div>
+					</div>
+				</div>
+				<div id="qunit-testrunner-toolbar"></div>
+				<h2 id="qunit-userAgent"></h2>
+				<p id="qunit-testresult"></p>
+				<ol id="qunit-tests"></ol>
+				<script><!--
+
+					aeon.init.on("done", function runTests()
+					{
+						test("thumbstrip initialization and api", function testSlider()
+						{
+							ok(1);
+						});
+					});
+
+				--></script>
+			</div>
+		</div>
+	</body>
+</html>
