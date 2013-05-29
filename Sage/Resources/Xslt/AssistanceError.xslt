@@ -354,9 +354,6 @@
 			<xsl:when test="$problemType = 'ContextualizeError'">
 				<p>Look into the XML document(s) you are working with and try to look for the cause indicated by the exception text.</p>
 			</xsl:when>
-			<xsl:when test="$problemType = 'ViewProcessingError'">
-				<p>Look in the view document you are working with and try to look for the cause indicated by the exception text.</p>
-			</xsl:when>
 			<xsl:when test="$problemType = 'ResourceProcessingError'">
 				<p>
 					Check that all referenced resources exist and that the path to them has been specified correctly.
@@ -390,6 +387,9 @@
 			<xsl:when test="$problemType = 'MissingExtensionDependency'">
 				Make sure that all dependencies used by the extension exist in the project's <code>extensions</code> directory.
 			</xsl:when>
+			<xsl:otherwise>
+				<p>Read the error description and try to look for the cause indicated by the text.</p>
+			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 	

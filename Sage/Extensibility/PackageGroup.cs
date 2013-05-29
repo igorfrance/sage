@@ -196,9 +196,13 @@ namespace Sage.Extensibility
 
 		private static List<string> ExcludeAllFilesOfTypeInDirectory(IEnumerable<string> files, SageContext context, string directory, string filter)
 		{
-			string resolved = context.Path.Resolve(directory).ToLower();
-			string extension = filter.Replace("*", string.Empty).ToLower();
+			string extension = filter.Trim('*');
+			if (string.IsNullOrEmpty(directory))
+			{
+				return files.Where(f => !(f.ToLower().EndsWith(extension))).ToList();
+			}
 
+			string resolved = context.Path.Resolve(directory).ToLower();
 			return files.Where(f => !(f.ToLower().StartsWith(resolved) && f.ToLower().EndsWith(extension))).ToList();
 		}
 

@@ -9,29 +9,29 @@
 	<xs:import namespace="http://www.w3.org/2003/XInclude" schemaLocation="XInclude.xsd"/>
 	<xs:import namespace="http://www.cycle99.com/schemas/sage/internationalization.xsd" schemaLocation="Internationalization.xsd"/>
 	
-	<xs:element name="project" type="config.project"/>
-	<xs:element name="extension" type="config.project"/>
+	<xs:element name="project" type="project"/>
+	<xs:element name="extension" type="project"/>
 
-	<xs:complexType name="config.project">
+	<xs:complexType name="project">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="paths" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
-						<xs:element name="AssetPath" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="View" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="Module" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="Extension" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="Dictionary" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="SiteMap" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="DefaultStylesheet" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="DefaultCategoryStylesheet" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="CategoryConfiguration" type="config.textelement.notempty" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="GlobalizedDirectory" type="config.textelement" minOccurs="0" maxOccurs="1">
+						<xs:element name="AssetPath" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="View" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Module" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Extension" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Dictionary" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SiteMap" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="DefaultStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="DefaultCategoryStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CategoryConfiguration" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="GlobalizedDirectory" type="textelement" minOccurs="0" maxOccurs="1">
 							<xs:annotation>
 								<xs:documentation>Defines the directory in which globalized resources will be saved, and from which they will be read.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="GlobalizedDirectoryForNonFileResources" type="config.textelement" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="GlobalizedDirectoryForNonFileResources" type="textelement" minOccurs="0" maxOccurs="1"/>
 					</xs:all>
 				</xs:complexType>
 			</xs:element>
@@ -49,7 +49,7 @@
 			<xs:element name="libraries" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="library" minOccurs="0" maxOccurs="unbounded" type="config.library"/>
+						<xs:element name="library" minOccurs="0" maxOccurs="unbounded" type="library"/>
 					</xs:sequence>
 				</xs:complexType>
 				<xs:unique name="unique-library-name">
@@ -60,7 +60,7 @@
 			<xs:element name="metaViews" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="metaView" type="config.metaView" minOccurs="1" maxOccurs="unbounded"/>
+						<xs:element name="metaView" type="metaView" minOccurs="1" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
 				<xs:unique name="uniqueMetaViewName">
@@ -71,7 +71,7 @@
 			<xs:element name="modules" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="module" type="config.module" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="module" type="module" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
 				<xs:key name="moduleName">
@@ -87,11 +87,11 @@
 					<xs:field xpath="@name"/>
 				</xs:unique>
 			</xs:element>
-			<xs:element name="linking" minOccurs="0" maxOccurs="1" type="config.linking"/>
+			<xs:element name="linking" minOccurs="0" maxOccurs="1" type="linking"/>
 			<xs:element name="routing" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="route" type="config.route" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="route" type="route" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:attribute name="defaultNamespace" use="optional">
 						<xs:simpleType>
@@ -109,7 +109,7 @@
 			<xs:element name="categories" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="category" type="config.category" minOccurs="1" maxOccurs="unbounded"/>
+						<xs:element name="category" type="category" minOccurs="1" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
 				<xs:unique name="unique-category-name">
@@ -125,7 +125,7 @@
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="locale" type="config.locale" minOccurs="1" maxOccurs="unbounded"/>
+						<xs:element name="locale" type="locale" minOccurs="1" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
 				<xs:unique name="unique-locale-name">
@@ -133,8 +133,8 @@
 					<xs:field xpath="@name"/>
 				</xs:unique>
 			</xs:element>
-			<xs:element name="environment" minOccurs="0" maxOccurs="1" type="config.environment"/>
-			<xs:element name="package" minOccurs="0" maxOccurs="1" type="config.package"/>
+			<xs:element name="environment" minOccurs="0" maxOccurs="1" type="environment"/>
+			<xs:element name="package" minOccurs="0" maxOccurs="1" type="package"/>
 			<xs:element name="variables" type="intl:variables">
 				<xs:unique name="unique-variable-id">
 					<xs:selector xpath="intl:variable"/>
@@ -151,41 +151,41 @@
 		<xs:attribute name="sharedCategory" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 	
-	<xs:complexType name="config.package">
+	<xs:complexType name="package">
 		<xs:choice minOccurs="0" maxOccurs="7">
-			<xs:element name="dependencies" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="binaries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="assets" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="modules" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="libraries" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="routes" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="links" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="metaViews" type="config.packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="dependencies" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="binaries" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="assets" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="modules" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="libraries" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="routes" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="links" type="packagegroup" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="metaViews" type="packagegroup" minOccurs="0" maxOccurs="1"/>
 		</xs:choice>
 	</xs:complexType>
 
-	<xs:complexType name="config.packagegroup" mixed="true">
+	<xs:complexType name="packagegroup" mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="include" type="config.textelement.notempty"/>
-			<xs:element name="exclude" type="config.textelement.notempty"/>
+			<xs:element name="include" type="textelement.notempty"/>
+			<xs:element name="exclude" type="textelement.notempty"/>
 		</xs:choice>
 	</xs:complexType>
 
-	<xs:complexType name="config.textelement.notempty" mixed="true">
+	<xs:complexType name="textelement.notempty" mixed="true">
 		<xs:simpleContent>
 			<xs:extension base="nonEmptyString"/>
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:complexType name="config.textelement" mixed="true">
+	<xs:complexType name="textelement" mixed="true">
 	</xs:complexType>
 
-	<xs:complexType name="config.authenticatedurl" mixed="true">
+	<xs:complexType name="authenticatedurl" mixed="true">
 		<xs:attribute name="username" use="optional"/>
 		<xs:attribute name="password" use="optional"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.metaView">
+	<xs:complexType name="metaView">
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
 		<xs:attribute name="contentType" use="required" type="nonEmptyString"/>
 		<xs:attribute name="type" use="required" type="nonEmptyString"/>
@@ -197,9 +197,10 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
+		<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.module">
+	<xs:complexType name="module">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="tags" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -242,7 +243,7 @@
 			<xs:element name="resources" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="config.resource"/>
+						<xs:element name="resource" minOccurs="1" maxOccurs="unbounded" type="resource"/>
 					</xs:choice>
 				</xs:complexType>
 			</xs:element>
@@ -259,14 +260,15 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
+		<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.library">
+	<xs:complexType name="library">
 		<xs:choice minOccurs="0" maxOccurs="3">
 			<xs:element name="resources" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="resource" minOccurs="0" maxOccurs="unbounded" type="config.resource"/>
+						<xs:element name="resource" minOccurs="0" maxOccurs="unbounded" type="resource"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -297,9 +299,10 @@
 			</xs:element>
 		</xs:choice>
 		<xs:attribute name="name" use="required"/>
+		<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.linking">
+	<xs:complexType name="linking">
 		<xs:choice minOccurs="0" maxOccurs="2">
 			<xs:element name="formats" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
@@ -313,6 +316,7 @@
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>
+								<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -334,6 +338,7 @@
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>
+								<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -345,9 +350,10 @@
 			</xs:element>
 		</xs:choice>
 		<xs:attribute name="rewritePrefix" use="optional" type="nonEmptyString"/>
+		<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.environment">
+	<xs:complexType name="environment">
 		<xs:sequence>
 			<xs:element name="addresses">
 				<xs:complexType>
@@ -355,21 +361,21 @@
 						<xs:element name="developers" minOccurs="0" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element type="config.ip" name="ip" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element type="ip" name="ip" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="blocked" minOccurs="0" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element type="config.ip" name="ip" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element type="ip" name="ip" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="robots" minOccurs="0" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element type="config.ip" name="ip" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element type="ip" name="ip" minOccurs="0" maxOccurs="unbounded"/>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
@@ -379,7 +385,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="config.resource">
+	<xs:complexType name="resource">
 		<xs:attribute name="type" type="p:resourceType" use="required"/>
 		<xs:attribute name="name" type="xs:string" use="optional">
 			<xs:annotation>
@@ -391,7 +397,7 @@
 		<xs:attribute name="limitTo" type="xs:string" use="optional"/>
 	</xs:complexType>
 	
-	<xs:complexType name="config.route">
+	<xs:complexType name="route">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="constraint" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -412,22 +418,17 @@
 		<xs:attribute name="controller" use="required" type="nonEmptyString"/>
 		<xs:attribute name="action" use="required" type="nonEmptyString"/>
 		<xs:attribute name="namespace" use="optional" type="nonEmptyString"/>
-		<xs:attribute name="source" use="optional" type="nonEmptyString">
-			<xs:annotation>
-				<xs:documentation>This attribute is generated by the system when merging extensions, and specifies 
-				the extension from which the route came from.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
+		<xs:attribute name="extension" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.category">
+	<xs:complexType name="category">
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
 		<xs:attribute name="locales" use="required" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.locale">
+	<xs:complexType name="locale">
 		<xs:all>
-			<xs:element name="format" type="config.format" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="format" type="format" minOccurs="1" maxOccurs="1"/>
 		</xs:all>
 		<xs:attribute name="name" use="required" type="nonEmptyString"/>
 		<xs:attribute name="language" use="required" type="nonEmptyString"/>
@@ -435,13 +436,13 @@
 		<xs:attribute name="resourceNames" use="required" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.format">
+	<xs:complexType name="format">
 		<xs:attribute name="culture" use="required" type="nonEmptyString"/>
 		<xs:attribute name="longDate" use="optional" type="nonEmptyString"/>
 		<xs:attribute name="shortDate" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.ip">
+	<xs:complexType name="ip">
 		<xs:annotation>
 			<xs:documentation>
 				Specifies either a single IP address (if only the address attribute is used) or an IP
@@ -452,7 +453,7 @@
 		<xs:attribute name="to" use="optional" type="xs:string"/>
 	</xs:complexType>
 
-	<xs:complexType name="config.credentials">
+	<xs:complexType name="credentials">
 		<xs:sequence>
 			<xs:element name="default" minOccurs="1" maxOccurs="1">
 				<xs:complexType>

@@ -142,6 +142,7 @@
     <Compile Include="ResourceManagement\SageResourceResolver.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Rewriters\ExtensionPathRewriter.cs" />
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
@@ -261,7 +262,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Kelp\Kelp\Kelp.csproj">
       <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
-      <Name>Kelp</Name>
+      <Name>Kelp %28Kelp\Kelp%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

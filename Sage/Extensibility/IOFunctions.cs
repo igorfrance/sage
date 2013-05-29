@@ -1,21 +1,16 @@
 ﻿namespace Sage.Extensibility
 {
 	using System;
-	using System.Collections.Generic;
 	using System.IO;
-	using System.Linq;
-	using System.Text;
-	using System.Web;
 	using System.Xml;
 
-	using Kelp;
 	using Kelp.Extensions;
-
 	using log4net;
 
 	/// <summary>
 	/// Provides IO functions that can be used within Sage markup.
 	/// </summary>
+	/// TODO: Review the usability and necessity of this group of extensions
 	public class IOFunctions
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(IOFunctions).FullName);

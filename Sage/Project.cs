@@ -482,11 +482,6 @@ namespace Sage
 			{
 				configuration = projectConfig;
 
-				var validationResult = ResourceManager.ValidateElement(
-					projectConfig.ToXml(new XmlDocument()), ProjectConfiguration.ConfigSchemaPath);
-
-				log.DebugFormat("Project configuration success: {0}", validationResult.Success);
-
 				var extensionManager = new ExtensionManager();
 				try
 				{

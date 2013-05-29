@@ -139,7 +139,7 @@ namespace Sage
 		/// <returns>The URL with the specified name, with any placeholders replaced with values from the <paramref name="query" />.</returns>
 		public string GetUrl(string linkName, string query, string hashString = null, bool qualify = false)
 		{
-			return this.GetUrl(linkName, new QueryString(query, parameterSeparators), hashString, qualify);
+			return this.GetUrl(linkName, new QueryString(parameterSeparators, query), hashString, qualify);
 		}
 
 		/// <summary>
@@ -334,11 +334,11 @@ namespace Sage
 				? context.Url.RawUrl
 				: context.Url.RawPathAndQuery;
 
-			var paramQuery = new QueryString();
+			var paramQuery = new QueryString(parameterSeparators);
 			if (currentUrl.Contains("?"))
 			{
 				var questionIndex = currentUrl.IndexOf("?", StringComparison.Ordinal);
-				paramQuery.Parse(currentUrl.Substring(questionIndex + 1), parameterSeparators);
+				paramQuery.Parse(currentUrl.Substring(questionIndex + 1));
 				currentUrl = currentUrl.Substring(0, questionIndex);
 			}
 
@@ -465,7 +465,7 @@ namespace Sage
 					if (parameter.IndexOf("#") == 0)
 						this.HashString = parameter.Trim('#');
 					else
-						this.QueryString.Merge(new QueryString(parameter, UrlGenerator.parameterSeparators));
+						this.QueryString.Merge(new QueryString(UrlGenerator.parameterSeparators, parameter));
 				}
 			}
 
