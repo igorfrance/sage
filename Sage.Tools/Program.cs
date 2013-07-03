@@ -171,7 +171,7 @@ namespace Sage.Tools
 				else
 				{
 					usage.AppendLine("Sage.Tools");
-					usage.AppendLine("Provide several command-line utilities for working with Sage and Sage projects");
+					usage.AppendLine("Command-line utilities for working with Sage projects and extensions.");
 				}
 
 				usage.AppendLine("The available commands are:");
