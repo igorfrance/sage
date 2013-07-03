@@ -49,6 +49,16 @@ namespace Sage.Extensibility
 			Contract.Requires<ArgumentException>(File.Exists(archiveFileName));
 
 			FileStream fs = File.OpenRead(archiveFileName);
+
+			string extensionDirectory = context.Path.Resolve(context.Path.ExtensionPath);
+
+			this.Name = Path.GetFileNameWithoutExtension(archiveFileName);
+			this.InstallDirectory = Path.Combine(extensionDirectory, this.Name);
+			this.ArchiveDate = File.GetLastWriteTime(archiveFileName).Max(File.GetCreationTime(archiveFileName));
+			this.ArchiveFileName = archiveFileName;
+			this.InstallLogFile = Path.ChangeExtension(this.ArchiveFileName, ".history.xml");
+			this.ConfigurationFileName = string.Join("/", this.ArchiveFileName, ProjectConfiguration.ExtensionConfigName);
+
 			try
 			{
 				using (ZipFile extensionArchive = new ZipFile(fs))
@@ -57,17 +67,15 @@ namespace Sage.Extensibility
 					foreach (ZipEntry entry in extensionArchive)
 					{
 						if (entry.IsFile)
-							this.ArchiveFiles.Add(new ExtensionFile(extensionArchive, entry));
+						{
+							string crcCode = Crc32.GetHash(extensionArchive.GetInputStream(entry));
+							string targetPath = Path.Combine(this.InstallDirectory, entry.Name);
+							this.ArchiveFiles.Add(new ExtensionFile(targetPath, entry, crcCode));
+						}
 					}
 
 					string assetPath = "assets";
 					this.context = context;
-
-					this.Name = Path.GetFileNameWithoutExtension(archiveFileName);
-					this.ArchiveDate = File.GetLastWriteTime(archiveFileName).Max(File.GetCreationTime(archiveFileName));
-					this.ArchiveFileName = archiveFileName;
-					this.InstallLogFile = Path.ChangeExtension(this.ArchiveFileName, ".history.xml");
-					this.ConfigurationFileName = string.Join("/", this.ArchiveFileName, ProjectConfiguration.ExtensionConfigName);
 
 					ExtensionFile configFile = this.ArchiveFiles.FirstOrDefault(file => file.Name.Equals(ProjectConfiguration.ExtensionConfigName));
 					if (configFile != null)
@@ -99,8 +107,6 @@ namespace Sage.Extensibility
 					this.AssetFiles = this.ArchiveFiles
 						.Where(v => v.Name.StartsWith(assetPath, StringComparison.InvariantCultureIgnoreCase))
 						.ToList();
-
-					this.TargetAssets = this.AssetFiles.Select(this.GetTargetPath).ToList();
 				}
 			}
 			finally
@@ -120,6 +126,8 @@ namespace Sage.Extensibility
 		public List<ExtensionFile> AssetFiles { get; private set; }
 
 		public string Name { get; private set; }
+
+		public string InstallDirectory { get; private set; }
 
 		public DateTime ArchiveDate { get; private set; }
 
@@ -151,8 +159,6 @@ namespace Sage.Extensibility
 				return assemblies;
 			}
 		}
-
-		public List<string> TargetAssets { get; private set; }
 
 		public List<InstallLog> InstallHistory 
 		{
@@ -205,7 +211,7 @@ namespace Sage.Extensibility
 		{
 			get
 			{
-				return this.TargetAssets.Any(targetAsset => !File.Exists(targetAsset));
+				return this.AssetFiles.Any(targetAsset => !File.Exists(targetAsset.InstallPath));
 			}
 		}
 
@@ -226,42 +232,36 @@ namespace Sage.Extensibility
 
 			FileStream fs = File.OpenRead(this.ArchiveFileName);
 			ZipFile extensionArchive = new ZipFile(fs);
+
+			string backupDirectory = this.InstallDirectory + "." + DateTime.Now.Ticks;
+
 			try
 			{
 				foreach (ExtensionFile file in this.AssetFiles)
 				{
 					string childPath = file.Name;
-					string targetPath = context.Path.Resolve(childPath);
-					string targetDir = Path.GetDirectoryName(targetPath);
+					string targetDir = Path.GetDirectoryName(file.InstallPath);
 
 					Directory.CreateDirectory(targetDir);
 
-					InstallItem entry = installLog.AddFile(targetPath);
+					InstallItem entry = installLog.AddFile(file.InstallPath);
 					entry.CrcCode = Crc32.GetHash(extensionArchive.GetInputStream(file.Entry));
 
-					if (File.Exists(targetPath))
+					if (File.Exists(file.InstallPath))
 					{
-						if (!this.HasInstalled(targetPath))
+						if (Crc32.GetHash(file.InstallPath) != entry.CrcCode)
 						{
-							log.WarnFormat("Extension {1}: skipped installing '{0}' because a file with the same name already exists, and it doesn't originate from this extension.",
-								targetPath, this.Name);
+							string backupPath = Path.Combine(backupDirectory, childPath);
+							log.WarnFormat("Extension {1}: file '{0}' seems modified, backing it up to '{2}'.",
+								file.InstallPath, this.Name, backupPath);
 
-							entry.State = InstallState.NotInstalled;
-							continue;
-						}
-
-						if (Crc32.GetHash(targetPath) != entry.CrcCode)
-						{
-							log.WarnFormat("Extension {1}: not overwriting previously installed file '{0}' because it has been changed.",
-								targetPath, this.Name);
-
-							entry.State = InstallState.NotInstalled;
-							continue;
+							Directory.CreateDirectory(Path.GetDirectoryName(backupPath));
+							File.Copy(file.InstallPath, backupPath);
 						}
 					}
 
-					log.DebugFormat("Extracting '{0}' to '{1}'", file.Name, targetPath);
-					file.Extract(extensionArchive, targetPath);
+					log.DebugFormat("Extracting '{0}' to '{1}'", file.Name, file.InstallPath);
+					file.Extract(extensionArchive, file.InstallPath);
 					entry.State = InstallState.Installed;
 				}
 
@@ -446,7 +446,7 @@ namespace Sage.Extensibility
 
 		private string GetTargetPath(ExtensionFile sourceFile)
 		{
-			return context.Path.Resolve(sourceFile.Name);
+			return Path.Combine(this.InstallDirectory, sourceFile.Name);
 		}
 
 		private ExtensionFile GetArchiveFile(string targetPath)

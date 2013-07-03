@@ -20,8 +20,6 @@ namespace Sage.Extensibility
 	using ICSharpCode.SharpZipLib.Core;
 	using ICSharpCode.SharpZipLib.Zip;
 
-	using Kelp.IO;
-
 	/// <summary>
 	/// Represents an extension file.
 	/// </summary>
@@ -30,13 +28,15 @@ namespace Sage.Extensibility
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExtensionFile"/> class.
 		/// </summary>
-		/// <param name="extensionArchive">The extension archive.</param>
+		/// <param name="installPath">The path where this file is installed.</param>
 		/// <param name="file">The file.</param>
-		public ExtensionFile(ZipFile extensionArchive, ZipEntry file)
+		/// <param name="crcCode">The CRC code of the file.</param>
+		public ExtensionFile(string installPath, ZipEntry file, string crcCode)
 		{
-			this.CrcCode = Crc32.GetHash(extensionArchive.GetInputStream(file));
+			this.CrcCode = crcCode;
 			this.Entry = file;
 			this.Name = file.Name;
+			this.InstallPath = installPath;
 		}
 
 		/// <summary>
@@ -48,6 +48,11 @@ namespace Sage.Extensibility
 		/// Gets the name of this file.
 		/// </summary>
 		public string Name { get; private set; }
+
+		/// <summary>
+		/// Gets the install path of this file.
+		/// </summary>
+		public string InstallPath { get; private set; }
 
 		/// <summary>
 		/// Gets the <see cref="ZipEntry"/> that corresponds to this file.

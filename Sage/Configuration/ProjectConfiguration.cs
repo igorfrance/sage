@@ -58,6 +58,7 @@ namespace Sage.Configuration
 
 		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
+		//private static ProjectConfiguration defaultConfiguration;
 		private readonly List<XmlElement> customElements;
 
 		private ProjectConfiguration()

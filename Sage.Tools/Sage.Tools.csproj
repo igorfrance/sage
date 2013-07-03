@@ -132,8 +132,9 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Utilities\BatchGlobalizer.cs" />
-    <Compile Include="Utilities\Debug.cs" />
     <Compile Include="Utilities\ExtensionInstaller.cs" />
+    <Compile Include="Utilities\Debug.cs" />
+    <Compile Include="Utilities\ExtensionRefresher.cs" />
     <Compile Include="Utilities\FileMonitor.cs" />
     <Compile Include="Utilities\IUtility.cs" />
     <Compile Include="Utilities\ExtensionBuilder.cs" />
@@ -143,7 +144,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Kelp\Kelp\Kelp.csproj">
       <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
-      <Name>Kelp</Name>
+      <Name>Kelp %28Kelp\Kelp%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sage\Sage.csproj">
       <Project>{E647EBD1-64CF-48EB-B20D-0133C24899F6}</Project>

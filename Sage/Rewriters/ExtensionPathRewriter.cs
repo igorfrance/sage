@@ -78,5 +78,13 @@ namespace Sage.Rewriters
 				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
 			}
 		}
+
+		/// <summary>
+		/// Registers the module with the project.
+		/// </summary>
+		public static void AutoRegister()
+		{
+			Project.RegisterModule(typeof(ExtensionPathRewriter));
+		}
 	}
 }

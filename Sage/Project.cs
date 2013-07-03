@@ -57,6 +57,8 @@ namespace Sage
 		private static ProblemInfo initializationProblemInfo;
 		private static List<Assembly> relevantAssemblies;
 		private static IList<string> installOrder;
+		private static OrderedDictionary<string, ExtensionInfo> extensions;
+		private static IList<Type> modules;
 
 		private static int threadPrefixIndex;
 
@@ -82,12 +84,7 @@ namespace Sage
 		{
 			get
 			{
-				return Path.GetDirectoryName(
-					Assembly.GetExecutingAssembly()
-						.CodeBase
-						.Replace("file:///", string.Empty)
-						.Replace("file://", @"\\")
-						.Replace("/", "\\"));
+				return Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 			}
 		}
 
@@ -99,11 +96,7 @@ namespace Sage
 		{
 			get
 			{
-				return Path.GetDirectoryName(
-					Assembly.GetExecutingAssembly()
-						.Location
-						.Replace("file:///", string.Empty)
-						.Replace("/", "\\"));
+				return Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath);
 			}
 		}
 
@@ -158,6 +151,35 @@ namespace Sage
 			{
 				return Project.installOrder;
 			}
+		}
+
+		internal static OrderedDictionary<string, ExtensionInfo> Extensions
+		{
+			get
+			{
+				return extensions;
+			}
+		}
+
+		/// <summary>
+		/// Registers the module.
+		/// </summary>
+		/// <param name="module">The type of the module to register.</param>
+		public static void RegisterModule(Type module)
+		{
+			if (module == null)
+				return;
+
+			if (!typeof(IHttpModule).IsAssignableFrom(module))
+			{
+				log.ErrorFormat("The module type '{0}' is not an instance of IHttpModule", module.FullName);
+				return;
+			}
+
+			if (modules == null)
+				modules = new List<Type>();
+
+			modules.Add(module);
 		}
 
 		private bool IsRequestAvailable
@@ -316,6 +338,8 @@ namespace Sage
 			log.InfoFormat("Application has shut down.");
 			log.DebugFormat("	Shutdown message:{0}", shutDownMessage);
 			log.DebugFormat("	Shutdown stack:\n{0}", shutDownStack);
+
+			initializationError = null;
 		}
 
 		/// <summary>
@@ -459,6 +483,7 @@ namespace Sage
 			}
 
 			installOrder = new List<string>();
+			extensions = new OrderedDictionary<string, ExtensionInfo>();
 
 			if (File.Exists(systemConfigPath))
 				projectConfig.Parse(systemConfigPath);
@@ -481,6 +506,10 @@ namespace Sage
 			else
 			{
 				configuration = projectConfig;
+
+				// this will ensure the new context uses the just
+				// created configuration immediately
+				context = new SageContext(context);
 
 				var extensionManager = new ExtensionManager();
 				try
@@ -521,6 +550,7 @@ namespace Sage
 						installOrder.Add(extension.Config.Id);
 						Project.RelevantAssemblies.AddRange(extension.Assemblies);
 						projectConfig.RegisterExtension(extension.Config);
+						extensions.Add(extension.Config.Id, extension);
 					}
 
 					installOrder.Add(projectConfig.Id);

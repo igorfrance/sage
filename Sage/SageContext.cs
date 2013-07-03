@@ -21,6 +21,7 @@ namespace Sage
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Reflection;
 	using System.Web;
 	using System.Web.Hosting;
@@ -208,6 +209,23 @@ namespace Sage
 
 			this.HttpContext = httpContext;
 
+			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
+			this.Category = this.Query.GetString(CategoryVariableName);
+
+			if (string.IsNullOrEmpty(this.Category) || !this.ProjectConfiguration.Categories.ContainsKey(this.Category))
+				this.Category = this.ProjectConfiguration.DefaultCategory;
+
+			if (string.IsNullOrEmpty(this.Locale))
+				this.Locale = this.ProjectConfiguration.DefaultLocale;
+
+			this.Query.Remove(LocaleVariableName);
+			this.Query.Remove(CategoryVariableName);
+			this.Query.Remove(RefreshVariableName);
+
+			this.Url = new UrlGenerator(this);
+			this.Path = new PathResolver(this);
+			this.Resources = new ResourceManager(this);
+
 			if (requestAvailable)
 			{
 				bool isNoCacheRequest = httpContext.Request.Headers["Cache-Control"] == "no-cache";
@@ -226,29 +244,14 @@ namespace Sage
 				this.UserAgentType = httpContext.Request.Browser.Crawler
 					? UserAgentType.Crawler
 					: UserAgentType.Browser;
+
+				this.SubstituteExtensionPath();
 			}
 			else
 			{
 				this.ApplicationPath = (HostingEnvironment.ApplicationVirtualPath ?? "/").TrimEnd('/') + "/";
 				this.PhysicalApplicationPath = HostingEnvironment.ApplicationPhysicalPath ?? @"c:\inetpub\wwwroot";
 			}
-
-			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
-			this.Category = this.Query.GetString(CategoryVariableName);
-
-			if (string.IsNullOrEmpty(this.Category) || !this.ProjectConfiguration.Categories.ContainsKey(this.Category))
-				this.Category = this.ProjectConfiguration.DefaultCategory;
-
-			if (string.IsNullOrEmpty(this.Locale))
-				this.Locale = this.ProjectConfiguration.DefaultLocale;
-
-			this.Query.Remove(LocaleVariableName);
-			this.Query.Remove(CategoryVariableName);
-			this.Query.Remove(RefreshVariableName);
-
-			this.Url = new UrlGenerator(this);
-			this.Path = new PathResolver(this);
-			this.Resources = new ResourceManager(this);
 		}
 
 		/// <summary>
@@ -831,6 +834,37 @@ namespace Sage
 			result.Locale = locale;
 
 			return result;
+		}
+
+		private bool SubstituteExtensionPath()
+		{
+			try
+			{
+				string extensionDirectory = this.Path.GetRelativeWebPath(this.Path.ExtensionPath, true);
+				if (File.Exists(this.Request.PhysicalPath) || this.Request.Path.Contains(extensionDirectory, true))
+					return false;
+
+				string requestedFile = this.Request.Path.ToLower().Replace(this.Request.ApplicationPath.ToLower(), string.Empty).Trim('/');
+				foreach (string extensionId in Project.Extensions.Keys)
+				{
+					ExtensionInfo info = Project.Extensions[extensionId];
+					string rewrittenPath = string.Format("{0}/{1}/{2}", extensionDirectory, info.Name, requestedFile);
+					if (File.Exists(this.MapPath(rewrittenPath)))
+					{
+						this.HttpContext.RewritePath(rewrittenPath);
+						if (this.IsDeveloperRequest)
+							this.Response.AddHeader("OriginalFilePath", requestedFile);
+
+						return true;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
+			}
+
+			return false;
 		}
 
 		private static string GetContextProperty(SageContext context, string propName, string propKey)
