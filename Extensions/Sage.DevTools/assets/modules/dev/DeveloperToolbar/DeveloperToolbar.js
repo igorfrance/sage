@@ -1,4 +1,4 @@
-﻿Type.registerNamespace("sage.dev");
+﻿aeon.type.registerNamespace("sage.dev");
 
 sage.dev.Toolbar = new function Toolbar()
 {
@@ -30,7 +30,7 @@ sage.dev.Toolbar = new function Toolbar()
 			.append("<div id='developer-frame'><iframe frameborder='no'></iframe><div class='close' title='Close'></div></div>")
 			.find("#developer-frame");
 
-		tooltip = $ctrl.getControl($icon[0]);
+		tooltip = aeon.controls.getControl($icon[0]);
 
 		$iframe = $frame.find("iframe");
 

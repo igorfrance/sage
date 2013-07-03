@@ -1,16 +1,20 @@
-﻿Type.registerNamespace("sage.devtools");
+﻿aeon.dev.registerNamespace("sage.devtools");
 
-sage.devtools.xmlroot = new function xmlroot() {
-	function setup() {
+sage.devtools.xmlroot = new function xmlroot()
+{
+	function setup()
+	{
 		$(".xmltree .toolbar .switch").click(onToolbarSwitchClick);
 		$(".xmltree .toolbar .toggleall").click(onToggleAllClick);
 		$(".xmltree .switch").click(onSwitchClick);
 	}
 
-	function onSwitchClick() {
+	function onSwitchClick()
+	{
 		var element = $(this).closest(".element, .comment");
 		var children = element.find("> .children, > pre, > .text");
-		if (children.length) {
+		if (children.length)
+		{
 			if (children.is(":visible"))
 				collapseElement(element);
 			else
@@ -18,11 +22,13 @@ sage.devtools.xmlroot = new function xmlroot() {
 		}
 	}
 
-	function onToggleAllClick() {
+	function onToggleAllClick()
+	{
 		var xmlroot = $(this).closest(".xmltree").find(".xmlroot");
 		var allvisible = xmlroot.find(".children:hidden").length == 0;
 
-		xmlroot.find(".element").each(function (i, element) {
+		xmlroot.find(".element").each(function (i, element)
+		{
 			if (allvisible)
 				collapseElement($(element));
 			else
@@ -30,29 +36,34 @@ sage.devtools.xmlroot = new function xmlroot() {
 		});
 	}
 
-	function onToolbarSwitchClick() {
+	function onToolbarSwitchClick()
+	{
 		var el = $(this);
 		var className = el.attr("class")
 			.replace(/\b(?:switch|on|off)\b/g, "")
 			.replace(/^\s*(.*?)\s*$/, "$1");
 
 		var xmlroot = el.closest(".xmltree").find(".xmlroot");
-		if (xmlroot.hasClass(className)) {
+		if (xmlroot.hasClass(className))
+		{
 			xmlroot.removeClass(className);
 			el.removeClass("on").addClass("off");
 		}
-		else {
+		else
+		{
 			xmlroot.addClass(className);
 			el.removeClass("off").addClass("on");
 		}
 	}
 
-	function expandElement(element) {
+	function expandElement(element)
+	{
 		element.find("> .children, > pre, > .text").show();
 		element.find("> .switch").text("-");
 	}
 
-	function collapseElement(element) {
+	function collapseElement(element)
+	{
 		element.find("> .children, > pre, > .text").hide();
 		element.find("> .switch").text("+");
 	}

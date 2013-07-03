@@ -1,8 +1,8 @@
-﻿Type.registerNamespace("sage.dev");
+﻿aeon.type.registerNamespace("sage.dev");
 
-sage.dev.ViewInspector = function ViewInspector()
+sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 {
-	this.$super("close", "info", "contentloaded", "reload");
+	this.construct("close", "info", "contentloaded", "reload");
 
 	var self = this;
 
@@ -17,9 +17,9 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	var contentFrame;
 	var contentPreloader;
-	var contentcontainer;
+	var contentContainer;
 	var contentTitle;
-	var toolscontainer;
+	var toolsContainer;
 	var toolFrame;
 	var toolPreloader;
 	var viewToolbar;
@@ -61,8 +61,8 @@ sage.dev.ViewInspector = function ViewInspector()
 		contentPreloader = viewInspector.find(".contentpreloader");
 		toolPreloader = viewInspector.find(".toolpreloader");
 		contentTitle = viewInspector.find(".contenttitle");
-		contentcontainer = viewInspector.find(".contentcontainer");
-		toolscontainer = viewInspector.find(".toolscontainer");
+		contentContainer = viewInspector.find(".contentContainer");
+		toolsContainer = viewInspector.find(".toolsContainer");
 
 		currentLayout = viewInspector.hasClass("double")
 			? layoutType.DOUBLE
@@ -85,7 +85,7 @@ sage.dev.ViewInspector = function ViewInspector()
 			.bind("mouseup", onDocumentMouseUp)
 			.bind("mousemove", onDocumentMouseMove);
 
-		var hashParam = $url.getHashParam(stateParamName);
+		var hashParam = aeon.url.getHashParam(stateParamName);
 		if (!hashParam)
 		{
 			var initialUrl = viewInspector.attr("data-view");
@@ -118,7 +118,7 @@ sage.dev.ViewInspector = function ViewInspector()
 		if (currentState.inspector)
 			state.inspector = currentState.inspector;
 
-		return $url.serializeParams(state);
+		return aeon.url.serializeParams(state);
 	}
 
 	function setHashInspectorState(state)
@@ -127,16 +127,16 @@ sage.dev.ViewInspector = function ViewInspector()
 		target.url = state.url || currentState.url;
 		target.inspector = state.inspector || currentState.inspector;
 
-		var hashTarget = $url.serializeParams(target);
-		var currentHash = $url.getHashParam(stateParamName);
+		var hashTarget = aeon.url.serializeParams(target);
+		var currentHash = aeon.url.getHashParam(stateParamName);
 
 		if (currentHash != hashTarget)
-			$url.setHashParam(stateParamName, escape(hashTarget));
+			aeon.url.setHashParam(stateParamName, escape(hashTarget));
 	}
 
 	function clearViewInspectorState()
 	{
-		$url.removeHashParam(stateParamName);
+		aeon.url.removeHashParam(stateParamName);
 	}
 
 	function setViewInspectorState(state)
@@ -215,8 +215,8 @@ sage.dev.ViewInspector = function ViewInspector()
 			dragClientX = e.clientX;
 			dragClientY = e.clientY;
 
-			contentHeight = contentcontainer.innerHeight();
-			contentWidth = contentcontainer.innerWidth();
+			contentHeight = contentContainer.innerHeight();
+			contentWidth = contentContainer.innerWidth();
 
 			isResizeActive = true;
 			overlayFrames();
@@ -227,13 +227,13 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	function updateLoop()
 	{
-		var hashParam = $url.getHashParam(stateParamName);
+		var hashParam = aeon.url.getHashParam(stateParamName);
 		if (hashParam)
 		{
 			var hashState = unescape(hashParam);
 			if (hashState != getHashInspectorState())
 			{
-				var state = $url.parseQuery(hashState);
+				var state = aeon.url.parseQuery(hashState);
 				setViewInspectorState(state);
 			}
 		}
@@ -277,7 +277,7 @@ sage.dev.ViewInspector = function ViewInspector()
 			if (commands[commandName] != null)
 			{
 				var state = buttonState.ENABLED;
-				if (Type.isFunction(commands[commandName].getState))
+				if (aeon.type.isFunction(commands[commandName].getState))
 					state = commands[commandName].getState(commandArgs);
 
 				if ((state & buttonState.ENABLED) != 0)
@@ -291,7 +291,7 @@ sage.dev.ViewInspector = function ViewInspector()
 				}
 			}
 		}
-		catch (e) { $log.error(e); }
+		catch (e) { aeon.log.error(e); }
 	}
 
 	function onButtonClicked()
@@ -404,10 +404,10 @@ sage.dev.ViewInspector = function ViewInspector()
 			var f1h = parseInt(percent);
 			var f2h = 100 - f1h;
 
-			contentcontainer.height(f1h + "%");
-			toolscontainer.height(f2h + "%");
+			contentContainer.height(f1h + "%");
+			toolsContainer.height(f2h + "%");
 
-			//$cookie.set("dev.viewinspector.fh", f1h);
+			//aeon.cookie.set("dev.viewinspector.fh", f1h);
 		}
 	}
 
@@ -423,10 +423,10 @@ sage.dev.ViewInspector = function ViewInspector()
 			var f1w = parseInt(percent);
 			var f2w = 100 - f1w;
 
-			contentcontainer.width(f1w + "%");
-			toolscontainer.width(f2w + "%");
+			contentContainer.width(f1w + "%");
+			toolsContainer.width(f2w + "%");
 
-			//$cookie.set("dev.viewinspector.fw", f1w);
+			//aeon.cookie.set("dev.viewinspector.fw", f1w);
 		}
 	}
 
@@ -442,7 +442,7 @@ sage.dev.ViewInspector = function ViewInspector()
 	function getRect(elem)
 	{
 		var rect = { x1: 0, y1: 0, x2: 0, y2: 0 };
-		if (Type.isHtmlElement(elem))
+		if (aeon.type.isHtmlElement(elem))
 		{
 			rect.x1 = $(elem).offset().left;
 			rect.y1 = $(elem).offset().top;
@@ -554,7 +554,7 @@ sage.dev.ViewInspector = function ViewInspector()
 			updateControls();
 		}
 		else
-			$log.warn("Unknown command: {0}", commandName);
+			aeon.log.warn("Unknown command: {0}", commandName);
 	}
 
 	var commands = {};
@@ -581,7 +581,7 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	commands.singleFrame = function singleFrame()
 	{
-		$cookie.set("dev.viewinspector.layout", "single", "/");
+		aeon.cookie.set("dev.viewinspector.layout", "single", "/");
 
 		currentState.inspector = null;
 
@@ -600,7 +600,7 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	commands.doubleFrame = function doubleFrame()
 	{
-		$cookie.set("dev.viewinspector.layout", "double", "/");
+		aeon.cookie.set("dev.viewinspector.layout", "double", "/");
 		viewInspector.removeClass("single").addClass("double");
 		currentLayout = layoutType.DOUBLE;
 
@@ -619,7 +619,7 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	commands.verticalFrames = function verticalFrames()
 	{
-		$cookie.set("dev.viewinspector.orientation", "vertical", "/");
+		aeon.cookie.set("dev.viewinspector.orientation", "vertical", "/");
 		viewInspector.removeClass("horizontal").addClass("vertical");
 		currentOrientation = orientationType.VERTICAL;
 
@@ -637,7 +637,7 @@ sage.dev.ViewInspector = function ViewInspector()
 
 	commands.horizontalFrames = function horizontalFrames()
 	{
-		$cookie.set("dev.viewinspector.orientation", "horizontal", "/");
+		aeon.cookie.set("dev.viewinspector.orientation", "horizontal", "/");
 		viewInspector.removeClass("vertical").addClass("horizontal");
 		currentOrientation = orientationType.HORIZONTAL;
 
@@ -720,9 +720,7 @@ sage.dev.ViewInspector = function ViewInspector()
 		}
 	};
 
-};
-
-sage.dev.ViewInspector.inherits(aeon.Dispatcher);
+});
 
 sage.dev.ViewInspector.setup = function ViewInspector$setup()
 {
@@ -735,4 +733,4 @@ sage.dev.ViewInspector.setup = function ViewInspector$setup()
 	return sage.dev.ViewInspector.current;
 };
 
-$init.registerModule(sage.dev.ViewInspector);
+aeon.init.register(sage.dev.ViewInspector);
