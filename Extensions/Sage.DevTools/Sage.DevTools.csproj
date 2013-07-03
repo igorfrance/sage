@@ -69,7 +69,7 @@
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\.nuget\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>$(SolutionDir)\.nuget\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -161,7 +161,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Kelp\Kelp\Kelp.csproj">
       <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
-      <Name>Kelp</Name>
+      <Name>Kelp %28Kelp\Kelp%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Sage.Tools\Sage.Tools.csproj">
       <Project>{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}</Project>
@@ -178,9 +178,7 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="assets\scripts\lib\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.xsd">
       <SubType>Designer</SubType>

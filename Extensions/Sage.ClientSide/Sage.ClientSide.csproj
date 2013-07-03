@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\lib\aeon\aeon.js" />
-    <Content Include="assets\lib\aeon\aeon.main.js" />
     <Content Include="assets\lib\aeon\controls\ControlRegistry.js" />
     <Content Include="assets\lib\aeon\controls\ControlTypeInfo.js" />
     <Content Include="assets\lib\aeon\controls\HtmlControl.js" />
