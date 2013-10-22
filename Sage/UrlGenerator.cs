@@ -302,7 +302,7 @@ namespace Sage
 		[TextFunction(Name = "url:application")]
 		internal static string GetProjectLinkFunction(SageContext context, params string[] arguments)
 		{
-			var linkArguments = new LinkArguments(arguments, false, "encode", "absolute");
+			var linkArguments = new LinkArguments(arguments, false, "encode", "absolute", "pretty");
 			var result = linkArguments.Switches["absolute"]
 				? context.Url.ApplicationRoot
 				: context.Request.ApplicationPath;
