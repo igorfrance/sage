@@ -432,6 +432,7 @@ namespace Sage
 			writer.Close();
 			writer.Dispose();
 
+			this.Response.ContentType = "text/html";
 			this.Response.Write(html.ToString());
 			this.Response.Cache.SetCacheability(HttpCacheability.NoCache);
 			this.Response.Cache.SetNoStore();
