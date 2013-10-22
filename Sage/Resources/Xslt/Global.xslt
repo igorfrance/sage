@@ -153,6 +153,12 @@
 
 	<xsl:template match="@xml:base | @xml:space"/>
 
+	<xsl:template match="@href[starts-with(., '~/')] | @src[starts-with(., '~/')]">
+		<xsl:attribute name="{name()}">
+			<xsl:value-of select="concat(/sage:view/sage:request/sage:path/@applicationPath, substring-after(., '~/'))"/>
+		</xsl:attribute>
+	</xsl:template>
+
 	<xsl:template match="xhtml:*">
 		<xsl:element name="{local-name()}">
 			<xsl:apply-templates select="@*"/>
