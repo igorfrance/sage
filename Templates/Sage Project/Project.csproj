@@ -72,7 +72,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Kelp\Kelp\Kelp.csproj">
       <Project>{aa487e40-4f39-46bf-a8fd-e15a146f32ba}</Project>
-      <Name>Kelp %28Kelp\Kelp%29</Name>
+      <Name>Kelp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Sage\Sage.csproj">
       <Project>{e647ebd1-64cf-48eb-b20d-0133c24899f6}</Project>
