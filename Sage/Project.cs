@@ -28,7 +28,6 @@ namespace Sage
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Routing;
-	using System.Xml;
 
 	using Kelp;
 	using Kelp.Extensions;
@@ -38,7 +37,6 @@ namespace Sage
 	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.Extensibility;
-	using Sage.ResourceManagement;
 	using Sage.Routing;
 	using Sage.Views;
 
@@ -61,6 +59,7 @@ namespace Sage
 		private static IList<Type> modules;
 
 		private static int threadPrefixIndex;
+		private static bool projectIsReady;
 
 		/// <summary>
 		/// Gets the last modification date of the current assembly.
@@ -145,6 +144,23 @@ namespace Sage
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the controller factory.
+		/// </summary>
+		/// <value>The controller factory.</value>
+		public static IControllerFactory ControllerFactory
+		{
+			get
+			{
+				return ControllerBuilder.Current.GetControllerFactory();
+			}
+
+			set
+			{
+				ControllerBuilder.Current.SetControllerFactory(value);
+			}
+		}
+
 		internal static IList<string> InstallOrder
 		{
 			get
@@ -153,11 +169,34 @@ namespace Sage
 			}
 		}
 
+		internal static bool IsReady
+		{
+			get { return projectIsReady; }
+		}
+
 		internal static OrderedDictionary<string, ExtensionInfo> Extensions
 		{
 			get
 			{
 				return extensions;
+			}
+		}
+
+		private bool IsRequestAvailable
+		{
+			get
+			{
+				try
+				{
+					// ReSharper disable ConditionIsAlwaysTrueOrFalse
+					// HttpContext might not be nullable, but accessing it may well generate an exception
+					return this.Context != null && this.Context.Request != null;
+					// ReSharper restore ConditionIsAlwaysTrueOrFalse
+				}
+				catch
+				{
+					return false;
+				}
 			}
 		}
 
@@ -180,24 +219,6 @@ namespace Sage
 				modules = new List<Type>();
 
 			modules.Add(module);
-		}
-
-		private bool IsRequestAvailable
-		{
-			get
-			{
-				try
-				{
-					// ReSharper disable ConditionIsAlwaysTrueOrFalse
-					// HttpContext might not be nullable, but accessing it may well generate an exception
-					return this.Context != null && this.Context.Request != null;
-					// ReSharper restore ConditionIsAlwaysTrueOrFalse
-				}
-				catch
-				{
-					return false;
-				}
-			}
 		}
 
 		/// <summary>
@@ -228,9 +249,23 @@ namespace Sage
 			return result;
 		}
 
+		internal static void Start(HttpContextBase httpContext)
+		{
+			if (Thread.CurrentThread.Name == null)
+			{
+				Thread.CurrentThread.Name = Project.GenerateThreadId(true);
+				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+			}
+
+			log.InfoFormat("Application started");
+
+			Project.ControllerFactory = new SageControllerFactory();
+			Project.Initialize(new SageContext(httpContext));
+		}
+
 		internal static Dictionary<string, string> GetVirtualDirectories(SageContext context)
 		{
-			Dictionary<string, string> virtualDirectories = null;
+			Dictionary<string, string> virtualDirectories = new Dictionary<string, string>();
 
 			try
 			{
@@ -256,10 +291,9 @@ namespace Sage
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// log.ErrorFormat("Could not retrieve virtual directories in the current application's web server: {0}", ex.Message);
-				virtualDirectories = new Dictionary<string, string>();
+				log.ErrorFormat("Could not retrieve virtual directories in the current application's web server: {0}", ex.Message);
 			}
 
 			return virtualDirectories;
@@ -268,17 +302,12 @@ namespace Sage
 		/// <summary>
 		/// Initializes the application using the specified project configuration instance.
 		/// </summary>
-		/// <param name="controllerFactory">The controller factory to use for this application.</param>
 		/// <param name="context">The context in which this method is being executed.</param>
-		internal static void Initialize(IControllerFactory controllerFactory, SageContext context)
+		internal static void Initialize(SageContext context)
 		{
-			Contract.Requires<ArgumentNullException>(controllerFactory != null);
-
 			ViewEngines.Engines.Clear();
 			ViewEngines.Engines.Add(new XsltViewEngine());
 			ViewEngines.Engines.Add(new WebFormViewEngine());
-
-			ControllerBuilder.Current.SetControllerFactory(controllerFactory);
 
 			InitializeConfiguration(context);
 
@@ -289,20 +318,109 @@ namespace Sage
 				"GenericController",
 				"{*path}",
 				new Dictionary<string, object> { { "controller", "Generic" }, { "action", "Action" } });
+
+			projectIsReady = true;
 		}
 
-		internal static void Start(HttpContextBase httpContext)
+		internal static void InitializeConfiguration(SageContext context)
 		{
-			if (Thread.CurrentThread.Name == null)
+			string systemConfigPath = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.SystemConfigName);
+			string projectConfigPathBinDir = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
+			string projectConfigPathProjDir = Path.Combine(AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
+
+			string projectConfigPath = projectConfigPathBinDir;
+			if (File.Exists(projectConfigPathProjDir))
 			{
-				Thread.CurrentThread.Name = Project.GenerateThreadId(true);
-				log.InfoFormat("Thread name set to {0}", Thread.CurrentThread.Name);
+				projectConfigPath = projectConfigPathProjDir;
 			}
 
-			log.InfoFormat("Application started");
+			var projectConfig = ProjectConfiguration.Create();
 
-			IControllerFactory controllerFactory = new SageControllerFactory();
-			Initialize(controllerFactory, new SageContext(httpContext));
+			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
+			{
+				log.Warn("Nither system nor project configuration files found; configuration initialized with default values");
+
+				//// initializationProblemInfo = new ProblemInfo(ProblemType.MissingConfigurationFile);
+				//// initializationError = new SageHelpException(initializationProblemInfo);
+				return;
+			}
+
+			installOrder = new List<string>();
+			extensions = new OrderedDictionary<string, ExtensionInfo>();
+
+			if (File.Exists(systemConfigPath))
+				projectConfig.Parse(systemConfigPath);
+
+			if (File.Exists(projectConfigPath))
+				projectConfig.Parse(projectConfigPath);
+
+			if (projectConfig.Locales.Count == 0)
+			{
+				var defaultLocale = new LocaleInfo();
+				projectConfig.Locales.Add(defaultLocale.Name, defaultLocale);
+			}
+
+			var result = projectConfig.ValidationResult;
+			if (!result.Success)
+			{
+				initializationError = result.Exception;
+				initializationProblemInfo = new ProblemInfo(ProblemType.ProjectSchemaValidationError, result.SourceFile);
+			}
+			else
+			{
+				configuration = projectConfig;
+
+				// this will ensure the new context uses the just
+				// created configuration immediately
+				context = new SageContext(context);
+
+				var extensionManager = new ExtensionManager();
+				try
+				{
+					extensionManager.Initialize(context);
+				}
+				catch (ProjectInitializationException ex)
+				{
+					initializationError = ex;
+					initializationProblemInfo = new ProblemInfo(ex.Reason, ex.SourceFile);
+					if (ex.Reason == ProblemType.MissingExtensionDependency)
+					{
+						initializationProblemInfo.InfoBlocks
+							.Add("Dependencies", ex.Dependencies.ToDictionary(name => name));
+					}
+				}
+
+				if (initializationError == null)
+				{
+					var missingDependencies = projectConfig.Dependencies
+						.Where(name => extensionManager.Count(ex => ex.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) == 0)
+						.ToList();
+
+					if (missingDependencies.Count != 0)
+					{
+						string errorMessage = 
+							string.Format("Project is missing one or more dependencies ({0}) - installation cancelled.",
+							string.Join(", ", missingDependencies));
+
+						initializationError = new ProjectInitializationException(errorMessage);
+						initializationProblemInfo = new ProblemInfo(ProblemType.MissingDependency);
+						initializationProblemInfo.InfoBlocks
+							.Add("Dependencies", missingDependencies.ToDictionary(name => name));
+					}
+
+					foreach (var extension in extensionManager)
+					{
+						installOrder.Add(extension.Config.Id);
+						Project.RelevantAssemblies.AddRange(extension.Assemblies);
+						projectConfig.RegisterExtension(extension.Config);
+						extensions.Add(extension.Config.Id, extension);
+					}
+
+					installOrder.Add(projectConfig.Id);
+					projectConfig.RegisterRoutes();
+					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
+				}
+			}
 		}
 
 		/// <summary>
@@ -458,107 +576,6 @@ namespace Sage
 			}
 
 			return result;
-		}
-
-		private static void InitializeConfiguration(SageContext context)
-		{
-			string systemConfigPath = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.SystemConfigName);
-			string projectConfigPathBinDir = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
-			string projectConfigPathProjDir = Path.Combine(AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
-
-			string projectConfigPath = projectConfigPathBinDir;
-			if (File.Exists(projectConfigPathProjDir))
-			{
-				projectConfigPath = projectConfigPathProjDir;
-			}
-
-			var projectConfig = ProjectConfiguration.Create();
-
-			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
-			{
-				log.Warn("Nither system nor project configuration files found; configuration initialized with default values");
-
-				//// initializationProblemInfo = new ProblemInfo(ProblemType.MissingConfigurationFile);
-				//// initializationError = new SageHelpException(initializationProblemInfo);
-				return;
-			}
-
-			installOrder = new List<string>();
-			extensions = new OrderedDictionary<string, ExtensionInfo>();
-
-			if (File.Exists(systemConfigPath))
-				projectConfig.Parse(systemConfigPath);
-
-			if (File.Exists(projectConfigPath))
-				projectConfig.Parse(projectConfigPath);
-
-			if (projectConfig.Locales.Count == 0)
-			{
-				var defaultLocale = new LocaleInfo();
-				projectConfig.Locales.Add(defaultLocale.Name, defaultLocale);
-			}
-
-			var result = projectConfig.ValidationResult;
-			if (!result.Success)
-			{
-				initializationError = result.Exception;
-				initializationProblemInfo = new ProblemInfo(ProblemType.ProjectSchemaValidationError, result.SourceFile);
-			}
-			else
-			{
-				configuration = projectConfig;
-
-				// this will ensure the new context uses the just
-				// created configuration immediately
-				context = new SageContext(context);
-
-				var extensionManager = new ExtensionManager();
-				try
-				{
-					extensionManager.Initialize(context);
-				}
-				catch (ProjectInitializationException ex)
-				{
-					initializationError = ex;
-					initializationProblemInfo = new ProblemInfo(ex.Reason, ex.SourceFile);
-					if (ex.Reason == ProblemType.MissingExtensionDependency)
-					{
-						initializationProblemInfo.InfoBlocks
-							.Add("Dependencies", ex.Dependencies.ToDictionary(name => name));
-					}
-				}
-
-				if (initializationError == null)
-				{
-					var missingDependencies = projectConfig.Dependencies
-						.Where(name => extensionManager.Count(ex => ex.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) == 0)
-						.ToList();
-
-					if (missingDependencies.Count != 0)
-					{
-						string errorMessage = 
-							string.Format("Project is missing one or more dependencies ({0}) - installation cancelled.",
-							string.Join(", ", missingDependencies));
-
-						initializationError = new ProjectInitializationException(errorMessage);
-						initializationProblemInfo = new ProblemInfo(ProblemType.MissingDependency);
-						initializationProblemInfo.InfoBlocks
-							.Add("Dependencies", missingDependencies.ToDictionary(name => name));
-					}
-
-					foreach (var extension in extensionManager)
-					{
-						installOrder.Add(extension.Config.Id);
-						Project.RelevantAssemblies.AddRange(extension.Assemblies);
-						projectConfig.RegisterExtension(extension.Config);
-						extensions.Add(extension.Config.Id, extension);
-					}
-
-					installOrder.Add(projectConfig.Id);
-					projectConfig.RegisterRoutes();
-					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
-				}
-			}
 		}
 
 		private static string GenerateThreadId(bool appStart = false)

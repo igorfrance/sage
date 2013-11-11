@@ -32,11 +32,14 @@ namespace Sage.Test.ResourceManagement
 	[Subject(typeof(Internationalizer)), Tags(Categories.ResourceManagement)]
 	public class When_globalizing_a_resource
 	{
-		private static readonly SageContext context = Mother.CreateSageContext("default", "com");
+		private static SageContext context = Mother.CreateSageContext("default", "com");
 		private static XmlResource resource;
 		
 		private Because of = () =>
 			{
+				Project.Initialize(context);
+				context = new SageContext(context);
+
 				string itemPath = context.Path.Expand("configuration/tests/internationalization-test1.xml");
 				resource = new XmlResource(itemPath, context);
 

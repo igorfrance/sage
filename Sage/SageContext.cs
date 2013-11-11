@@ -191,9 +191,11 @@ namespace Sage
 			//// with less features.
 
 			bool requestAvailable = false;
+			string queryString = string.Empty;
 			try
 			{
 				requestAvailable = httpContext.Request != null;
+				queryString = httpContext.Request.Url.Query;
 			}
 			catch (HttpException ex)
 			{
@@ -203,7 +205,7 @@ namespace Sage
 			}
 
 			this.ProjectConfiguration = config ?? Sage.Project.Configuration;
-			this.Query = new QueryString();
+			this.Query = new QueryString(queryString);
 			this.Cache = new CacheWrapper(httpContext);
 			this.LmCache = new LastModifiedCache(this);
 
@@ -245,7 +247,8 @@ namespace Sage
 					? UserAgentType.Crawler
 					: UserAgentType.Browser;
 
-				this.SubstituteExtensionPath();
+				if (Project.IsReady)
+					this.SubstituteExtensionPath();
 			}
 			else
 			{
