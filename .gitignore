@@ -22,3 +22,4 @@ _target
 *.tfb
 /Sage.Local.sln.DotSettings
 /Sage.Local.sln.GhostDoc.xml
+/.idea
