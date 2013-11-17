@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <project name="Sage" xmlns="http://nant.sf.net/release/0.91-alpha2/nant.xsd" default="default">
-	
+
 	<property name="outputPath" value="releases/latest"/>
 	<property name="targetSite" value="${outputPath}/examples/documentation"/>
-	<property name="solutionFile" value="src/Sage.sln"/>
+	<property name="solutionFile" value="Sage.sln"/>
 	<property name="buildConfiguration" value="Debug"/>
-	<property name="kelpBuildPath" value="src/kelp/bin/${buildConfiguration}"/>
-	<property name="sageBuildPath" value="src/sage/bin/${buildConfiguration}"/>
-	<property name="extensionBuilder" value="src/sage.build/bin/${buildConfiguration}/sage.build.exe"/>
-	<property name="exampleSitePath" value="src/examples/documentation"/>
-	
+	<property name="kelpBuildPath" value="kelp/kelp/bin/${buildConfiguration}"/>
+	<property name="sageBuildPath" value="sage/bin/${buildConfiguration}"/>
+	<property name="extensionBuilder" value="sage.tools/bin/${buildConfiguration}/sage.tools.exe"/>
+	<property name="exampleSitePath" value="examples/documentation"/>
+
+	<property name="msbuildPath" value="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe"/>
+
 	<target name="default">
 		<call target="clean"/>
 		<call target="build-solution"/>
@@ -19,12 +21,19 @@
 	<target name="clean">
 		<delete dir="${outputPath}"/>
 	</target>
-	
+
 	<target name="build-solution">
-		<msbuild project="${solutionFile}" verbosity="Normal">
-			<property name="Configuration" value="${buildConfiguration}"/>
-		</msbuild>
-		
+		<exec program="${msbuildPath}"
+          workingdir="."
+          basedir="."
+          commandline="./${solutionFile}"
+          failonerror="true" >
+
+        <arg value="/p:Platform=Any CPU" />
+        <arg value="/p:Configuration=${buildConfiguration}" />
+        <arg value="/t:Rebuild" />
+    </exec>
+
 		<copy todir="${outputPath}/kelp">
 			<fileset basedir="${kelpBuildPath}">
 				<include name="*.dll"/>
@@ -32,7 +41,7 @@
 				<include name="*.pdb"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="${outputPath}/sage">
 			<fileset basedir="${sageBuildPath}">
 				<include name="*.dll"/>
@@ -40,7 +49,7 @@
 				<include name="*.pdb"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="${outputPath}/examples/documentation">
 			<fileset basedir="${exampleSitePath}">
 				<include name="*/**"/>
@@ -49,33 +58,177 @@
 				<exclude name="extensions/**"/>
 			</fileset>
 		</copy>
-		<xmlpoke file="${targetSite}/bin/Project.config" 
-						 xpath="/p:project/@debugMode" 
-						 value="false">
+
+		<set-xml-attribute
+			file="${targetSite}/bin/Project.config"
+			xpath="/p:project/@debugMode"
+			value="false">
 			<namespaces>
 				<namespace prefix="p" uri="http://www.cycle99.com/schemas/sage/configuration/project.xsd"/>
 			</namespaces>
-		</xmlpoke>
-		<xmlpoke file="${targetSite}/web.config"
-						 xpath="/configuration/resourceHandling/script/@Enabled"
-						 value="true"/>
-		<xmlpoke file="${targetSite}/web.config"
-						 xpath="/configuration/resourceHandling/css/@Enabled"
-						 value="true"/>
-		<xmlpoke file="${targetSite}/web.config"
-						 xpath="/configuration/system.web/compilation/@debug"
-						 value="false"/>
+		</set-xml-attribute>
+
+		<set-xml-attribute
+			file="${targetSite}/web.config"
+			xpath="/configuration/resourceHandling/script/@Enabled"
+			value="true"/>
+
+		<set-xml-attribute
+			file="${targetSite}/web.config"
+			xpath="/configuration/resourceHandling/css/@Enabled"
+			value="true"/>
+
+		<set-xml-attribute
+			file="${targetSite}/web.config"
+			xpath="/configuration/system.web/compilation/@debug"
+			value="false"/>
+
 	</target>
 
 	<target name="build-extensions">
 		<exec program="${extensionBuilder}" basedir=".">
-			<arg value="extension"/>
-			<arg value="-source:&quot;src/extensions/DevTools&quot;"/>
-			<arg value="-target:&quot;${outputPath}/extensions/sage.devtools.zip&quot;"/>
+			<arg value="build-extension"/>
+			<arg value="-source:&quot;extensions/Sage.DevTools&quot;"/>
 		</exec>
-		<copy 
-			file="releases/latest/extensions/sage.devtools.zip" 
+		<move
+			file="extensions/Sage.DevTools.zip"
 			todir="releases/latest/examples/documentation/extensions"/>
 	</target>
-	
+
+	<script language="C#" prefix="test" >
+    <references>
+        <include name="System.Xml.dll" />
+    </references>
+    <code>
+
+				<![CDATA[
+					[TaskName("set-xml-attribute")]
+					public class TestTask : Task
+					{
+						private NAnt.Core.Types.XmlNamespaceCollection namespaces = new NAnt.Core.Types.XmlNamespaceCollection();
+
+						[TaskAttribute("file", Required=true)]
+						public string FileName
+						{
+							get;
+							set;
+						}
+
+						[TaskAttribute("xpath", Required=true)]
+						public string XPath
+						{
+							get;
+							set;
+						}
+
+						[TaskAttribute("value", Required=true)]
+						public string Value
+						{
+							get;
+							set;
+						}
+
+						[BuildElementCollection("namespaces", "namespace")]
+						public NAnt.Core.Types.XmlNamespaceCollection Namespaces
+						{
+							get { return namespaces; }
+							set { namespaces = value; }
+						}
+
+						protected override void ExecuteTask()
+						{
+							System.Xml.XmlDocument document = new System.Xml.XmlDocument();
+							document.Load(this.FileName);
+
+							System.Xml.XmlNamespaceManager nsManager = new System.Xml.XmlNamespaceManager(document.NameTable);
+							foreach (NAnt.Core.Types.XmlNamespace ns in this.Namespaces)
+							{
+								if (!(!ns.IfDefined || ns.UnlessDefined))
+								{
+									nsManager.AddNamespace(ns.Prefix, ns.Uri);
+								}
+							}
+
+							System.Xml.XmlNode selection = document.SelectSingleNode(this.XPath, nsManager);
+							if (selection == null)
+								selection = MakeXPath(document.DocumentElement, this.XPath, nsManager);
+
+							if (selection != null)
+							{
+								selection.Value = this.Value;
+								document.Save(this.FileName);
+							}
+						}
+
+						private System.Xml.XmlNode MakeXPath(System.Xml.XmlElement parent, string xpath, System.Xml.XmlNamespaceManager nm)
+						{
+							string[] parts = xpath.Trim('/').Split('/');
+							if (parts.Length == 0 || string.IsNullOrEmpty(parts[0]))
+								return parent;
+
+							string next = parts[0];
+
+							System.Xml.XmlNode node = parent.SelectSingleNode(next, nm);
+							if (node == null)
+							{
+								bool isElement = true;
+								if (next.StartsWith("@"))
+								{
+									isElement = false;
+									next = next.Trim('@');
+								}
+
+								if (next.IndexOf(":") != -1)
+								{
+									string[] chunks = next.Split(':');
+									string ns = nm.LookupNamespace(chunks[0]);
+									string name = chunks[1];
+
+									if (string.IsNullOrEmpty(ns))
+									{
+										this.Log(Level.Error, string.Format("Could not create {0}; the namespace for {1} could not be found",
+											next, parts[0]));
+
+										return null;
+									}
+
+									if (isElement)
+									{
+										node = parent.AppendChild(parent.OwnerDocument.CreateElement(name, ns));
+									}
+									else
+									{
+										parent.SetAttribute(name, ns, string.Empty);
+										node = parent.Attributes[next];
+									}
+								}
+								else
+								{
+									if (isElement)
+									{
+										node = parent.AppendChild(parent.OwnerDocument.CreateElement(next));
+									}
+									else
+									{
+										parent.SetAttribute(next, string.Empty);
+										node = parent.Attributes[next];
+									}
+								}
+							}
+
+							if (parts.Length == 1)
+								return node;
+
+							string[] parts2 = new string[parts.Length - 1];
+							Array.Copy(parts, 1, parts2, 0, parts2.Length);
+
+							string rest = string.Join("/", parts2);
+							return MakeXPath((System.Xml.XmlElement) node, rest, nm);
+
+						}
+					}
+				]]>
+    </code>
+  </script>
+
 </project>
