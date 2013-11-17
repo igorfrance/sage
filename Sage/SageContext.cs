@@ -839,37 +839,6 @@ namespace Sage
 			return result;
 		}
 
-		private bool SubstituteExtensionPath()
-		{
-			try
-			{
-				string extensionDirectory = this.Path.GetRelativeWebPath(this.Path.ExtensionPath, true);
-				if (File.Exists(this.Request.PhysicalPath) || this.Request.Path.Contains(extensionDirectory, true))
-					return false;
-
-				string requestedFile = this.Request.Path.ToLower().Replace(this.Request.ApplicationPath.ToLower(), string.Empty).Trim('/');
-				foreach (string extensionId in Project.Extensions.Keys)
-				{
-					ExtensionInfo info = Project.Extensions[extensionId];
-					string rewrittenPath = string.Format("{0}/{1}/{2}", extensionDirectory, info.Name, requestedFile);
-					if (File.Exists(this.MapPath(rewrittenPath)))
-					{
-						this.HttpContext.RewritePath(rewrittenPath);
-						if (this.IsDeveloperRequest)
-							this.Response.AddHeader("OriginalFilePath", requestedFile);
-
-						return true;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
-			}
-
-			return false;
-		}
-
 		private static string GetContextProperty(SageContext context, string propName, string propKey)
 		{
 			const BindingFlags BindingFlags = 
@@ -909,6 +878,37 @@ namespace Sage
 			}
 
 			return null;
+		}
+
+		private bool SubstituteExtensionPath()
+		{
+			try
+			{
+				string extensionDirectory = this.Path.GetRelativeWebPath(this.Path.ExtensionPath, true);
+				if (File.Exists(this.Request.PhysicalPath) || this.Request.Path.Contains(extensionDirectory, true))
+					return false;
+
+				string requestedFile = this.Request.Path.ToLower().Replace(this.Request.ApplicationPath.ToLower(), string.Empty).Trim('/');
+				foreach (string extensionId in Project.Extensions.Keys)
+				{
+					ExtensionInfo info = Project.Extensions[extensionId];
+					string rewrittenPath = string.Format("{0}/{1}/{2}", extensionDirectory, info.Name, requestedFile);
+					if (File.Exists(this.MapPath(rewrittenPath)))
+					{
+						this.HttpContext.RewritePath(rewrittenPath);
+						if (this.IsDeveloperRequest)
+							this.Response.AddHeader("OriginalFilePath", requestedFile);
+
+						return true;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
+			}
+
+			return false;
 		}
 	}
 }
