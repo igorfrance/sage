@@ -54,118 +54,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\lib\aeon\aeon.js" />
-    <Content Include="assets\lib\aeon\controls\ControlRegistry.js" />
-    <Content Include="assets\lib\aeon\controls\ControlTypeInfo.js" />
-    <Content Include="assets\lib\aeon\controls\HtmlControl.js" />
-    <Content Include="assets\lib\aeon\controls\PageControl.js" />
-    <Content Include="assets\lib\aeon\controls\scroller\scroller.css" />
-    <Content Include="assets\lib\aeon\controls\scroller\scroller.js" />
-    <Content Include="assets\lib\aeon\controls\slider\slider.css" />
-    <Content Include="assets\lib\aeon\controls\slider\slider.js" />
-    <Content Include="assets\lib\aeon\controls\thumbstrip\thumbstrip.js" />
-    <Content Include="assets\lib\aeon\controls\tooltip\Tooltip.css" />
-    <Content Include="assets\lib\aeon\controls\tooltip\Tooltip.js" />
-    <Content Include="assets\lib\aeon\core\Array.js" />
-    <Content Include="assets\lib\aeon\core\Date.js" />
-    <Content Include="assets\lib\aeon\core\Dispatcher.js" />
-    <Content Include="assets\lib\aeon\core\Error.js" />
-    <Content Include="assets\lib\aeon\core\Function.js" />
-    <Content Include="assets\lib\aeon\core\Number.js" />
-    <Content Include="assets\lib\aeon\core\Prototype.js" />
-    <Content Include="assets\lib\aeon\core\QueryString.js" />
-    <Content Include="assets\lib\aeon\core\Settings.js" />
-    <Content Include="assets\lib\aeon\core\String.js" />
-    <Content Include="assets\lib\aeon\core\Type.js" />
-    <Content Include="assets\lib\aeon\utils\Constants.js" />
-    <Content Include="assets\lib\aeon\utils\Cookie.js" />
-    <Content Include="assets\lib\aeon\utils\Css.js" />
-    <Content Include="assets\lib\aeon\utils\Dom.js" />
-    <Content Include="assets\lib\aeon\utils\Dragger.js" />
-    <Content Include="assets\lib\aeon\utils\Easing.js" />
-    <Content Include="assets\lib\aeon\utils\Event.js" />
-    <Content Include="assets\lib\aeon\utils\Initializer.js" />
-    <Content Include="assets\lib\aeon\utils\Log.js" />
-    <Content Include="assets\lib\aeon\utils\Url.js" />
-    <Content Include="assets\lib\aeon\utils\Xml.js" />
-    <Content Include="assets\lib\backbone\backbone-0.9.2.js" />
-    <Content Include="assets\lib\backbone\backbone-0.9.2.min.js" />
-    <Content Include="assets\lib\jquery\jquery-1.8.2.js" />
-    <Content Include="assets\lib\jquery\jquery-1.8.2.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery-ui.custom.js" />
-    <Content Include="assets\lib\jquery\ui\jquery-ui.custom.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.accordion.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.accordion.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.autocomplete.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.autocomplete.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.button.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.button.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.core.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.core.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.datepicker.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.datepicker.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.dialog.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.dialog.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.draggable.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.draggable.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.droppable.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.droppable.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-blind.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-blind.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-bounce.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-bounce.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-clip.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-clip.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-drop.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-drop.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-explode.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-explode.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-fade.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-fade.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-fold.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-fold.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-highlight.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-highlight.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-pulsate.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-pulsate.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-scale.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-scale.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-shake.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-shake.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-slide.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-slide.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-transfer.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect-transfer.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.effect.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.menu.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.menu.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.mouse.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.mouse.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.position.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.position.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.progressbar.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.progressbar.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.resizable.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.resizable.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.selectable.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.selectable.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.slider.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.slider.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.sortable.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.sortable.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.spinner.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.spinner.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.tabs.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.tabs.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.tooltip.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.tooltip.min.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.widget.js" />
-    <Content Include="assets\lib\jquery\ui\jquery.ui.widget.min.js" />
-    <Content Include="assets\lib\qunit\qunit-1.11.0.css" />
-    <Content Include="assets\lib\qunit\qunit-1.11.0.js" />
-    <Content Include="assets\lib\underscore\underscore-1.4.2-min.js" />
-    <Content Include="assets\lib\underscore\underscore-1.4.2.js" />
     <Content Include="assets\views\home\index.html" />
     <Content Include="Global.asax" />
     <Content Include="log4net.xml">
@@ -191,7 +79,9 @@
       <Name>Sage</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="assets\lib\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
