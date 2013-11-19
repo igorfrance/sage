@@ -146,6 +146,7 @@
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
+    <Compile Include="Views\Meta\ConfigView.cs" />
     <Compile Include="Views\ViewConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\ControllerMessage.cs" />
@@ -244,6 +245,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Xslt\Logic.xslt" />
     <EmbeddedResource Include="Resources\Xslt\AssistanceError.xslt" />
+    <EmbeddedResource Include="Resources\MetaViews\Config.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Content Include="System.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

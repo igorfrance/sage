@@ -71,13 +71,13 @@ namespace Sage.Views
 		/// </summary>
 		/// <param name="viewContext">The view context.</param>
 		/// <param name="textWriter">The text writer.</param>
-		/// <param name="template">The template.</param>
-		public virtual void Transform(ViewContext viewContext, TextWriter textWriter, XsltTransform template)
+		/// <param name="stylesheet">The template.</param>
+		public virtual void Transform(ViewContext viewContext, TextWriter textWriter, XsltTransform stylesheet)
 		{
 			Contract.Requires<ArgumentNullException>(viewContext != null);
 			Contract.Requires<ArgumentException>(viewContext.Controller is SageController);
 			Contract.Requires<ArgumentNullException>(textWriter != null);
-			Contract.Requires<ArgumentNullException>(template != null);
+			Contract.Requires<ArgumentNullException>(stylesheet != null);
 			
 			SageController controller = (SageController) viewContext.Controller;
 
@@ -94,7 +94,24 @@ namespace Sage.Views
 				throw new SageHelpException(new ProblemInfo(ProblemType.ViewProcessingError), ex);
 			}
 
-			template.Transform(requestXml, textWriter, controller.Context);
+			this.Transform(requestXml, textWriter, stylesheet, controller.Context);
+		}
+
+		/// <summary>
+		/// Transforms the specified document.
+		/// </summary>
+		/// <param name="subject">The xml node to transform.</param>
+		/// <param name="textWriter">The text writer to transform to.</param>
+		/// <param name="stylesheet">The style sheet to use.</param>
+		/// <param name="context">The context under which the code is executing.</param>
+		public virtual void Transform(XmlNode subject, TextWriter textWriter, XsltTransform stylesheet, SageContext context)
+		{
+			Contract.Requires<ArgumentNullException>(subject != null);
+			Contract.Requires<ArgumentNullException>(textWriter != null);
+			Contract.Requires<ArgumentNullException>(stylesheet != null);
+			Contract.Requires<ArgumentNullException>(context != null);
+
+			stylesheet.Transform(subject, textWriter, context);
 		}
 	}
 }

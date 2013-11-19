@@ -27,6 +27,23 @@ namespace Sage.Configuration
 		internal const string ParamNameMetaView = "view";
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="MetaViewDictionary"/> class.
+		/// </summary>
+		public MetaViewDictionary()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MetaViewDictionary"/> class, using the specified 
+		/// instance to initialize the content of this instance.
+		/// </summary>
+		/// <param name="init">The object to copy the contents from.</param>
+		internal MetaViewDictionary(IDictionary<string, MetaViewInfo> init)
+			: base(init)
+		{
+		}
+
+		/// <summary>
 		/// Selects the meta view appropriate for the specified <paramref name="context"/>.
 		/// </summary>
 		/// <param name="context">The context under which this method is being executed.</param>

@@ -69,10 +69,13 @@ namespace Sage
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
 		/// </summary>
 		/// <param name="context">An existing <see cref="SageContext"/> to use to initialize this instance.</param>
+		/// <param name="pathMapper">The function to use for resolving relative paths.</param>
 		/// <param name="config">The project configuration to use with this context instance.</param>
-		public SageContext(SageContext context, ProjectConfiguration config = null)
+		public SageContext(SageContext context, ProjectConfiguration config = null, Func<string, string> pathMapper = null)
 			: this(context, context.Category, config)
 		{
+			if (pathMapper != null)
+				this.pathMapper = pathMapper;
 		}
 
 		/// <summary>
