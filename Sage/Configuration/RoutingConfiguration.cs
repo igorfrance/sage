@@ -36,6 +36,11 @@ namespace Sage.Configuration
 			this.DefaultNamespace = string.Empty;
 		}
 
+		internal RoutingConfiguration(RoutingConfiguration init)
+			: base(init)
+		{
+		}
+
 		/// <summary>
 		/// Gets the default controller namespace for routes that don't define their namespace explicitly.
 		/// </summary>

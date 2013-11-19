@@ -46,6 +46,19 @@ namespace Sage.Configuration
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="EnvironmentConfiguration"/> class, using the specified 
+		/// instance to initialize the content of this instance.
+		/// </summary>
+		/// <param name="init">The object to copy the contents from.</param>
+		internal EnvironmentConfiguration(EnvironmentConfiguration init)
+		{
+			this.blockedIPs = new List<IpAddress>(init.blockedIPs);
+			this.developerIPs = new List<IpAddress>(init.developerIPs);
+			this.BlockedIPs = this.blockedIPs.AsReadOnly();
+			this.DeveloperIPs = this.developerIPs.AsReadOnly();
+		}
+
+		/// <summary>
 		/// Gets the IP addresses to be blocked.
 		/// </summary>
 		public ReadOnlyCollection<IpAddress> BlockedIPs { get; private set; }

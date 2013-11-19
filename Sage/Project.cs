@@ -324,7 +324,6 @@ namespace Sage
 
 		internal static void InitializeConfiguration(SageContext context)
 		{
-			string systemConfigPath = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.SystemConfigName);
 			string projectConfigPathBinDir = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
 			string projectConfigPathProjDir = Path.Combine(AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
 
@@ -336,20 +335,14 @@ namespace Sage
 
 			var projectConfig = ProjectConfiguration.Create();
 
-			if (!File.Exists(projectConfigPath) && !File.Exists(systemConfigPath))
+			if (!File.Exists(projectConfigPath))
 			{
-				log.Warn("Nither system nor project configuration files found; configuration initialized with default values");
-
-				//// initializationProblemInfo = new ProblemInfo(ProblemType.MissingConfigurationFile);
-				//// initializationError = new SageHelpException(initializationProblemInfo);
+				log.Warn("Project configuration file not found; configuration initialized with default values");
 				return;
 			}
 
 			installOrder = new List<string>();
 			extensions = new OrderedDictionary<string, ExtensionInfo>();
-
-			if (File.Exists(systemConfigPath))
-				projectConfig.Parse(systemConfigPath);
 
 			if (File.Exists(projectConfigPath))
 				projectConfig.Parse(projectConfigPath);

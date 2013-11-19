@@ -54,6 +54,19 @@ namespace Sage.Configuration
 			this.Parse(configElement);
 		}
 
+		internal PathTemplates(PathTemplates init)
+		{
+			this.View = init.View;
+			this.Module = init.Module;
+			this.Extension = init.Extension;
+			this.CategoryConfiguration = init.CategoryConfiguration;
+			this.DefaultStylesheet = init.DefaultStylesheet;
+			this.Dictionary = init.Dictionary;
+			this.SiteMap = init.SiteMap;
+			this.GlobalizedDirectory = init.GlobalizedDirectory;
+			this.GlobalizedDirectoryForNonFileResources = init.GlobalizedDirectoryForNonFileResources;
+		}
+
 		/// <summary>
 		/// Gets the template for constructing paths to views.
 		/// </summary>
@@ -70,18 +83,18 @@ namespace Sage.Configuration
 		public string Extension { get; private set; }
 
 		/// <summary>
-		/// Gets the template for constucting paths to language dictionaries.
+		/// Gets the template for constructing paths to language dictionaries.
 		/// </summary>
 		public string Dictionary { get; private set; }
 
 		/// <summary>
-		/// Gets the template for constucting paths to sitemap files.
+		/// Gets the template for constructing paths to sitemap files.
 		/// </summary>
 		public string SiteMap { get; private set; }
 
 		/// <summary>
-		/// Gets the path template to the default XSLT stylesheet that can be used if a view
-		/// doesn't have it's own, specific stylesheet.
+		/// Gets the path template to the default XSLT style sheet that can be used if a view
+		/// doesn't have it's own, specific style sheet.
 		/// </summary>
 		public string DefaultStylesheet { get; private set; }
 
@@ -96,7 +109,7 @@ namespace Sage.Configuration
 		public string GlobalizedDirectoryForNonFileResources { get; private set; }
 
 		/// <summary>
-		/// Gets the template for constucting paths to category configuration files.
+		/// Gets the template for constructing paths to category configuration files.
 		/// </summary>
 		public string CategoryConfiguration { get; private set; }
 

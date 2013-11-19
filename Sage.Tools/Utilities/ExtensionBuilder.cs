@@ -97,7 +97,6 @@ namespace Sage.Tools.Utilities
 
 			string extensionName = Path.GetFileName(sourcePath);
 			string configSourcePath = Path.Combine(sourcePath, ProjectConfiguration.ProjectConfigName);
-			string systemConfigPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.SystemConfigName);
 			string configTargetPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.ExtensionConfigName);
 			string extensionPath = targetPath;
 
@@ -124,7 +123,7 @@ namespace Sage.Tools.Utilities
 			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = extensionConfig.DocumentElement;
 
-			ProjectConfiguration config = ProjectConfiguration.Create(configSourcePath, systemConfigPath);
+			ProjectConfiguration config = ProjectConfiguration.Create(configSourcePath);
 			if (!config.ValidationResult.Success)
 				throw config.ValidationResult.Exception;
 

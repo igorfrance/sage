@@ -58,49 +58,118 @@ namespace Sage.Configuration
 
 		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
-		//private static ProjectConfiguration defaultConfiguration;
+		private static ProjectConfiguration defaultConfiguration;
 		private readonly List<XmlElement> customElements;
 
-		private ProjectConfiguration()
+		static ProjectConfiguration()
 		{
-			this.AssetPath = "~/assets";
-			this.Modules = new Dictionary<string, ModuleConfiguration>();
-			this.MetaViews = new MetaViewDictionary();
-			this.Environment = new EnvironmentConfiguration();
-			this.Linking = new LinkingConfiguration();
-			this.Routing = new RoutingConfiguration();
-			this.PathTemplates = new PathTemplates();
-			this.ResourceLibraries = new Dictionary<string, ResourceLibraryInfo>();
-			this.Type = ProjectType.Project;
+			defaultConfiguration = new ProjectConfiguration();
+			if (File.Exists(SystemConfigurationPath))
+				defaultConfiguration.Parse(SystemConfigurationPath);
+		}
 
-			this.SharedCategory = "shared";
-			this.DefaultLocale = "us";
-			this.DefaultCategory = "default";
-			this.AutoInternationalize = true;
-			this.ValidationResult = new ValidationResult();
-			this.Files = new List<string>();
-			this.Dependencies = new List<string>();
+		private ProjectConfiguration(ProjectConfiguration initConfiguration = null)
+		{
+			this.AssetPath = initConfiguration != null 
+				? initConfiguration.AssetPath 
+				: "~/assets";
 
-			this.Locales = new Dictionary<string, LocaleInfo> { { "us", new LocaleInfo 
-			{ 
-				Name = "us",
-				DictionaryNames = new List<string> { "us", "en" },
-				ResourceNames = new List<string> { "us", "en", "default" },
-			}}};
+			this.Modules = initConfiguration != null
+				? new Dictionary<string, ModuleConfiguration>(initConfiguration.Modules)
+				: new Dictionary<string, ModuleConfiguration>();
 
-			this.Categories = new Dictionary<string, CategoryInfo>();
+			this.MetaViews = initConfiguration != null
+				? new MetaViewDictionary(initConfiguration.MetaViews)
+				: new MetaViewDictionary();
+
+			this.Environment = initConfiguration != null
+				? new EnvironmentConfiguration(initConfiguration.Environment)
+				: new EnvironmentConfiguration();
+
+			this.Linking = initConfiguration != null
+				? new LinkingConfiguration(initConfiguration.Linking)
+				: new LinkingConfiguration();
+
+			this.Routing = initConfiguration != null
+				? new RoutingConfiguration(initConfiguration.Routing)
+				: new RoutingConfiguration();
+
+			this.PathTemplates = initConfiguration != null
+				? new PathTemplates(initConfiguration.PathTemplates)
+				: new PathTemplates();
+
+			this.ResourceLibraries = initConfiguration != null
+				? new Dictionary<string, ResourceLibraryInfo>(initConfiguration.ResourceLibraries)
+				: new Dictionary<string, ResourceLibraryInfo>();
+
+			this.Type = initConfiguration != null
+				? initConfiguration.Type
+				: ProjectType.Project;
+
+			this.SharedCategory = initConfiguration != null
+				? initConfiguration.SharedCategory
+				: "shared";
+
+			this.DefaultLocale = initConfiguration != null
+				? initConfiguration.DefaultLocale
+				: "us";
+
+			this.DefaultCategory = initConfiguration != null
+				? initConfiguration.DefaultCategory
+				: "default";
+
+			this.AutoInternationalize = initConfiguration == null || initConfiguration.AutoInternationalize;
+
+			this.ValidationResult = initConfiguration != null
+				? new ValidationResult(initConfiguration.ValidationResult)
+				: new ValidationResult();
+
+			this.Files = initConfiguration != null
+				? new List<string>(initConfiguration.Files)
+				: new List<string>();
+			
+			this.Dependencies = initConfiguration != null
+				? new List<string>(initConfiguration.Dependencies)
+				: new List<string>();
+
+			this.Locales = initConfiguration != null
+				? new Dictionary<string, LocaleInfo>(initConfiguration.Locales)
+				: new Dictionary<string, LocaleInfo> { { "us", new LocaleInfo 
+					{ 
+						Name = "us",
+						DictionaryNames = new List<string> { "us", "en" },
+						ResourceNames = new List<string> { "us", "en", "default" },
+					}}};
+
+			this.Categories = initConfiguration != null
+				? new Dictionary<string, CategoryInfo>(initConfiguration.Categories)
+				: new Dictionary<string, CategoryInfo>();
+
 			this.Categories[this.DefaultCategory] = new CategoryInfo(this.DefaultCategory) 
 			{ 
 				Locales = this.Locales.Keys.ToList() 
 			};
 
-			this.customElements = new List<XmlElement>();
+			this.customElements = initConfiguration != null
+				? new List<XmlElement>(initConfiguration.customElements)
+				: new List<XmlElement>();
 		}
 
 		/// <summary>
 		/// Occurs when the project configuration is changed.
 		/// </summary>
 		public event EventHandler Changed;
+
+		/// <summary>
+		/// Gets the path of system configuration file, used to initialize the default settings.
+		/// </summary>
+		public static string SystemConfigurationPath
+		{
+			get
+			{
+				return Path.Combine(Project.AssemblyCodeBaseDirectory, ProjectConfiguration.SystemConfigName);
+			}
+		}
 
 		/// <summary>
 		/// Gets the asset path configuration variable; this is the base path for all resources.
@@ -238,67 +307,46 @@ namespace Sage.Configuration
 		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
 		public static ProjectConfiguration Create()
 		{
-			return new ProjectConfiguration();
+			return new ProjectConfiguration(defaultConfiguration);
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified 
-		/// <paramref name="configStream"/>, optionally using the values from file located at 
-		/// <paramref name="parentConfigPath"/> to initialize values not present in <paramref name="configStream"/>.
+		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified <paramref name="configStream"/>.
 		/// </summary>
 		/// <param name="configStream">The stream to the configuration file to use.</param>
-		/// <param name="parentConfigPath">Optional path to the parent configuration file to use.</param>
 		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
-		public static ProjectConfiguration Create(Stream configStream, string parentConfigPath = null)
+		public static ProjectConfiguration Create(Stream configStream)
 		{
 			Contract.Requires<ArgumentNullException>(configStream != null);
 
 			XmlDocument document = new XmlDocument { PreserveWhitespace = true };
 			document.Load(configStream);
-
-			XmlDocument parentDoc = null;
-			if (parentConfigPath != null)
-				parentDoc = ResourceManager.LoadXmlDocument(parentConfigPath);
-
-			return Create(document, parentDoc);
+			return Create(document);
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified 
-		/// <paramref name="configPath"/>, optionally using the values from file located at 
-		/// <paramref name="parentConfigPath"/> to initialize values not present in <paramref name="configPath"/>.
+		/// Creates a new <see cref="ProjectConfiguration"/> instance using the file from the specified <paramref name="configPath"/>.
 		/// </summary>
 		/// <param name="configPath">The path to the configuration file to use.</param>
-		/// <param name="parentConfigPath">Optional path to the parent configuration file to use.</param>
 		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
-		public static ProjectConfiguration Create(string configPath, string parentConfigPath = null)
+		public static ProjectConfiguration Create(string configPath)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
 
 			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
-			XmlDocument parentDoc = null;
-			if (parentConfigPath != null)
-				parentDoc = ResourceManager.LoadXmlDocument(parentConfigPath);
-
-			return Create(document, parentDoc);
+			return Create(document);
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="ProjectConfiguration"/> instance using the <paramref name="configDoc"/>, 
-		/// optionally using the values from <paramref name="parentConfigDoc"/> to initialize values not present in 
-		/// <paramref name="configDoc"/>.
+		/// Creates a new <see cref="ProjectConfiguration"/> instance using the <paramref name="configDoc"/>.
 		/// </summary>
 		/// <param name="configDoc">The configuration file to use.</param>
-		/// <param name="parentConfigDoc">Optional parent configuration file to use.</param>
 		/// <returns>A new instance of <see cref="ProjectConfiguration"/>.</returns>
-		public static ProjectConfiguration Create(XmlDocument configDoc, XmlDocument parentConfigDoc = null)
+		public static ProjectConfiguration Create(XmlDocument configDoc)
 		{
 			Contract.Requires<ArgumentNullException>(configDoc != null);
 
-			var result = new ProjectConfiguration();
-			if (parentConfigDoc != null)
-				result.Parse(parentConfigDoc.DocumentElement);
-
+			var result = Create();
 			result.Parse(configDoc.DocumentElement);
 			return result;
 		}
@@ -586,7 +634,7 @@ namespace Sage.Configuration
 		{
 			foreach (RouteInfo route in this.Routing.Values)
 			{
-				string[] namespaces = new[] { route.Namespace ?? this.Routing.DefaultNamespace };
+				string[] namespaces = { route.Namespace ?? this.Routing.DefaultNamespace };
 				RouteTable.Routes.MapRouteLowercase(route.Name, route.Path,
 					route.Defaults,
 					route.Constraints,

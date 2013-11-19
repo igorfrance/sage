@@ -32,6 +32,15 @@ namespace Sage.Configuration
 			this.Column = -1;
 		}
 
+		internal ValidationResult(ValidationResult init)
+		{
+			this.Success = init.Success;
+			this.Line = init.Line;
+			this.Column = init.Column;
+			this.SourceFile = init.SourceFile;
+			this.Exception = init.Exception;
+		}
+
 		/// <summary>
 		/// Gets or sets the name of the source file that caused the error, if any.
 		/// </summary>

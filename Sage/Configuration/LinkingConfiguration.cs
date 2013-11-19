@@ -60,6 +60,19 @@ namespace Sage.Configuration
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="LinkingConfiguration"/> class, using the specified 
+		/// instance to initialize the content of this instance.
+		/// </summary>
+		/// <param name="init">The object to copy the contents from.</param>
+		internal LinkingConfiguration(LinkingConfiguration init)
+		{
+			this.links = new Dictionary<string, string>(init.links);
+			this.formats = new Dictionary<string, string>(init.formats);
+			this.Links = new ReadOnlyDictionary<string, string>(this.links);
+			this.Formats = new ReadOnlyDictionary<string, string>(this.formats);
+		}
+
+		/// <summary>
 		/// Gets the dictionary of links.
 		/// </summary>
 		public ReadOnlyDictionary<string, string> Links
