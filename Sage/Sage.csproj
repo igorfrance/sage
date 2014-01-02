@@ -73,11 +73,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\.nuget\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>$(SolutionDir).nuget\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+    <Reference Include="log4net">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\.nuget\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>$(SolutionDir).nuget\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -94,6 +94,8 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\EnvironmentConfiguration.cs" />
+    <Compile Include="Configuration\ExtensionString.cs" />
+    <Compile Include="Controllers\ExtensionControllerProxy.cs" />
     <Compile Include="Extensibility\IOFunctions.cs" />
     <Compile Include="ProjectInitializationException.cs" />
     <Compile Include="Extensibility\NodeEvaluator.cs" />
@@ -215,37 +217,37 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Schemas\ProjectConfiguration.xsd">
+    <EmbeddedResource Include="Resources\schemas\sage\configuration\project.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Schemas\XInclude.xsd">
+    <EmbeddedResource Include="Resources\schemas\xinclude.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Xslt\Error.xslt" />
+    <EmbeddedResource Include="Resources\xslt\error.xslt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Xslt\Internationalization.xslt">
+    <EmbeddedResource Include="Resources\xslt\internationalization.xslt">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\MetaViews\Xml.xsl">
+    <EmbeddedResource Include="Resources\metaviews\xml.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\MetaViews\Xmlx.xsl">
+    <EmbeddedResource Include="Resources\metaviews\xmlx.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Xslt\Installer.xslt" />
-    <EmbeddedResource Include="Resources\Xslt\Global.xslt">
+    <EmbeddedResource Include="Resources\xslt\Installer.xslt" />
+    <EmbeddedResource Include="Resources\xslt\global.xslt">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Xslt\Logic.xslt" />
-    <EmbeddedResource Include="Resources\Xslt\AssistanceError.xslt" />
-    <EmbeddedResource Include="Resources\MetaViews\Config.xsl">
+    <EmbeddedResource Include="Resources\xslt\logic.xslt" />
+    <EmbeddedResource Include="Resources\xslt\assistanceerror.xslt" />
+    <EmbeddedResource Include="Resources\metaviews\config.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="System.config">
@@ -254,12 +256,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Schemas\CategoryConfiguration.xsd">
+    <EmbeddedResource Include="Resources\schemas\sage\configuration\category.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Schemas\Internationalization.xsd">
+    <EmbeddedResource Include="Resources\schemas\sage\internationalization.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -271,10 +273,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\Schemas\Sage.xsd">
+    <None Include="Resources\schemas\sage\contextualization.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\schemas\sage\modules.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\schemas\sage\sage-xhtml.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\schemas\sage\sage.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

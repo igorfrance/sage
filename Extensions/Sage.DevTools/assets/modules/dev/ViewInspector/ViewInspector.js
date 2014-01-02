@@ -1,6 +1,6 @@
-﻿aeon.type.registerNamespace("sage.dev");
+﻿atom.type.registerNamespace("sage.dev");
 
-sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
+sage.dev.ViewInspector = atom.Dispatcher.extend(function ViewInspector()
 {
 	this.construct("close", "info", "contentloaded", "reload");
 
@@ -85,7 +85,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 			.bind("mouseup", onDocumentMouseUp)
 			.bind("mousemove", onDocumentMouseMove);
 
-		var hashParam = aeon.url.getHashParam(stateParamName);
+		var hashParam = atom.url.getHashParam(stateParamName);
 		if (!hashParam)
 		{
 			var initialUrl = viewInspector.attr("data-view");
@@ -118,7 +118,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 		if (currentState.inspector)
 			state.inspector = currentState.inspector;
 
-		return aeon.url.serializeParams(state);
+		return atom.url.serializeParams(state);
 	}
 
 	function setHashInspectorState(state)
@@ -127,16 +127,16 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 		target.url = state.url || currentState.url;
 		target.inspector = state.inspector || currentState.inspector;
 
-		var hashTarget = aeon.url.serializeParams(target);
-		var currentHash = aeon.url.getHashParam(stateParamName);
+		var hashTarget = atom.url.serializeParams(target);
+		var currentHash = atom.url.getHashParam(stateParamName);
 
 		if (currentHash != hashTarget)
-			aeon.url.setHashParam(stateParamName, escape(hashTarget));
+			atom.url.setHashParam(stateParamName, escape(hashTarget));
 	}
 
 	function clearViewInspectorState()
 	{
-		aeon.url.removeHashParam(stateParamName);
+		atom.url.removeHashParam(stateParamName);
 	}
 
 	function setViewInspectorState(state)
@@ -185,7 +185,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	function loadMetaView(name)
 	{
-		var toolUrl = new aeon.utils.Url(getContentDocumentUrl());
+		var toolUrl = new atom.url(getContentDocumentUrl());
 		toolUrl.setQueryParam("view", name);
 
 		toolPreloader.show();
@@ -227,13 +227,13 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	function updateLoop()
 	{
-		var hashParam = aeon.url.getHashParam(stateParamName);
+		var hashParam = atom.url.getHashParam(stateParamName);
 		if (hashParam)
 		{
-			var hashState = unescape(hashParam);
+			var hashState = decodeURIComponent(hashParam);
 			if (hashState != getHashInspectorState())
 			{
-				var state = aeon.url.parseQuery(hashState);
+				var state = atom.url.parseQuery(hashState);
 				setViewInspectorState(state);
 			}
 		}
@@ -277,7 +277,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 			if (commands[commandName] != null)
 			{
 				var state = buttonState.ENABLED;
-				if (aeon.type.isFunction(commands[commandName].getState))
+				if (atom.type.isFunction(commands[commandName].getState))
 					state = commands[commandName].getState(commandArgs);
 
 				if ((state & buttonState.ENABLED) != 0)
@@ -291,7 +291,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 				}
 			}
 		}
-		catch (e) { aeon.log.error(e); }
+		catch (e) { atom.log.error(e); }
 	}
 
 	function onButtonClicked()
@@ -407,7 +407,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 			contentContainer.height(f1h + "%");
 			toolsContainer.height(f2h + "%");
 
-			//aeon.cookie.set("dev.viewinspector.fh", f1h);
+			//atom.cookie.set("dev.viewinspector.fh", f1h);
 		}
 	}
 
@@ -426,7 +426,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 			contentContainer.width(f1w + "%");
 			toolsContainer.width(f2w + "%");
 
-			//aeon.cookie.set("dev.viewinspector.fw", f1w);
+			//atom.cookie.set("dev.viewinspector.fw", f1w);
 		}
 	}
 
@@ -442,7 +442,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 	function getRect(elem)
 	{
 		var rect = { x1: 0, y1: 0, x2: 0, y2: 0 };
-		if (aeon.type.isHtmlElement(elem))
+		if (atom.type.isHtmlElement(elem))
 		{
 			rect.x1 = $(elem).offset().left;
 			rect.y1 = $(elem).offset().top;
@@ -554,7 +554,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 			updateControls();
 		}
 		else
-			aeon.log.warn("Unknown command: {0}", commandName);
+			atom.log.warn("Unknown command: {0}", commandName);
 	}
 
 	var commands = {};
@@ -581,7 +581,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	commands.singleFrame = function singleFrame()
 	{
-		aeon.cookie.set("dev.viewinspector.layout", "single", "/");
+		atom.cookie.set("dev.viewinspector.layout", "single", "/");
 
 		currentState.inspector = null;
 
@@ -600,7 +600,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	commands.doubleFrame = function doubleFrame()
 	{
-		aeon.cookie.set("dev.viewinspector.layout", "double", "/");
+		atom.cookie.set("dev.viewinspector.layout", "double", "/");
 		viewInspector.removeClass("single").addClass("double");
 		currentLayout = layoutType.DOUBLE;
 
@@ -619,7 +619,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	commands.verticalFrames = function verticalFrames()
 	{
-		aeon.cookie.set("dev.viewinspector.orientation", "vertical", "/");
+		atom.cookie.set("dev.viewinspector.orientation", "vertical", "/");
 		viewInspector.removeClass("horizontal").addClass("vertical");
 		currentOrientation = orientationType.VERTICAL;
 
@@ -637,7 +637,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	commands.horizontalFrames = function horizontalFrames()
 	{
-		aeon.cookie.set("dev.viewinspector.orientation", "horizontal", "/");
+		atom.cookie.set("dev.viewinspector.orientation", "horizontal", "/");
 		viewInspector.removeClass("vertical").addClass("horizontal");
 		currentOrientation = orientationType.HORIZONTAL;
 
@@ -689,7 +689,7 @@ sage.dev.ViewInspector = aeon.Dispatcher.extend(function ViewInspector()
 
 	commands.close = function close()
 	{
-		var event = new aeon.Event(this, "close");
+		var event = new atom.Event(this, "close");
 		self.fireEvent(event);
 
 		if (!event.cancel)
@@ -733,4 +733,4 @@ sage.dev.ViewInspector.setup = function ViewInspector$setup()
 	return sage.dev.ViewInspector.current;
 };
 
-aeon.init.register(sage.dev.ViewInspector);
+atom.init.register(sage.dev.ViewInspector);

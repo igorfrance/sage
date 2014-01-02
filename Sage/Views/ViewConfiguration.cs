@@ -118,11 +118,11 @@ namespace Sage.Views
 		{
 			get
 			{
-				lock (log)
+				if (string.IsNullOrEmpty(moduleSelectXPath)) 
 				{
-					if (string.IsNullOrEmpty(moduleSelectXPath))
+					lock (log)
 					{
-						lock (log)
+						if (string.IsNullOrEmpty(moduleSelectXPath)) 
 						{
 							List<string> parts = new List<string>();
 							foreach (string name in SageModuleFactory.Modules.Keys)

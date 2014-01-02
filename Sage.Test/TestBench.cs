@@ -23,6 +23,11 @@ namespace Sage.Test
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+
+	using Kelp;
+	using Kelp.Extensions;
+	using Kelp.ResourceHandling;
+
 	using Machine.Specifications;
 
 	using log4net;
@@ -34,106 +39,30 @@ namespace Sage.Test
 	public class TestBench
 	{
 		static readonly ILog log = LogManager.GetLogger(typeof(TestBench).FullName);
-		static readonly Dictionary<string, Item> items = new Dictionary<string, Item>();
 
-		private Establish context = () =>
+		private It CheckForDuplicateReferences = () =>
 		{
-			items["a1"] = new Item("a1");
-			items["b2"] = new Item("b2");
-			items["c1"] = new Item("c1");
-			items["b1"] = new Item("b1");
-			items["c2"] = new Item("c2", "d2", "b1");
-			items["a2"] = new Item("a2", "d2");
-			items["dd"] = new Item("dd", "a1", "a2");
-			items["e2"] = new Item("e2");
-			items["d1"] = new Item("d1", "b1", "c2");
-			items["e1"] = new Item("e1");
-			items["d2"] = new Item("d2");
+			IEnumerable<IGrouping<string, Util.Reference>> referenceGroups =
+				Kelp.Util.FindConflictingReferences(@"G:\cycle99\projects\git\sage\Sage.Tools\bin\Debug");
 
-			items["aa"] = new Item("aa", "a1", "a2");
-			items["ee"] = new Item("ee", "a1", "a2");
-			items["bb"] = new Item("bb", "b1", "b2", "a1", "c1");
-			items["cc"] = new Item("cc", "c2", "c1");
-
-
-			List<Item> ordered = new List<Item>(items.Values.ToList());
-
-			int index = 0;
-			while (index != ordered.Count - 1)
+			foreach (var group in referenceGroups)
 			{
-				var curr = ordered[index];
-				var swapIndex = -1;
-
-				log.DebugFormat("{0} Current: {1}", index, curr.Name);
-
-				if (curr.Dependencies.Count == 0)
+				log.WarnFormat("Possible conflicts for {0}:", group.Key);
+				log.WarnFormat("=".Repeat(80));
+				foreach (var reference in group)
 				{
-					index += 1;
-					continue;
+					log.WarnFormat("{0} references {1}",
+						reference.Assembly.Name.PadLeft(25),
+						reference.ReferencedAssembly.FullName);
 				}
-
-				for (int i = index + 1; i < ordered.Count; i++)
-				{
-					if (curr.Dependencies.Contains(ordered[i].Name))
-					{
-						swapIndex = i;
-						break;
-					}
-				}
-
-				if (swapIndex != -1)
-				{
-					var swap = ordered[swapIndex];
-					ordered.RemoveAt(swapIndex);
-					ordered.Insert(index, swap);
-				}
-				else
-					index += 1;
+				log.WarnFormat("=".Repeat(80));
 			}
 		};
 
-		private It TestOrderingLists = () =>
+		private It TestTheMimeExtensionHelper = () =>
 		{
-			true.ShouldEqual(true);
+			string mimeType = Kelp.Http.Util.GetMimeType("myimage.jpg");
+			log.DebugFormat("Mime type is: " + mimeType);
 		};
-
-		private class ItemComparer : IComparer<Item>
-		{
-			private Func<Item, Item, int> compare;
-
-			public ItemComparer(Func<Item, Item, int> compare)
-			{
-				this.compare = compare;
-			}
-
-			public int Compare(Item x, Item y)
-			{
-				return compare(x, y);
-			}
-		}
-
-		private class Item
-		{
-			public Item(string name)
-			{
-				this.Name = name;
-			}
-
-			public Item(string name, params string[] items)
-				: this(name)
-			{
-				this.Dependencies.AddRange(items);
-			}
-
-			public string Name;
-
-			public List<string> Dependencies = new List<string>();
-
-			public override string ToString()
-			{
-				return string.Format("{0} {1}", this.Name, this.Dependencies.Count == 0
-					? string.Empty : "(" + string.Join(",", this.Dependencies) + ")");
-			}
-		}
 	}
 }

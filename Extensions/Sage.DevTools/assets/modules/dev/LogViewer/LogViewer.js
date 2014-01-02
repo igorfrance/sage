@@ -1,4 +1,4 @@
-﻿aeon.type.registerNamespace("sage.dev");
+﻿atom.type.registerNamespace("sage.dev");
 
 sage.dev.LogViewer = new function LogViewer()
 {

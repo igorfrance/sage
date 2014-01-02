@@ -22,6 +22,9 @@ namespace Sage.ResourceManagement
 	using System.Xml;
 
 	using Kelp;
+	using Kelp.Extensions;
+	using Kelp.ResourceHandling;
+
 	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
@@ -29,6 +32,8 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class Resource : IXmlConvertible
 	{
+		private CodeFile codeFile;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Resource"/> class, using the specified <paramref name="configElement"/>.
 		/// </summary>
@@ -56,6 +61,13 @@ namespace Sage.ResourceManagement
 		/// Gets or sets the optional name of this resource.
 		/// </summary>
 		public string Name { get; protected set; }
+
+		/// <summary>
+		/// If true, the resource will be treated as a <see cref="CodeFile"/>, and when
+		/// calling <see cref="ToXml(XmlDocument, SageContext)"/>
+		/// an element will be generated for each constituent file.
+		/// </summary>
+		public bool Unmerge { get; protected set; }
 
 		/// <summary>
 		/// Gets or sets the path of this resource.
@@ -187,6 +199,7 @@ namespace Sage.ResourceManagement
 			this.Name = element.GetAttribute("name");
 			this.Type = (ResourceType) Enum.Parse(typeof(ResourceType), element.GetAttribute("type"), true);
 			this.Location = (ResourceLocation) Enum.Parse(typeof(ResourceLocation), element.GetAttribute("location"), true);
+			this.Unmerge = element.GetAttribute("unmerge").EqualsAnyOf("true", "yes", "1");
 			this.LimitTo = new List<string>();
 
 			string limitTo = element.GetAttribute("limitTo");
@@ -211,7 +224,9 @@ namespace Sage.ResourceManagement
 		{
 			XmlElement result = document.CreateElement("resource", XmlNamespaces.ProjectConfigurationNamespace);
 
-			result.SetAttribute("name", this.Name);
+			if (!string.IsNullOrWhiteSpace(this.Name))
+				result.SetAttribute("name", this.Name);
+
 			result.SetAttribute("path", this.Path);
 			result.SetAttribute("type", this.Type.ToString().ToLower());
 			result.SetAttribute("location", this.Location.ToString().ToLower());
@@ -232,41 +247,76 @@ namespace Sage.ResourceManagement
 		/// <returns>
 		/// An <see cref="XmlElement" /> that represent this resource.
 		/// </returns>
-		public virtual XmlElement ToXml(XmlDocument ownerDocument, SageContext context)
+		public virtual XmlNode ToXml(XmlDocument ownerDocument, SageContext context)
 		{
 			Contract.Requires<ArgumentNullException>(ownerDocument != null);
 			Contract.Requires<ArgumentNullException>(context != null);
 
-			XmlElement result;
-			string webPath = this.GetResolvedWebPath(context);
-			if (this.Type == ResourceType.Style)
+			XmlDocumentFragment result = ownerDocument.CreateDocumentFragment();
+			List<string> webPaths = new List<string>();
+
+			if (this.Unmerge)
 			{
-				result = ownerDocument.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("type", "text/css");
-				result.SetAttribute("rel", "stylesheet");
-				result.SetAttribute("href", webPath);
+				if (codeFile == null)
+				{
+					codeFile = CodeFile.Create(
+						this.GetResolvedPhysicalPath(context),
+						this.GetResolvedWebPath(context));
+				}
+
+				foreach (string dependency in codeFile.Dependencies)
+				{
+					string webPath = context.Path.GetRelativeWebPath(dependency, true);
+					webPaths.Add(webPath);
+				}
 			}
-			else if (this.Type == ResourceType.Script)
+			else
 			{
-				result = ownerDocument.CreateElement("xhtml:script", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("type", "text/javascript");
-				result.SetAttribute("language", "javascript");
-				result.SetAttribute("src", webPath);
+				webPaths.Add(this.GetResolvedWebPath(context));
+			}
+
+			if (this.Type == ResourceType.CSS)
+			{
+				foreach (string webPath in webPaths)
+				{
+					XmlElement link = ownerDocument.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
+					link.SetAttribute("type", "text/css");
+					link.SetAttribute("rel", "stylesheet");
+					link.SetAttribute("href", webPath);
+					result.AppendChild(link);
+				}
+			}
+			else if (this.Type == ResourceType.JavaScript)
+			{
+				foreach (string webPath in webPaths)
+				{
+					XmlElement script = ownerDocument.CreateElement("xhtml:script", XmlNamespaces.XHtmlNamespace);
+					script.SetAttribute("type", "text/javascript");
+					script.SetAttribute("language", "javascript");
+					script.SetAttribute("src", webPath);
+					result.AppendChild(script);
+				}
 			}
 			else if (this.Type == ResourceType.Icon)
 			{
-				result = ownerDocument.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
-				result.SetAttribute("rel", "icon");
-				result.SetAttribute("href", webPath);
+				XmlElement icon = ownerDocument.CreateElement("xhtml:link", XmlNamespaces.XHtmlNamespace);
+				icon.SetAttribute("rel", "icon");
+				icon.SetAttribute("href", webPaths[0]);
+				result.AppendChild(icon);
 			}
 			else
 			{
 				string documentPath = context.Path.Resolve(this.Path);
 				XmlDocument document = context.Resources.LoadXml(documentPath);
-
-				result = (XmlElement) ownerDocument.ImportNode(document.DocumentElement, true);
+				XmlElement importedElement = (XmlElement) ownerDocument.ImportNode(document.DocumentElement, true);
 				if (!string.IsNullOrWhiteSpace(this.Name))
-					result.OwnerDocument.DocumentElement.SetAttribute("sage:resourceName", XmlNamespaces.SageNamespace, this.Name);
+				{
+					var nameAttribute = ownerDocument.CreateAttribute("sage:name", XmlNamespaces.SageNamespace);
+					nameAttribute.Value = this.Name;
+					importedElement.AppendChild(nameAttribute);
+				}
+
+				result.AppendChild(importedElement);
 			}
 
 			return result;

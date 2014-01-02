@@ -54,6 +54,11 @@ namespace Sage.Configuration
 		public string Namespace { get; private set; }
 
 		/// <summary>
+		/// Optional name of extension that defines this route.
+		/// </summary>
+		public string Extension { get; internal set; }
+
+		/// <summary>
 		/// Gets the path associated with this route.
 		/// </summary>
 		public string Path { get; private set; }
@@ -106,6 +111,8 @@ namespace Sage.Configuration
 			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
 			XmlElement result = document.CreateElement("route", Ns);
 			result.SetAttribute("name", this.Name);
+			if (!string.IsNullOrEmpty(this.Extension))
+				result.SetAttribute("extension", this.Extension);
 			result.SetAttribute("path", this.Path);
 			result.SetAttribute("controller", this.Controller);
 			result.SetAttribute("action", this.Action);

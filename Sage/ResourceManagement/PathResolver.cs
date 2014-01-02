@@ -19,6 +19,7 @@ namespace Sage.ResourceManagement
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.IO;
+	using System.Linq;
 	using System.Web;
 	using System.Web.Hosting;
 
@@ -27,6 +28,7 @@ namespace Sage.ResourceManagement
 
 	using Sage.Configuration;
 	using Sage.Modules;
+	using Sage.Rewriters;
 
 	/// <summary>
 	/// Provides a class that resolves physical file paths based on current category, locale and any fallback scenario 
@@ -661,8 +663,30 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public string Resolve(string templatePath, QueryString values)
 		{
-			var substituted = this.Substitute(templatePath, values);
-			return context.MapPath(substituted);
+			var physicalPath = context.MapPath(this.Substitute(templatePath, values));
+
+			if (!File.Exists(physicalPath) && !Directory.Exists(physicalPath) && Project.Extensions.Count > 0)
+			{
+				string applicationPath = context.Request.PhysicalApplicationPath;
+				string requestedFile = physicalPath.ToLower()
+					.Replace(applicationPath.ToLower(), string.Empty)
+					.Trim('\\');
+
+				foreach (string extensionId in Project.InstallOrder.Reverse())
+				{
+					if (!Project.Extensions.ContainsKey(extensionId))
+						continue;
+
+					string extensionName = Project.Extensions[extensionId].Name;
+					string rewrittenPath = Path.Combine(this.ExtensionPath, extensionName, requestedFile);
+					if (File.Exists(rewrittenPath))
+					{
+						return rewrittenPath;
+					}
+				}
+			}
+
+			return physicalPath;
 		}
 
 		/// <summary>

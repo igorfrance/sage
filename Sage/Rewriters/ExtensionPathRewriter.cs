@@ -27,7 +27,7 @@ namespace Sage.Rewriters
 	/// <summary>
 	/// Intercepts all requests and tries to match a missing path against a path within an extension.
 	/// </summary>
-	public sealed class ExtensionPathRewriter : IHttpModule
+	public class ExtensionPathRewriter : IHttpModule
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionPathRewriter).FullName);
 
@@ -52,39 +52,20 @@ namespace Sage.Rewriters
 			try
 			{
 				SageContext context = new SageContext(application.Context);
-
-				string extensionDirectory = context.Path.Resolve(context.Path.ExtensionPath);
 				string requestedPath = context.Request.PhysicalPath;
 
-				if (File.Exists(requestedPath) || requestedPath.Contains(extensionDirectory, true))
-					return;
-
-				string applicationPath = context.Request.PhysicalApplicationPath;
-				string requestedFile = context.Request.PhysicalPath.ToLower().Replace(applicationPath.ToLower(), string.Empty).Trim('\\');
-
-				foreach (string extensionName in Project.InstallOrder.Reverse())
+				string rewrittenPath = context.Path.Resolve(requestedPath);
+				if (rewrittenPath != requestedPath)
 				{
-					string rewrittenPath = Path.Combine(extensionDirectory, extensionName, requestedFile);
-					if (File.Exists(rewrittenPath))
-					{
-						context.HttpContext.RewritePath(rewrittenPath);
-						if (context.IsDeveloperRequest)
-							context.Response.AddHeader("OriginalFilePath", requestedFile);
-					}
+					context.HttpContext.RewritePath(rewrittenPath);
+					if (context.IsDeveloperRequest)
+						context.Response.AddHeader("OriginalFilePath", requestedPath);
 				}
 			}
 			catch (Exception ex)
 			{
 				log.ErrorFormat("Failed to rewrite path: {0}", ex.Message);
 			}
-		}
-
-		/// <summary>
-		/// Registers the module with the project.
-		/// </summary>
-		public static void AutoRegister()
-		{
-			Project.RegisterModule(typeof(ExtensionPathRewriter));
 		}
 	}
 }

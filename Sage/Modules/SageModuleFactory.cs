@@ -40,11 +40,11 @@ namespace Sage.Modules
 		{
 			get
 			{
-				lock (log)
+				if (moduleDictionary == null) 
 				{
-					if (moduleDictionary == null)
+					lock (log)
 					{
-						lock (log)
+						if (moduleDictionary == null) 
 						{
 							var temp = new Dictionary<string, ModuleConfiguration>();
 							foreach (ModuleConfiguration config in Project.Configuration.Modules.Values)
@@ -64,9 +64,9 @@ namespace Sage.Modules
 							moduleDictionary = temp;
 						}
 					}
-
-					return moduleDictionary;
 				}
+
+				return moduleDictionary;
 			}
 		}
 

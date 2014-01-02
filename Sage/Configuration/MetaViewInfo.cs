@@ -45,6 +45,11 @@ namespace Sage.Configuration
 		public string Name { get; private set; }
 
 		/// <summary>
+		/// Optional name of extension that defines this meta view.
+		/// </summary>
+		public string Extension { get; internal set; }
+
+		/// <summary>
 		/// Gets the description of the meta view.
 		/// </summary>
 		public string Description { get; private set; }
@@ -94,6 +99,9 @@ namespace Sage.Configuration
 
 			result.SetAttribute("contentType", this.ContentType);
 			result.SetAttribute("type", this.TypeName);
+
+			if (!string.IsNullOrWhiteSpace(this.Extension))
+				result.SetAttribute("extension", this.Extension);
 
 			if (!string.IsNullOrWhiteSpace(this.Description))
 				result.SetAttribute("description", this.Description);

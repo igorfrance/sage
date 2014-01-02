@@ -2863,14 +2863,15 @@ var $url = new function url()
 	/**
 	 * Provides a wrapper around a url parsed from a string, and a set of static methods for working with the
 	 * browser's location object.
-	 * @constructor
 	 * @param {String} [value] The url string to use to initialize a new instance with. If omitted, the url of the
 	 * browser's current location is used.
 	 * @param {Object} [options] The object that specifies the options of this instance.
-	 * <ul>
-	 *    <li><b>separator: </b> the character to use as the name/value pair separator within url query strings and hashes</li>
-	 *    <li><b>equals: </b> the character to use as the names/value separator within url query strings and hashes.</li>
-	 * </ul>
+	 * <dl>
+	 *   <dt>separator</dt>
+	 *     <dd>the character to use as the name/value pair separator within url query strings and hashes</dd>
+	 *   <dt>equals</dt>
+	 *     <dd>the character to use as the names/value separator within url query strings and hashes.</dd>
+	 * </dl>
 	 */
 	function Url(value, options)
 	{
@@ -2878,6 +2879,8 @@ var $url = new function url()
 
 		this.separator = options.separator || url.DEFAULT_SEPARATOR;
 		this.equals = options.equals || url.DEFAULT_EQUALS;
+
+		this.init();
 
 		if (value)
 			this.parse(value);
@@ -2887,7 +2890,7 @@ var $url = new function url()
 	 * Initializes all url components to blank values.
 	 * @return {Url} The current instance.
 	 */
-	Url.prototype.init = function url$init()
+	Url.prototype.init = function ()
 	{
 		this.components = {
 			source: $string.EMPTY,
@@ -2912,7 +2915,7 @@ var $url = new function url()
 		return this;
 	};
 
-	Url.prototype.qualify = function url$qualify(value)
+	Url.prototype.qualify = function (value)
 	{
 		if (!value)
 			return $string.EMPTY;
@@ -2939,7 +2942,7 @@ var $url = new function url()
 	 * @param {String} prefix The character to prefix the resulting  string with
 	 * @returns {String}
 	 */
-	Url.prototype.getHash = function url$getHash(prefix)
+	Url.prototype.getHash = function (prefix)
 	{
 		var result = [];
 		for (var name in this.hashParam)
@@ -2964,7 +2967,7 @@ var $url = new function url()
 	 * @param {String} prefix The character to prefix the resulting  string with
 	 * @returns {String}
 	 */
-	Url.prototype.getQuery = function url$getQuery(prefix)
+	Url.prototype.getQuery = function (prefix)
 	{
 		var result = [];
 		for (var name in this.queryParam)
@@ -2989,7 +2992,7 @@ var $url = new function url()
 	 * @param {String} name The name of the parameter to get.
 	 * @return {String} The value of the parameter.
 	 */
-	Url.prototype.getQueryParam = function url$getQueryParam(name)
+	Url.prototype.getQueryParam = function (name)
 	{
 		return this.queryParam[name];
 	};
@@ -2999,7 +3002,7 @@ var $url = new function url()
 	 * @param {String} name The name of the parameter to get.
 	 * @return {String} The value of the parameter.
 	 */
-	Url.prototype.getHashParam = function url$getHashParam(name)
+	Url.prototype.getHashParam = function (name)
 	{
 		return this.hashParam[name];
 	};
@@ -3010,7 +3013,7 @@ var $url = new function url()
 	 * @param {String} value The value to set.
 	 * @return {Url} The current instance
 	 */
-	Url.prototype.setQueryParam = function url$setQueryParam(name, value)
+	Url.prototype.setQueryParam = function (name, value)
 	{
 		this.queryParam[name] = value;
 		return this;
@@ -3022,7 +3025,7 @@ var $url = new function url()
 	 * @param {String} value The value to set.
 	 * @return {Url} The current instance
 	 */
-	Url.prototype.setHashParam = function url$setHashParam(name, value)
+	Url.prototype.setHashParam = function (name, value)
 	{
 		this.hashParam[name] = value;
 		return this;
@@ -3033,7 +3036,7 @@ var $url = new function url()
 	 * @param {String} name The name of the parameter to remove.
 	 * @return {Url} The current instance
 	 */
-	Url.prototype.removeQueryParam = function url$removeQueryParam(name)
+	Url.prototype.removeQueryParam = function (name)
 	{
 		delete this.queryParam[name];
 		return this;
@@ -3044,7 +3047,7 @@ var $url = new function url()
 	 * @param {String} name The name of the parameter to remove.
 	 * @return {Url} The current instance
 	 */
-	Url.prototype.removeHashParam = function url$removeHashParam(name)
+	Url.prototype.removeHashParam = function (name)
 	{
 		delete this.hashParam[name];
 		return this;
@@ -3055,12 +3058,10 @@ var $url = new function url()
 	 * @param {String} value
 	 * @return {Url} The current instance
 	 */
-	Url.prototype.parse = function url$parse(value)
+	Url.prototype.parse = function (value)
 	{
 		if (value == null)
 			return this;
-
-		this.init();
 
 		var matches = url.URL_EXPRESSION.exec(value);
 
@@ -3083,7 +3084,7 @@ var $url = new function url()
 	 * Creates a complete url string made of all components of this <c>Url</u> instance.
 	 * @returns {String}
 	 */
-	Url.prototype.toString = function url$toString()
+	Url.prototype.toString = function ()
 	{
 		var prefix = this.components.protocol
 			? $string.concat(this.components.protocol, url.PROTOCOL_SEPARATOR)
@@ -3107,7 +3108,7 @@ var $url = new function url()
 	 * // the following returns "my/directory/to/file2.txt":
 	 * var combined = combine("my/directory/to/files", "../file2.txt");
 	 */
-	url.combine = function url$combine(folderUrl, fileUrl)
+	url.combine = function (folderUrl, fileUrl)
 	{
 		var filePath = $string.concat(folderUrl, "/", fileUrl);
 		while (filePath.match(/[^\/]+\/\.\.\//))
@@ -3124,7 +3125,7 @@ var $url = new function url()
 	 * specified <c>name</c> or if that value is blank.
 	 * @returns {String}
 	 */
-	url.getQueryParam = function url$getQueryParam(name, defaultValue)
+	url.getQueryParam = function (name, defaultValue)
 	{
 		return new Url().getQueryParam(name) || defaultValue;
 	};
@@ -3136,7 +3137,7 @@ var $url = new function url()
 	 * specified <c>name</c> or if that value is blank.
 	 * @returns {String}
 	 */
-	url.getHashParam = function url$getHashParam(name, defaultValue)
+	url.getHashParam = function (name, defaultValue)
 	{
 		return new Url().getHashParam(name) || defaultValue;
 	};
@@ -3145,7 +3146,7 @@ var $url = new function url()
 	 * Gets the query string component (without the initial hash character) from current <c>window.location</c>.
 	 * @returns {String}
 	 */
-	url.getHash = function url$getHash()
+	url.getHash = function ()
 	{
 		return String(location.hash).substring(1);
 	};
@@ -3154,7 +3155,7 @@ var $url = new function url()
 	 * Gets the query string component (without the initial question character) from current <c>window.location</c>.
 	 * @returns {String}
 	 */
-	url.getQuery = function url$getQuery()
+	url.getQuery = function ()
 	{
 		return String(location.search).substring(1);
 	};
@@ -3167,7 +3168,7 @@ var $url = new function url()
 	 * @example setHashParam("color", "red");
 	 * @example setHashParam({ color: "red", size: "xlarge" });
 	 */
-	url.setHashParam = function url$setHashParam()
+	url.setHashParam = function ()
 	{
 		var current = url(location.href);
 		if (arguments.length == 2)
@@ -3198,7 +3199,7 @@ var $url = new function url()
 	 * Sets the complete hash of the current <c>window.location</c>.
 	 * @param {String} hash The value to set.
 	 */
-	url.setHash = function url$setHash(hash)
+	url.setHash = function (hash)
 	{
 		// ensure that setting the location hash to empty doesn't cause the page to scroll to the top
 		if (hash == $string.EMPTY)
@@ -3211,7 +3212,7 @@ var $url = new function url()
 	 * Removes the parameter with the specified <c>name</c> from the hash component of the current <c>window.location</c>.
 	 * @param {String} name The name of the parameter to remove.
 	 */
-	url.removeHashParam = function url$removeHashParam(name)
+	url.removeHashParam = function (name)
 	{
 		var current = new Url(location);
 		current.removeHashParam(name);
@@ -3224,7 +3225,7 @@ var $url = new function url()
 	 * @param {String} path
 	 * @returns {String}
 	 */
-	url.getFileExtension = function url$getFileExtension(path)
+	url.getFileExtension = function (path)
 	{
 		var dotIndex = path ? path.lastIndexOf(".") : -1;
 		return (dotIndex > -1 ? path.slice(dotIndex + 1) : "");
@@ -3235,7 +3236,7 @@ var $url = new function url()
 	 * @param {String} path
 	 * @returns {String}
 	 */
-	url.getFileName = function url$getFileName(path)
+	url.getFileName = function (path)
 	{
 		return String(path).match(/[^\\\/]*$/)[0];
 	};
@@ -3245,24 +3246,26 @@ var $url = new function url()
 	 * specified <c>queryString</c>.
 	 * @param {String} queryString The string to parse.
 	 * @param {Object} options Optional object that specifies the parse options.
-	 * <ul>
-	 *    <li><b>separator: </b> the character to use as the name/value pair separator within url query strings and hashes</li>
-	 *    <li><b>equals: </b> the character to use as the names/value separator within url query strings and hashes.</li>
-	 * </ul>
-	 * @return {Object}
+	 * <dl>
+	 *  <dt>separator</dt>
+	 *    <dd>the character to use as the name/value pair separator within url query strings and hashes</dd>
+	 *  <dt>equals</dt>
+	 *    <dd>the character to use as the names/value separator within url query strings and hashes.</dd>
+	 *  <dt>equals</dt>
+	 *    <dd>the character to use as the names/value separator within url query strings and hashes.</dd>
+	 * </dl>
+	 * @returns {Object}
 	 */
-	url.parseQuery = function url$parseQuery(queryString, options)
+	url.parseQuery = function (queryString, options)
 	{
-		var opt = { separator: url.DEFAULT_SEPARATOR, equals: url.DEFAULT_EQUALS };
-		if (options && options.separator)
-			opt.separator = options.separator;
-		if (options && options.equals)
-			opt.equals = options.equals;
-
 		if (!queryString)
-		{
 			return {};
-		}
+
+		var opt = $.extend({
+				separator: url.DEFAULT_SEPARATOR,
+				equals: url.DEFAULT_EQUALS,
+			},
+			options || {});
 
 		var param = String(queryString).split(opt.separator);
 		var query = {};
@@ -3294,21 +3297,28 @@ var $url = new function url()
 	/**
 	 * Serializes the names and values of properties of <c>params</c> into a string of name/value pairs.
 	 * @param {Object} params The object to serialize.
-	 * @param {Boolean} encode If true, the values will be URL-encoded.
-	 * @param {String} separator Optional character (default: &) to use as the name/value pair separator.
-	 * @param {String} equals Optional character (default: =) to use as the name/value separator.
+	 * @param {Object} [options] Object that specifies the serialization options.
+	 * <dl>
+	 *  <dt>separator</dt>
+	 *    <dd>the character to use as the pair separator</dd>
+	 *  <dt>equals</dt>
+	 *    <dd>the character to use as the names/value separator</dd>
+	 *  <dt>encode</dt>
+	 *    <dd>if <c>true</c> the resulting string will be URL encoded.</dd>
+	 * </dl>
 	 * @return {String}
 	 */
-	url.serializeParams = function url$serializeParams(params, encode, separator, equals)
+	url.serializeParams = function (params, options)
 	{
 		if (params == null)
 			return null;
 
-		if (!$type.isString(separator))
-			separator = url.DEFAULT_SEPARATOR;
-
-		if (!$type.isString(equals))
-			equals = url.DEFAULT_EQUALS;
+		var opt = $.extend({
+			separator: url.DEFAULT_SEPARATOR,
+			equals: url.DEFAULT_EQUALS,
+			encode: false
+		},
+			options || {});
 
 		var result = [];
 		for (var name in params)
@@ -3316,22 +3326,22 @@ var $url = new function url()
 			if (!params.hasOwnProperty(name))
 				continue;
 
-			var itemName = encode ? encodeURIComponent(name) : name;
-			var itemValue = encode ? encodeURIComponent(params[name] || $string.EMPTY) : params[name];
+			var itemName = opt.encode ? encodeURIComponent(name) : name;
+			var itemValue = opt.encode ? encodeURIComponent(params[name] || $string.EMPTY) : params[name];
 			if (itemValue)
-				result.push(itemName + equals + itemValue);
+				result.push(itemName + opt.equals + itemValue);
 			else
 				result.push(itemName);
 		}
 
-		var value = result.join(separator);
+		var value = result.join(opt.separator);
 		if (opt.prefix && value.length)
 			return $string.concat(opt.prefix, value);
 
 		return value;
 	};
 
-	url.qualify = function url$qualify(value)
+	url.qualify = function (value)
 	{
 		var url = $("base[href]").attr("href") || document.location.href;
 		return new Url(url).qualify(value);
@@ -4859,8 +4869,6 @@ var $easing = new function Easing()
  */
 var $image = new function image()
 {
-	var $image = this;
-
 	var XImage = HtmlControl.extend(function XImage(element)
 	{
 		this.construct(element, "start", "progress", "done");

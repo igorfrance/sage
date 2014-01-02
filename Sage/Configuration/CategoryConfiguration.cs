@@ -27,7 +27,7 @@ namespace Sage.Configuration
 	/// </summary>
 	public class CategoryConfiguration
 	{
-		private const string ConfigSchemaPath = "sageresx://sage/resources/schemas/CategoryConfiguration.xsd";
+		private const string ConfigSchemaPath = "sageresx://sage/resources/schemas/sage/configuration/category.xsd";
 
 		private CategoryConfiguration(XmlDocument configDocument)
 		{

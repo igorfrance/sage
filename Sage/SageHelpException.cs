@@ -24,7 +24,7 @@ namespace Sage
 	/// </summary>
 	internal class SageHelpException : SageException
 	{
-		private const string DefaultStylesheetPath = @"sageresx://sage/resources/xslt/AssistanceError.xslt";
+		private const string DefaultStylesheetPath = @"sageresx://sage/resources/xslt/assistanceerror.xslt";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageHelpException"/> class.

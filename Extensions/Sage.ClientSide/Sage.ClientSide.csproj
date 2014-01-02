@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Extension.build" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -33,8 +33,8 @@ namespace Sage.Configuration
 	{
 		//// TODO: Remove the HostingEnvironment.ApplicationVirtualPath property
 		//// TODO: Add option to fully qualify URL's or not
-		private readonly Dictionary<string, string> links = new Dictionary<string, string>();
-		private readonly Dictionary<string, string> formats = new Dictionary<string, string>();
+		private readonly Dictionary<string, ExtensionString> links;
+		private readonly Dictionary<string, ExtensionString> formats;
 		private string applicationPath = HostingEnvironment.ApplicationVirtualPath ?? "/";
 
 		/// <summary>
@@ -42,8 +42,10 @@ namespace Sage.Configuration
 		/// </summary>
 		public LinkingConfiguration()
 		{
-			this.Links = new ReadOnlyDictionary<string, string>(this.links);
-			this.Formats = new ReadOnlyDictionary<string, string>(this.formats);
+			this.links = new Dictionary<string, ExtensionString>();
+			this.formats = new Dictionary<string, ExtensionString>();
+			this.Links = new ReadOnlyDictionary<string, ExtensionString>(this.links);
+			this.Formats = new ReadOnlyDictionary<string, ExtensionString>(this.formats);
 		}
 
 		/// <summary>
@@ -66,16 +68,16 @@ namespace Sage.Configuration
 		/// <param name="init">The object to copy the contents from.</param>
 		internal LinkingConfiguration(LinkingConfiguration init)
 		{
-			this.links = new Dictionary<string, string>(init.links);
-			this.formats = new Dictionary<string, string>(init.formats);
-			this.Links = new ReadOnlyDictionary<string, string>(this.links);
-			this.Formats = new ReadOnlyDictionary<string, string>(this.formats);
+			this.links = new Dictionary<string, ExtensionString>(init.links);
+			this.formats = new Dictionary<string, ExtensionString>(init.formats);
+			this.Links = new ReadOnlyDictionary<string, ExtensionString>(this.links);
+			this.Formats = new ReadOnlyDictionary<string, ExtensionString>(this.formats);
 		}
 
 		/// <summary>
 		/// Gets the dictionary of links.
 		/// </summary>
-		public ReadOnlyDictionary<string, string> Links
+		public ReadOnlyDictionary<string, ExtensionString> Links
 		{
 			get;
 			private set;
@@ -84,7 +86,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the dictionary of format strings.
 		/// </summary>
-		public ReadOnlyDictionary<string, string> Formats
+		public ReadOnlyDictionary<string, ExtensionString> Formats
 		{
 			get;
 			private set;
@@ -124,22 +126,28 @@ namespace Sage.Configuration
 			if (this.formats.Count != 0)
 			{
 				XmlElement linksElement = result.AppendElement(document.CreateElement("formats", Ns));
-				foreach (KeyValuePair<string, string> format in this.formats)
+				foreach (KeyValuePair<string, ExtensionString> format in this.formats)
 				{
 					XmlElement element = linksElement.AppendElement(document.CreateElement("format", Ns));
 					element.SetAttribute("name", format.Key);
-					element.InnerText = format.Value;
+					if (!string.IsNullOrEmpty(format.Value.Extension))
+						element.SetAttribute("extension", format.Value.Extension);
+
+					element.InnerText = format.Value.Value;
 				}
 			}
 
 			if (this.links.Count != 0)
 			{
 				XmlElement linksElement = result.AppendElement(document.CreateElement("links", Ns));
-				foreach (KeyValuePair<string, string> link in this.links)
+				foreach (KeyValuePair<string, ExtensionString> link in this.links)
 				{
 					XmlElement element = linksElement.AppendElement(document.CreateElement("link", Ns));
 					element.SetAttribute("name", link.Key);
-					element.InnerText = link.Value;
+					if (!string.IsNullOrEmpty(link.Value.Extension))
+						element.SetAttribute("extension", link.Value.Extension);
+
+					element.InnerText = link.Value.Value;
 				}
 			}
 
@@ -151,7 +159,7 @@ namespace Sage.Configuration
 		/// </summary>
 		/// <param name="linkName">The name of the link.</param>
 		/// <param name="linkUrl">The URL (pattern) of the link.</param>
-		internal void AddLink(string linkName, string linkUrl)
+		internal ExtensionString AddLink(string linkName, string linkUrl)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(linkName));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(linkUrl));
@@ -162,7 +170,9 @@ namespace Sage.Configuration
 			if (!linkUrl.StartsWith("/") && !linkUrl.Contains("://"))
 				linkUrl = string.Concat(applicationPath.TrimEnd('/'), "/", linkUrl);
 
-			this.links[linkName] = linkUrl;
+			ExtensionString result = new ExtensionString(linkUrl);
+			this.links[linkName] = result;
+			return result;
 		}
 
 		/// <summary>
@@ -170,12 +180,14 @@ namespace Sage.Configuration
 		/// </summary>
 		/// <param name="formatName">The name of the format pattern.</param>
 		/// <param name="formatValue">The format pattern.</param>
-		internal void AddFormat(string formatName, string formatValue)
+		internal ExtensionString AddFormat(string formatName, string formatValue)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(formatName));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(formatValue));
 
-			this.formats[formatName] = formatValue;
+			ExtensionString result = new ExtensionString(formatValue);
+			this.formats[formatName] = result;
+			return result;
 		}
 
 		internal void SetApplicationPath(string applicationPath)

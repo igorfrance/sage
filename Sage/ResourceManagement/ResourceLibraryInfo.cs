@@ -55,6 +55,11 @@ namespace Sage.ResourceManagement
 		public string Name { get; private set; }
 
 		/// <summary>
+		/// Optional name of extension that defines this library.
+		/// </summary>
+		public string Extension { get; internal set; }
+
+		/// <summary>
 		/// Gets a value indicating whether this library should be included on all views.
 		/// </summary>
 		public bool IncludeAlways { get; private set; }
@@ -125,6 +130,9 @@ namespace Sage.ResourceManagement
 			XmlElement result = document.CreateElement("library", Ns);
 
 			result.SetAttribute("name", this.Name);
+
+			if (!string.IsNullOrWhiteSpace(this.Extension))
+				result.SetAttribute("extension", this.Extension);
 
 			XmlNode dependenciesNode = result.AppendChild(document.CreateElement("dependencies", Ns));
 			foreach (string name in this.LibraryDependencies)

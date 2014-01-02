@@ -109,14 +109,14 @@ namespace Sage
 		{
 			get
 			{
-				return context.Request.ServerVariables["HTTP_X_REWRITE_URL"] ?? context.Request.RawUrl;
+				return context.Request.RawUrl;
 			}
 		}
 
 		/// <summary>
 		/// Gets the dictionary of links.
 		/// </summary>
-		internal ReadOnlyDictionary<string, string> Links
+		internal ReadOnlyDictionary<string, ExtensionString> Links
 		{
 			get { return this.Context.ProjectConfiguration.Linking.Links; }
 		}
@@ -124,7 +124,7 @@ namespace Sage
 		/// <summary>
 		/// Gets the dictionary of format strings.
 		/// </summary>
-		internal ReadOnlyDictionary<string, string> Formats
+		internal ReadOnlyDictionary<string, ExtensionString> Formats
 		{
 			get { return this.Context.ProjectConfiguration.Linking.Formats; }
 		}
@@ -371,7 +371,7 @@ namespace Sage
 				return string.Format("javascript:alert('Unresolved link: {0}')", linkName);
 			}
 
-			string linkPattern = this.Links[linkName];
+			string linkPattern = this.Links[linkName].Value;
 
 			QueryString formatValues = new QueryString { { "locale", context.Locale }, { "category", context.Category } };
 			if (parameters != null)
@@ -416,7 +416,7 @@ namespace Sage
 					}
 
 					visited.Add(key);
-					return this.FormatPattern(this.Formats[key], parameters, visited.ToArray());
+					return this.FormatPattern(this.Formats[key].Value, parameters, visited.ToArray());
 				}
 
 				if (parameters[key] != null)

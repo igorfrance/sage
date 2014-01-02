@@ -1,11 +1,11 @@
-﻿aeon.type.registerNamespace("sage.dev");
+﻿atom.type.registerNamespace("sage.dev");
 
 sage.dev.Toolbar = new function Toolbar()
 {
 	var jQuery = window.jQuery;
 	var $toolbar, $icon, $text, $time, $commands, $frame, $iframe;
 	var hideTimeout = 100, hideTimeoutId = null;
-	var parameters = { basehref: "", thread: "0", url: escape(document.location) };
+	var parameters = { basehref: "", thread: "0", url: encodeURIComponent(document.location) };
 	var status = { log: [], errors: 0, warnings: 0, clientTime: 0, serverTime: 0 };
 
 	var tooltip;
@@ -18,7 +18,7 @@ sage.dev.Toolbar = new function Toolbar()
 
 	function setup()
 	{
-		if (top.window != window || $url.getQueryParam("devtools") == "0")
+		if (top.window != window || atom.url.getQueryParam("devtools") == "0")
 			return;
 
 		$toolbar = jQuery("#developer-toolbar");
@@ -30,7 +30,7 @@ sage.dev.Toolbar = new function Toolbar()
 			.append("<div id='developer-frame'><iframe frameborder='no'></iframe><div class='close' title='Close'></div></div>")
 			.find("#developer-frame");
 
-		tooltip = aeon.controls.getControl($icon[0]);
+		tooltip = atom.controls.get($icon[0]);
 
 		$iframe = $frame.find("iframe");
 
@@ -50,7 +50,7 @@ sage.dev.Toolbar = new function Toolbar()
 
 		loadLogData();
 
-		console.info("Developer console is ready, press CTRL-ALT-D to toggle it.");
+		atom.log.info("Developer console is ready, press CTRL-ALT-D to toggle it.");
 	}
 
 	function setStatusClass(status)
@@ -69,7 +69,7 @@ sage.dev.Toolbar = new function Toolbar()
 		if (status.log.length)
 			return "ok";
 
-		return String.EMPTY;
+		return atom.string.EMPTY;
 	}
 
 	function updateToolbar()
@@ -79,16 +79,19 @@ sage.dev.Toolbar = new function Toolbar()
 		if (status.errors)
 		{
 			statusClass = "error";
-			statusText = String.format("{0} {1}.", status.errors, status.errors == 1 ? "error" : "errors");
+			statusText = atom.string.format("{0} {1}.", status.errors, status.errors == 1 ? "error" : "errors");
 			errorText = Enumerable.from(status.log)
-				.where("$.severity == 'ERROR'").select("\"<div class='error'>\" + $.message + \"</div>\"").toArray().join(String.EMPTY);
+				.where("$.severity == 'ERROR'")
+				.select("\"<div class='error'>\" + $.message + \"</div>\"")
+				.toArray()
+					.join(atom.string.EMPTY);
 		}
 		else if (status.warnings)
 		{
 			statusClass = "warning";
-			statusText = String.format("{0} {1}.", status.warnings, status.warnings == 1 ? "warning" : "warnings");
+			statusText = atom.string.format("{0} {1}.", status.warnings, status.warnings == 1 ? "warning" : "warnings");
 			errorText = Enumerable.from(status.log)
-				.where("$.severity == 'WARN'").select("\"<div class='error'>\" + $.message + \"</div>\"").toArray().join(String.EMPTY);
+				.where("$.severity == 'WARN'").select("\"<div class='error'>\" + $.message + \"</div>\"").toArray().join(atom.string.EMPTY);
 		}
 		else if (status.log.length)
 		{
@@ -99,7 +102,7 @@ sage.dev.Toolbar = new function Toolbar()
 
 		if (statusText)
 		{
-			$icon.attr("title", errorText)
+			$icon.attr("title", errorText);
 			$text.find("label").text(statusText);
 
 			if ((status.errors + status.warnings) != 0)
@@ -131,8 +134,6 @@ sage.dev.Toolbar = new function Toolbar()
 		if (tooltip)
 		{
 			tooltip.hide();
-			tooltip.setSettingsValue("hideOn", "mouseout");
-			tooltip.setSettingsValue("useFades", false);
 		}
 
 		var totalWidth = getTotalToolbarWidth();
@@ -149,13 +150,11 @@ sage.dev.Toolbar = new function Toolbar()
 	function getTotalToolbarWidth()
 	{
 		var content = $toolbar.find(".content");
-		var totalWidth =
+		return (
 			(parseInt(content.css("paddingLeft")) || 0) +
 			(parseInt(content.css("paddingRight")) || 0) +
 			$toolbar.find(".status").outerWidth() +
-			$toolbar.find(".commands").outerWidth();
-
-		return totalWidth;
+			$toolbar.find(".commands").outerWidth());
 	}
 
 	function getTotalCommandsWidth()
@@ -195,7 +194,7 @@ sage.dev.Toolbar = new function Toolbar()
 		setStatusClass("loading");
 		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(document) /**/
 		{
-			var rows = $xml.selectNodes(document, "//mod:log/mod:line", namespaces);
+			var rows = atom.xml.select("//mod:log/mod:line", document, namespaces);
 			var entry = null;
 			for (var i = 0; i < rows.length; i++)
 			{
@@ -228,6 +227,9 @@ sage.dev.Toolbar = new function Toolbar()
 		var params = jQuery.extend(parameters, extraParams);
 		for (var name in params)
 		{
+			if (!params.hasOwnProperty(name))
+				continue;
+
 			template = template.replace(new RegExp("\\{" + name + "\\}"), params[name]);
 		}
 
@@ -263,14 +265,14 @@ sage.dev.Toolbar = new function Toolbar()
 
 	function openMetaView(viewName)
 	{
-		var url = new $url();
+		var url = atom.url();
 		url.setQueryParam("view", viewName);
 
 		var p = window.open(url.toString(), viewName);
 		if (p)
 			p.focus();
 		else
-			$log.warn("Could not open '{0}' in a new window. Is there a popup blocker running?", url);
+			atom.log.warn("Could not open '{0}' in a new window. Is there a popup blocker running?", url);
 	}
 
 	function onMetaViewCommandClick(e)

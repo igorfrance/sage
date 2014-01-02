@@ -55,8 +55,8 @@ namespace Sage
 		private static ProblemInfo initializationProblemInfo;
 		private static List<Assembly> relevantAssemblies;
 		private static IList<string> installOrder;
-		private static OrderedDictionary<string, ExtensionInfo> extensions;
-		private static IList<Type> modules;
+		private static OrderedDictionary<string, ExtensionInfo> extensions = 
+			new OrderedDictionary<string, ExtensionInfo>();
 
 		private static int threadPrefixIndex;
 		private static bool projectIsReady;
@@ -118,16 +118,16 @@ namespace Sage
 		{
 			get
 			{
-				lock (log)
+				if (relevantAssemblies == null)
 				{
-					if (relevantAssemblies == null)
+					lock (log)
 					{
-						lock (log)
+						if (relevantAssemblies == null)
 						{
 							var currentAssembly = Assembly.GetExecutingAssembly();
 							relevantAssemblies = new List<Assembly> { currentAssembly };
 							var files = Directory.GetFiles(AssemblyCodeBaseDirectory, "*.dll", SearchOption.AllDirectories);
-							log.DebugFormat("Scanning for dependent assmblies in '{0}'", AssemblyCodeBaseDirectory);
+							log.DebugFormat("Scanning for dependent assemblies in '{0}'", AssemblyCodeBaseDirectory);
 							foreach (string path in files)
 							{
 								Assembly asmb = Assembly.LoadFrom(path);
@@ -198,27 +198,6 @@ namespace Sage
 					return false;
 				}
 			}
-		}
-
-		/// <summary>
-		/// Registers the module.
-		/// </summary>
-		/// <param name="module">The type of the module to register.</param>
-		public static void RegisterModule(Type module)
-		{
-			if (module == null)
-				return;
-
-			if (!typeof(IHttpModule).IsAssignableFrom(module))
-			{
-				log.ErrorFormat("The module type '{0}' is not an instance of IHttpModule", module.FullName);
-				return;
-			}
-
-			if (modules == null)
-				modules = new List<Type>();
-
-			modules.Add(module);
 		}
 
 		/// <summary>

@@ -113,6 +113,11 @@ namespace Sage.Modules
 		public string Name { get; private set; }
 
 		/// <summary>
+		/// Optional name of extension that defines this module.
+		/// </summary>
+		public string Extension { get; internal set; }
+
+		/// <summary>
 		/// Gets the identification string of the project this library belongs to.
 		/// </summary>
 		public string ProjectId { get; private set; }

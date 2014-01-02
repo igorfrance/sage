@@ -38,11 +38,11 @@ namespace Sage.Rewriters
 		{
 			get
 			{
-				lock (log)
+				if (metaViewExpression == null) 
 				{
-					if (metaViewExpression == null)
+					lock (log) 
 					{
-						lock (log)
+						if (metaViewExpression == null)
 						{
 							List<string> extensions = Project.Configuration.MetaViews.Keys.ToList();
 							extensions.Add("html");

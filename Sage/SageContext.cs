@@ -551,6 +551,7 @@ namespace Sage
 			XmlElement resultElement = ownerDocument.CreateElement("sage:request", XmlNamespaces.SageNamespace);
 			HttpRequestBase request = this.Request;
 			Uri requestUri = new Uri(this.Url.RawUrl);
+			bool urlRewritten = this.Request.Url.ToString() != requestUri.ToString();
 
 			resultElement.SetAttribute("method", request.HttpMethod);
 			resultElement.SetAttribute("basehref", this.BaseHref);
@@ -564,17 +565,13 @@ namespace Sage
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
 			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugEnabled ? "1" : "0");
 
-			XmlElement addressNode = resultElement.AppendElement("sage:address", XmlNamespaces.SageNamespace);
+			XmlElement addressNode = (XmlElement) resultElement.AppendChild(this.CreateAddressNode(requestUri, ownerDocument));
 			addressNode.SetAttribute("basehref", this.BaseHref);
-			addressNode.SetAttribute("url", this.Url.RawUrl);
 			if (request.UrlReferrer != null)
 				addressNode.SetAttribute("referrer", request.UrlReferrer.ToString());
 
-			addressNode.SetAttribute("serverName", requestUri.Host);
-			addressNode.SetAttribute("serverNameFull", string.Format("{0}://{1}", requestUri.Scheme, requestUri.Authority));
-			addressNode.SetAttribute("scriptName", requestUri.LocalPath.TrimEnd('/'));
-			addressNode.SetAttribute("scriptNameFull", requestUri.PathAndQuery);
-			addressNode.SetAttribute("queryString", requestUri.Query);
+			if (urlRewritten)
+				addressNode.AppendChild(this.CreateAddressNode(this.Request.Url, ownerDocument, "sage:rewritten"));
 
 			XmlElement pathNode = resultElement.AppendElement("sage:path", XmlNamespaces.SageNamespace);
 			pathNode.SetAttribute("applicationPath", this.ApplicationPath);
@@ -600,7 +597,10 @@ namespace Sage
 			var version = Assembly.GetExecutingAssembly().GetName().Version;
 			assemblyNode.SetAttribute("version", version.ToString());
 
-			resultElement.AppendChild(new QueryString(requestUri.Query).ToXml(ownerDocument, "sage:querystring", XmlNamespaces.SageNamespace));
+			var queryNode = resultElement.AppendChild(new QueryString(requestUri.Query).ToXml(ownerDocument, "sage:querystring", XmlNamespaces.SageNamespace));
+			if (urlRewritten)
+				queryNode.AppendChild(new QueryString(this.Request.Url.Query).ToXml(ownerDocument, "sage:rewritten", XmlNamespaces.SageNamespace));
+			
 			resultElement.AppendChild(new QueryString(request.Cookies).ToXml(ownerDocument, "sage:cookies", XmlNamespaces.SageNamespace));
 			if (request.HttpMethod == "POST")
 				resultElement.AppendChild(new QueryString(request.Form).ToXml(ownerDocument, "sage:form", XmlNamespaces.SageNamespace));
@@ -639,6 +639,20 @@ namespace Sage
 			dateNode.SetAttribute("second", DateTime.Now.ToString("ss"));
 
 			return resultElement;
+		}
+
+		private XmlElement CreateAddressNode(Uri uri, XmlDocument ownerDocument, string nodeName = "sage:address")
+		{
+			XmlElement addressNode = ownerDocument.CreateElement(nodeName, XmlNamespaces.SageNamespace);
+			addressNode.SetAttribute("url", uri.ToString());
+
+			addressNode.SetAttribute("serverName", uri.Host);
+			addressNode.SetAttribute("serverNameFull", string.Format("{0}://{1}", uri.Scheme, uri.Authority));
+			addressNode.SetAttribute("scriptName", uri.LocalPath.TrimEnd('/'));
+			addressNode.SetAttribute("scriptNameFull", uri.PathAndQuery);
+			addressNode.SetAttribute("queryString", uri.Query);
+
+			return addressNode;
 		}
 
 		/// <summary>
@@ -865,16 +879,20 @@ namespace Sage
 			{
 				if (!string.IsNullOrEmpty(propKey))
 				{
-					if (!(value is NameValueCollection))
-					{
-						log.ErrorFormat(
-							"The GetContextProperty '{0}' used a key attribute ('{1}'), but SageContext.{0} is not a collection.",
-							propName, propKey);
+					if (value is NameValueCollection)
+						return ((NameValueCollection) value)[propKey];
 
-						return null;
+					object subProperty = value.GetType().GetProperty(propKey, BindingFlags);
+					if (subProperty != null)
+					{
+						return subProperty.ToString();
 					}
 
-					return ((NameValueCollection) value)[propKey];
+					log.ErrorFormat(
+						"The context property '{0}' is not a NameValue collection and it doesn't have a property named '{1}'.",
+						propName, propKey);
+
+					return null;
 				}
 
 				return value.ToString();

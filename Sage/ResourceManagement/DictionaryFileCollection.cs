@@ -89,16 +89,9 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		public void Refresh()
 		{
-			lock (context)
-			{
-				lock (context)
-				{
-					//// RESET DICTIONARIES
-					this.Dictionaries = new Dictionary<string, DictionaryFile>();
-					foreach (string locale in this.Locales)
-						this.Dictionaries.Add(locale, new DictionaryFile(context, locale));
-				}
-			}
+			this.Dictionaries = new Dictionary<string, DictionaryFile>();
+			foreach (string locale in this.Locales)
+				this.Dictionaries.Add(locale, new DictionaryFile(context, locale));
 		}
 	}
 }

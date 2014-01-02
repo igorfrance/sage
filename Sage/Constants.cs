@@ -328,37 +328,6 @@ namespace Sage
 	}
 
 	/// <summary>
-	/// Indicates recognized resource types
-	/// </summary>
-	public enum ResourceType
-	{
-		/// <summary>
-		/// Indicates an unknown resource type.
-		/// </summary>
-		Undefined = 0,
-
-		/// <summary>
-		/// Indicates an icon resource (usually the <c>favicon.ico</c>)
-		/// </summary>
-		Icon = 1,
-
-		/// <summary>
-		/// Indicates a style resource.
-		/// </summary>
-		Style = 2,
-
-		/// <summary>
-		/// Indicates a script resource.
-		/// </summary>
-		Script = 3,
-
-		/// <summary>
-		/// Indicates an XML document resource.
-		/// </summary>
-		Document = 4,
-	}
-
-	/// <summary>
 	/// Possible render location for resource types (scripts and styles).
 	/// </summary>
 	public enum ResourceLocation

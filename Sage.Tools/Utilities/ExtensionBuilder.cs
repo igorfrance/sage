@@ -28,12 +28,16 @@ namespace Sage.Tools.Utilities
 	using Kelp.Extensions;
 
 	using log4net;
+
+	using NAnt.Core;
+
 	using Sage.Configuration;
 	using Sage.Extensibility;
 
 	//// TODO: Compile any xincluded project.config resources into a single file prior to packaging it
 	internal class ExtensionBuilder : IUtility
 	{
+		private const string BuildFileName = "Extension.build";
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionBuilder).FullName);
 
 		private readonly ZipEntryFactory zipEntryFactory = new ZipEntryFactory();
@@ -98,6 +102,7 @@ namespace Sage.Tools.Utilities
 			string extensionName = Path.GetFileName(sourcePath);
 			string configSourcePath = Path.Combine(sourcePath, ProjectConfiguration.ProjectConfigName);
 			string configTargetPath = Path.Combine(Program.ApplicationPath, ProjectConfiguration.ExtensionConfigName);
+			string extensionBuildScript = Path.Combine(sourcePath, BuildFileName);
 			string extensionPath = targetPath;
 
 			if (string.IsNullOrWhiteSpace(extensionPath))
@@ -118,16 +123,33 @@ namespace Sage.Tools.Utilities
 					string.Format("The specified project configuration path '{0}' doesn't exist", configSourcePath));
 			}
 
+			if (File.Exists(extensionBuildScript))
+			{
+				try
+				{
+					log.DebugFormat("Running nant on build file '{0}'", extensionBuildScript);
+					ConsoleDriver.Main(new[] { "-buildfile:" + extensionBuildScript });
+
+					// nantProject = new Project(extensionBuildScript, Level.Error, 1);
+					// nantProject.Run();
+				}
+				catch (Exception ex)
+				{
+					log.ErrorFormat("Running nant failed: {0}", ex.Message);
+					throw;
+				}
+			}
+
 			sourcePath = new DirectoryInfo(sourcePath).FullName;
 
-			XmlDocument extensionConfig = CreateExtensionConfigurationDocument(extensionName);
-			XmlElement extensionRoot = extensionConfig.DocumentElement;
+			XmlDocument configurationDocument = CreateExtensionConfigurationDocument(extensionName);
+			XmlElement extensionRoot = configurationDocument.DocumentElement;
 
 			ProjectConfiguration config = ProjectConfiguration.Create(configSourcePath);
 			if (!config.ValidationResult.Success)
 				throw config.ValidationResult.Exception;
 
-			XmlElement configRoot = config.ToXml(extensionConfig);
+			XmlElement configRoot = config.ToXml(configurationDocument);
 			if (targetPath == null && !string.IsNullOrWhiteSpace(config.Name))
 			{
 				extensionName = config.Name;
@@ -182,7 +204,7 @@ namespace Sage.Tools.Utilities
 				}
 
 				XmlElement linkingElement =
-					extensionConfig.CreateElement("p:linking", XmlNamespaces.ProjectConfigurationNamespace);
+					configurationDocument.CreateElement("p:linking", XmlNamespaces.ProjectConfigurationNamespace);
 
 				// libraries, modules, links, metaviews, routes
 				CopyConfiguration(config.Package.Links, "p:link", "p:link", linkingElement, extensionRoot);
@@ -195,7 +217,7 @@ namespace Sage.Tools.Utilities
 				CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
 				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
-				extensionConfig.Save(configTargetPath);
+				configurationDocument.Save(configTargetPath);
 
 				this.PackFile(zipfile, configTargetPath, ProjectConfiguration.ExtensionConfigName);
 

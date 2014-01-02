@@ -112,11 +112,35 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\.nuget\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>$(SolutionDir).nuget\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+    <Reference Include="log4net">
+      <HintPath>$(SolutionDir).nuget\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.CompressionTasks">
+      <HintPath>..\lib\NAnt.CompressionTasks.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.Contrib.Tasks">
+      <HintPath>..\lib\NAnt.Contrib.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.Core">
+      <HintPath>..\lib\NAnt.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.DotNetTasks">
+      <HintPath>..\lib\NAnt.DotNetTasks.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.MSNetTasks">
+      <HintPath>..\lib\NAnt.MSNetTasks.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.SourceControlTasks, Version=0.92.4543.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\.nuget\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>..\lib\NAnt.SourceControlTasks.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.VSNetTasks">
+      <HintPath>..\lib\NAnt.VSNetTasks.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.Win32Tasks">
+      <HintPath>..\lib\NAnt.Win32Tasks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -153,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="log4net.xml">

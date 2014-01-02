@@ -19,4 +19,4 @@ using Sage.Rewriters;
 // configure logging from the file specified by System.Configuration.ConfigurationSettings for the AppDomain, and watch for changes
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.xml", Watch = true)]
 
-[assembly: PreApplicationStartMethod(typeof(ExtensionPathRewriter), "AutoRegister")]
+//// [assembly: PreApplicationStartMethod(typeof(ExtensionPathRewriter), "AutoRegister")]

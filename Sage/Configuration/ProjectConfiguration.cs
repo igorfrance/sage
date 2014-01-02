@@ -39,7 +39,7 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Specifies the path to the configuration schema document.
 		/// </summary>
-		public const string ConfigSchemaPath = "sageresx://sage/resources/schemas/projectconfiguration.xsd";
+		public const string ConfigSchemaPath = "sageresx://sage/resources/schemas/sage/configuration/project.xsd";
 
 		/// <summary>
 		/// Specifies the file name of the extension configuration document.
@@ -58,7 +58,7 @@ namespace Sage.Configuration
 
 		private static readonly Dictionary<string, ProjectConfiguration> extensions = new Dictionary<string, ProjectConfiguration>();
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProjectConfiguration).FullName);
-		private static ProjectConfiguration defaultConfiguration;
+		private static readonly ProjectConfiguration defaultConfiguration;
 		private readonly List<XmlElement> customElements;
 
 		static ProjectConfiguration()
@@ -658,29 +658,32 @@ namespace Sage.Configuration
 					continue;
 				}
 
+				extensionConfig.Routing[name].Extension = extensionName;
 				this.Routing.Add(name, extensionConfig.Routing[name]);
 			}
 
-			foreach (KeyValuePair<string, string> link in extensionConfig.Linking.Links)
+			foreach (KeyValuePair<string, ExtensionString> pair in extensionConfig.Linking.Links)
 			{
-				if (this.Linking.Links.ContainsKey(link.Key))
+				if (this.Linking.Links.ContainsKey(pair.Key))
 				{
-					log.WarnFormat("Skipped registering link '{0}' from extension '{1}' because a link with the same name already exists.", link.Key, extensionName);
+					log.WarnFormat("Skipped registering link '{0}' from extension '{1}' because a link with the same name already exists.", pair.Key, extensionName);
 					continue;
 				}
 
-				this.Linking.AddLink(link.Key, link.Value);
+				var newLink = this.Linking.AddLink(pair.Key, pair.Value.Value);
+				newLink.Extension = extensionName;
 			}
 
-			foreach (KeyValuePair<string, string> format in extensionConfig.Linking.Formats)
+			foreach (KeyValuePair<string, ExtensionString> pair in extensionConfig.Linking.Formats)
 			{
-				if (this.Linking.Formats.ContainsKey(format.Key))
+				if (this.Linking.Formats.ContainsKey(pair.Key))
 				{
-					log.WarnFormat("Skipped registering format '{0}' from extension '{1}' because a link with the same name already exists.", format.Key, extensionName);
+					log.WarnFormat("Skipped registering format '{0}' from extension '{1}' because a link with the same name already exists.", pair.Key, extensionName);
 					continue;
 				}
 
-				this.Linking.AddFormat(format.Key, format.Value);
+				var newFormat = this.Linking.AddFormat(pair.Key, pair.Value.Value);
+				newFormat.Extension = extensionName;
 			}
 
 			foreach (string name in extensionConfig.ResourceLibraries.Keys)
@@ -691,7 +694,9 @@ namespace Sage.Configuration
 					continue;
 				}
 
-				this.ResourceLibraries.Add(name, extensionConfig.ResourceLibraries[name]);
+				ResourceLibraryInfo library = extensionConfig.ResourceLibraries[name];
+				library.Extension = extensionName;
+				this.ResourceLibraries.Add(name, library);
 			}
 
 			foreach (string name in extensionConfig.MetaViews.Keys)
@@ -702,7 +707,9 @@ namespace Sage.Configuration
 					continue;
 				}
 
-				this.MetaViews.Add(name, extensionConfig.MetaViews[name]);
+				MetaViewInfo info = extensionConfig.MetaViews[name];
+				info.Extension = extensionName;
+				this.MetaViews.Add(name, info);
 			}
 
 			foreach (string name in extensionConfig.Modules.Keys)
@@ -713,7 +720,9 @@ namespace Sage.Configuration
 					continue;
 				}
 
-				this.Modules.Add(name, extensionConfig.Modules[name]);
+				ModuleConfiguration module = extensionConfig.Modules[name];
+				module.Extension = extensionName;
+				this.Modules.Add(name, module);
 			}
 		}
 	}
