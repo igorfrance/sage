@@ -23,3 +23,6 @@ _target
 /Sage.Local.sln.DotSettings
 /Sage.Local.sln.GhostDoc.xml
 /.idea
+/Sage.schemas.bat
+/temp
+/sage.iml
