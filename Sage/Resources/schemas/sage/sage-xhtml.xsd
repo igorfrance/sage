@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="sage-xhtml"
+    targetNamespace="http://www.w3.org/1999/xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	
+	<xs:annotation>
+		<xs:documentation>
+			The reason for this schema is to define several XHTML elements referenced by other
+			schemas in Sage, without having to include the whole XHTML schema.
+		</xs:documentation>
+	</xs:annotation>
+	
+	<xs:element name="script">
+		<xs:complexType mixed="true">
+			<xs:attribute name="type" use="optional"/>
+			<xs:attribute name="src" use="optional"/>
+			<xs:attribute name="language" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="link">
+		<xs:complexType mixed="true">
+			<xs:attribute name="type" use="optional"/>
+			<xs:attribute name="href" use="optional"/>
+			<xs:attribute name="rel" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>

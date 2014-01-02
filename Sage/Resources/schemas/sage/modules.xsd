@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="sage.modules"
+		elementFormDefault="qualified"
+		targetNamespace="http://www.cycle99.com/schemas/sage/modules.xsd"
+		xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+		xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns="http://www.cycle99.com/schemas/sage/modules.xsd">
+
+	<xs:import schemaLocation="sage.xsd" namespace="http://www.cycle99.com/schemas/sage/sage.xsd"/>
+
+	<xs:complexType name="generic">
+		<xs:complexContent mixed="true">
+			<xs:extension base="sage:generic">
+				<xs:choice minOccurs="0" maxOccurs="2">
+					<xs:element name="config" minOccurs="0" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="param" type="sage:generic"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="data" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

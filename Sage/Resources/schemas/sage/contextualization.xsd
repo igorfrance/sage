@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="sage.contextualization"
+		elementFormDefault="qualified"
+		targetNamespace="http://www.cycle99.com/schemas/sage/contextualization.xsd"
+		xmlns:context="http://www.cycle99.com/schemas/sage/contextualization.xsd"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns="http://www.cycle99.com/schemas/sage/contextualization.xsd">
+		
+	<xs:element name="value" type="context:value" />
+
+	<xs:element name="switch" type="context:switch" />
+		
+	<xs:complexType name="value" mixed="true">
+		<xs:attribute name="property" type="contextProperty" use="required"/>
+		<xs:attribute name="key" use="optional"/>
+	</xs:complexType>
+	
+	<xs:complexType name="switch">
+		<xs:choice>
+			<xs:element name="case" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType mixed="true">
+					<xs:attribute name="test" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="default" minOccurs="0" maxOccurs="1">
+				<xs:complexType mixed="true"/>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="property" type="contextProperty" use="required"/>
+		<xs:attribute name="key" use="optional"/>
+	</xs:complexType>
+	
+	<xs:simpleType name="contextProperty">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="application"/>
+			<xs:enumeration value="applicationPath"/>
+			<xs:enumeration value="basehref"/>
+			<xs:enumeration value="cache"/>
+			<xs:enumeration value="category"/>
+			<xs:enumeration value="isDeveloperRequest"/>
+			<xs:enumeration value="locale"/>
+			<xs:enumeration value="path"/>
+			<xs:enumeration value="physicalApplicationPath"/>
+			<xs:enumeration value="query"/>
+			<xs:enumeration value="referrerUrl"/>
+			<xs:enumeration value="request"/>
+			<xs:enumeration value="response"/>
+			<xs:enumeration value="route"/>
+			<xs:enumeration value="routeValues"/>
+			<xs:enumeration value="session"/>
+			<xs:enumeration value="url"/>
+			<xs:enumeration value="userAgentId"/>
+			<xs:enumeration value="userAgentType"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
