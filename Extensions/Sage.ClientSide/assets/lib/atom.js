@@ -52,16 +52,18 @@ var $type = new function type()
 	/**
 	 * Returns <c>true</c> if the specified object is an array.
 	 * @param {Object} value The value to test.
+	 * @param {String} [defaultArray] The default array value to return if the specified <c>value</c> is not an array.
 	 * @return {Boolean} <c>true</c> if the specified object is an array, otherwise <c>false</c>.
 	 */
-	type.isArray = function type$isArray(value)
+	type.isArray = function type$isArray(value, defaultArray)
 	{
 		if (value == null)
-			return false;
+			return defaultArray || false;
 
 		return (
 			(value.constructor == Array) ||
-			(value != window && !$type.isString(value) && !$type.isFunction(value) && $type.isNumber(value.length))
+			(value != window && !$type.isString(value) && !$type.isFunction(value) && $type.isNumber(value.length)) ||
+				defaultArray || false
 		);
 	};
 
@@ -82,19 +84,21 @@ var $type = new function type()
 	};
 
 	/**
-	 * Returns <c>true</c> if the specified object is a function.
+	 * Returns <c>true</c> if the specified object is a function, or the specified <c>defaultFunction</c> if the value is not a function.
 	 * @param {Object} value The value to test.
+	 * @param {String} [defaultFunction] The default function value to return if the specified <c>value</c> is not a function.
 	 * @return {Boolean} <c>true</c> if the specified object is a function, otherwise <c>false</c>.
 	 */
-	type.isFunction = function type$isFunction(value)
+	type.isFunction = function type$isFunction(value, defaultFunction)
 	{
 		if (value == null)
-			return false;
+			return defaultFunction || false;
 
 		return (
 			(type(value) == 'function') ||
 			(value.constructor == Function) ||
-			(!$type.isString(value) && Boolean(String(value).match(/\bfunction\b/)))
+			(!$type.isString(value) && Boolean(String(value).match(/\bfunction\b/))) ||
+				defaultFunction || false
 		);
 	};
 
@@ -109,18 +113,20 @@ var $type = new function type()
 	};
 
 	/**
-	 * Returns <c>true</c> if the specified object is a number.
+	 * Returns <c>true</c> if the specified object is a number, or the specified <c>defaultNumber</c> if the value is not a number.
 	 * @param {Object} value The value to test.
+	 * @param {String} [defaultNumber] The default number value to return if the specified <c>value</c> is not a number.
 	 * @return {Boolean} <c>true</c> if the specified object is a number, otherwise <c>false</c>.
 	 */
-	type.isNumber = function type$isNumber(value)
+	type.isNumber = function type$isNumber(value, defaultNumber)
 	{
 		if (value == null)
-			return false;
+			return defaultNumber || false;
 
 		return (
 			(type(value) == 'number' && isFinite(value)) ||
-			(value.constructor == Number)
+			(value.constructor == Number) ||
+				defaultNumber || false
 		);
 	};
 
@@ -135,51 +141,54 @@ var $type = new function type()
 	};
 
 	/**
-	 * Returns <c>true</c> if the specified object is a date.
+	 * Returns <c>true</c> if the specified object is a date, or the specified <c>defaultDate</c> if the value is not a date.
 	 * @param {Object} value The value to test.
+	 * @param {String} [defaultDate] The default date value to return if the specified <c>value</c> is not a date.
 	 * @return {Boolean} <c>true</c> if the specified object is a date, otherwise <c>false</c>.
 	 */
-	type.isDate = function type$isDate(value)
+	type.isDate = function type$isDate(value, defaultDate)
 	{
 		if (value == null)
-			return false;
+			return defaultDate || false;
 
 		return (
-			($type.isFunction(value.getDate) && $type.isFunction(value.getTime))
+			($type.isFunction(value.getDate) && $type.isFunction(value.getTime)) ||
+				defaultDate || false
 		);
 	};
 
 	/**
-	 * Returns <c>true</c> if the specified value is an object (other than String or Number).
+	 * Returns <c>true</c> if the specified value is an object (other than String or Number), or the specified <c>defaultObject</c> if the value is not an object.
 	 * @param {Object} value The value to test.
+	 * @param {String} [defaultObject] The default object value to return if the specified <c>value</c> is not an object.
 	 * @return {Boolean} <c>true</c> if the specified object is an object, otherwise <c>false</c>.
 	 */
-	type.isObject = function type$isObject(value)
+	type.isObject = function type$isObject(value, defaultObject)
 	{
 		if (value == null || value == undefined)
-			return false;
+			return defaultObject || false;
 
 		return (
-			type(value) == 'object' &&
-			value.constructor != String &&
-			value.constructor != Number
-
-		) || $type.isFunction(value);
+			type(value) == 'object' && value.constructor != String && value.constructor != Number)
+				|| $type.isFunction(value)
+				|| defaultObject || false;
 	};
 
 	/**
-	 * Returns <c>true</c> if the specified object is a string.
+	 * Returns <c>true</c> if the specified object is a string, or the specified <c>defaultString</c> if the value is not a string.
 	 * @param {Object} value The value to test.
+	 * @param {String} [defaultString] The default string value to return if the specified <c>value</c> is not a string.
 	 * @return {Boolean} <c>true</c> if the specified object is a string, otherwise <c>false</c>.
 	 */
-	type.isString = function type$isString(value)
+	type.isString = function type$isString(value, defaultString)
 	{
 		if (value == null)
-			return false;
+			return defaultString || false;
 
 		return (
 			type(value) == 'string' ||
-			(value != null && value.constructor == String)
+			(value != null && value.constructor == String) ||
+				defaultString || false
 		);
 	};
 
@@ -1603,8 +1612,9 @@ Dispatcher.prototype.toString = function()
 
 /**
  * Implements a class that helps with creating variable number of argument objects in a structured way.
+ *
  * <p>When a function accepts a large number of arguments, where each can have a default value and can also be set
- * by the function itself, using, chaning and maintaining this function and its usages can be daunting. This objects
+ * by the function itself, using, changing and maintaining this function and its usages can be daunting. This objects
  * helps do it in a structured way.</p>
  * <p>By using the class as the container for arguments, the function can than have only one formal argument, because
  * all parameters it operates on are contained within an instance of this class.</p>
@@ -1735,7 +1745,8 @@ Settings.prototype.getNumber = function Settings$getNumber(propName, data, overr
  */
 Settings.prototype.getString = function Settings$getString(propName, data, override, defaultValue)
 {
-	return String(this.getValue(propName, data, override, defaultValue));
+	var value = this.getValue(propName, data, override, defaultValue);
+	return value == null ? null : String(value);
 };
 
 /**
@@ -2050,15 +2061,19 @@ var ControlRegistry = function ControlRegistry()
 	 */
 	this.register = function ControlRegistry$register(control)
 	{
-		$log.assert($type.isObject(control), "Argument 'control' should be an object that describes the control or the control itself");
+		$log.assert($type.isObject(control), "Argument 'control' should either be an object that describes the control or the control itself");
 
 		var typeInfo = new ControlTypeInfo(control);
 		types.push(typeInfo);
 		expressions.push(typeInfo.expression);
 
-		$log.info("Registered control {0}", $type.isFunction(control) ?
-			Function.getName(control) :
-			Function.getName(control.constructor));
+		var controlName = $type.isString(control.NAME)
+			? control.NAME
+			: $type.isFunction(control)
+				? Function.getName(control)
+				: Function.getName(control.constructor);
+
+		$log.info("Registered control {0}", controlName);
 
 		return control;
 	};
@@ -2944,22 +2959,7 @@ var $url = new function url()
 	 */
 	Url.prototype.getHash = function (prefix)
 	{
-		var result = [];
-		for (var name in this.hashParam)
-		{
-			if (!this.hashParam.hasOwnProperty(name))
-				continue;
-
-			result.push(name);
-			result.push(this.equals);
-			result.push(this.hashParam[name]);
-		}
-
-		var value = result.join(this.separator);
-		if (value != $string.EMPTY && prefix != $string.EMPTY)
-			return prefix + value;
-
-		return value;
+		return url.serializeParams(this.hashParam, { prefix: prefix || $string.EMPTY });
 	};
 
 	/**
@@ -2969,22 +2969,7 @@ var $url = new function url()
 	 */
 	Url.prototype.getQuery = function (prefix)
 	{
-		var result = [];
-		for (var name in this.queryParam)
-		{
-			if (!this.queryParam.hasOwnProperty(name))
-				continue;
-
-			result.push(name);
-			result.push(this.equals);
-			result.push(this.queryParam[name]);
-		}
-
-		var value = result.join(this.separator);
-		if (value != $string.EMPTY && prefix != $string.EMPTY)
-			return prefix + value;
-
-		return value;
+		return url.serializeParams(this.queryParam, { prefix: prefix || $string.EMPTY });
 	};
 
 	/**
@@ -3180,7 +3165,8 @@ var $url = new function url()
 			if ($type.isObject(arguments[0]))
 			{
 				for (var name in arguments[0])
-					current.setHashParam(name, arguments[0][name]);
+					if (arguments[0].hasOwnProperty(name))
+						current.setHashParam(name, arguments[0][name]);
 			}
 			else
 			{
@@ -3263,7 +3249,7 @@ var $url = new function url()
 
 		var opt = $.extend({
 				separator: url.DEFAULT_SEPARATOR,
-				equals: url.DEFAULT_EQUALS,
+				equals: url.DEFAULT_EQUALS
 			},
 			options || {});
 
@@ -4147,8 +4133,7 @@ var $evt = new function ()
 	};
 
 	/**
-	 * Sets the event's <c>cancelBubble</c> to <c>true</c>, <c>returnValue</c> to <c>false</c> and calls it's
-	 * <c>stopPropagation</c> event.
+	 * Calls the event's <c>preventDefault</c> and <c>stopPropagation</c> methods.
 	 * @param {Event} e The event that was raised.
 	 * @returns {Boolean} Returns false.
 	 */
@@ -4158,7 +4143,8 @@ var $evt = new function ()
 		if (e != null)
 		{
 			e.cancelBubble = true;
-			e.returnValue = false;
+			if (e.preventDefault)
+				e.preventDefault();
 
 			if (e.stopPropagation)
 				e.stopPropagation();
@@ -4257,6 +4243,7 @@ var $drag = new function Dragger()
 
 		if (event.originalEvent)
 			event = event.originalEvent;
+
 		$target = $(target);
 		if ($target.length == 0)
 			return true;
@@ -4300,10 +4287,14 @@ var $drag = new function Dragger()
 		return $evt.cancel(e);
 	};
 
-	function stop()
+	function stop(e)
 	{
+		var event = $evt.create(dragger, "stop", { specs: specs });
+		event.target = $target[0];
+		event.originalEvent = e;
+
 		dragger.active = false;
-		dragger.fire("stop", { specs: specs });
+		dragger.fire(event);
 
 		document.removeEventListener("mousemove", move, true);
 		document.removeEventListener("touchmove", move, true);
@@ -4331,6 +4322,7 @@ var $drag = new function Dragger()
 		if (dragger.__listeners["beforemove"].length)
 		{
 			var moveEvent = $evt.create(dragger, "beforemove");
+			moveEvent.target = $target[0];
 
 			if (specs.moveX)
 				moveEvent.data.targetX = targetX;
@@ -4352,7 +4344,12 @@ var $drag = new function Dragger()
 
 		var position2 = $target.position();
 		if (position2.left != position1.left || position2.top != position1.top)
-			dragger.fire("move", position2);
+		{
+			moveEvent = $evt.create(dragger, "move", position2);
+			moveEvent.target = $target[0];
+
+			dragger.fire(moveEvent);
+		}
 
 		specs.accelX = position2.left - position1.left;
 		specs.accelY = position2.top - position1.top;

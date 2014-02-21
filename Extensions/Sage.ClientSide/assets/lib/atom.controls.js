@@ -21,6 +21,8 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 		ENGAGED: "engaged"
 	};
 
+	this.NAME = "atom.controls.Scroller";
+
 	/**
 	 * This control doesn't need asynchronous initialization.
 	 * @type {Boolean}
@@ -434,6 +436,8 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 		"1": { pos: "top", min: "minY", max: "maxY", size: "height", outerSize: "outerHeight" }
 	};
 
+	this.NAME = "atom.controls.Slider";
+
 	/**
 	 * This control doesn't need asynchronous initialization.
 	 * @type {Boolean}
@@ -642,7 +646,7 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 
 });
 
-atom.controls.register(new function Thumbstrip()
+atom.controls.Thumbstrip = atom.controls.register(new function Thumbstrip()
 {
 	var MIN_DIF_MOVE = 10;
 	var orientation = { VERTICAL: 0, HORIZONTAL: 1 };
@@ -664,6 +668,8 @@ atom.controls.register(new function Thumbstrip()
 	};
 
 	var thumbstrip = this;
+
+	this.NAME = "atom.controls.Thumbstrip";
 
 	/**
 	 * This control doesn't need asynchronous initialization.
@@ -763,7 +769,7 @@ atom.controls.register(new function Thumbstrip()
 		this.redraw();
 	});
 
-	this.Control.prototype.redraw = function ThumbstripControl$redraw(maintainPosition)
+	this.Control.prototype.redraw = function redraw(maintainPosition)
 	{
 		var containerLength = this.$container[this.props.size]();
 		var stripLength =
@@ -801,7 +807,10 @@ atom.controls.register(new function Thumbstrip()
 		this.snapCoords = getSnapCoords(this);
 
 		if (stripLength < containerLength)
-			this.$element.css(this.props.position, (containerLength / 2) - (stripLength / 2));
+		{
+			this.$element.css(this.props.size, containerLength);
+			this.$element.css(this.props.position, 0);
+		}
 		else
 		{
 			var current = parseInt(this.$element.css(this.props.position)) || 0;
@@ -1082,6 +1091,8 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 	var windowLeft = 0;
 	var timeoutId;
 
+	this.NAME = "atom.controls.Tooltip";
+
 	/**
 	 * This control doesn't need asynchronous initialization.
 	 * @type {Boolean}
@@ -1209,7 +1220,7 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 		this.$element.attr("title", atom.string.EMPTY);
 
 		var maxWidth = this.settings.maxWidth || $(tooltipDocument).width() * .75;
-		tooltipPopup.css("maxWidth", maxWidth);
+		tooltipPopup.css("max-width", maxWidth + "px");
 		tooltipContent.html(title);
 
 		var orientation = this.settings.orientation;
