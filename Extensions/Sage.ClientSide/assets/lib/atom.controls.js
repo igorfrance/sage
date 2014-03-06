@@ -1404,7 +1404,7 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 		var result = { orientation: orientation, top: 0, arrowTop: 0, arrowBottom: 0 };
 
 		var arrowHeight = 6;
-		var scrollTop = tooltipDocument.documentElement.scrollTop;
+		var scrollTop = $(tooltipDocument).scrollTop();
 		var absoluteTop = windowTop + elementTop - scrollTop;
 		var popupHeight = tooltipPopup.outerHeight() + arrowHeight;
 
@@ -1444,7 +1444,7 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 		var result = { top: 0, arrowTop: 0, arrowBottom: 0 };
 
 		var arrowHeight = 12;
-		var scrollTop = tooltipDocument.documentElement.scrollTop;
+		var scrollTop = $(tooltipDocument).scrollTop();
 		var absoluteTop = windowTop + elementTop - scrollTop;
 		var popupHeight = tooltipPopup.outerHeight();
 

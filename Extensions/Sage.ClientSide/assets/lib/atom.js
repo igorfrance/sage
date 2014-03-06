@@ -1256,10 +1256,10 @@ Function.callerName = function function$callerName()
 };
 
 /**
- * Gets the stacktrace starting at the specified <c>point</c>.
+ * Gets the stack trace starting at the specified <c>point</c>.
  * @param {Function} point The function from which to start building the stack trace.
  * @param {Number} maxIterations The maximum number of iterations to go through.
- * @returns {String} The string representing the function call stack built from the specified <c>point</c>.
+ * @returns {Array} The array with stack trace, and an overridden toString method that pretty prints it.
  */
 Function.stackTrace = function function$stackTrace(point, maxIterations)
 {
@@ -1325,9 +1325,9 @@ Function.stackTrace = function function$stackTrace(point, maxIterations)
 	{
 		return this.join(joinString || "\n");
 	};
+
 	return callStack;
 };
-
 
 /**
  * @copyright 2012 Igor France
@@ -1813,9 +1813,6 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 
 		for (var expression in type.registeredConstructors)
 		{
-			if (!type.registeredConstructors.hasOwnProperty(expression))
-				continue;
-
 			if (type.registeredConstructors[expression] == typeFunction)
 				return true;
 		}
@@ -1951,9 +1948,6 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 
 		for (var expression in type.registeredConstructors)
 		{
-			if (!type.registeredConstructors.hasOwnProperty(expression))
-				continue;
-
 			if ($element.is(expression))
 			{
 				constructor = type.registeredConstructors[expression];
@@ -3112,7 +3106,7 @@ var $url = new function url()
 	 */
 	url.getQueryParam = function (name, defaultValue)
 	{
-		return new Url().getQueryParam(name) || defaultValue;
+		return url().getQueryParam(name) || defaultValue;
 	};
 
 	/**
@@ -3124,7 +3118,7 @@ var $url = new function url()
 	 */
 	url.getHashParam = function (name, defaultValue)
 	{
-		return new Url().getHashParam(name) || defaultValue;
+		return url().getHashParam(name) || defaultValue;
 	};
 
 	/**
@@ -3200,7 +3194,7 @@ var $url = new function url()
 	 */
 	url.removeHashParam = function (name)
 	{
-		var current = new Url(location);
+		var current = url(location);
 		current.removeHashParam(name);
 
 		url.setHash(url.getHash());
@@ -3329,8 +3323,8 @@ var $url = new function url()
 
 	url.qualify = function (value)
 	{
-		var url = $("base[href]").attr("href") || document.location.href;
-		return new Url(url).qualify(value);
+		var baseHref = $("base[href]").attr("href") || document.location.href;
+		return url(baseHref).qualify(value);
 	};
 
 	return url;
@@ -4133,6 +4127,88 @@ var $evt = new function ()
 	};
 
 	/**
+	 * Gets the x coordinate of the event
+	 * @param e
+	 * @returns {Number}
+	 */
+	evt.x = function x(e)
+	{
+		e = e.originalEvent || e;
+
+		var result = 0;
+		if ($type.isNumber(e.pageX))
+			result = e.pageX;
+		else if ($type.isNumber(e.clientX))
+			result = e.clientX;
+
+		if (e.touches && e.touches.length)
+			result = e.touches[0].clientX;
+
+		return result;
+	};
+
+	/**
+	 * Gets the y coordinate of the event
+	 * @param e
+	 * @returns {Number}
+	 */
+	evt.y = function y(e)
+	{
+		e = e.originalEvent || e;
+
+		var result = 0;
+		if ($type.isNumber(e.pageY))
+			result = e.pageY;
+		else if ($type.isNumber(e.clientY))
+			result = e.clientY;
+
+		if (e.touches && e.touches.length)
+			result = e.touches[0].clientY;
+
+		return result;
+	};
+
+	evt.capture = function (target, event, handler)
+	{
+		target.addEventListener(event, handler, true);
+	};
+
+	$.fn.capture = function (event, handler)
+	{
+		if (!$type.isString(event) || !$type.isFunction(handler))
+			return this;
+
+		var events = event.split(/(?:\s+)|,/);
+		this.each(function (i, element)
+		{
+			for (var j = 0; j < events.length; j++)
+				evt.capture(element, events[j], handler)
+		});
+
+		return this;
+	};
+
+	evt.release = function (target, event, handler)
+	{
+		target.removeEventListener(event, handler, true);
+	};
+
+	$.fn.release = function (event, handler)
+	{
+		if (!$type.isString(event) || !$type.isFunction(handler))
+			return this;
+
+		var events = event.split(/(?:\s+)|,/);
+		this.each(function (i, element)
+		{
+			for (var j = 0; j < events.length; j++)
+				evt.release(element, events[j], handler)
+		});
+
+		return this;
+	};
+
+	/**
 	 * Calls the event's <c>preventDefault</c> and <c>stopPropagation</c> methods.
 	 * @param {Event} e The event that was raised.
 	 * @returns {Boolean} Returns false.
@@ -4265,8 +4341,8 @@ var $drag = new function Dragger()
 		specs.minY = isNaN(specifications.minY) ? Number.NEGATIVE_INFINITY : specifications.minY;
 		specs.maxY = isNaN(specifications.maxY) ? Number.POSITIVE_INFINITY : specifications.maxY;
 
-		clientX = $dom.isTouchDevice ? event.pageX : event.clientX;
-		clientY = $dom.isTouchDevice ? event.pageY : event.clientY;
+		clientX = $evt.x(e);
+		clientY = $evt.y(e);
 
 		var position = $target.position();
 		var offset = $target.offset();
@@ -4274,10 +4350,8 @@ var $drag = new function Dragger()
 		startX = isNaN(position.left) ? offset.left : position.left;
 		startY = isNaN(position.top) ? offset.top : position.top;
 
-		document.addEventListener("mouseup", stop, true);
-		document.addEventListener("touchend", stop, true);
-		document.addEventListener("mousemove", move, true);
-		document.addEventListener("touchmove", move, true);
+		$(document).capture("mouseup touchend", stop);
+		$(document).capture("mousemove touchmove", move);
 
 		overlayFrames();
 
@@ -4308,10 +4382,8 @@ var $drag = new function Dragger()
 
 	function move(e)
 	{
-		var event = $evt(e);
-
-		var eventX = $dom.isTouchDevice ? event.pageX : event.clientX;
-		var eventY = $dom.isTouchDevice ? event.pageY : event.clientY;
+		var eventX = $evt.x(e);
+		var eventY = $evt.y(e);
 
 		var diffX = eventX - clientX;
 		var diffY = eventY - clientY;
