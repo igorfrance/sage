@@ -13,13 +13,7 @@
 		<xs:complexContent mixed="true">
 			<xs:extension base="sage:generic">
 				<xs:choice minOccurs="0" maxOccurs="2">
-					<xs:element name="config" minOccurs="0" maxOccurs="1">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="param" type="sage:generic"/>
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
+					<xs:element name="config" type="sage:generic" minOccurs="0" maxOccurs="1" />
 					<xs:element name="data" type="sage:generic" minOccurs="0" maxOccurs="1"/>
 				</xs:choice>
 			</xs:extension>
