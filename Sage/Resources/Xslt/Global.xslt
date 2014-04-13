@@ -59,7 +59,7 @@
 				<xsl:value-of select="$view/@controller"/>
 				<xsl:text> </xsl:text>
 				<xsl:value-of select="$view/@action"/>
-				<xsl:if test="string-length(@class)">
+				<xsl:if test="string-length(@class) != 0">
 					<xsl:text> </xsl:text>
 					<xsl:value-of select="@class"/>
 				</xsl:if>
