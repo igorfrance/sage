@@ -3,15 +3,16 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:basic="http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd"
+	xmlns:string="http://www.cycle99.com/schemas/sage/xslt/extensions/string.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns="http://www.w3.org/1999/xhtml"
 	exclude-result-prefixes="sage mod basic">
 
 	<xsl:template match="mod:XmlTree">
 		<xsl:param name="config" select="mod:config"/>
-		<xsl:variable name="showWrapped" select="count($config/mod:wrap[text()='false']) = 0"/>
-		<xsl:variable name="showNamespaces" select="count($config/mod:namespaces[text()='true']) = 1"/>
-		<xsl:variable name="showToolbar" select="count($config/mod:toolbar[text()='true']) = 1"/>
+		<xsl:variable name="showWrapped" select="boolean($config/mod:show/@wrapped)"/>
+		<xsl:variable name="showNamespaces" select="boolean($config/mod:show/@namespaces)"/>
+		<xsl:variable name="showToolbar" select="boolean($config/mod:show/@toolbar)"/>
 		<xsl:variable name="showHighlighted" select="count($config/mod:highlight/*) != 0"/>
 		<xsl:variable name="phrases" select="$config/mod:text/mod:phrase"/>
 		<div class="xmltree{basic:iif($showToolbar, ' with', '')}">
@@ -68,7 +69,7 @@
 					some kind of character that won't be stripped by the xmlwriter;
 					this is needed to in order to force
 					browsers to ignore whitespace in the following blocks
-				-->&#160;
+				-->&#8203;
 				<xsl:apply-templates select="mod:data/node()" mode="xmltree">
 					<xsl:with-param name="level" select="1" />
 				</xsl:apply-templates>
@@ -81,7 +82,7 @@
 		<xsl:choose>
 			<xsl:when test="ancestor::sage:literal">
 				<div>
-					<xsl:apply-templates select="." mode="xhighlightclass"/>
+					<xsl:apply-templates select="." mode="class-attribute"/>
 					<span class="switch_space">
 						<xsl:text>&#160;</xsl:text>
 					</span>
@@ -110,7 +111,7 @@
 	<xsl:template match="*" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<div>
-			<xsl:apply-templates select="." mode="xhighlightclass"/>
+			<xsl:apply-templates select="." mode="class-attribute"/>
 			<span class="switch_space">
 				<xsl:text>&#160;</xsl:text>
 			</span>
@@ -134,7 +135,9 @@
 	<xsl:template match="*[node()]" mode="xmltree">
 		<xsl:param name="level" select="1"/>
 		<div>
-			<xsl:apply-templates select="." mode="xhighlightclass"/>
+			<xsl:apply-templates select="." mode="class-attribute">
+				<xsl:with-param name="level" select="$level" />
+			</xsl:apply-templates>
 			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
@@ -153,9 +156,6 @@
 				<xsl:text>&gt;</xsl:text>
 			</span>
 			<div class="children">
-				<xsl:apply-templates select="." mode="xdisplay">
-					<xsl:with-param name="level" select="$level" />
-				</xsl:apply-templates>
 				<xsl:apply-templates mode="xmltree">
 					<xsl:with-param name="level" select="$level + 1" />
 				</xsl:apply-templates>
@@ -179,7 +179,9 @@
 	<xsl:template match="*[*]" mode="xmltree" priority="20">
 		<xsl:param name="level" select="1"/>
 		<div>
-			<xsl:apply-templates select="." mode="xhighlightclass"/>
+			<xsl:apply-templates select="." mode="class-attribute">
+					<xsl:with-param name="level" select="$level" />
+				</xsl:apply-templates>
 			<xsl:apply-templates select="." mode="xswitch">
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
@@ -194,9 +196,6 @@
 			</xsl:apply-templates>
 			<span class="markup">></span>
 			<div class="children">
-				<xsl:apply-templates select="." mode="xdisplay">
-					<xsl:with-param name="level" select="$level" />
-				</xsl:apply-templates>
 				<xsl:apply-templates mode="xmltree">
 					<xsl:with-param name="level" select="$level + 1" />
 				</xsl:apply-templates>
@@ -221,10 +220,12 @@
 
 	<xsl:template match="*[text() and not (comment() or processing-instruction())]" mode="xmltree">
 		<xsl:param name="level" select="1"/>
-		<xsl:variable name="wrapIndex" select="basic:isnull(ancestor::mod:XmlTree/mod:config/mod:wrapChars, 90)"/>
-		<xsl:variable name="collapsible" select="string-length(text()) > 110"/>
+		<xsl:variable name="wrapIndex" select="basic:isnull(ancestor::mod:XmlTree/mod:config/mod:wrapChars, 110)"/>
+		<xsl:variable name="collapsible" select="string-length(text()) > $wrapIndex"/>
+		<xsl:variable name="preserve"
+			select="count(ancestor::mod:XmlTree/mod:config/mod:preserve/mod:element[text() = name(current())])"/>
 		<div>
-			<xsl:apply-templates select="." mode="xhighlightclass"/>
+			<xsl:apply-templates select="." mode="class-attribute"/>
 			<xsl:choose>
 				<xsl:when test="$collapsible">
 					<xsl:apply-templates select="." mode="xswitch">
@@ -247,12 +248,23 @@
 				<xsl:with-param name="level" select="$level" />
 			</xsl:apply-templates>
 			<span class="markup">></span>
-			<div class="children">
+			<div class="children{basic:iif($collapsible, '', ' inline')}">
 				<span class="text">
-					<xsl:apply-templates select="." mode="xhighlightclass">
+					<xsl:apply-templates select="." mode="class-attribute">
 						<xsl:with-param name="class">text</xsl:with-param>
 					</xsl:apply-templates>
-					<xsl:value-of select="."/>
+					<xsl:choose>
+						<xsl:when test="$preserve = 0">
+							<xsl:value-of select="."/>
+						</xsl:when>
+						<xsl:otherwise>
+							<pre>
+								<xsl:value-of select="string:trimSourceCode(.)"/>
+								<br clear="all"/>
+							</pre>
+						</xsl:otherwise>
+					</xsl:choose>
+
 				</span>
 				<div class="close">
 					<xsl:if test="$collapsible">
@@ -286,19 +298,23 @@
 
 	<xsl:template match="text()" mode="xmltree">
 		<span class="text">
-			<xsl:apply-templates select="." mode="xhighlightclass"/>
+			<xsl:apply-templates select="." mode="class-attribute"/>
 			<xsl:value-of select="."/>
 		</span>
 	</xsl:template>
 
 	<xsl:template match="comment()" mode="xmltree">
 		<xsl:param name="level" select="1"/>
-		<xsl:variable name="collapsible" select="string-length(.) > 110"/>
-		<div class="comment{basic:iif($collapsible, ' collapsible', '')}">
+		<xsl:variable name="wrapIndex" select="basic:isnull(ancestor::mod:XmlTree/mod:config/mod:wrapChars, 110)"/>
+		<xsl:variable name="collapsible" select="string-length(.) > $wrapIndex or contains(., '&#xA;')"/>
+		<xsl:variable name="collapsed" select="basic:iif(count(ancestor::mod:XmlTree/mod:config/mod:collapseComments) = 0, 0, 1)"/>
+		<xsl:variable name="text" select="string:replace(string:trim(.), '^[\s\t]+', '', 2)"/>
+		<div class="comment{basic:iif($collapsible, ' collapsible', '')}{basic:iif($collapsed, ' collapsed', '')}">
 			<xsl:choose>
 				<xsl:when test="$collapsible">
 					<xsl:apply-templates select="." mode="xswitch">
 						<xsl:with-param name="level" select="$level" />
+						<xsl:with-param name="state" select="basic:iif($collapsed, 0, -1)" />
 					</xsl:apply-templates>
 				</xsl:when>
 				<xsl:otherwise>
@@ -306,7 +322,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			<span class="markup open">&lt;&#33;&#45;&#45;</span>
-			<pre><xsl:value-of select="string:replace(string:trim(.), '^[\s\t]+', '', 2)"/></pre>
+			<pre data-title="{$text}"><xsl:value-of select="$text"/></pre>
 			<span class="markup close">&#45;&#45;&gt;</span>
 		</div>
 	</xsl:template>
@@ -372,43 +388,21 @@
 
 	<xsl:template match="node()" mode="xswitch">
 		<xsl:param name="level"/>
-		<xsl:variable name="expandNode" select="ancestor::mod:XmlTree/mod:config/mod:expandLevels"/>
-		<xsl:variable name="expandLevels">
+		<xsl:param name="state"/>
+		<xsl:variable name="text">
 			<xsl:choose>
-				<xsl:when test="$expandNode">
-					<xsl:apply-templates select="$expandNode/node()"/>
-				</xsl:when>
+				<xsl:when test="$state = 1">-</xsl:when>
+				<xsl:when test="$state = 0">+</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="'*'"/>
+					<xsl:variable name="expandLevels" select="basic:isnull(ancestor::mod:XmlTree/mod:config/mod:expandLevels/text(), '*')"/>
+					<xsl:choose>
+						<xsl:when test="$expandLevels = '*' or $level &lt;= number($expandLevels)">-</xsl:when>
+						<xsl:otherwise>+</xsl:otherwise>
+					</xsl:choose>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<xsl:choose>
-			<xsl:when test="$expandLevels = '*' or $level &lt;= $expandLevels">
-				<span class="switch">-</span>
-			</xsl:when>
-			<xsl:otherwise>
-				<span class="switch">+</span>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="node()" mode="xdisplay">
-		<xsl:param name="level"/>
-		<xsl:variable name="expandNode" select="ancestor::mod:XmlTree/mod:config/mod:expandLevels"/>
-		<xsl:variable name="expandLevels">
-			<xsl:choose>
-				<xsl:when test="$expandNode">
-					<xsl:apply-templates select="$expandNode/node()"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="'*'"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		<xsl:if test="$expandLevels != '*' and $level &gt; $expandLevels">
-			<xsl:attribute name="style">display:none</xsl:attribute>
-		</xsl:if>
+		<span class="switch"><xsl:value-of select="$text"/></span>
 	</xsl:template>
 
 	<xsl:template match="*" mode="xmltree-class">
@@ -433,8 +427,10 @@
 		</xsl:attribute>
 	</xsl:template>
 
-	<xsl:template match="*" mode="xhighlightclass">
+	<xsl:template match="*" mode="class-attribute">
 		<xsl:param name="class" select="'element'"/>
+		<xsl:param name="level"/>
+		<xsl:variable name="expandLevels" select="basic:isnull(ancestor::mod:XmlTree/mod:config/mod:expandLevels/text(), '*')"/>
 		<xsl:variable name="hlElements" select="ancestor::mod:XmlTree/mod:config/mod:highlight/mod:element"/>
 		<xsl:variable name="hlNamespaces" select="ancestor::mod:XmlTree/mod:config/mod:highlight/mod:namespace"/>
 		<xsl:attribute name="class">
@@ -448,7 +444,29 @@
 				count($hlNamespaces[.= namespace-uri(current())]) != 0">
 					<xsl:text> highlighted</xsl:text>
 			</xsl:if>
+			<xsl:if test="$expandLevels != '*' and $level &gt; number($expandLevels)">
+				<xsl:text> collapsed</xsl:text>
+			</xsl:if>
 		</xsl:attribute>
+	</xsl:template>
+
+	<xsl:template name="split">
+		<xsl:param name="text" select="."/>
+		<xsl:param name="index" select="1"/>
+		<xsl:param name="charcount" select="20"/>
+		<xsl:param name="wrapelem" select="'div'"/>
+		<xsl:variable name="fragment" select="substring($text, $index, $charcount)"/>
+		<xsl:element name="{$wrapelem}">
+			<xsl:value-of select="$fragment"/>
+		</xsl:element>
+		<xsl:if test="string-length(.) > ($index + $charcount)">
+			<xsl:call-template name="split">
+				<xsl:with-param name="text" select="$text"/>
+				<xsl:with-param name="index" select="$index + $charcount"/>
+				<xsl:with-param name="charcount" select="$charcount"/>
+				<xsl:with-param name="wrapelem" select="$wrapelem"/>
+			</xsl:call-template>
+		</xsl:if>
 	</xsl:template>
 
 </xsl:stylesheet>

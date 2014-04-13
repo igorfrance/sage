@@ -16,12 +16,9 @@
 namespace Sage.DevTools.Modules
 {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Text.RegularExpressions;
 	using System.Xml;
-
-	using Kelp.Extensions;
 
 	using log4net;
 	using Sage.Modules;
@@ -38,13 +35,11 @@ namespace Sage.DevTools.Modules
 			SageContext context = configuration.Context;
 			ModuleResult result = new ModuleResult(moduleElement);
 
-			XmlNode pathNode = moduleElement.SelectSingleNode("mod:config/mod:source", nm);
-			XmlNode selectionNode = moduleElement.SelectSingleNode("mod:config/mod:xpath", nm);
-			XmlNode noincludesNode = moduleElement.SelectSingleNode("mod:config/mod:noIncludes", nm);
-			XmlNodeList namespaceNodes = moduleElement.SelectNodes("mod:config/mod:namespaces/mod:namespace", nm);
+			XmlNode pathNode = moduleElement.SelectSingleNode("mod:config/mod:source/mod:path", nm);
+			XmlNode selectionNode = moduleElement.SelectSingleNode("mod:config/mod:source/mod:xpath", nm);
+			XmlNodeList namespaceNodes = moduleElement.SelectNodes("mod:config/mod:source/mod:namespaces/mod:namespace", nm);
 
 			string xpath = selectionNode != null ? selectionNode.InnerText : null;
-			bool skipIncludes = noincludesNode != null && noincludesNode.InnerText.ContainsAnyOf("yes", "1", "true");
 
 			if (pathNode == null)
 			{
@@ -78,15 +73,7 @@ namespace Sage.DevTools.Modules
 			XmlNode selection;
 			try
 			{
-				if (skipIncludes)
-				{
-					selection = new XmlDocument();
-					((XmlDocument) selection).Load(resolved);
-				}
-				else
-				{
-					selection = context.Resources.LoadXml(resolved);
-				}
+				selection = context.Resources.LoadXml(resolved);
 			}
 			catch (Exception ex)
 			{

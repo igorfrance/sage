@@ -1,4 +1,4 @@
-﻿aeon.dev.registerNamespace("sage.devtools");
+﻿atom.type.registerNamespace("sage.devtools");
 
 sage.devtools.xmlroot = new function xmlroot()
 {
@@ -34,6 +34,8 @@ sage.devtools.xmlroot = new function xmlroot()
 			else
 				expandElement($(element));
 		});
+		
+		1234567890
 	}
 
 	function onToolbarSwitchClick()
@@ -58,13 +60,13 @@ sage.devtools.xmlroot = new function xmlroot()
 
 	function expandElement(element)
 	{
-		element.find("> .children, > pre, > .text").show();
+		element.removeClass("collapsed")
 		element.find("> .switch").text("-");
 	}
 
 	function collapseElement(element)
 	{
-		element.find("> .children, > pre, > .text").hide();
+		element.addClass("collapsed")
 		element.find("> .switch").text("+");
 	}
 

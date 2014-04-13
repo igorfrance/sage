@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html
-	xmlns:xi="http://www.w3.org/2003/XInclude"
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd"
@@ -8,30 +7,107 @@
 
 	<head>
 		<title>XML Tree</title>
-		<link type="text/css" rel="stylesheet" href="${assetpath}/css/devtools.css"/>
 	</head>
 	<body>
-		<h1>XML Tree</h1>
+		<div id="wrapper">
+			<div id="container">
+				<hgroup class="title">
+					<h1>XML Tree Module</h1>
+					<h2><a href="../">Sage.DevTools</a></h2>
+				</hgroup>
+				<p class="overview">Provides a module that renders XML fragments as expandable HTML trees</p>
+				<h3>Syntax</h3>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:preserve>
+							<mod:element>element-name</mod:element>
+						</mod:preserve>
+						<mod:expandLevels>2</mod:expandLevels>
+					</mod:config>
+					<mod:data>
+						<sage:literal>
+							<mod:XmlTree>
+								<mod:config>
+									<mod:source>
+										<mod:path>../data/mydocument.xml</mod:path>
+										<mod:xpath>//p:section</mod:xpath>
+										<mod:namespaces>
+											<mod:namespace prefix="p">http://mycompany.net/namespaces/progressive.xsd</mod:namespace>
+										</mod:namespaces>
+									</mod:source>
+									<mod:preserve>
+										<mod:element>element1</mod:element>
+										<mod:element>element2</mod:element>
+										<mod:element>...</mod:element>
+									</mod:preserve>
+									<mod:expandLevels>3</mod:expandLevels>
+									<mod:highlight>
+										<mod:element>element1</mod:element>
+										<mod:element>element2</mod:element>
+										<mod:attribute>attrib1</mod:attribute>
+										<mod:attribute>attrib2</mod:attribute>
+										<mod:namespace>http://www.cycle99.com/schemas/sage/internationalization.xsd</mod:namespace>
+									</mod:highlight>
+									<mod:wrapChars>90</mod:wrapChars>
+									<mod:show namespaces="false" toolbar="false" wrapped="false"/>
+								</mod:config>
+							</mod:XmlTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Elements</h3>
+				<dl class="elements indent">
+					<dt>mod:source</dt>
+					<dd>...</dd>
+					<dt>mod:source/mod:path</dt>
+					<dd>...</dd>
+					<dt>mod:source/mod:xpath</dt>
+					<dd>...</dd>
+					<dt>mod:source/mod:namespaces/mod:namespace</dt>
+					<dd>...</dd>
+					<dt>mod:preserve/mod:element</dt>
+					<dd>...</dd>
+					<dt>mod:expandLevels</dt>
+					<dd>...</dd>
+					<dt>mod:wrapChars</dt>
+					<dd>...</dd>
+					<dt>mod:highlight/mod:element</dt>
+					<dd>...</dd>
+					<dt>mod:highlight/mod:attribute</dt>
+					<dd>...</dd>
+					<dt>mod:highlight/mod:namespace</dt>
+					<dd>...</dd>
+					<dt>mod:show</dt>
+					<dd>...</dd>
+				</dl>
 
-		<mod:XmlTree>
-			<mod:data xml:space="default">
-				<sage:literal>
-					<intl:variables>
-						<intl:variable id="supernovaUrl">
-							<intl:value locale="uk">http://shop.adidas.co.uk/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
-							<intl:value locale="de">http://shop.adidas.de/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
-							<intl:value locale="nl">http://shop.adidas.nl/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
-							<intl:value locale="fr">http://shop.adidas.fr/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
-							<intl:value locale="ca">http://www.shopadidas.ca/pages/products/productListPage.jsf?;c=Categories~Sports~SRunning&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
-							<intl:value locale="ru">http://shop.adidas.ru/on/demandware.store/</intl:value>
-							<intl:value locale="kr">http://shop.adidas.co.kr/PF050101.action?S_PROD_NM=%EC%88%98%ED%8D%BC%EB%85%B8%EB%B0%94</intl:value>
-							<intl:value locale="us">http://www.shopadidas.com/N?searchTerm=adidas_+Supernova&amp;cm_sp=Brand_Running-_-Footwear-_-Shop_SupernovaGlide</intl:value>
-							<intl:value locale="jp">http://shop.adidas.jp/pc/item/?cat2Id=adisn</intl:value>
-						</intl:variable>
-					</intl:variables>
-				</sage:literal>
-			</mod:data>
-		</mod:XmlTree>
+				<p class="overview">Example 1</p>
+				<h3>Configuration</h3>
+
+				<h3>Result</h3>
+				<mod:XmlTree>
+					<mod:data xml:space="default">
+						<sage:literal>
+							<intl:variables>
+								<intl:variable id="supernovaUrl">
+									<intl:value locale="uk">http://shop.adidas.co.uk/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+									<intl:value locale="de">http://shop.adidas.de/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+									<intl:value locale="nl">http://shop.adidas.nl/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+									<intl:value locale="fr">http://shop.adidas.fr/pages/products/productListPage.jsf?;c=Branding~BSports&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+									<intl:value locale="ca">http://www.shopadidas.ca/pages/products/productListPage.jsf?;c=Categories~Sports~SRunning&#39;S1_ROOT~SRunning&#39;S2_ROOT~SRSupernova;</intl:value>
+									<intl:value locale="ru">http://shop.adidas.ru/on/demandware.store/</intl:value>
+									<intl:value locale="kr">http://shop.adidas.co.kr/PF050101.action?S_PROD_NM=%EC%88%98%ED%8D%BC%EB%85%B8%EB%B0%94</intl:value>
+									<intl:value locale="us">http://www.shopadidas.com/N?searchTerm=adidas_+Supernova&amp;cm_sp=Brand_Running-_-Footwear-_-Shop_SupernovaGlide</intl:value>
+									<intl:value locale="jp">http://shop.adidas.jp/pc/item/?cat2Id=adisn</intl:value>
+								</intl:variable>
+							</intl:variables>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+			</div>
+		</div>
+
+<!--
 
 		<h2>Embedding the xml directly in mod:data element</h2>
 		<mod:XmlTree>
@@ -42,19 +118,20 @@
 			</mod:data>
 		</mod:XmlTree>
 
-		<h2>X-including an xml in mod:data element using xi:include element</h2>
+		<h2>X-including an xml in mod:data element using sage:include element</h2>
 		<mod:XmlTree>
 			<mod:data>
-				<xi:include href="../shared/elements.html"/>
+				<sage:include href="../shared/elements.html"/>
 			</mod:data>
 		</mod:XmlTree>
 
-		<h2>Showing the xi:include element without processing it</h2>
+		<h2>Showing the sage:include element without processing it</h2>
 		<mod:XmlTree>
-			<mod:config>
-				<mod:source>example.html</mod:source>
-				<mod:noIncludes>true</mod:noIncludes>
-			</mod:config>
+			<mod:data>
+				<sage:literal>
+					<sage:include href="../shared/elements.html"/>
+				</sage:literal>
+			</mod:data>
 		</mod:XmlTree>
 
 		<h2>Loading an external document</h2>
@@ -89,14 +166,14 @@
 					<mod:MastHead>
 						<mod:config>
 							<mod:mastheads>
-								<xi:include href="configuration/mastheads/chewy_mango.xml"/>
-								<xi:include href="configuration/mastheads/tropical_strawberry.xml"/>
+								<sage:include href="configuration/mastheads/chewy_mango.xml"/>
+								<sage:include href="configuration/mastheads/tropical_strawberry.xml"/>
 								<intl:localize>
 									<intl:if locale="jp">
-										<xi:include href="configuration/mastheads/winter_surprise_v1.xml"/>
+										<sage:include href="configuration/mastheads/winter_surprise_v1.xml"/>
 									</intl:if>
 									<intl:else>
-										<xi:include href="configuration/mastheads/winter_surprise_v2.xml"/>
+										<sage:include href="configuration/mastheads/winter_surprise_v2.xml"/>
 									</intl:else>
 								</intl:localize>
 							</mod:mastheads>
@@ -118,14 +195,14 @@
 					<mod:MastHead>
 						<mod:config>
 							<mod:mastheads>
-								<xi:include href="configuration/mastheads/chewy_mango.xml"/>
-								<xi:include href="configuration/mastheads/tropical_strawberry.xml"/>
+								<sage:include href="configuration/mastheads/chewy_mango.xml"/>
+								<sage:include href="configuration/mastheads/tropical_strawberry.xml"/>
 								<intl:localize>
 									<intl:if locale="jp">
-										<xi:include href="configuration/mastheads/winter_surprise_v1.xml"/>
+										<sage:include href="configuration/mastheads/winter_surprise_v1.xml"/>
 									</intl:if>
 									<intl:else>
-										<xi:include href="configuration/mastheads/winter_surprise_v2.xml"/>
+										<sage:include href="configuration/mastheads/winter_surprise_v2.xml"/>
 									</intl:else>
 								</intl:localize>
 							</mod:mastheads>
@@ -134,6 +211,6 @@
 				</sage:literal>
 			</mod:data>
 		</mod:XmlTree>
-
+-->
 	</body>
 </html>

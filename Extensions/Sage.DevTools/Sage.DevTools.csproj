@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\dictionary\en.xml" />
     <Content Include="assets\modules\dev\DeveloperToolbar\DeveloperToolbar.css" />
     <Content Include="assets\modules\dev\DeveloperToolbar\DeveloperToolbar.js" />
     <Content Include="assets\modules\dev\DeveloperToolbar\DeveloperToolbar.xsl" />
@@ -180,15 +181,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="assets\modules\dev\SyntaxHighlighter\SyntaxHighlighter.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="assets\modules\dev\ViewInspector\ViewInspector.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="assets\modules\dev\XmlTree\XmlTree.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

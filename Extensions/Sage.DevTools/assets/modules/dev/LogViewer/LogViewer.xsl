@@ -16,7 +16,7 @@
 				</xsl:if>
 			</xsl:attribute>
 			<div class="header">
-				<table width="100%" cellpadding="0" cellspacing="0">
+				<table>
 					<colgroup>
 						<col width="60"/>
 						<col width="60"/>
@@ -34,7 +34,14 @@
 				</table>
 			</div>
 			<div class="content">
-				<xsl:apply-templates select="mod:data/mod:log"/>
+				<xsl:choose>
+					<xsl:when test="count(mod:data/mod:log/mod:line) = 0">
+						<h4 class="empty">No log data</h4>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:apply-templates select="mod:data/mod:log"/>
+					</xsl:otherwise>
+				</xsl:choose>
 			</div>
 		</div>
 	</xsl:template>

@@ -1,11 +1,181 @@
 ﻿<!DOCTYPE html>
-<html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+	xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>Directory tree</title>
+		<title>Directory Tree Module - Dev Tools - Sage</title>
 	</head>
 	<body>
-		<h1>This is actually a tooltip test right now.</h1>
-
-		<iframe src="/dev/log/634649020870892283" style="width: 600px; height: 400px;"></iframe>
+		<div id="wrapper">
+			<div id="container">
+				<hgroup class="title">
+					<h1>Directory Tree Module</h1>
+					<h2><a href="../">Sage.DevTools</a></h2>
+				</hgroup>
+				<p class="overview">Provides a module that reads directories.</p>
+				<h3>Syntax</h3>
+				<div class="indent">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<mod:DirectoryTree>
+									<mod:config>
+										<mod:path>path/to/directory/to/scan</mod:path>
+										<mod:absolutePaths />
+										<mod:recursive />
+										<mod:directoriesOnly />
+										<mod:filesOnly />
+										<mod:pattern>*.xml;*.txt</mod:pattern>
+										<mod:expression>^(?!test-).*\.xml$</mod:expression>
+									</mod:config>
+								</mod:DirectoryTree>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+				</div>
+				<h3>Elements</h3>
+				<dl class="elements indent">
+					<dt>mod:path</dt>
+					<dd>
+						Specifies the path of the directory to read. Unless absolute, the path will be server-mapped within the c
+						urrent application.
+					</dd>
+					<dt>mod:absolutePaths</dt>
+					<dd>If present, Resulting elements will, in addition to the relative path, also have their absolute attrib
+						ute set.</dd>
+					<dt>mod:recursive</dt>
+					<dd>If present, the path's subdirectories should be scanned recursively.</dd>
+					<dt>mod:directoriesOnly</dt>
+					<dd>If present, only directories will be returned.</dd>
+					<dt>mod:filesOnly</dt>
+					<dd>If present, the only files will be returned. Note that if both directoriesOnly and filesOnly options a
+						re specified, only the files will be returned.</dd>
+					<dt>mod:pattern</dt>
+					<dd>File pattern to match (e.g. *.txt). Optional. Default is '*'.</dd>
+					<dt>mod:expression</dt>
+					<dd>The regular expression string that the files and/or folders should match to be returned. Optional.</dd>
+				</dl>
+				<p class="overview">Reading the current directory</p>
+				<h3>Configuration:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:DirectoryTree>
+								<mod:config>
+									<mod:path>.</mod:path>
+								</mod:config>
+							</mod:DirectoryTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Result:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<mod:DirectoryTree>
+							<mod:config>
+								<mod:path>.</mod:path>
+							</mod:config>
+						</mod:DirectoryTree>
+					</mod:data>
+				</mod:XmlTree>
+				<p class="overview">Reading the CSS directory</p>
+				<h3>Configuration:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:DirectoryTree>
+								<mod:config>
+									<mod:path>~/assets/css</mod:path>
+								</mod:config>
+							</mod:DirectoryTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Result:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<mod:DirectoryTree>
+							<mod:config>
+								<mod:path>~/assets/css</mod:path>
+							</mod:config>
+						</mod:DirectoryTree>
+					</mod:data>
+				</mod:XmlTree>
+				<p class="overview">Using a file pattern</p>
+				<h3>Configuration:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:DirectoryTree>
+								<mod:config>
+									<mod:path>~/assets/css</mod:path>
+									<mod:pattern>*.css</mod:pattern>
+								</mod:config>
+							</mod:DirectoryTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Result:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<mod:DirectoryTree>
+							<mod:config>
+								<mod:path>~/assets/css</mod:path>
+								<mod:pattern>*.css</mod:pattern>
+							</mod:config>
+						</mod:DirectoryTree>
+					</mod:data>
+				</mod:XmlTree>
+				<p class="overview">Using an expression</p>
+				<h3>Configuration:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:DirectoryTree>
+								<mod:config>
+									<mod:path>~/assets/css</mod:path>
+									<mod:expression>ubuntu</mod:expression>
+								</mod:config>
+							</mod:DirectoryTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Result:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<mod:DirectoryTree>
+							<mod:config>
+								<mod:path>~/assets/css</mod:path>
+								<mod:expression>ubuntu</mod:expression>
+							</mod:config>
+						</mod:DirectoryTree>
+					</mod:data>
+				</mod:XmlTree>
+				<p class="overview">Reading the root directory</p>
+				<h3>Configuration:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<sage:literal>
+							<mod:DirectoryTree>
+								<mod:config>
+									<mod:path>~/</mod:path>
+								</mod:config>
+							</mod:DirectoryTree>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Result:</h3>
+				<mod:XmlTree>
+					<mod:data>
+						<mod:DirectoryTree>
+							<mod:config>
+								<mod:path>~/</mod:path>
+							</mod:config>
+						</mod:DirectoryTree>
+					</mod:data>
+				</mod:XmlTree>
+			</div>
+		</div>
 	</body>
 </html>

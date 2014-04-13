@@ -19,8 +19,8 @@
 
 .logviewer .content
 	{ position: absolute; left: 0; right: 0; top: 17px; bottom: 0; z-index: 0; overflow: auto; }
-.logviewer .content table
-	{ }
+.logviewer .content h4.empty
+	{ text-align: center; margin-top: 20px; font-size: 20px;}
 .logviewer .content td
 	{ padding: 0px; overflow: hidden; padding: 2px; }
 .logviewer .content td div

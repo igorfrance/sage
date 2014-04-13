@@ -6,13 +6,24 @@
 	xmlns="http://www.w3.org/1999/xhtml">
 
 	<xsl:template match="mod:DeveloperToolbar">
-		<div id="developer-toolbar"
-				data-basehref="{/sage:view/sage:request/@basehref}"
-				data-thread="{/sage:view/sage:request/@thread}">
+		<div id="developer-toolbar">
+			<xsl:attribute name="data-thread">
+				<xsl:value-of select="/sage:view/sage:request/@thread"/>
+			</xsl:attribute>
+			<xsl:attribute name="data-basehref">
+				<xsl:value-of select="/sage:view/sage:request/@basehref"/>
+			</xsl:attribute>
 
 			<div class="background"></div>
 			<div class="content">
-				<div class="icon tooltip" data-hideOn="click, blur" data-useFades="true" title="Unknown status"></div>
+				<div class="icon tooltip" title="Unknown status">
+					<xsl:attribute name="data-hideOn">
+						<xsl:text>click, blur</xsl:text>
+					</xsl:attribute>
+					<xsl:attribute name="data-useFades">
+						<xsl:text>true</xsl:text>
+					</xsl:attribute>
+				</div>
 				<div class="status">
 					<span class="text">
 						<label></label>
@@ -24,7 +35,10 @@
 				<div class="commands">
 					<span class="group meta">
 						<xsl:for-each select="mod:data/mod:meta/mod:view">
-							<span class="button {@name} tooltip" title="{.}" data-meta="{@name}">
+							<span class="button {@name} tooltip" title="{.}">
+								<xsl:attribute name="data-meta">
+									<xsl:value-of select="@name"/>
+								</xsl:attribute>
 								<label><xsl:value-of select="@name"/></label>
 							</span>
 						</xsl:for-each>

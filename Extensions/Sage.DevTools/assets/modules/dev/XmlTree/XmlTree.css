@@ -4,7 +4,7 @@
 	{ overflow: auto; margin-top: -18px;  }
 .xmltree,
 .xmltree pre
-	{ font: 10pt Consolas; }
+	{ font-size: 10pt; font-family: Consolas, "Courier New", Courier, Monaco, "Lucida Console", monospace; }
 .xmlroot *
 	{ text-align: left; }
 .xmlroot
@@ -51,17 +51,31 @@
 .xmltree .toolbar .toggleall
 	{ background-image: url(images/collapseall.png); }
 
+
+
 /**
  * Tree structure
  */
 .xmlroot pre
-	{ margin: 0px; }
+	{ margin: 0px; white-space: pre-wrap; }
 .xmlroot .element > .children
-	{ margin-left: 20px; width: 100%; }
+	{ margin-left: 20px; /* width: 100%; */ }
 .xmlroot .element.ce > .children
 	{ margin-left: 10px; }
 .xmlroot .element > .children > .close
 	{ clear: left; margin-left: -10px; }
+
+.xmlroot .element > .children.inline
+	{ display: inline; margin-left: 0; }
+.xmlroot .element > .children.inline > .close
+	{ display: inline; clear: none; margin-left: 0; }
+
+.xmltree .element.collapsed > .children
+	{ display: none; }
+.xmltree .element.collapsed > .text
+	{ display: none; }
+
+
 /*.xmlroot .element.ce > .children > .close
 	{ clear: left; margin-left: -20px; }*/
 .xmlroot .attrValue
@@ -95,11 +109,17 @@
 .xmlroot .comment .markup.close
 	{ margin-left: 10px;  }
 .xmlroot .comment.collapsible pre
-	{ clear: left;   }
+	{ clear: left; margin-left: 20px;  }
 .xmlroot .comment.collapsible .close
 	{ clear: left;   }
 .xmlroot .comment.collapsible.closed .close
 	{ clear: none; margin-left: 5px;  }
+.xmltree .comment.collapsed > pre
+	{ display: none; }
+.xmltree .comment.collapsed > .close
+	{ clear: none; margin-left: 0; }
+.xmltree .comment.collapsed > .close:before
+	{ content: "..."; margin-right: 10px; }
 
 /**
  * Wrapping
@@ -120,7 +140,7 @@
 .xmlroot.wrap .element > .children > .close
 	{ clear: none; margin-left: 0px; }
 .xmlroot.wrap .element.ce > .children > .close
-	{ clear: none; margin-left: -10px; }
+	{ clear: left; margin-left: -10px; }
 .xmlroot.wrap .element.ce > .children
 	{ clear: left; }
 .xmlroot.namespaces .nsattrib
