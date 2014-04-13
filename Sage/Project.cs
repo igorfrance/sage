@@ -227,6 +227,19 @@ namespace Sage
 
 			return result;
 		}
+		
+		internal static ExtensionInfo GetExtension(Controller controller)
+		{
+			Contract.Requires<ArgumentNullException>(controller != null);
+
+			foreach (var extensionInfo in Project.Extensions.Values)
+			{
+				if (extensionInfo.Assemblies.Contains(controller.GetType().Assembly))
+					return extensionInfo;
+			}
+
+			return null;
+		}
 
 		internal static void Start(HttpContextBase httpContext)
 		{
