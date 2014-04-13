@@ -16,16 +16,20 @@
 namespace Sage.Views
 {
 	using System;
+	using System.Linq;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Xml;
 
+	using Kelp;
 	using Kelp.Extensions;
 
 	using log4net;
 	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.Modules;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Represents the xml configuration for the controller views.
@@ -50,29 +54,64 @@ namespace Sage.Views
 			this.Name = viewInfo.Action;
 			this.Controller = controller;
 			this.Info = viewInfo;
-			this.Modules = new Dictionary<string, IModule>();
+			this.Modules = new OrderedDictionary<string, IModule>();
 
-			SageModuleFactory factory = new SageModuleFactory();
+			if (string.IsNullOrWhiteSpace(ModuleSelectXPath))
+				return;
 
-			if (!string.IsNullOrWhiteSpace(ModuleSelectXPath))
+			var moduleDependencies = new Dictionary<string, List<string>>(); 
+			var moduleNodes = this.Info.ConfigDocument.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
+			var moduleList = moduleNodes.ToList();
+
+			// tag all modules with unique ids
+			for (int i = 0; i < moduleNodes.Count; i++)
 			{
-				XmlNodeList moduleNodes = this.Info.ConfigDocument.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
-				log.DebugFormat("Found {0} module nodes in view configuration.", moduleNodes.Count);
+				XmlElement moduleElem = (XmlElement) moduleNodes[i];
+				string moduleId = moduleElem.GetAttribute("id");
+				if (string.IsNullOrEmpty(moduleId))
+					moduleId = string.Format(ModuleIdPattern, i);
 
-				foreach (XmlElement moduleElem in moduleNodes)
+				moduleElem.SetAttribute("id", moduleId);
+				moduleDependencies.Add(moduleId, new List<string>());
+			}
+
+			// determine module dependencies
+			foreach (XmlElement moduleElem in moduleNodes)
+			{
+				string moduleId = moduleElem.GetAttribute("id");
+				var parent = moduleElem.ParentNode;
+				while (parent != null)
 				{
-					string moduleId = moduleElem.GetAttribute("id");
-					if (string.IsNullOrEmpty(moduleId))
-						moduleId = string.Format(ModuleIdPattern, this.Modules.Count);
+					if (moduleList.Contains(parent))
+					{
+						string parentId = ((XmlElement) parent).GetAttribute("id");
+						moduleDependencies[parentId].Add(moduleId);
+						moduleId = parentId;
+					}
 
-					if (this.Modules.ContainsKey(moduleId))
-						throw new ConfigurationError(string.Format(
-							"Duplicate module id: '{0}'. Make sure all modules in the view configuration have unique ids.", moduleId));
-
-					IModule module = factory.CreateModule(moduleElem);
-					this.Modules.Add(moduleId, module);
-					moduleElem.SetAttribute("id", moduleId);
+					parent = parent.ParentNode;
 				}
+			}
+
+			// order the modules by processing order (nested modules processed first)
+			moduleList = moduleList.OrderBy((node1, node2) =>
+			{
+				var parentId = ((XmlElement) node1).GetAttribute("id");
+				var childId = ((XmlElement) node2).GetAttribute("id");
+
+				var contains = moduleDependencies[parentId].Contains(childId);
+				return contains ? 1 : 0;
+			}).ToList();
+
+			// create the modules and populate the modules dictionary
+			SageModuleFactory factory = new SageModuleFactory();
+			foreach (XmlElement moduleElem in moduleList)
+			{
+				var moduleId = moduleElem.GetAttribute("id");
+				IModule module = factory.CreateModule(moduleElem);
+				this.Modules.Add(moduleId, module);
+
+				log.DebugFormat("Mapped element {0} to module {1} ({2}).", moduleElem.LocalName, module.GetType().Name, module.GetType().FullName);
 			}
 		}
 
@@ -139,7 +178,7 @@ namespace Sage.Views
 			}
 		}
 
-		internal Dictionary<string, IModule> Modules { get; private set; }
+		internal OrderedDictionary<string, IModule> Modules { get; private set; }
 
 		/// <summary>
 		/// Creates a new <see cref="ViewConfiguration"/> instance for the specified <paramref name="controller"/> and
@@ -166,46 +205,42 @@ namespace Sage.Views
 		{
 			ViewInput input = new ViewInput(this, configElement);
 
-			if (!string.IsNullOrWhiteSpace(ModuleSelectXPath))
+			foreach (string moduleId in this.Modules.Keys)
 			{
-				XmlNodeList moduleNodes = input.ConfigNode.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
+				var moduleElement = (XmlElement) input.ConfigNode.SelectSingleNode(string.Format("//mod:*[@id='{0}']", moduleId), XmlNamespaces.Manager);
+				string moduleName = moduleElement.LocalName;
 
-				foreach (XmlElement moduleElement in moduleNodes)
+				ModuleConfiguration moduleConfig = null;
+				if (Context.ProjectConfiguration.Modules.TryGetValue(moduleName, out moduleConfig))
 				{
-					string moduleName = moduleElement.LocalName;
+					XmlElement moduleDefaults = moduleConfig.GetDefault(this.Context);
+					if (moduleDefaults != null)
+						this.SynchronizeElements(moduleElement, moduleDefaults);
+				}
 
-					ModuleConfiguration moduleConfig = null;
-					if (Context.ProjectConfiguration.Modules.TryGetValue(moduleName, out moduleConfig))
+				IModule module = this.Modules[moduleId];
+				ModuleResult result = null;
+				try
+				{
+					result = module.ProcessElement(moduleElement, this);
+				}
+				catch (Exception ex)
+				{
+					log.ErrorFormat("Error procesing module element {0}: {1}", moduleElement.Name, ex.Message);
+				}
+				finally
+				{
+					if (result == null)
 					{
-						XmlElement moduleDefaults = moduleConfig.GetDefault(this.Context);
-						if (moduleDefaults != null)
-							this.SynchronizeElements(moduleElement, moduleDefaults);
+						moduleElement.ParentNode.RemoveChild(moduleElement);
 					}
-
-					IModule module = this.Controller.CreateModule(moduleElement);
-					ModuleResult result = null;
-					try
+					else
 					{
-						result = module.ProcessElement(moduleElement, this);
-					}
-					catch (Exception ex)
-					{
-						log.ErrorFormat("Error procesing module element {0}: {1}", moduleElement.Name, ex.Message);
-					}
-					finally
-					{
-						if (result == null)
+						input.AddModuleResult(moduleName, result);
+						if (result.ResultElement != null)
 						{
-							moduleElement.ParentNode.RemoveChild(moduleElement);
-						}
-						else
-						{
-							input.AddModuleResult(moduleName, result);
-							if (result.ResultElement != null)
-							{
-								XmlNode newElement = input.ConfigNode.OwnerDocument.ImportNode(result.ResultElement, true);
-								moduleElement.ParentNode.ReplaceChild(newElement, moduleElement);
-							}
+							XmlNode newElement = moduleElement.OwnerDocument.ImportNode(result.ResultElement, true);
+							moduleElement.ParentNode.ReplaceChild(newElement, moduleElement);
 						}
 					}
 				}
