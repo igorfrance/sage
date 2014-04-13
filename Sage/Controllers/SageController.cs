@@ -20,6 +20,7 @@ namespace Sage.Controllers
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text.RegularExpressions;
 	using System.Web.Mvc;
 	using System.Web.Routing;
 	using System.Xml;
@@ -122,6 +123,26 @@ namespace Sage.Controllers
 		/// it possible to have create views that are shared across all categories in a multi-category project.
 		/// </remarks>
 		internal bool IsShared { get; private set; }
+
+		/// <summary>
+		/// Gets the path template of the directory from which this controller view templates and/or configuration should be loaded.
+		/// </summary>
+		internal string ViewPathTemplate
+		{
+			get
+			{
+				var viewPath = this.IsShared ? this.Context.Path.SharedViewPath : this.Context.Path.ViewPath;
+				var extensionInfo = Project.GetExtension(this);
+				if (extensionInfo != null)
+				{
+					viewPath = Regex.Replace(viewPath, "^~?/", string.Format("{0}{1}/", 
+						this.Context.Path.Substitute(this.Context.ProjectConfiguration.PathTemplates.Extension), 
+						extensionInfo.Name));
+				}
+
+				return viewPath;
+			}
+		}
 
 		/// <summary>
 		/// Sets the HTTP status to not found (404) and returns an <see cref="EmptyResult"/>.
