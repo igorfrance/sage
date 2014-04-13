@@ -50,6 +50,7 @@ namespace Sage.Views
 			this.Action = viewConfiguration.Info.Action;
 			this.ViewConfiguration = viewConfiguration;
 			this.ModuleResults = new Dictionary<string, List<ModuleResult>>();
+			this.Resources = new List<Resource>();
 		}
 
 		/// <summary>
@@ -86,6 +87,8 @@ namespace Sage.Views
 
 				this.autoResources.AddRange(library.Resources);
 			}
+
+			this.AddViewResources(autoResources);
 		}
 
 		/// <summary>
@@ -98,13 +101,8 @@ namespace Sage.Views
 		/// </summary>
 		public List<Resource> Resources
 		{
-			get
-			{
-				var result = new List<Resource>(autoResources);
-				result.AddRange(moduleResources);
-
-				return result.Distinct().ToList();
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -242,6 +240,8 @@ namespace Sage.Views
 
 				this.moduleResources.AddRange(module.Resources);
 			}
+
+			this.AddViewResources(this.moduleResources);
 		}
 
 		private void AddLibraryReference(string libraryName)
@@ -261,6 +261,13 @@ namespace Sage.Views
 			}
 
 			this.moduleResources.AddRange(library.Resources);
+			this.AddViewResources(this.moduleResources);
+		}
+
+		private void AddViewResources(List<Resource> resources)
+		{
+			this.Resources.AddRange(resources);
+			this.Resources = this.Resources.Distinct().ToList();
 		}
 	}
 }
