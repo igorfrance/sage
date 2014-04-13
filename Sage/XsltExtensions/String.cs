@@ -117,7 +117,7 @@ namespace Sage.XsltExtensions
 		/// <param name="expression">The expression to look for.</param>
 		/// <param name="replacement">The replacement string to substitute with.</param>
 		/// <returns>
-		/// The processed version of speciried <paramref name="value"/>.
+		/// The processed version of specified <paramref name="value"/>.
 		/// </returns>
 		public string replace(string value, string expression, string replacement)
 		{
@@ -133,7 +133,7 @@ namespace Sage.XsltExtensions
 		/// <param name="replacement">The replacement string to substitute with.</param>
 		/// <param name="regexOptions">The regex options to use.</param>
 		/// <returns>
-		/// The processed version of speciried <paramref name="value"/>.
+		/// The processed version of specified <paramref name="value"/>.
 		/// </returns>
 		public string replace(string value, string expression, string replacement, int regexOptions)
 		{
@@ -263,6 +263,65 @@ namespace Sage.XsltExtensions
 				subject = subject.Trim(segment.ToCharArray());
 
 			return subject;
+		}
+
+		/// <summary>
+		/// Trims the source code of initial indent characters.
+		/// </summary>
+		/// <param name="subject">The subject.</param>
+		/// <returns>The trimmed version of <paramref name="subject" />.</returns>
+		public string trimSourceCode(string subject)
+		{
+			return trimSourceCode(subject, "  ");
+		}
+
+		/// <summary>
+		/// Trims the source code of initial indent characters.
+		/// </summary>
+		/// <param name="subject">The subject.</param>
+		/// <param name="tabChars">The chars to replace the tabs with.</param>
+		/// <returns>The trimmed version of <paramref name="subject" />.</returns>
+		public string trimSourceCode(string subject, string tabChars)
+		{
+			return trimSourceCode(subject, "  ", "  ");
+		}
+
+		/// <summary>
+		/// Trims the source code of initial indent characters.
+		/// </summary>
+		/// <param name="subject">The subject.</param>
+		/// <param name="tabChars">The chars to replace the tabs with.</param>
+		/// <param name="lineIndent">The indent chars to use at the start of each line.</param>
+		/// <returns>The trimmed version of <paramref name="subject" />.</returns>
+		public string trimSourceCode(string subject, string tabChars, string lineIndent)
+		{
+			if (string.IsNullOrEmpty(subject))
+				return subject;
+
+			Match match;
+			string initialSpace = string.Empty;
+
+			if ((match = Regex.Match(subject, @"^([\n\r]+)")).Success)
+			{
+				initialSpace = match.Groups[1].Value;
+				subject = Regex.Replace(subject, "^" + initialSpace, string.Empty);
+			}
+
+			if ((match = Regex.Match(subject, @"^([\s\t]+)")).Success)
+			{
+				string indent = match.Groups[1].Value;
+				string[] lines = subject.Split('\n');
+				for (int i = 0; i < lines.Length; i++)
+				{
+					lines[i] = Regex.Replace(lines[i], "^" + indent, string.Empty);
+					lines[i] = Regex.Replace(lines[i], @"\t", tabChars);
+					lines[i] = lineIndent + lines[i];
+				}
+
+				subject = string.Join("\n", lines);
+			}
+
+			return initialSpace + subject;
 		}
 
 		private string unquoteReplacement(string replacement)
