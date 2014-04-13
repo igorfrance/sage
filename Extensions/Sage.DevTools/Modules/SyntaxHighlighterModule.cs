@@ -52,6 +52,7 @@ namespace Sage.DevTools.Modules
 			XmlNode languageNode = moduleElement.SelectSingleNode("mod:config/mod:language", nm);
 			XmlElement codeNode = moduleElement.SelectSingleElement("mod:config/mod:code", nm);
 			XmlNodeList keywordGroups = moduleElement.SelectNodes("mod:config/mod:keywords/mod:group", nm);
+			XmlElement digitsNode = moduleElement.SelectSingleElement("mod:config/mod:digits", nm);
 
 			if (languageNode == null)
 				log.ErrorFormat("The required element mod:language is missing from the module configuration");
@@ -130,7 +131,6 @@ namespace Sage.DevTools.Modules
 			}
 
 			SyntaxHighlighter highlighter = new SyntaxHighlighter(languages[language], additionalGroups);
-			XmlElement digitsNode = moduleElement.SelectSingleElement("mod:config/mod:digits", nm);
 			if (digitsNode != null)
 			{
 				int lineCountDigits = 0;
@@ -158,14 +158,15 @@ namespace Sage.DevTools.Modules
 			XmlNode definitionRoot = definitionDoc.SelectSingleNode("//mod:definitions", nm);
 
 			languages = new Dictionary<string, LanguageDefinition>();
-			foreach (XmlElement languageElement in definitionRoot.SelectNodes("mod:language | mod:xmllanguage", nm))
+			foreach (XmlElement languageElement in definitionRoot.SelectNodes("mod:language", nm))
 			{
-				LanguageDefinition definition;
-				if (languageElement.LocalName == "xmllanguage")
-					definition = new ModularXmlLanguageDefinition(languageElement);
-				else
-					definition = new ModularLanguageDefinition(languageElement);
+				LanguageDefinition definition = new ModularLanguageDefinition(languageElement);
+				languages.Add(definition.Name, definition);
+			}
 
+			foreach (XmlElement languageElement in definitionRoot.SelectNodes("mod:xmllanguage", nm))
+			{
+				LanguageDefinition definition = new ModularXmlLanguageDefinition(languageElement);
 				languages.Add(definition.Name, definition);
 			}
 

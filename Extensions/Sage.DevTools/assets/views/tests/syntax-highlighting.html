@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html
-	xmlns:xi="http://www.w3.org/2003/XInclude"
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns="http://www.w3.org/1999/xhtml">
 
@@ -9,132 +9,361 @@
 		<link type="text/css" rel="stylesheet" href="${assetpath}/css/devtools.css"/>
 	</head>
 	<body>
-		<h1>Syntax Highlighter</h1>
-		<xi:include href="sageres://views/shared/elements.html"
-			xpointer="xmlns(x=http://www.w3.org/1999/xhtml) xpointer(//x:ul[@class]) "/>
+		<div id="wrapper">
+			<div id="container">
+				<hgroup class="title">
+					<h1>Syntax Highlighter</h1>
+					<h2><a href="../">Sage.DevTools</a></h2>
+				</hgroup>
+				<p class="overview">A module that provides syntax highlighting.</p>
+				<h3>Syntax</h3>
+				<div class="indent">
+					<mod:XmlTree>
+						<mod:data>
+							<sage:literal>
+								<mod:SyntaxHighlighter>
+									<mod:config>
+										<mod:language>csharp</mod:language>
+										<mod:keywords>
+											<mod:group name="type">
+												XmlDocument|SageController|ViewContext
+											</mod:group>
+											<mod:group name="delegate">
+												ViewXmlFilter
+											</mod:group>
+										</mod:keywords>
+										<mod:digits />
+										<mod:code src="path/to/source/code">... source code ...</mod:code>
+									</mod:config>
+								</mod:SyntaxHighlighter>
+							</sage:literal>
+						</mod:data>
+					</mod:XmlTree>
+				</div>
+				<h3>Elements</h3>
+				<dl class="elements indent">
+					<dt>mod:language</dt>
+					<dd>
+						Specifies the language.
+					</dd>
+					<dt>mod:keywords/mod:group</dt>
+					<dd>
+						Additional formatting groups.
+					</dd>
+					<dt>mod:digits</dt>
+					<dd>
+						...
+					</dd>
+					<dt>mod:code</dt>
+					<dd>
+						Specifies the source code. Either an external file - if <i>src</i> attribute is used - or inline
+						code.
+					</dd>
+				</dl>
+			</div>
+			<p class="overview">XSLT</p>
+			<h3>The configuration:</h3>
+			<mod:XmlTree>
+				<mod:config>
+					<mod:preserve>
+						<mod:element>mod:code</mod:element>
+					</mod:preserve>
+				</mod:config>
+				<mod:data>
+					<sage:literal>
+						<mod:SyntaxHighlighter>
+							<mod:config>
+								<mod:language>xslt</mod:language>
+								<mod:code><![CDATA[
 
-		<h2>Highlighting XSLT</h2>
-		<mod:SyntaxHighlighter>
-			<mod:config>
-				<mod:language>xslt</mod:language>
-				<mod:code><![CDATA[
+									<?xml version="1.0" encoding="utf-8"?>
+									<?xml-stylesheet type="text/xsl" href=""?>
+									<xsl:stylesheet version="1.0"
+										xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+										xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+										xmlns="http://www.w3.org/1999/xhtml"
+										exclude-result-prefixes="mod">
 
-					<?xml version="1.0" encoding="utf-8"?>
-					<?xml-stylesheet type="text/xsl" href=""?>
-					<xsl:stylesheet version="1.0"
-						xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-						xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
-						xmlns="http://www.w3.org/1999/xhtml"
-						exclude-result-prefixes="mod">
+										<xsl:template match="mod:SyntaxHighlighter">
+											<div class="syntaxbox">&#160;<xsl:value-of select="mod:data/mod:formatted" disable-output-escaping="yes" /></div>
+										</xsl:template>
 
-						<!-- multi
-						line
-						comment
-						xslt -->
-						<xsl:template match="mod:SyntaxHighlighter">
-							<div class="syntaxbox">&#160;<xsl:value-of select="mod:data/mod:formatted" disable-output-escaping="yes" /></div>
-						</xsl:template>
+									</xsl:stylesheet>
+								]]></mod:code>
+							</mod:config>
+						</mod:SyntaxHighlighter>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<h3>The rendered result:</h3>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>xslt</mod:language>
+					<mod:code><![CDATA[
 
-					</xsl:stylesheet>
-				]]></mod:code>
-			</mod:config>
-		</mod:SyntaxHighlighter>
+						<?xml version="1.0" encoding="utf-8"?>
+						<?xml-stylesheet type="text/xsl" href=""?>
+						<xsl:stylesheet version="1.0"
+							xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+							xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+							xmlns="http://www.w3.org/1999/xhtml"
+							exclude-result-prefixes="mod">
 
-		<h2>Highlighting C# with API documentation</h2>
-		<mod:SyntaxHighlighter>
-			<mod:config>
-				<mod:language>csharp</mod:language>
-				<mod:keywords>
-					<mod:group name="type">
-						XmlDocument|SageController|ViewContext
-					</mod:group>
-					<mod:group name="delegate">
-						ViewXmlFilter
-					</mod:group>
-				</mod:keywords>
-				<mod:code><![CDATA[
+							<xsl:template match="mod:SyntaxHighlighter">
+								<div class="syntaxbox">&#160;<xsl:value-of select="mod:data/mod:formatted" disable-output-escaping="yes" /></div>
+							</xsl:template>
 
-					/// <summary>
-					/// Defines the signature of a method that can be used to further filter and/or modify the XML document that is
-					/// prepared by the controller for the XSLT transformation.
-					/// </summary>
-					/// <param name="controller">The controller calling this method.</param>
-					/// <param name="viewContext">The current viewContext associated with this method call.</param>
-					/// <param name="viewXml">The view XML document being changed.</param>
-					/// <returns>The filtered version of the specified <paramref name="viewXml"/>.</returns>
-					/// <seealso cref="ViewXmlFilterAttribute"/>
-					/// <seealso cref="SageController.FilterViewXml"/>
-					delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
-
-				]]></mod:code>
-			</mod:config>
-		</mod:SyntaxHighlighter>
-
-		<h2>Highlighting javascript</h2>
-		<mod:SyntaxHighlighter>
-			<mod:config>
-				<mod:language>javascript</mod:language>
-				<mod:code><![CDATA[
-
-					/**
-					 * Tests my function.
-					 * @param {String} arg1 Argument 1
-					 * @param {String} arg2 Argument 2
-					 */
-					function testMyFunction(arg1, arg2)
-					{
-						if (arg1 > 200 && new Date().getMonth() == 11)
-							return arg2 * 4;
-
-						x |= RegExp.$1;
-
-						return arg2;
-					}
-
+						</xsl:stylesheet>
 					]]></mod:code>
-			</mod:config>
-		</mod:SyntaxHighlighter>
+				</mod:config>
+			</mod:SyntaxHighlighter>
 
-		<h2>Highlighting C# with custom keywords supplied</h2>
-		<mod:SyntaxHighlighter>
-			<mod:config>
-				<mod:language>csharp</mod:language>
-				<mod:keywords>
-					<mod:group name="type">
-						XmlNode|SageContext
-					</mod:group>
-				</mod:keywords>
-				<mod:code>
+			<p class="overview">C#</p>
+			<h2>Delegate signature with documentation</h2>
 
-					delegate XmlNode ProcessNode(XmlNode node, SageContext context);
+			<section class="indent">
+				<h3>Markup:</h3>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:preserve>
+							<mod:element>mod:code</mod:element>
+						</mod:preserve>
+					</mod:config>
+					<mod:data>
+						<sage:literal>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											XmlDocument|SageController|ViewContext
+										</mod:group>
+										<mod:group name="delegate">
+											ViewXmlFilter
+										</mod:group>
+									</mod:keywords>
+									<mod:code><![CDATA[
+										/// <summary>
+										/// Defines the signature of a method that can be used to further filter and/or modify the XML document that is
+										/// prepared by the controller for the XSLT transformation.
+										/// </summary>
+										/// <param name="controller">The controller calling this method.</param>
+										/// <param name="viewContext">The current viewContext associated with this method call.</param>
+										/// <param name="viewXml">The view XML document being changed.</param>
+										/// <returns>The filtered version of the specified <paramref name="viewXml"/>.</returns>
+										/// <seealso cref="ViewXmlFilterAttribute"/>
+										/// <seealso cref="SageController.FilterViewXml"/>
+										delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);]]>
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+				<h3>Rendered result:</h3>
+				<mod:SyntaxHighlighter>
+					<mod:config>
+						<mod:language>csharp</mod:language>
+						<mod:keywords>
+							<mod:group name="type">
+								XmlDocument|SageController|ViewContext
+							</mod:group>
+							<mod:group name="delegate">
+								ViewXmlFilter
+							</mod:group>
+						</mod:keywords>
+						<mod:code><![CDATA[
 
-				</mod:code>
-			</mod:config>
-		</mod:SyntaxHighlighter>
+							/// <summary>
+							/// Defines the signature of a method that can be used to further filter and/or modify the XML document that is
+							/// prepared by the controller for the XSLT transformation.
+							/// </summary>
+							/// <param name="controller">The controller calling this method.</param>
+							/// <param name="viewContext">The current viewContext associated with this method call.</param>
+							/// <param name="viewXml">The view XML document being changed.</param>
+							/// <returns>The filtered version of the specified <paramref name="viewXml"/>.</returns>
+							/// <seealso cref="ViewXmlFilterAttribute"/>
+							/// <seealso cref="SageController.FilterViewXml"/>
+							delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
 
-		<h2>Highlighting C# with comment-like text in string</h2>
-		<mod:SyntaxHighlighter>
-			<mod:config>
-				<mod:language>csharp</mod:language>
-				<mod:keywords>
-					<mod:group name="type">
-						NodeHandler|SageContext|XmlNode
-					</mod:group>
-					<mod:group name="enum">
-						XmlNodeType
-					</mod:group>
-					<mod:group name="value">
-						Element
-					</mod:group>
-				</mod:keywords>
-				<mod:code>
+						]]></mod:code>
+					</mod:config>
+				</mod:SyntaxHighlighter>
+			</section>
 
-					[NodeHandler(XmlNodeType.Element, "switch", "http://www.cycle99.com/schemas/sage/contextualization.xsd")]
-					internal static XmlNode ProcessContextSwitchNode(XmlNode switchNode, SageContext context)
+			<h2>Highlighting C# with custom keywords supplied</h2>
 
-				</mod:code>
-			</mod:config>
-		</mod:SyntaxHighlighter>
+			<section class="indent">
+				<h3>Markup:</h3>
+				<mod:XmlTree>
+					<mod:config>
+						<mod:preserve>
+							<mod:element>mod:code</mod:element>
+						</mod:preserve>
+					</mod:config>
+					<mod:data>
+						<sage:literal>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											XmlNode|SageContext
+										</mod:group>
+									</mod:keywords>
+									<mod:code><![CDATA[
+
+										delegate XmlNode ProcessNode(XmlNode node, SageContext context);
+
+									]]></mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+
+				<h3>Rendered result:</h3>
+				<mod:SyntaxHighlighter>
+					<mod:config>
+						<mod:language>csharp</mod:language>
+						<mod:keywords>
+							<mod:group name="type">
+								XmlNode|SageContext
+							</mod:group>
+						</mod:keywords>
+						<mod:code>
+
+							delegate XmlNode ProcessNode(XmlNode node, SageContext context);
+
+						</mod:code>
+					</mod:config>
+				</mod:SyntaxHighlighter>
+			</section>
+
+			<h2>Highlighting C# with comment-like text in string</h2>
+
+			<section class="indent">
+				<h3>Markup:</h3>
+
+				<mod:XmlTree>
+					<mod:config>
+						<mod:preserve>
+							<mod:element>mod:code</mod:element>
+						</mod:preserve>
+					</mod:config>
+					<mod:data>
+						<sage:literal>
+							<mod:SyntaxHighlighter>
+								<mod:config>
+									<mod:language>csharp</mod:language>
+									<mod:keywords>
+										<mod:group name="type">
+											NodeHandler|SageContext|XmlNode
+										</mod:group>
+										<mod:group name="enum">
+											XmlNodeType
+										</mod:group>
+										<mod:group name="value">
+											Element
+										</mod:group>
+									</mod:keywords>
+									<mod:code><![CDATA[
+										[NodeHandler(XmlNodeType.Element, "switch", "http://www.cycle99.com/schemas/sage/contextualization.xsd")]
+										internal static XmlNode ProcessContextSwitchNode(XmlNode switchNode, SageContext context)]]>
+									</mod:code>
+								</mod:config>
+							</mod:SyntaxHighlighter>
+						</sage:literal>
+					</mod:data>
+				</mod:XmlTree>
+
+				<h3>Rendered result:</h3>
+				<mod:SyntaxHighlighter>
+					<mod:config>
+						<mod:language>csharp</mod:language>
+						<mod:keywords>
+							<mod:group name="type">
+								NodeHandler|SageContext|XmlNode
+							</mod:group>
+							<mod:group name="enum">
+								XmlNodeType
+							</mod:group>
+							<mod:group name="value">
+								Element
+							</mod:group>
+						</mod:keywords>
+						<mod:code>
+
+							[NodeHandler(XmlNodeType.Element, "switch", "http://www.cycle99.com/schemas/sage/contextualization.xsd")]
+							internal static XmlNode ProcessContextSwitchNode(XmlNode switchNode, SageContext context)
+
+						</mod:code>
+					</mod:config>
+				</mod:SyntaxHighlighter>
+			</section>
+
+			<p class="overview">JavaScript</p>
+			<h3>Markup:</h3>
+			<mod:XmlTree>
+				<mod:config>
+					<mod:preserve>
+						<mod:element>mod:code</mod:element>
+					</mod:preserve>
+				</mod:config>
+				<mod:data>
+					<sage:literal>
+						<mod:SyntaxHighlighter>
+							<mod:config>
+								<mod:language>javascript</mod:language>
+								<mod:code><![CDATA[
+
+									/**
+									 * Tests my function.
+									 * @param {String} arg1 Argument 1
+									 * @param {String} arg2 Argument 2
+									 */
+									function testMyFunction(arg1, arg2)
+									{
+										if (arg1 > 200 && new Date().getMonth() == 11)
+											return arg2 * 4;
+
+										x |= RegExp.$1;
+
+										return arg2;
+									}
+
+									]]></mod:code>
+							</mod:config>
+						</mod:SyntaxHighlighter>
+					</sage:literal>
+				</mod:data>
+			</mod:XmlTree>
+			<h3>Rendered result:</h3>
+			<mod:SyntaxHighlighter>
+				<mod:config>
+					<mod:language>javascript</mod:language>
+					<mod:code><![CDATA[
+
+						/**
+						 * Tests my function.
+						 * @param {String} arg1 Argument 1
+						 * @param {String} arg2 Argument 2
+						 */
+						function testMyFunction(arg1, arg2)
+						{
+							if (arg1 > 200 && new Date().getMonth() == 11)
+								return arg2 * 4;
+
+							x |= RegExp.$1;
+
+							return arg2;
+						}
+
+						]]></mod:code>
+				</mod:config>
+			</mod:SyntaxHighlighter>
+
+		</div>
 
 	</body>
 </html>
