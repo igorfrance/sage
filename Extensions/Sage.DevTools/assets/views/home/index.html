@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
 	xmlns="http://www.w3.org/1999/xhtml">
+
 	<head>
-		<title>DevTools test page</title>
-		<meta http-equiv="cache-control" content="no-cache"/>
-		<meta http-equiv="pragma" content="no-cache"/>
+		<link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'/>
+		<title>Sage.DevTools</title>
+		<sage:basehref/>
 	</head>
 	<body>
-
-		<mod:ViewInspector>
-			<mod:config>
-				<mod:path>${apppath}tests/index.html</mod:path>
-			</mod:config>
-		</mod:ViewInspector>
-
+		<div id="wrapper">
+			<div id="container">
+				<hgroup class="title">
+					<h1>Sage.DevTools</h1>
+					<h2>The developer tools extension for Sage.</h2>
+				</hgroup>
+		    <p class="overview">
+	        Modules
+		    </p>
+		    <ul>
+	        <li><a href="tests/directory-tree.html">Directory tree</a></li>
+	        <li><a href="tests/syntax-highlighting.html">Syntax highlighter</a></li>
+	        <li><a href="tests/xml-tree.html">XML Tree</a></li>
+	        <li><a href="tests/developer-toolbar.html">Developer Toolbar</a></li>
+		    </ul>
+		    <p class="overview">
+	        Views
+		    </p>
+		    <ul>
+	        <li><a href="dev/log.html">Log view</a></li>
+	        <li><a href="dev/inspect.html">View inspector</a></li>
+		    </ul>
+			</div>
+		</div>
 	</body>
 </html>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="sage.devtools.modules"
+		elementFormDefault="qualified"
+		xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+		xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns="http://www.cycle99.com/schemas/sage/modules.xsd"
+		targetNamespace="http://www.cycle99.com/schemas/sage/modules.xsd">
+
+	<xs:include schemaLocation="http://www.cycle99.com/schemas/sage/modules.xsd"/>
+
+
+	<xs:element name="ViewInspector" type="sage:generic"/>
+	<xs:element name="LogViewer" type="sage:generic"/>
+	<xs:element name="DeveloperToolbar" type="sage:generic"/>
+
+	<xs:element name="SyntaxHighlighter">
+		<xs:complexType>
+			<xs:complexContent mixed="true">
+				<xs:extension base="sage:generic">
+					<xs:choice minOccurs="0" maxOccurs="2">
+						<xs:element name="config" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:choice>
+									<xs:element name="language" type="sage:generic" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="code" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="digits" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="keywords" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="group" type="sage:generic" minOccurs="0" maxOccurs="unbounded"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="defaults" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="definitions" minOccurs="1" maxOccurs="1">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="language" minOccurs="0" maxOccurs="unbounded">
+																<xs:complexType>
+																	<xs:choice minOccurs="0" maxOccurs="unbounded">
+																		<xs:element name="elements" minOccurs="0" maxOccurs="1">
+																			<xs:complexType>
+																				<xs:all>
+																					<xs:element name="group" minOccurs="0" maxOccurs="1">
+																						<xs:complexType mixed="true">
+																							<xs:attribute name="name" use="required"/>
+																						</xs:complexType>
+																					</xs:element>
+																				</xs:all>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="attributes" minOccurs="0" maxOccurs="1">
+																			<xs:complexType>
+																				<xs:all>
+																					<xs:element name="group" minOccurs="0" maxOccurs="1">
+																						<xs:complexType mixed="true">
+																							<xs:attribute name="name" use="required"/>
+																						</xs:complexType>
+																					</xs:element>
+																				</xs:all>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="keywords" minOccurs="0" maxOccurs="1">
+																			<xs:complexType>
+																				<xs:all>
+																					<xs:element name="group" minOccurs="0" maxOccurs="1">
+																						<xs:complexType mixed="true">
+																							<xs:attribute name="name" use="required"/>
+																						</xs:complexType>
+																					</xs:element>
+																				</xs:all>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="comments" minOccurs="0" maxOccurs="1">
+																			<xs:complexType>
+																				<xs:all>
+																					<xs:element name="comment" minOccurs="0" maxOccurs="1">
+																						<xs:complexType mixed="true"/>
+																					</xs:element>
+																					<xs:element name="linecomment" minOccurs="0" maxOccurs="1">
+																						<xs:complexType mixed="true"/>
+																					</xs:element>
+																				</xs:all>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="quotes" minOccurs="0" maxOccurs="1">
+																			<xs:complexType>
+																				<xs:sequence>
+																					<xs:element name="quote" minOccurs="0" maxOccurs="unbounded">
+																						<xs:complexType mixed="true"/>
+																					</xs:element>
+																				</xs:sequence>
+																			</xs:complexType>
+																		</xs:element>
+																		<xs:element name="escape" minOccurs="0" maxOccurs="1">
+																			<xs:complexType mixed="true"/>
+																		</xs:element>
+																		<xs:element name="regexp" minOccurs="0" maxOccurs="1">
+																			<xs:complexType mixed="true"/>
+																		</xs:element>
+																	</xs:choice>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="data" minOccurs="0" maxOccurs="1" type="sage:generic"/>
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="XmlTree">
+		<xs:complexType>
+			<xs:complexContent mixed="true">
+				<xs:extension base="sage:generic">
+					<xs:choice minOccurs="0" maxOccurs="2">
+						<xs:element name="config" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:choice>
+									<xs:element name="preserve" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="element" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType mixed="true"/>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="highlight" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="element" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType mixed="true"/>
+												</xs:element>
+												<xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType mixed="true"/>
+												</xs:element>
+												<xs:element name="namespace" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType mixed="true"/>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="expandLevels" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="source" minOccurs="1" maxOccurs="1">
+										<xs:complexType>
+											<xs:choice minOccurs="1" maxOccurs="2">
+												<xs:element name="path" type="sage:generic" minOccurs="1" maxOccurs="1"/>
+												<xs:element name="xpath" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="namespaces" minOccurs="0" maxOccurs="1">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="namespace" minOccurs="0" maxOccurs="unbounded">
+																<xs:complexType mixed="true">
+																	<xs:attribute name="prefix" use="required"/>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="text" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="phrase" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType xml:base="sage:generic" mixed="true">
+														<xs:attribute name="id" use="required"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="wrapChars" minOccurs="0" maxOccurs="1">
+										<xs:complexType mixed="true">
+											<xs:simpleContent>
+												<xs:restriction base="xs:int"/>
+											</xs:simpleContent>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="show" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:attribute name="wrapped" type="xs:boolean" default="false"/>
+											<xs:attribute name="toolbar" type="xs:boolean" default="false"/>
+											<xs:attribute name="namespaces" type="xs:boolean" default="false"/>
+											</xs:complexType>
+									</xs:element>
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="data" minOccurs="0" maxOccurs="1" type="sage:generic"/>
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="DirectoryTree">
+		<xs:complexType>
+			<xs:complexContent mixed="true">
+				<xs:extension base="sage:generic">
+					<xs:choice minOccurs="0" maxOccurs="2">
+						<xs:element name="config" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:choice>
+									<xs:element name="path" type="sage:generic" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="absolutePaths" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="recursive" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="directoriesOnly" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="filesOnly" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="pattern" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="expression" type="sage:generic" minOccurs="0" maxOccurs="1"/>
+								</xs:choice>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="data" minOccurs="0" maxOccurs="1" type="sage:generic"/>
+					</xs:choice>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

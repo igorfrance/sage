@@ -1,0 +1,2 @@
+var sage = {};
+sage.devtools = {};
