@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ namespace Sage.DevTools.Modules
 	using Kelp.Extensions;
 	using log4net;
 	using Sage.Modules;
+	using Sage.ResourceManagement;
 	using Sage.Views;
 
 	/// <summary>
@@ -33,9 +34,9 @@ namespace Sage.DevTools.Modules
 	/// The configuration element for this module has the following structure:
 	/// <para><pre>&lt;mod:config&gt;
 	///    &lt;mod:path /&gt;
-	///    &lt;mod:recursive /&gt; 
-	///    &lt;mod:foldersOnly /&gt; 
-	///    &lt;mod:filesOnly /&gt; 
+	///    &lt;mod:recursive /&gt;
+	///    &lt;mod:directoriesOnly /&gt;
+	///    &lt;mod:filesOnly /&gt;
 	///    &lt;mod:pattern /&gt;
 	///    &lt;mod:expression /&gt;
 	/// &lt;/mod:config&gt;</pre></para>
@@ -89,6 +90,7 @@ namespace Sage.DevTools.Modules
 		private Regex expression;
 		private bool recursive;
 		private bool filesOnly;
+		private bool absolutePaths;
 		private bool directoriesOnly;
 		private XmlElement moduleElement;
 
@@ -107,24 +109,27 @@ namespace Sage.DevTools.Modules
 			XmlNode valueNode;
 			if ((valueNode = configNode.SelectSingleNode("mod:path", XmlNamespaces.Manager)) == null)
 			{
-				log.ErrorFormat("The {0} element doesn't have the mod:config node. Skipping further work", typeof(DirectoryTreeModule).FullName);
+				log.ErrorFormat("The {0} element doesn't have the mod:config/mod:path node. Skipping further work", typeof(DirectoryTreeModule).FullName);
 				return new ModuleResult(moduleElement, ModuleResultStatus.MissingParameters);
 			}
 
 			this.path = valueNode.InnerText;
-			this.absolutePath = context.MapPath(path);
+			this.absolutePath = this.GetDirectoryPath(moduleElement, context);
 
-			if ((valueNode = configNode.SelectSingleNode("mod:recursive", XmlNamespaces.Manager)) != null)
-				this.recursive = valueNode.InnerText.Trim().EqualsAnyOf("yes", "true", "1");
+			if (configNode.SelectSingleNode("mod:recursive", XmlNamespaces.Manager) != null)
+				this.recursive = true;
+
+			if (configNode.SelectSingleNode("mod:filesOnly", XmlNamespaces.Manager) != null)
+				this.filesOnly = true;
+
+			if (configNode.SelectSingleNode("mod:directoriesOnly", XmlNamespaces.Manager) != null)
+				this.directoriesOnly = true;
+
+			if (configNode.SelectSingleNode("mod:absolutePaths", XmlNamespaces.Manager) != null)
+				this.absolutePaths = true;
 
 			if ((valueNode = configNode.SelectSingleNode("mod:pattern", XmlNamespaces.Manager)) != null)
 				this.pattern = valueNode.InnerText.Trim();
-
-			if ((valueNode = configNode.SelectSingleNode("mod:filesOnly", XmlNamespaces.Manager)) != null)
-				this.filesOnly = valueNode.InnerText.Trim().EqualsAnyOf("yes", "true", "1");
-
-			if ((valueNode = configNode.SelectSingleNode("mod:directoriesOnly", XmlNamespaces.Manager)) != null)
-				this.directoriesOnly = valueNode.InnerText.Trim().EqualsAnyOf("yes", "true", "1");
 
 			if ((valueNode = configNode.SelectSingleNode("mod:expression", XmlNamespaces.Manager)) != null)
 			{
@@ -149,17 +154,19 @@ namespace Sage.DevTools.Modules
 			}
 
 			ModuleResult result = new ModuleResult(moduleElement);
-			result.AppendDataNode(ScanDirectory(absolutePath));
+			result.AppendDataNode(ScanDirectory(absolutePath, context));
 
 			return result;
 		}
 
-		private XmlElement ScanDirectory(string path)
+		private XmlElement ScanDirectory(string path, SageContext context)
 		{
 			XmlDocument doc = moduleElement.OwnerDocument;
 			XmlElement result = doc.CreateElement("mod:directory", XmlNamespaces.ModulesNamespace);
 			result.SetAttribute("name", Path.GetFileName(path));
-			result.SetAttribute("path", path);
+			result.SetAttribute("path", context.Path.GetRelativeWebPath(path, true));
+			if (this.absolutePaths)
+				result.SetAttribute("absolute", path);
 
 			if (!filesOnly)
 			{
@@ -170,7 +177,7 @@ namespace Sage.DevTools.Modules
 				if (this.recursive)
 				{
 					foreach (string directory in directories)
-						result.AppendChild(ScanDirectory(directory));
+						result.AppendChild(ScanDirectory(directory, context));
 				}
 				else
 				{
@@ -178,7 +185,9 @@ namespace Sage.DevTools.Modules
 					{
 						XmlElement dirElem = result.AppendElement(doc.CreateElement("mod:directory", XmlNamespaces.ModulesNamespace));
 						dirElem.SetAttribute("name", Path.GetFileName(directory));
-						dirElem.SetAttribute("path", directory);
+						dirElem.SetAttribute("path", context.Path.GetRelativeWebPath(directory, true));
+						if (this.absolutePaths)
+							dirElem.SetAttribute("absolute", directory);
 					}
 				}
 			}
@@ -193,11 +202,35 @@ namespace Sage.DevTools.Modules
 				{
 					XmlElement fileElem = result.AppendElement(doc.CreateElement("mod:file", XmlNamespaces.ModulesNamespace));
 					fileElem.SetAttribute("name", Path.GetFileName(file));
-					fileElem.SetAttribute("path", file);
+					fileElem.SetAttribute("path", context.Path.GetRelativeWebPath(file, true));
+					if (this.absolutePaths)
+						fileElem.SetAttribute("absolute", file);
 				}
 			}
 
 			return result;
+		}
+
+		private string GetDirectoryPath(XmlElement moduleElement, SageContext context)
+		{
+			XmlNode valueNode = moduleElement.SelectSingleNode("mod:config/mod:path", XmlNamespaces.Manager);
+			if (valueNode == null || string.IsNullOrWhiteSpace(valueNode.InnerText))
+			{
+				return null;
+			}
+
+			var path = valueNode.InnerText.Trim();
+			if (Path.IsPathRooted(path))
+				return path;
+
+			if (path.StartsWith("~/"))
+				return context.MapPath(path);
+
+			CacheableXmlDocument document = (CacheableXmlDocument) moduleElement.OwnerDocument;
+
+			var uri = new Uri(document.BaseURI);
+			var directory = Path.GetDirectoryName(uri.AbsolutePath);
+			return path == "." ? directory : Path.Combine(directory, path);
 		}
 	}
 }
