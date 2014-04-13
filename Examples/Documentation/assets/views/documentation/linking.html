@@ -57,9 +57,6 @@
 							</p>
 							<blockquote>
 								<mod:XmlTree>
-									<mod:config>
-										<mod:namespaces>false</mod:namespaces>
-									</mod:config>
 									<mod:data>
 										<link name="book-catalog" url="catalog/books"/>
 									</mod:data>
@@ -72,9 +69,6 @@
 								<small>Before:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(book-catalog)}">books</a>
@@ -85,9 +79,6 @@
 								<small>After:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<sage:literal>
 												<a href="/catalog/books">books</a>
@@ -116,9 +107,6 @@
 							</p>
 							<blockquote>
 								<mod:XmlTree>
-									<mod:config>
-										<mod:namespaces>false</mod:namespaces>
-									</mod:config>
 									<mod:data>
 										<link name="book-catalog" url="catalog/books/{genre}/{order}"/>
 									</mod:data>
@@ -131,9 +119,6 @@
 								<small>Before:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(book-catalog, genre=sf;order=byname)}">science-fiction books</a>
@@ -144,9 +129,6 @@
 								<small>After:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<sage:literal>
 												<a href="/catalog/books/sf/byname">science-fiction books</a>
@@ -176,9 +158,6 @@
 								<small>Before:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(subscription-manager, url=url:self(encode=1))}">Manage subscriptions</a>
@@ -189,9 +168,6 @@
 								<small>After:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<a href="manage/subscriptions/?return=${url:self(encode=1)}">Manage subscriptions</a>
 										</mod:data>
@@ -230,9 +206,6 @@
 								<small>Before:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(registration)}">Register</a>
@@ -243,9 +216,6 @@
 								<small>After:</small>
 								<div class="indent">
 									<mod:XmlTree>
-										<mod:config>
-											<mod:namespaces>false</mod:namespaces>
-										</mod:config>
 										<mod:data>
 											<a href="/swimming/uk/manage/subscriptions/registration.html">Register</a>
 										</mod:data>

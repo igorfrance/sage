@@ -56,7 +56,7 @@
 											</p>
 											<mod:XmlTree>
 												<mod:config>
-													<mod:namespaces>true</mod:namespaces>
+													<mod:show namespaces="true"/>
 												</mod:config>
 												<mod:data>
 													<sage:literal>
@@ -80,12 +80,12 @@
 											</p>
 											<mod:XmlTree>
 												<mod:config>
-													<mod:namespaces>true</mod:namespaces>
+													<mod:show namespaces="true"/>
 													<mod:expandLevels>2</mod:expandLevels>
 												</mod:config>
 												<mod:data>
 													<sage:literal>
-														<conditions xmlns="http://www.cycle99.com/schemas/sage/logic.xsd">
+														<conditions xmlns="http://www.cycle99.com/sage/xslt/extensions/basic.xsd">
 															<or id="isSupportedBrowser">
 																<and id="isFirefoxSupported">
 																	<clause object="useragent" property="name" equals="firefox"/>

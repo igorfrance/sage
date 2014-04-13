@@ -1,4 +1,4 @@
-Type.registerNamespace("sage.documentation");
+atom.type.registerNamespace("sage.documentation");
 
 sage.documentation.Navigation = new function Navigation()
 {
@@ -30,5 +30,5 @@ sage.documentation.Navigation = new function Navigation()
 		toggleNavigationGroup(jQuery(this));
 	}
 
-	$init.registerMain(setup);
+	atom.init.registerMain(setup);
 };

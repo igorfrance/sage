@@ -1,4 +1,4 @@
-Type.registerNamespace("sage.documentation");
+atom.type.registerNamespace("sage.documentation");
 
 sage.documentation.Dashboard = new function Dashboard()
 {
@@ -10,7 +10,7 @@ sage.documentation.Dashboard = new function Dashboard()
 	function setup()
 	{
 		if (!sage.dev || !sage.dev.ViewInspector)
-			return $log.warn("sage.dev.ViewInspector is a required component for this page");
+			return atom.log.warn("sage.dev.ViewInspector is a required component for this page");
 
 		inspector = sage.dev.ViewInspector.current;
 		inspector.addListener("close", onViewInspectorClose);
@@ -49,12 +49,9 @@ sage.documentation.Dashboard = new function Dashboard()
 		navigationElement.animate({ left: -navigationElement.innerWidth() });
 		welcomeElement.animate({ left: 0 });
 
-		$log.message("B");
 		welcomeElement.show();
-		$log.message("C");
 		inspectorElement.fadeOut(function onFadeComplete()
 		{
-			$log.message("D");
 			sage.dev.Toolbar.show();
 		});
 	}
@@ -84,7 +81,7 @@ sage.documentation.Dashboard = new function Dashboard()
 		}
 		catch(e)
 		{
-			$log.error(e);
+			atom.log.error(e);
 		}
 
 		return false;
