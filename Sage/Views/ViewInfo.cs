@@ -61,7 +61,7 @@ namespace Sage.Views
 			this.ViewSource = ViewSource.BuiltIn;
 			this.ViewPath = DefaultBuiltInStylesheetPath;
 
-			string pathTemplate = controller.IsShared ? context.Path.SharedViewPath : context.Path.ViewPath;
+			string pathTemplate = controller.ViewPathTemplate;
 			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controller.Name));
 			string basePath = context.MapPath(string.Format("{0}/{1}", folderPath, action));
 
