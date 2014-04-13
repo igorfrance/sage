@@ -48,6 +48,7 @@ namespace Sage.ResourceManagement
 
 		private readonly List<string> dependencies;
 		private DateTime? lastModified;
+		private string baseUri = null;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CacheableXmlDocument"/> class.
@@ -75,6 +76,19 @@ namespace Sage.ResourceManagement
 				}
 
 				return this.lastModified.Value;
+			}
+		}
+
+		/// <summary>
+		/// Gets the base URI of the current node.
+		/// </summary>
+		/// <value>The base URI.</value>
+		/// <returns>The location from which the node was loaded.</returns>
+		public new string BaseURI
+		{
+			get
+			{
+				return baseUri ?? base.BaseURI;
 			}
 		}
 
@@ -165,6 +179,8 @@ namespace Sage.ResourceManagement
 						xmlReader.Close();
 				}
 			}
+
+			this.baseUri = uri.ToString();
 
 			if (processIncludes)
 				this.ProcessIncludes(this.DocumentElement, context);
