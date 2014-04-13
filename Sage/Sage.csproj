@@ -95,7 +95,6 @@
     </Compile>
     <Compile Include="Configuration\EnvironmentConfiguration.cs" />
     <Compile Include="Configuration\ExtensionString.cs" />
-    <Compile Include="Controllers\ExtensionControllerProxy.cs" />
     <Compile Include="Extensibility\IOFunctions.cs" />
     <Compile Include="ProjectInitializationException.cs" />
     <Compile Include="Extensibility\NodeEvaluator.cs" />
