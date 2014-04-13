@@ -310,11 +310,7 @@ namespace Sage.ResourceManagement
 				XmlDocument document = context.Resources.LoadXml(documentPath);
 				XmlElement importedElement = (XmlElement) ownerDocument.ImportNode(document.DocumentElement, true);
 				if (!string.IsNullOrWhiteSpace(this.Name))
-				{
-					var nameAttribute = ownerDocument.CreateAttribute("sage:name", XmlNamespaces.SageNamespace);
-					nameAttribute.Value = this.Name;
-					importedElement.AppendChild(nameAttribute);
-				}
+					importedElement.SetAttribute("name", XmlNamespaces.SageNamespace, this.Name);
 
 				result.AppendChild(importedElement);
 			}
