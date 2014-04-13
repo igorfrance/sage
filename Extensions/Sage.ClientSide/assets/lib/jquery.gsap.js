@@ -34,7 +34,7 @@
 			vars[type + "Scope"] = obj;
 			vars[type + "Params"] = next ? [func, next] : [func];
 		},
-		_reserved = {overwrite:1, delay:1, useFrames:1, runBackwards:1, easeParams:1, yoyo:1, immediateRender:1, repeat:1, repeatDelay:1, autoCSS:1},
+		_reserved = {onUpdate: 1, overwrite:1, delay:1, useFrames:1, runBackwards:1, easeParams:1, yoyo:1, immediateRender:1, repeat:1, repeatDelay:1, autoCSS:1},
 		_copyCriticalReserved = function(main, sub) {
 			for (var p in _reserved) {
 				if (_reserved[p] && main[p] !== undefined) {
@@ -87,7 +87,10 @@
 			return _animate.call(this, prop, speed, easing, callback);
 		}
 		var config = $.speed(speed, easing, callback),
-			vars = {ease:(_easeMap[config.easing] || ((config.easing === false) ? _easeMap.linear : _easeMap.swing))},
+			vars = {
+				ease:(_easeMap[config.easing] || ((config.easing === false) ? _easeMap.linear : _easeMap.swing)),
+				onUpdate: speed ? speed.onUpdate : null
+			},
 			obj = this,
 			specEasing = (typeof(speed) === "object") ? speed.specialEasing : null,
 			val, p, doAnimation, specEasingVars;
