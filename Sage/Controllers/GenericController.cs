@@ -68,7 +68,12 @@ namespace Sage.Controllers
 			Context.Response.StatusCode = 404;
 			Context.Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
 			Context.Response.Cache.SetNoStore();
-			return new ContentResult { Content = "File not found (A.K.A. Error 404)", ContentType = "text/html" };
+
+			var errorMessage = Context.IsDeveloperRequest
+				? string.Format("TODO: Decent 404 page (friendly and dev)<br/>Path:{0}<br/>Controller={1}<br/>Action={2}", Context.Request.Path, this.Name, this.genericViewInfo.Action)
+				: "Not Found";
+
+			return new ContentResult { Content = errorMessage, ContentType = "text/html" };
 		}
 
 		/// <summary>
