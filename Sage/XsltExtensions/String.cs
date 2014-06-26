@@ -19,10 +19,13 @@ namespace Sage.XsltExtensions
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
 
+	using Kelp;
 	using Kelp.Extensions;
 
 	using log4net;
 	using Sage.Extensibility;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Provides several string-related utility methods for use in XSLT.
@@ -33,6 +36,74 @@ namespace Sage.XsltExtensions
 	public class String
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Sage.XsltExtensions.String).FullName);
+
+		/// <summary>
+		/// Returns the  <paramref name="value"/> converted to upper case
+		/// </summary>
+		/// <param name="value">The string to process.</param>
+		/// <returns>
+		/// The upper-case version of the specified <paramref name="value"/>
+		/// </returns>
+		public string upperCase(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return string.Empty;
+
+			return value.ToUpper();
+		}
+
+		/// <summary>
+		/// Returns the  <paramref name="value"/> converted to lower case
+		/// </summary>
+		/// <param name="value">The string to process.</param>
+		/// <returns>
+		/// The lower-case version of the specified <paramref name="value"/>
+		/// </returns>
+		public string lowerCase(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return string.Empty;
+
+			return value.ToLower();
+		}
+
+		/// <summary>
+		/// Returns the  <paramref name="value"/> with it's first char converted to upper case
+		/// </summary>
+		/// <param name="value">The string to process.</param>
+		/// <returns>
+		/// The specified <paramref name="value"/> with it's first char converted to upper case.
+		/// </returns>
+		public string upperCaseFirst(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return string.Empty;
+
+			return value[0].ToString().ToUpper() + value.Substring(1);
+		}
+
+		/// <summary>
+		/// Substitutes the placeholders in the specified <paramref name="pattern"/> using the parameters specified with <paramref name="query"/>.
+		/// </summary>
+		/// <param name="pattern">The pattern string with placeholders.</param>
+		/// <param name="query">The query string with substitution values.</param>
+		/// <returns>
+		/// The formatted version of the specified <paramref name="pattern"/>.
+		/// </returns>
+		/// <remarks>
+		/// The <paramref name="query"/> should be formatted as a URL query string. The placeholders are names surrounded with
+		/// curly braces.
+		/// </remarks>
+		/// <example>substitute("Hello {FirstName} {LastName}!", "FirstName=John&amp;LastName=Smith")</example>
+		public string substitute(string pattern, string query)
+		{
+			var parameters = new QueryString(query);
+			return Regex.Replace(pattern, @"\{([^}]+)\}", delegate(Match match)
+			{
+				var result = parameters[match.Groups[1].Value] ?? match.Groups[0].Value;
+				return result;
+			});
+		}
 
 		/// <summary>
 		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
