@@ -57,10 +57,10 @@
 			<xsl:apply-templates select="@*"/>
 			<xsl:attribute name="class">
 				<xsl:value-of select="$view/@controller"/>
-				<xsl:text> </xsl:text>
-				<xsl:value-of select="$view/@action"/>
+				<xsl:value-of select="' '"/>
+				<xsl:value-of select="translate($view/@action, '/', ' ')"/>
 				<xsl:if test="string-length(@class) != 0">
-					<xsl:text> </xsl:text>
+					<xsl:value-of select="' '"/>
 					<xsl:value-of select="@class"/>
 				</xsl:if>
 			</xsl:attribute>
