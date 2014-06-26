@@ -137,6 +137,10 @@ namespace Sage.Routing
 				route.DataTokens["Namespaces"] = namespaces;
 			}
 
+			var existingRoute = RouteTable.Routes[name];
+			if (existingRoute != null)
+				RouteTable.Routes.Remove(existingRoute);
+
 			RouteTable.Routes.Add(name, route);
 		}
 

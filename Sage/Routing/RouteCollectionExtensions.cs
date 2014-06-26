@@ -171,7 +171,7 @@ namespace Sage.Routing
 						log.WarnFormat("Overwriting an identically named route ('{0}') for url '{1}' and controller '{2}' with a new route for url '{3}' and controller '{4}'",
 							name, r.Url, r.Defaults["controller"], route.Url, route.Defaults["controller"]);
 
-						routes.Insert(i, route);
+						routes[i] = route;
 						return;
 					}
 				}
