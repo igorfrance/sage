@@ -16,16 +16,15 @@
 namespace Sage.Views
 {
 	using System;
-	using System.Linq;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 	using System.Xml;
 
 	using Kelp;
 	using Kelp.Extensions;
 
 	using log4net;
-	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.Modules;
 
