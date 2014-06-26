@@ -247,7 +247,8 @@ namespace Sage.Modules
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("{0} ({1}) ({2})", this.Name, string.Join(",", this.TagNames), this.Type);
+			return string.Format("{0} ({1}) ({2})", this.Name, 
+				string.Join(",", this.TagNames), this.TypeName ?? typeof(NullModule).Name);
 		}
 
 		/// <inheritdoc/>
