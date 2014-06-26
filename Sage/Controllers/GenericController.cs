@@ -111,7 +111,7 @@ namespace Sage.Controllers
 				action = string.Join("/", pathParts.Skip(1).ToArray());
 
 				if (Directory.Exists(Context.MapPath(testPath)))
-					action = Path.Combine(action, SageController.DefaultAction);
+					action = string.Join("/", action, SageController.DefaultAction);
 			}
 
 			this.genericViewInfo = this.GetViewInfo(action);
