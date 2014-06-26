@@ -465,6 +465,35 @@ namespace Sage
 		public UserAgentType UserAgentType { get; private set; }
 
 		/// <summary>
+		/// Gets the value of the project variable with the specified <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name of the variable.</param>
+		/// <param name="locale">Optional locale to use to select the variable value. If omitted the current <see cref="Locale"/> will be used</param>
+		/// <returns>The value of the project variable with the specified <paramref name="name"/>.</returns>
+		public string GetProjectVariable(string name, string locale = null)
+		{
+			NameValueCollection variable;
+			if (!this.ProjectConfiguration.Variables.TryGetValue(name, out variable))
+				return null;
+
+			if (locale == null || !this.ProjectConfiguration.Locales.ContainsKey(locale))
+				locale = this.Locale;
+
+			var result = variable["default"];
+			var localeInfo = this.ProjectConfiguration.Locales[locale];
+			foreach (string localeName in localeInfo.ResourceNames)
+			{
+				if (variable[localeName] != null)
+				{
+					result = variable[localeName];
+					break;
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Returns an absolute URL, fully expanded to a path within the current application.
 		/// </summary>
 		/// <param name="path">The path to expand</param>
@@ -639,20 +668,6 @@ namespace Sage
 			dateNode.SetAttribute("second", DateTime.Now.ToString("ss"));
 
 			return resultElement;
-		}
-
-		private XmlElement CreateAddressNode(Uri uri, XmlDocument ownerDocument, string nodeName = "sage:address")
-		{
-			XmlElement addressNode = ownerDocument.CreateElement(nodeName, XmlNamespaces.SageNamespace);
-			addressNode.SetAttribute("url", uri.ToString());
-
-			addressNode.SetAttribute("serverName", uri.Host);
-			addressNode.SetAttribute("serverNameFull", string.Format("{0}://{1}", uri.Scheme, uri.Authority));
-			addressNode.SetAttribute("scriptName", uri.LocalPath.TrimEnd('/'));
-			addressNode.SetAttribute("scriptNameFull", uri.PathAndQuery);
-			addressNode.SetAttribute("queryString", uri.Query);
-
-			return addressNode;
 		}
 
 		/// <summary>
@@ -899,6 +914,20 @@ namespace Sage
 			}
 
 			return null;
+		}
+
+		private XmlElement CreateAddressNode(Uri uri, XmlDocument ownerDocument, string nodeName = "sage:address")
+		{
+			XmlElement addressNode = ownerDocument.CreateElement(nodeName, XmlNamespaces.SageNamespace);
+			addressNode.SetAttribute("url", uri.ToString());
+
+			addressNode.SetAttribute("serverName", uri.Host);
+			addressNode.SetAttribute("serverNameFull", string.Format("{0}://{1}", uri.Scheme, uri.Authority));
+			addressNode.SetAttribute("scriptName", uri.LocalPath.TrimEnd('/'));
+			addressNode.SetAttribute("scriptNameFull", uri.PathAndQuery);
+			addressNode.SetAttribute("queryString", uri.Query);
+
+			return addressNode;
 		}
 
 		private bool SubstituteExtensionPath()
