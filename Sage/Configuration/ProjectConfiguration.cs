@@ -17,6 +17,7 @@ namespace Sage.Configuration
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
@@ -153,6 +154,8 @@ namespace Sage.Configuration
 			this.customElements = initConfiguration != null
 				? new List<XmlElement>(initConfiguration.customElements)
 				: new List<XmlElement>();
+
+			this.Variables = new Dictionary<string, NameValueCollection>();
 		}
 
 		/// <summary>
@@ -299,7 +302,13 @@ namespace Sage.Configuration
 		/// Gets the element that contains the definition of project-global internationalization variables. Used with
 		/// internationalization.
 		/// </summary>
-		internal XmlNode Variables { get; private set; }
+		internal XmlNode VariablesNode { get; private set; }
+
+		internal Dictionary<string, NameValueCollection> Variables
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Creates a <see cref="ProjectConfiguration"/> instance with all settings initialized to their defaults.
@@ -476,24 +485,45 @@ namespace Sage.Configuration
 			XmlNode variablesNode = configNode.SelectSingleNode("p:variables", nm);
 			if (variablesNode != null)
 			{
-				if (this.Variables != null)
+				if (this.VariablesNode != null)
 				{
 					foreach (XmlElement variableNode in variablesNode.SelectNodes("*"))
 					{
-						var importReady = this.Variables.OwnerDocument.ImportNode(variableNode, true);
+						var importReady = this.VariablesNode.OwnerDocument.ImportNode(variableNode, true);
 						var id = variableNode.GetAttribute("id");
-						var current = this.Variables.SelectSingleNode(
+						var current = this.VariablesNode.SelectSingleNode(
 							string.Format("intl:variable[@id='{0}']", id), nm);
 
 						if (current != null)
-							this.Variables.ReplaceChild(importReady, current);
+							this.VariablesNode.ReplaceChild(importReady, current);
 						else
-							this.Variables.AppendChild(importReady);
+							this.VariablesNode.AppendChild(importReady);
 					}
 				}
 				else
 				{
-					this.Variables = variablesNode;
+					this.VariablesNode = variablesNode;
+				}
+
+				this.Variables = new Dictionary<string, NameValueCollection>();
+
+				var variables = variablesNode.SelectNodes("intl:variable", nm);
+				foreach (XmlElement elem in variables)
+				{
+					var values = elem.SelectNodes("intl:value", nm);
+					var valueDictionary = new NameValueCollection();
+
+					if (values.Count == 0)
+					{
+						valueDictionary["default"] = elem.InnerText;
+					}
+					else
+					{
+						foreach (XmlElement val in values)
+							valueDictionary.Add(val.GetAttribute("locale"), val.InnerText.Trim());
+					}
+
+					this.Variables[elem.GetAttribute("id")] = valueDictionary;
 				}
 			}
 
@@ -548,16 +578,16 @@ namespace Sage.Configuration
 			if (environmentNode != null)
 				this.Environment.Parse(environmentNode);
 
-			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
-			{
-				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode, this.Id);
-				this.Modules.Add(moduleConfig.Name, moduleConfig);
-			}
-
 			foreach (XmlElement libraryNode in configNode.SelectNodes("p:libraries/p:library", nm))
 			{
 				ResourceLibraryInfo info = new ResourceLibraryInfo(libraryNode, this.Id);
 				this.ResourceLibraries.Add(info.Name, info);
+			}
+
+			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
+			{
+				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode, this.Id);
+				this.Modules.Add(moduleConfig.Name, moduleConfig);
 			}
 
 			var localeNodes = configNode.SelectNodes("p:internationalization/p:locale", nm);
