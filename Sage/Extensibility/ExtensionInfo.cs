@@ -77,11 +77,11 @@ namespace Sage.Extensibility
 					string assetPath = "assets";
 					this.context = context;
 
-					ExtensionFile configFile = this.ArchiveFiles.FirstOrDefault(file => file.Name.Equals(ProjectConfiguration.ExtensionConfigName));
-					if (configFile != null)
+					this.ConfigurationFile = this.ArchiveFiles.FirstOrDefault(file => file.Name.Equals(ProjectConfiguration.ExtensionConfigName));
+					if (this.ConfigurationFile != null)
 					{
-						this.Config = ProjectConfiguration.Create(extensionArchive.GetInputStream(configFile.Entry));
-						this.Config.ValidationResult.SourceFile = string.Format("{0}/{1}", this.ArchiveFileName, configFile.Name);
+						this.Config = ProjectConfiguration.Create(extensionArchive.GetInputStream(this.ConfigurationFile.Entry));
+						this.Config.ValidationResult.SourceFile = string.Format("{0}/{1}", this.ArchiveFileName, this.ConfigurationFile.Name);
 						assetPath = (this.Config.AssetPath ?? assetPath).Replace("~/", string.Empty);
 					}
 
@@ -100,7 +100,9 @@ namespace Sage.Extensibility
 					this.AssemblyFiles = new List<ExtensionFile[]>();
 					foreach (ExtensionFile dll in dlls)
 					{
-						var pdb = pdbs.FirstOrDefault(p => p.Name == dll.Name);
+						var pdb = pdbs.FirstOrDefault(p => 
+							Path.GetFileNameWithoutExtension(p.Name) == Path.GetFileNameWithoutExtension(dll.Name));
+						
 						this.AssemblyFiles.Add(new[] { dll, pdb });
 					}
 
@@ -185,6 +187,8 @@ namespace Sage.Extensibility
 
 		public string ArchiveFileName { get; private set; }
 
+		public ExtensionFile ConfigurationFile { get; private set; }
+
 		public string ConfigurationFileName { get; private set; }
 
 		public bool IsInstalled
@@ -263,6 +267,11 @@ namespace Sage.Extensibility
 					log.DebugFormat("Extracting '{0}' to '{1}'", file.Name, file.InstallPath);
 					file.Extract(extensionArchive, file.InstallPath);
 					entry.State = InstallState.Installed;
+				}
+
+				if (this.ConfigurationFile != null)
+				{
+					this.ConfigurationFile.Extract(extensionArchive, this.ConfigurationFile.InstallPath);
 				}
 
 				installLog.Result = InstallState.Installed;
