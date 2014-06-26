@@ -57,7 +57,8 @@ namespace Sage.Rewriters
 				string rewrittenPath = context.Path.Resolve(requestedPath);
 				if (rewrittenPath != requestedPath)
 				{
-					context.HttpContext.RewritePath(rewrittenPath);
+					string relativePath = context.Path.GetRelativeWebPath(rewrittenPath, true);
+					context.HttpContext.RewritePath(relativePath);
 					if (context.IsDeveloperRequest)
 						context.Response.AddHeader("OriginalFilePath", requestedPath);
 				}
