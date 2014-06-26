@@ -506,19 +506,14 @@ namespace Sage
 			public const string Basic = "http://www.cycle99.com/schemas/sage/xslt/extensions/basic.xsd";
 
 			/// <summary>
+			/// Defines the namespace for the Url extensions.
+			/// </summary>
+			public const string Url = "http://www.cycle99.com/schemas/sage/xslt/extensions/url.xsd";
+
+			/// <summary>
 			/// Defines the namespace for the Date extensions.
 			/// </summary>
 			public const string Date = "http://www.cycle99.com/schemas/sage/xslt/extensions/date.xsd";
-
-			/// <summary>
-			/// Defines the namespace for the IO extensions.
-			/// </summary>
-			public const string IO = "http://www.cycle99.com/schemas/sage/xslt/extensions/io.xsd";
-
-			/// <summary>
-			/// Defines the namespace for regular expression extensions.
-			/// </summary>
-			public const string Regex = "http://www.cycle99.com/schemas/sage/xslt/extensions/regex.xsd";
 
 			/// <summary>
 			/// Defines the namespace for the Set extensions.
