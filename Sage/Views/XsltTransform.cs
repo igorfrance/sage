@@ -51,38 +51,15 @@ namespace Sage.Views
 		
 		private const string CacheKeyFormat = "XSLT_{0}";
 		private static readonly ILog log = LogManager.GetLogger(typeof(XsltTransform).FullName);
-		private static readonly Dictionary<string, object> extensions;
+		private static Dictionary<string, object> extensions;
 
 		private readonly Hashtable parameterArguments;
 		private readonly Hashtable extensionArguments;
 
 		static XsltTransform()
 		{
-			extensions = new Dictionary<string, object>();
-			foreach (Assembly a in Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes() where t.IsClass && !t.IsAbstract select t;
-
-				foreach (
-					Type type in types.Where(t => t.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false).Length != 0))
-				{
-					try
-					{
-						ConstructorInfo ctor = type.GetConstructor(new Type[] { });
-						object instance = ctor.Invoke(new object[] { });
-
-						XsltExtensionObjectAttribute attrib =
-							(XsltExtensionObjectAttribute)type.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false)[0];
-
-						extensions.Add(attrib.Namespace, instance);
-						log.DebugFormat("Successfully created the XSLT extension object '{0}'.", type.FullName);
-					}
-					catch (Exception ex)
-					{
-						log.ErrorFormat("Failed to create the XSLT extension object '{0}': {1}", type.FullName, ex.Message);
-					}
-				}
-			}
+			DiscoverXsltExtensionObjects();
+			Project.AssembliesUpdated += OnAssembliesUpdated;
 		}
 
 		internal XsltTransform()
@@ -178,7 +155,7 @@ namespace Sage.Views
 		/// <returns>
 		/// A new <see cref="XsltTransform"/> initialized with the <paramref name="stylesheetMarkup"/>.
 		/// </returns>
-		public static XsltTransform Create(SageContext context, IXPathNavigable stylesheetMarkup)
+		public static XsltTransform Create(SageContext context, XmlDocument stylesheetMarkup)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(stylesheetMarkup != null);
@@ -263,6 +240,40 @@ namespace Sage.Views
 			}
 
 			return result;
+		}
+
+		private static void DiscoverXsltExtensionObjects()
+		{
+			extensions = new Dictionary<string, object>();
+			foreach (Assembly a in Project.RelevantAssemblies)
+			{
+				var types = from t in a.GetTypes() where t.IsClass && !t.IsAbstract select t;
+
+				foreach (
+					Type type in types.Where(t => t.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false).Length != 0))
+				{
+					try
+					{
+						ConstructorInfo ctor = type.GetConstructor(new Type[] { });
+						object instance = ctor.Invoke(new object[] { });
+
+						XsltExtensionObjectAttribute attrib =
+							(XsltExtensionObjectAttribute) type.GetCustomAttributes(typeof(XsltExtensionObjectAttribute), false)[0];
+
+						extensions.Add(attrib.Namespace, instance);
+						log.DebugFormat("Successfully created the XSLT extension object '{0}'.", type.FullName);
+					}
+					catch (Exception ex)
+					{
+						log.ErrorFormat("Failed to create the XSLT extension object '{0}': {1}", type.FullName, ex.Message);
+					}
+				}
+			}
+		}
+
+		private static void OnAssembliesUpdated(object sender, EventArgs arg)
+		{
+			DiscoverXsltExtensionObjects();
 		}
 	}
 

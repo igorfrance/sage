@@ -43,7 +43,7 @@ namespace Sage.Views
 		/// </summary>
 		/// <param name="context">The current context.</param>
 		/// <param name="stylesheetMarkup">The markup to initialize the transform with.</param>
-		public MsXsltTransform(SageContext context, IXPathNavigable stylesheetMarkup)
+		public MsXsltTransform(SageContext context, XmlDocument stylesheetMarkup)
 		{
 			Contract.Requires<ArgumentNullException>(context != null);
 			Contract.Requires<ArgumentNullException>(stylesheetMarkup != null);
