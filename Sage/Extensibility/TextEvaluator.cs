@@ -47,36 +47,8 @@ namespace Sage.Extensibility
 
 		static TextEvaluator()
 		{
-			const BindingFlags BindingFlags =
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-
-			foreach (Assembly a in Sage.Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-							where t.IsClass && !t.IsAbstract
-							select t;
-
-				foreach (Type type in types)
-				{
-					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
-					{
-						foreach (TextFunctionAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextFunctionAttribute), false))
-						{
-							TextFunction functionHandler = (TextFunction) Delegate.CreateDelegate(typeof(TextFunction), methodInfo);
-							TextEvaluator.RegisterFunction(attrib.Name, functionHandler);
-						}
-
-						foreach (TextVariableAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextVariableAttribute), false))
-						{
-							TextVariable variableHandler = (TextVariable) Delegate.CreateDelegate(typeof(TextVariable), methodInfo);
-							foreach (string name in attrib.Variables)
-							{
-								TextEvaluator.RegisterVariable(name, variableHandler);
-							}
-						}
-					}
-				}
-			}
+			DiscoverFunctionsAndVariables();
+			Project.AssembliesUpdated += OnAssembliesUpdated;
 		}
 
 		/// <summary>
@@ -313,6 +285,45 @@ namespace Sage.Extensibility
 			}
 
 			return result;
+		}
+
+		private static void DiscoverFunctionsAndVariables()
+		{
+			const BindingFlags BindingFlags =
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+
+			foreach (Assembly a in Sage.Project.RelevantAssemblies)
+			{
+				var types = from t in a.GetTypes()
+							where t.IsClass && !t.IsAbstract
+							select t;
+
+				foreach (Type type in types)
+				{
+					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
+					{
+						foreach (TextFunctionAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextFunctionAttribute), false))
+						{
+							TextFunction functionHandler = (TextFunction) Delegate.CreateDelegate(typeof(TextFunction), methodInfo);
+							TextEvaluator.RegisterFunction(attrib.Name, functionHandler);
+						}
+
+						foreach (TextVariableAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextVariableAttribute), false))
+						{
+							TextVariable variableHandler = (TextVariable) Delegate.CreateDelegate(typeof(TextVariable), methodInfo);
+							foreach (string name in attrib.Variables)
+							{
+								TextEvaluator.RegisterVariable(name, variableHandler);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private static void OnAssembliesUpdated(object sender, EventArgs arg)
+		{
+			DiscoverFunctionsAndVariables();
 		}
 	}
 }

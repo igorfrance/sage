@@ -46,40 +46,12 @@ namespace Sage.ResourceManagement
 		private const BindingFlags AttributeFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageResourceResolver).FullName);
-		private static readonly Dictionary<string, XmlProvider> providers;
+		private static Dictionary<string, XmlProvider> providers;
 
 		static SageResourceResolver()
 		{
-			providers = new Dictionary<string, XmlProvider>();
-
-			foreach (Assembly a in Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-							where
-								t.IsClass &&
-								t.GetMethods(AttributeFlags).Count(m => m.GetCustomAttributes(typeof(XmlProviderAttribute), false).Count() != 0) != 0
-							select t;
-
-				foreach (Type type in types)
-				{
-					foreach (MethodInfo methodInfo in type.GetMethods(AttributeFlags))
-					{
-						foreach (XmlProviderAttribute attrib in methodInfo.GetCustomAttributes(typeof(XmlProviderAttribute), false))
-						{
-							XmlProvider del = (XmlProvider) Delegate.CreateDelegate(typeof(XmlProvider), methodInfo);
-							if (providers.ContainsKey(attrib.ResourceName))
-							{
-								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",
-									Util.GetMethodSignature(providers[attrib.ResourceName].Method),
-									attrib.ResourceName,
-									Util.GetMethodSignature(del.Method));
-							}
-
-							providers[attrib.ResourceName] = del;
-						}
-					}
-				}
-			}
+			DiscoverXmlProviders();
+			Project.AssembliesUpdated += OnAssembliesUpdated;
 		}
 
 		/// <inheritdoc/>
@@ -111,6 +83,46 @@ namespace Sage.ResourceManagement
 
 			XmlReader reader = XmlReader.Create(new StringReader(resourceDoc.OuterXml), settings, resourceUri);
 			return new EntityResult { Entity = reader, Dependencies = resourceDoc.Dependencies };
+		}
+
+		private static void DiscoverXmlProviders()
+		{
+			providers = new Dictionary<string, XmlProvider>();
+
+			foreach (Assembly a in Project.RelevantAssemblies)
+			{
+				var types = from t in a.GetTypes()
+							where
+								t.IsClass &&
+								t.GetMethods(AttributeFlags).Count(m => m.GetCustomAttributes(typeof(XmlProviderAttribute), false).Count() != 0) != 0
+							select t;
+
+				foreach (Type type in types)
+				{
+					foreach (MethodInfo methodInfo in type.GetMethods(AttributeFlags))
+					{
+						foreach (XmlProviderAttribute attrib in methodInfo.GetCustomAttributes(typeof(XmlProviderAttribute), false))
+						{
+							XmlProvider del = (XmlProvider) Delegate.CreateDelegate(typeof(XmlProvider), methodInfo);
+							if (providers.ContainsKey(attrib.ResourceName))
+							{
+								log.WarnFormat("Overwriting existing resource provider '{0}' for resource name '{1}' with provider '{2}'",
+									Util.GetMethodSignature(providers[attrib.ResourceName].Method),
+									attrib.ResourceName,
+									Util.GetMethodSignature(del.Method));
+							}
+
+							providers[attrib.ResourceName] = del;
+						}
+					}
+				}
+			}
+
+		}
+
+		private static void OnAssembliesUpdated(object sender, EventArgs arg)
+		{
+			DiscoverXmlProviders();
 		}
 
 		private string GetResourceName(string uri)

@@ -45,26 +45,8 @@ namespace Sage.ResourceManagement
 
 		static UrlResolver()
 		{
-			foreach (Assembly a in Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-								  where t.IsClass && !t.IsAbstract
-										&& typeof(IUrlResolver).IsAssignableFrom(t)
-										&& t.GetCustomAttributes(typeof(UrlResolverAttribute), false).Count() != 0
-								  select t;
-
-				foreach (Type type in types)
-				{
-					UrlResolverAttribute attrib = ((UrlResolverAttribute[]) type.GetCustomAttributes(typeof(UrlResolverAttribute), false))[0];
-					if (staticResolvers.ContainsKey(attrib.Scheme))
-					{
-						log.WarnFormat("Overwriting existing resolver {0} for scheme '{1}' with resolver {2}",
-							staticResolvers[attrib.Scheme].FullName, attrib.Scheme, type.FullName);
-					}
-
-					staticResolvers[attrib.Scheme] = type;
-				}
-			}
+			DiscoverUrlResolvers();
+			Project.AssembliesUpdated += OnAssembliesUpdated;
 		}
 
 		/// <summary>
@@ -151,6 +133,43 @@ namespace Sage.ResourceManagement
 			{
 				throw new NotSupportedException(string.Format("Could not resolve uri '{0}'", uri), ex);
 			}
+		}
+
+		private static void DiscoverUrlResolvers()
+		{
+			foreach (Assembly a in Project.RelevantAssemblies)
+			{
+				try
+				{
+					var types = from t in a.GetTypes()
+								where t.IsClass && !t.IsAbstract
+									  && typeof(IUrlResolver).IsAssignableFrom(t)
+									  && t.GetCustomAttributes(typeof(UrlResolverAttribute), false).Count() != 0
+								select t;
+
+					foreach (Type type in types)
+					{
+						UrlResolverAttribute attrib = ((UrlResolverAttribute[]) type.GetCustomAttributes(typeof(UrlResolverAttribute), false))[0];
+						if (staticResolvers.ContainsKey(attrib.Scheme))
+						{
+							log.WarnFormat("Overwriting existing resolver {0} for scheme '{1}' with resolver {2}",
+								staticResolvers[attrib.Scheme].FullName, attrib.Scheme, type.FullName);
+						}
+
+						staticResolvers[attrib.Scheme] = type;
+					}
+				}
+				catch (ReflectionTypeLoadException ex)
+				{
+					log.ErrorFormat("Error loading types from {0}: {1}", a.FullName, ex.Message);
+					throw;
+				}
+			}
+		}
+
+		private static void OnAssembliesUpdated(object sender, EventArgs arg)
+		{
+			DiscoverUrlResolvers();
 		}
 
 		private IUrlResolver GetResolver(string scheme)

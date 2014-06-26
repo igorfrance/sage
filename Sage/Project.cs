@@ -39,6 +39,7 @@ namespace Sage
 	using Sage.Extensibility;
 	using Sage.Routing;
 	using Sage.Views;
+	using BuildManager = System.Web.Compilation.BuildManager;
 
 	/// <summary>
 	/// Implements the <see cref="HttpApplication"/> class for this web application.
@@ -49,6 +50,7 @@ namespace Sage
 		private static readonly ILog log = LogManager.GetLogger(typeof(Project).FullName);
 		private static readonly string[] threadNamePrefixes = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
 
+		private static readonly object lck = new object();
 		private static DateTime? assemblyDate;
 		private static ProjectConfiguration configuration = ProjectConfiguration.Create();
 		private static Exception initializationError;
@@ -60,6 +62,15 @@ namespace Sage
 
 		private static int threadPrefixIndex;
 		private static bool projectIsReady;
+
+		/// <summary>
+		/// Occurs when the project assembly collection gets updated.
+		/// </summary>
+		/// <remarks>
+		/// Code that uses reflection-based initialization can subscribe to this event
+		/// to have a chance to re-initialize once the extensions are loaded. 
+		/// </remarks>
+		public static event EventHandler AssembliesUpdated;
 
 		/// <summary>
 		/// Gets the last modification date of the current assembly.
@@ -125,17 +136,30 @@ namespace Sage
 						if (relevantAssemblies == null)
 						{
 							var currentAssembly = Assembly.GetExecutingAssembly();
-							relevantAssemblies = new List<Assembly> { currentAssembly };
-							var files = Directory.GetFiles(AssemblyCodeBaseDirectory, "*.dll", SearchOption.AllDirectories);
-							log.DebugFormat("Scanning for dependent assemblies in '{0}'", AssemblyCodeBaseDirectory);
-							foreach (string path in files)
+							var list = new List<Assembly> { currentAssembly };
+
+							var directories = new List<string> { AssemblyCodeBaseDirectory };
+							var globalAsaxType = BuildManager.GetGlobalAsaxType();
+
+							if (globalAsaxType != null)
+								directories.Add(Path.GetDirectoryName(globalAsaxType.Assembly.Location));
+
+							foreach (var directory in directories)
 							{
-								Assembly asmb = Assembly.LoadFrom(path);
-								if (asmb.GetReferencedAssemblies().Count(a => a.FullName == currentAssembly.FullName) != 0)
+								var files = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
+								log.DebugFormat("Scanning for dependent assemblies in '{0}'", directory);
+								foreach (string path in files)
 								{
-									relevantAssemblies.Add(asmb);
+									Assembly asmb = Assembly.LoadFrom(path);
+									if (asmb.GetReferencedAssemblies().Count(a => a.FullName == currentAssembly.FullName) != 0)
+									{
+										list.Add(asmb);
+									}
 								}
+								
 							}
+
+							relevantAssemblies = list;
 						}
 					}
 				}
@@ -172,6 +196,12 @@ namespace Sage
 		internal static bool IsReady
 		{
 			get { return projectIsReady; }
+		}
+
+		internal static bool IsStarted
+		{
+			get;
+			private set;
 		}
 
 		internal static OrderedDictionary<string, ExtensionInfo> Extensions
@@ -303,7 +333,9 @@ namespace Sage
 
 			InitializeConfiguration(context);
 
-			UrlRoutingUtility.RegisterRoutesToMethodsWithAttributes(RelevantAssemblies.ToArray());
+			//// The routes need to be re-registered after the assemblies get updated
+			Project.AssembliesUpdated += (sender, args) => RegisterRoutes();
+			RegisterRoutes();
 
 			log.Debug("Manually registering route '*' to GenericController.Action");
 			RouteTable.Routes.MapRouteLowercase(
@@ -397,8 +429,20 @@ namespace Sage
 					{
 						installOrder.Add(extension.Config.Id);
 						Project.RelevantAssemblies.AddRange(extension.Assemblies);
+
 						projectConfig.RegisterExtension(extension.Config);
 						extensions.Add(extension.Config.Id, extension);
+					}
+
+					// fire this event at the end rather than once for each extension
+					var totalAssemblies = extensionManager.Sum(info => info.Assemblies.Count);
+					if (totalAssemblies != 0)
+					{
+						if (Project.AssembliesUpdated != null)
+						{
+							log.DebugFormat("{0} extension assemblies loaded, triggering AssembliesUpdated event", totalAssemblies);
+							Project.AssembliesUpdated(null, EventArgs.Empty);
+						}
 					}
 
 					installOrder.Add(projectConfig.Id);
@@ -406,6 +450,15 @@ namespace Sage
 					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Starts this instance.
+		/// </summary>
+		/// <param name="context">The context.</param>
+		protected static void Start(SageContext context)
+		{
+			Project.IsStarted = true;
 		}
 
 		/// <summary>
@@ -476,6 +529,17 @@ namespace Sage
 			var context = new SageContext(this.Context);
 			if (context.LmCache.Get(ConfigWatchName) == null)
 				InitializeConfiguration(context);
+
+			if (!Project.IsStarted)
+			{
+				lock (lck)
+				{
+					if (!Project.IsStarted)
+					{
+						Project.Start(context);
+					}
+				}
+			}
 
 			if (this.Context != null)
 				log.InfoFormat("Request {0} started.", HttpContext.Current.Request.Url);
@@ -579,6 +643,11 @@ namespace Sage
 			}
 
 			return string.Format("{0}-{1}", prefix, DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture));
+		}
+	
+		private static void RegisterRoutes()
+		{
+			UrlRoutingUtility.RegisterRoutesToMethodsWithAttributes(RelevantAssemblies.ToArray());
 		}
 	}
 }

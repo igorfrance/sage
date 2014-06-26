@@ -35,27 +35,8 @@ namespace Sage.Extensibility
 
 		static NodeEvaluator()
 		{
-			const BindingFlags BindingFlags =
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreReturn;
-
-			foreach (Assembly a in Sage.Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-							where t.IsClass && !t.IsAbstract
-							select t;
-
-				foreach (Type type in types)
-				{
-					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
-					{
-						foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
-						{
-							NodeHandler handler = (NodeHandler) Delegate.CreateDelegate(typeof(NodeHandler), methodInfo);
-							RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, handler);
-						}
-					}
-				}
-			}
+			DiscoverNodeHandlers();
+			Project.AssembliesUpdated += OnAssembliesUpdated;
 		}
 
 		public NodeEvaluator(SageContext context)
@@ -67,9 +48,9 @@ namespace Sage.Extensibility
 		/// Registers the specified node <paramref name="handler"/>, for the specified <paramref name="nodeType"/>,
 		/// <paramref name="nodeName"/> and <paramref name="nodeNamespace"/>.
 		/// </summary>
-		/// <param name="nodeType">The type of the node for wihch the handler is being registered.</param>
-		/// <param name="nodeName">The name of the node for wihch the handler is being registered.</param>
-		/// <param name="nodeNamespace">The namespace of the node for wihch the handler is being registered.</param>
+		/// <param name="nodeType">The type of the node for which the handler is being registered.</param>
+		/// <param name="nodeName">The name of the node for which the handler is being registered.</param>
+		/// <param name="nodeNamespace">The namespace of the node for which the handler is being registered.</param>
 		/// <param name="handler">The method that will will handle the node.</param>
 		public static void RegisterNodeHandler(XmlNodeType nodeType, string nodeName, string nodeNamespace, NodeHandler handler)
 		{
@@ -150,7 +131,7 @@ namespace Sage.Extensibility
 		}
 
 		/// <summary>
-		/// Gets the node handler for the spefied node.
+		/// Gets the node handler for the specified node.
 		/// </summary>
 		/// <param name="node">The node.</param>
 		/// <returns>A <see cref="NodeHandler"/> for the specified node. If no handler is registered for this node's
@@ -183,6 +164,44 @@ namespace Sage.Extensibility
 				return string.Concat((int) node.NodeType, "_", node.LocalName);
 
 			return string.Concat((int) node.NodeType, "_", node.NamespaceURI, ":", node.LocalName);
+		}
+
+		private static void OnAssembliesUpdated(object sender, EventArgs arg)
+		{
+			DiscoverNodeHandlers();
+		}
+
+		private static void DiscoverNodeHandlers()
+		{
+			const BindingFlags BindingFlags =
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreReturn;
+
+			foreach (Assembly a in Sage.Project.RelevantAssemblies)
+			{
+				try
+				{
+					var types = from t in a.GetTypes()
+								where t.IsClass && !t.IsAbstract
+								select t;
+
+					foreach (Type type in types)
+					{
+						foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
+						{
+							foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
+							{
+								NodeHandler handler = (NodeHandler) Delegate.CreateDelegate(typeof(NodeHandler), methodInfo);
+								RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, handler);
+							}
+						}
+					}
+				}
+				catch (ReflectionTypeLoadException ex)
+				{
+					log.ErrorFormat("Error loading types from {0}: {1}", a.FullName, ex.Message);
+					throw;
+				}
+			}
 		}
 	}
 }

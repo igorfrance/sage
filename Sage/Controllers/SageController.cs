@@ -54,33 +54,8 @@ namespace Sage.Controllers
 
 		static SageController()
 		{
-			foreach (Assembly a in Project.RelevantAssemblies)
-			{
-				var types = from t in a.GetTypes()
-							where t.IsClass && !t.IsAbstract
-							select t;
-
-				foreach (Type type in types)
-				{
-					foreach (MethodInfo methodInfo in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttributes(typeof(ViewXmlFilterAttribute), false).Count() != 0))
-					{
-						ViewXmlFilter del;
-						try
-						{
-							del = (ViewXmlFilter) Delegate.CreateDelegate(typeof(ViewXmlFilter), methodInfo);
-						}
-						catch
-						{
-							log.ErrorFormat("The method {0} on type {1} marked with attribute {2} doesn't match the required delegate {3}, and will therefore not be registered as an XML filter method",
-								methodInfo.Name, type.FullName, typeof(ViewXmlFilterAttribute).Name, typeof(ViewXmlFilter).Name);
-
-							continue;
-						}
-
-						xmlFilters.Add(del);
-					}
-				}
-			}
+			DiscoverViewXmlFilters();
+			Project.AssembliesUpdated += OnAssembliesUpdated;
 		}
 
 		/// <summary>
@@ -459,6 +434,42 @@ namespace Sage.Controllers
 		{
 			base.Initialize(requestContext);
 			this.Context = new SageContext(this.ControllerContext);
+		}
+
+		private static void DiscoverViewXmlFilters()
+		{
+			foreach (Assembly a in Project.RelevantAssemblies)
+			{
+				var types = from t in a.GetTypes()
+							where t.IsClass && !t.IsAbstract
+							select t;
+
+				foreach (Type type in types)
+				{
+					foreach (MethodInfo methodInfo in type.GetMethods().Where(m => m.IsStatic && m.GetCustomAttributes(typeof(ViewXmlFilterAttribute), false).Count() != 0))
+					{
+						ViewXmlFilter del;
+						try
+						{
+							del = (ViewXmlFilter) Delegate.CreateDelegate(typeof(ViewXmlFilter), methodInfo);
+						}
+						catch
+						{
+							log.ErrorFormat("The method {0} on type {1} marked with attribute {2} doesn't match the required delegate {3}, and will therefore not be registered as an XML filter method",
+								methodInfo.Name, type.FullName, typeof(ViewXmlFilterAttribute).Name, typeof(ViewXmlFilter).Name);
+
+							continue;
+						}
+
+						xmlFilters.Add(del);
+					}
+				}
+			}
+		}
+
+		private static void OnAssembliesUpdated(object sender, EventArgs arg)
+		{
+			DiscoverViewXmlFilters();
 		}
 	}
 }
