@@ -20,6 +20,7 @@ namespace Sage
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Runtime.CompilerServices;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Xml;
@@ -259,8 +260,20 @@ namespace Sage
 				return node;
 
 			XmlElement linkElem = (XmlElement) node;
-			string linkHref = context.Url.GetUrl(linkElem);
+			string linkName = linkElem.GetAttribute("ref");
+			bool rawString = linkElem.GetAttribute("raw").EqualsAnyOf("1", "yes", "true");
 
+			if (!string.IsNullOrEmpty(linkName) && rawString)
+			{
+				if (context.Url.Links.ContainsKey(linkName))
+				{
+					linkElem.InnerText = context.Url.Links[linkName].Value;
+				}
+
+				return linkElem;
+			}
+
+			string linkHref = context.Url.GetUrl(linkElem);
 			if (!string.IsNullOrEmpty(linkHref))
 			{
 				linkElem.SetAttribute("href", linkHref);
