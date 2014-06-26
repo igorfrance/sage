@@ -20,7 +20,7 @@
 	</xsl:template>
 
 	<xsl:template match="@*">
-		<xsl:attribute name="{name()}">
+		<xsl:attribute name="{name()}" namespace="{namespace-uri()}">
 			<xsl:value-of select="."/>
 		</xsl:attribute>
 	</xsl:template>
