@@ -166,8 +166,8 @@ namespace Sage.ResourceManagement
 			arguments.Add("mode", type.ToString().ToLower());
 
 			var projectConfig = this.context.ProjectConfiguration;
-			if (projectConfig.Variables != null)
-				arguments.Add("globalvariables", projectConfig.Variables);
+			if (projectConfig.VariablesNode != null)
+				arguments.Add("globalvariables", projectConfig.VariablesNode);
 
 			var categoryConfig = this.context.CategoryConfiguration;
 			if (categoryConfig != null && categoryConfig.Variables != null)
