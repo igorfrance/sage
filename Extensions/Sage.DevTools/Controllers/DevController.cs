@@ -49,10 +49,5 @@ namespace Sage.DevTools.Controllers
 
 			return this.SageView("inspect");
 		}
-
-		public override DateTime? GetLastModificationDate(string viewName)
-		{
-			return base.GetLastModificationDate(viewName);
-		}
 	}
 }
