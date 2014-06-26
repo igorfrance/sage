@@ -59,6 +59,9 @@ namespace Sage.Test.Configuration
 		It Should_correctly_match_the_specified_value2 = () =>
 			new IpAddress("194.109.0.1", "194.109.255.254").Matches("194.109.227.126").ShouldBeTrue();
 
+		It Should_correctly_match_the_specified_value3 = () =>
+			new IpAddress("192.168.0.0", "192.168.255.255").Matches("192.168.178.35").ShouldBeTrue();
+
 		It Should_not_match_the_incorrect_value1 = () =>
 			new IpAddress("10.0.0.1", "10.1.1.1").Matches("10.2.255.255").ShouldBeFalse();
 
