@@ -166,7 +166,7 @@
 				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
-				{<xsl:value-of select="@ref"/>}
+				{<xsl:value-of select="@ref"/> (global vars: <xsl:value-of select="$globalvariables[1]/@id"/>)}
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -214,13 +214,23 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
-			<xsl:otherwise>
+			<xsl:when test="intl:value[@locale='default']">
 				<xsl:choose>
 					<xsl:when test="$diagnose = 1">
 						<xsl:text>default</xsl:text>
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:apply-templates select="intl:value[@locale='default']/node()"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:choose>
+					<xsl:when test="$diagnose = 1">
+						<xsl:text>text</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:apply-templates select="node()[name() != 'intl:value']"/>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:otherwise>
