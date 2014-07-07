@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Sage"
+		elementFormDefault="qualified"
+		targetNamespace="http://www.cycle99.com/schemas/sage/sage.xsd"
+		xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xhtml="http://www.w3.org/1999/xhtml"
+		xmlns="http://www.cycle99.com/schemas/sage/sage.xsd">
+
+	<xs:import schemaLocation="sage-xhtml.xsd" namespace="http://www.w3.org/1999/xhtml"/>
+
+	<xs:element name="basehref"/>
+	<xs:element name="library" type="sage:library"/>
+	<xs:element name="link" type="sage:link" />
+	<xs:element name="url" type="sage:link" />
+	<xs:element name="view" type="sage:view" />
+	<xs:element name="literal" type="sage:generic" />
+
+	<xs:attribute name="url"/>
+
+	<xs:element name="include">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="fallback" minOccurs="0" maxOccurs="1" type="sage:generic"/>
+			</xs:choice>
+			<xs:attribute name="href" use="optional"/>
+			<xs:attribute name="xpath" use="optional"/>
+			<xs:attribute name="parse" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="xml"/>
+						<xs:enumeration value="text"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="encoding" use="optional">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="utf-8"/>
+						<xs:enumeration value="ascii"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="generic" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:any namespace="http://www.w3.org/1999/xhtml"/>
+			<xs:any namespace="http://www.cycle99.com/schemas/sage/sage.xsd"/>
+			<xs:any namespace="http://www.cycle99.com/schemas/sage/internationalization.xsd"/>
+			<xs:any namespace="http://www.cycle99.com/schemas/sage/modules.xsd"/>
+			<xs:any namespace="http://www.w3.org/2003/XInclude"/>
+		</xs:choice>
+		<xs:anyAttribute namespace="
+										 http://www.w3.org/1999/xhtml
+										 http://www.cycle99.com/projects/sage
+										 http://www.cycle99.com/schemas/sage/internationalization.xsd"/>
+	</xs:complexType>
+
+	<xs:complexType name="library">
+		<xs:complexContent>
+			<xs:extension base="sage:generic">
+				<xs:attribute name="ref" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="link">
+		<xs:complexContent>
+			<xs:extension base="sage:generic">
+				<xs:attribute name="id" use="optional"/>
+				<xs:attribute name="ref" use="optional"/>
+				<xs:attribute name="values" use="optional"/>
+				<xs:attribute name="encode" use="optional" type="xs:boolean" default="false"/>
+				<xs:attribute name="raw" use="optional" type="xs:boolean" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="view">
+		<xs:sequence>
+			<xs:element name="request">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="address" type="address2"/>
+						<xs:element name="path">
+							<xs:complexType>
+								<xs:attribute name="applicationPath"/>
+								<xs:attribute name="assetPath"/>
+								<xs:attribute name="sharedAssetPath"/>
+								<xs:attribute name="modulePath"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="useragent">
+							<xs:complexType>
+								<xs:attribute name="id"/>
+								<xs:attribute name="name"/>
+								<xs:attribute name="version"/>
+								<xs:attribute name="version.major"/>
+								<xs:attribute name="version.minor"/>
+								<xs:attribute name="isCrawler"/>
+								<xs:attribute name="value"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="assembly">
+							<xs:complexType>
+								<xs:attribute name="version"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="querystring">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="rewritten">
+										<xs:complexType>
+											<xs:anyAttribute namespace="##any"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:anyAttribute namespace="##any"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="form">
+							<xs:complexType>
+								<xs:anyAttribute namespace="##any"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="cookies">
+							<xs:complexType>
+								<xs:anyAttribute namespace="##any"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="session">
+							<xs:complexType>
+								<xs:anyAttribute namespace="##any"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="dateTime">
+							<xs:complexType>
+								<xs:attribute name="date"/>
+								<xs:attribute name="time"/>
+								<xs:attribute name="day"/>
+								<xs:attribute name="month"/>
+								<xs:attribute name="year"/>
+								<xs:attribute name="hour"/>
+								<xs:attribute name="minute"/>
+								<xs:attribute name="second"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="response">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resources">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="head" minOccurs="0" maxOccurs="1" type="resourceGroup"/>
+									<xs:element name="body" minOccurs="0" maxOccurs="1" type="resourceGroup"/>
+									<xs:element name="data" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:any namespace="##any" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="model">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:any namespace="##any"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="controller"/>
+		<xs:attribute name="action"/>
+	</xs:complexType>
+
+	<xs:complexType name="address">
+		<xs:attribute name="url"/>
+		<xs:attribute name="serverName"/>
+		<xs:attribute name="serverNameFull"/>
+		<xs:attribute name="scriptName"/>
+		<xs:attribute name="scriptNameFull"/>
+		<xs:attribute name="queryString"/>
+		<xs:attribute name="basehref"/>
+	</xs:complexType>
+
+	<xs:complexType name="address2">
+		<xs:complexContent>
+			<xs:extension base="address">
+				<xs:sequence>
+					<xs:element name="rewritten" type="address" minOccurs="0" maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="resourceGroup">
+		<xs:sequence>
+			<xs:element ref="xhtml:link" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="xhtml:script" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>
