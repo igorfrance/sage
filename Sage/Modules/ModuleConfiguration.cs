@@ -330,7 +330,11 @@ namespace Sage.Modules
 
 			XmlNode resultNode = context.ProcessNode(htmlNode);
 			foreach (ModuleConfiguration module in autoModules)
-				resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
+			{
+				XmlElement appended = resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);
+				if (!string.IsNullOrWhiteSpace(module.Category))
+					appended.SetAttribute("category", module.Category);
+			}
 
 			return resultNode;
 		}

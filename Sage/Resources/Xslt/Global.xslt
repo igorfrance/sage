@@ -75,11 +75,11 @@
 	</xsl:template>
 
 	<xsl:template match="xhtml:head">
-		<xsl:variable name="styles" select="$response/sage:resources/sage:head/xhtml:link | xhtml:link"/>
+		<xsl:variable name="styles" select="$response/sage:resources/sage:head/xhtml:link | xhtml:link | xhtml:style"/>
 		<xsl:variable name="scripts" select="$response/sage:resources/sage:head/xhtml:script | xhtml:script"/>
 		<head>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates select="*[local-name() != 'script' and local-name() != 'link']"/>
+			<xsl:apply-templates select="*[local-name() != 'script' and local-name() != 'link' and local-name() != 'style']"/>
 			<xsl:apply-templates select="set:distinct($styles, '@href', true())"/>
 			<xsl:apply-templates select="set:distinct($scripts, '@src', true())"/>
 			<xsl:apply-templates select="comment()"/>

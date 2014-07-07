@@ -25,6 +25,8 @@ namespace Sage.Views
 	using Kelp.Extensions;
 
 	using log4net;
+
+	using Sage.Configuration;
 	using Sage.Controllers;
 	using Sage.Modules;
 
@@ -37,6 +39,7 @@ namespace Sage.Views
 	{
 		internal const string ModuleIdPattern = "module{0}";
 		internal const string ModuleSelectPattern = ".//mod:{0}[not(ancestor::sage:literal)]";
+		internal const string ModuleSelectPatternCategorized = ".//mod:{0}[not(ancestor::sage:literal) and @category='{1}']";
 		internal const string LibrarySelectXpath = ".//sage:library[@ref][not(ancestor::sage:literal)]";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(ViewConfiguration).FullName);
@@ -165,7 +168,12 @@ namespace Sage.Views
 							List<string> parts = new List<string>();
 							foreach (string name in SageModuleFactory.Modules.Keys)
 							{
-								parts.Add(string.Format(ModuleSelectPattern, name));
+								var config = SageModuleFactory.Modules[name];
+								var pattern = string.IsNullOrWhiteSpace(config.Category)
+									? ModuleSelectPattern
+									: ModuleSelectPatternCategorized;
+
+								parts.Add(string.Format(pattern, name, config.Category));
 							}
 
 							moduleSelectXPath = string.Join("|", parts);

@@ -139,10 +139,19 @@ namespace Sage
 							var list = new List<Assembly> { currentAssembly };
 
 							var directories = new List<string> { AssemblyCodeBaseDirectory };
-							var globalAsaxType = BuildManager.GetGlobalAsaxType();
 
-							if (globalAsaxType != null)
-								directories.Add(Path.GetDirectoryName(globalAsaxType.Assembly.Location));
+							//// This part is required for dynamically built asp.net websites,
+							//// and will fail when ran from command line
+							try
+							{
+								var globalAsaxType = BuildManager.GetGlobalAsaxType();
+
+								if (globalAsaxType != null)
+									directories.Add(Path.GetDirectoryName(globalAsaxType.Assembly.Location));
+							}
+							catch (InvalidOperationException)
+							{
+							}
 
 							foreach (var directory in directories)
 							{

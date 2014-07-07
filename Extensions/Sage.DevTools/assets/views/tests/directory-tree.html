@@ -16,20 +16,20 @@
 				<p class="overview">Provides a module that reads directories.</p>
 				<h3>Syntax</h3>
 				<div class="indent">
-					<mod:XmlTree>
+					<mod:XmlTree category="dev">
 						<mod:data>
 							<sage:literal>
-								<mod:DirectoryTree>
+								<mod:directorytree>
 									<mod:config>
 										<mod:path>path/to/directory/to/scan</mod:path>
-										<mod:absolutePaths />
+										<mod:absolutepaths />
 										<mod:recursive />
-										<mod:directoriesOnly />
-										<mod:filesOnly />
+										<mod:directoriesonly />
+										<mod:filesonly />
 										<mod:pattern>*.xml;*.txt</mod:pattern>
 										<mod:expression>^(?!test-).*\.xml$</mod:expression>
 									</mod:config>
-								</mod:DirectoryTree>
+								</mod:directorytree>
 							</sage:literal>
 						</mod:data>
 					</mod:XmlTree>
@@ -58,21 +58,21 @@
 				</dl>
 				<p class="overview">Reading the current directory</p>
 				<h3>Configuration:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
 						<sage:literal>
-							<mod:DirectoryTree>
-								<mod:config>
-									<mod:path>.</mod:path>
-								</mod:config>
-							</mod:DirectoryTree>
+                            <mod:directorytree category="dev">
+                                <mod:config>
+                                    <mod:path>.</mod:path>
+                                </mod:config>
+                            </mod:directorytree>
 						</sage:literal>
 					</mod:data>
 				</mod:XmlTree>
 				<h3>Result:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
-						<mod:DirectoryTree>
+						<mod:DirectoryTree category="dev">
 							<mod:config>
 								<mod:path>.</mod:path>
 							</mod:config>
@@ -81,10 +81,10 @@
 				</mod:XmlTree>
 				<p class="overview">Reading the CSS directory</p>
 				<h3>Configuration:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
 						<sage:literal>
-							<mod:DirectoryTree>
+							<mod:DirectoryTree category="dev">
 								<mod:config>
 									<mod:path>~/assets/css</mod:path>
 								</mod:config>
@@ -93,9 +93,9 @@
 					</mod:data>
 				</mod:XmlTree>
 				<h3>Result:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
-						<mod:DirectoryTree>
+						<mod:DirectoryTree category="dev">
 							<mod:config>
 								<mod:path>~/assets/css</mod:path>
 							</mod:config>
@@ -104,10 +104,10 @@
 				</mod:XmlTree>
 				<p class="overview">Using a file pattern</p>
 				<h3>Configuration:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
 						<sage:literal>
-							<mod:DirectoryTree>
+							<mod:DirectoryTree category="dev">
 								<mod:config>
 									<mod:path>~/assets/css</mod:path>
 									<mod:pattern>*.css</mod:pattern>
@@ -117,9 +117,9 @@
 					</mod:data>
 				</mod:XmlTree>
 				<h3>Result:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
-						<mod:DirectoryTree>
+						<mod:DirectoryTree category="dev">
 							<mod:config>
 								<mod:path>~/assets/css</mod:path>
 								<mod:pattern>*.css</mod:pattern>
@@ -129,10 +129,10 @@
 				</mod:XmlTree>
 				<p class="overview">Using an expression</p>
 				<h3>Configuration:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
 						<sage:literal>
-							<mod:DirectoryTree>
+							<mod:DirectoryTree category="dev">
 								<mod:config>
 									<mod:path>~/assets/css</mod:path>
 									<mod:expression>ubuntu</mod:expression>
@@ -142,9 +142,9 @@
 					</mod:data>
 				</mod:XmlTree>
 				<h3>Result:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
-						<mod:DirectoryTree>
+						<mod:DirectoryTree category="dev">
 							<mod:config>
 								<mod:path>~/assets/css</mod:path>
 								<mod:expression>ubuntu</mod:expression>
@@ -154,10 +154,10 @@
 				</mod:XmlTree>
 				<p class="overview">Reading the root directory</p>
 				<h3>Configuration:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
 						<sage:literal>
-							<mod:DirectoryTree>
+							<mod:DirectoryTree category="dev">
 								<mod:config>
 									<mod:path>~/</mod:path>
 								</mod:config>
@@ -166,9 +166,9 @@
 					</mod:data>
 				</mod:XmlTree>
 				<h3>Result:</h3>
-				<mod:XmlTree>
+				<mod:XmlTree category="dev">
 					<mod:data>
-						<mod:DirectoryTree>
+						<mod:DirectoryTree category="dev">
 							<mod:config>
 								<mod:path>~/</mod:path>
 							</mod:config>
