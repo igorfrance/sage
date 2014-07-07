@@ -373,7 +373,8 @@ namespace Sage.Modules
 			foreach (XmlElement includeElem in includeNodes)
 			{
 				string includeHref = includeElem.GetAttribute("href");
-				string includePath = Path.Combine(stylesheetDirectory, includeHref);
+				Uri includeHrefUri = new Uri(includeHref, UriKind.RelativeOrAbsolute);
+				string includePath = includeHrefUri.IsAbsoluteUri ? includeHref : string.Join("/", stylesheetDirectory, includeHref);
 
 				CopyXslElements(context, includePath, targetDocument);
 				targetDocument.AddDependencies(includePath);
