@@ -360,6 +360,35 @@ namespace Sage.Configuration
 			return result;
 		}
 
+		/// <summary>
+		/// Gets the value of the project variable with the specified <paramref name="name"/>.
+		/// </summary>
+		/// <param name="name">The name of the variable.</param>
+		/// <param name="locale">Optional locale to use to select the variable value.</param>
+		/// <returns>The value of the project variable with the specified <paramref name="name"/>.</returns>
+		public string GetVariable(string name, string locale = null)
+		{
+			NameValueCollection variable;
+			if (!this.Variables.TryGetValue(name, out variable))
+				return null;
+
+			var result = variable["default"];
+			if (locale != null && this.Locales.ContainsKey(locale))
+			{
+				var localeInfo = this.Locales[locale];
+				foreach (string localeName in localeInfo.ResourceNames)
+				{
+					if (variable[localeName] != null)
+					{
+						result = variable[localeName];
+						break;
+					}
+				}
+			}
+
+			return result;
+		}
+
 		/// <inheritdoc/>
 		public override string ToString()
 		{

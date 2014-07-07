@@ -472,25 +472,10 @@ namespace Sage
 		/// <returns>The value of the project variable with the specified <paramref name="name"/>.</returns>
 		public string GetProjectVariable(string name, string locale = null)
 		{
-			NameValueCollection variable;
-			if (!this.ProjectConfiguration.Variables.TryGetValue(name, out variable))
-				return null;
-
 			if (locale == null || !this.ProjectConfiguration.Locales.ContainsKey(locale))
 				locale = this.Locale;
 
-			var result = variable["default"];
-			var localeInfo = this.ProjectConfiguration.Locales[locale];
-			foreach (string localeName in localeInfo.ResourceNames)
-			{
-				if (variable[localeName] != null)
-				{
-					result = variable[localeName];
-					break;
-				}
-			}
-
-			return result;
+			return this.ProjectConfiguration.GetVariable(name, locale);
 		}
 
 		/// <summary>
