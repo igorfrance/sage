@@ -292,7 +292,7 @@ namespace Sage.Extensibility
 			const BindingFlags BindingFlags =
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
 
-			foreach (Assembly a in Sage.Project.RelevantAssemblies)
+			foreach (Assembly a in Sage.Project.RelevantAssemblies.ToList())
 			{
 				var types = from t in a.GetTypes()
 							where t.IsClass && !t.IsAbstract

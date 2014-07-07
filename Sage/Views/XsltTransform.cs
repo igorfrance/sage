@@ -245,7 +245,7 @@ namespace Sage.Views
 		private static void DiscoverXsltExtensionObjects()
 		{
 			extensions = new Dictionary<string, object>();
-			foreach (Assembly a in Project.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies.ToList())
 			{
 				var types = from t in a.GetTypes() where t.IsClass && !t.IsAbstract select t;
 

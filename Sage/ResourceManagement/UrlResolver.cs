@@ -137,7 +137,7 @@ namespace Sage.ResourceManagement
 
 		private static void DiscoverUrlResolvers()
 		{
-			foreach (Assembly a in Project.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies.ToList())
 			{
 				try
 				{

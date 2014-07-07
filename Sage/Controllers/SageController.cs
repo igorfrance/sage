@@ -438,7 +438,7 @@ namespace Sage.Controllers
 
 		private static void DiscoverViewXmlFilters()
 		{
-			foreach (Assembly a in Project.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies.ToList())
 			{
 				var types = from t in a.GetTypes()
 							where t.IsClass && !t.IsAbstract

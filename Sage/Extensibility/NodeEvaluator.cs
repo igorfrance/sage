@@ -176,7 +176,7 @@ namespace Sage.Extensibility
 			const BindingFlags BindingFlags =
 				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreReturn;
 
-			foreach (Assembly a in Sage.Project.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies.ToList())
 			{
 				try
 				{

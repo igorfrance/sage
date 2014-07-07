@@ -89,7 +89,7 @@ namespace Sage.ResourceManagement
 		{
 			providers = new Dictionary<string, XmlProvider>();
 
-			foreach (Assembly a in Project.RelevantAssemblies)
+			foreach (Assembly a in Project.RelevantAssemblies.ToList())
 			{
 				var types = from t in a.GetTypes()
 							where
