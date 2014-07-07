@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html
+	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
+	xmlns:mod="http://www.cycle99.com/schemas/sage/modules.xsd"
+ 	xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<sage:basehref/>
+		<title>Linking functions</title>
+	</head>
+	<body>
+
+		<div class="page">
+			<mod:Sidebar>
+				<mod:config>
+					<mod:current><sage:url ref="reference-functions-linking"/></mod:current>
+				</mod:config>
+			</mod:Sidebar>
+			<section class="content">
+				<header>
+					<span>Linking functions</span>
+				</header>
+				<article>
+
+					<section class="topic" id="functions">
+						<article>
+							<section class="element" id="url:link" data-index="yes">
+								<header>url:link function</header>
+								<article>
+									<summary>
+										The <code class="accent">url:link</code> function generates a fully resolved URL with the specified <code>linkId</code>.
+									</summary>
+									<section class="properties syntax">
+										<header>Syntax</header>
+										<article>
+											<code class="principal">${<code class="accent">url:link</code>(linkId[, queryParameters][, hashString][, encode=(0)|1]][, absolute=(0)|1])}</code>
+										</article>
+									</section>
+									<section class="properties attributes">
+										<header>Arguments</header>
+										<article>
+											<section class="attribute">
+												<header>linkId</header>
+												<article>Specifies the <code>id</code> of the link to generate.</article>
+											</section>
+											<section class="attribute">
+												<header>queryParameters</header>
+												<article>
+													Specifies the list of name/value pairs of substitution values to use when generating the URL. The names are separated from values with the <code>=</code> symbol, and the name/value pairs are separated with either an ampersand, comma or a semicolon (eg. <code>param1=value1;param2=value2;param3=value3</code>).
+												</article>
+											</section>
+											<section class="attribute">
+												<header>hashString</header>
+												<article>The <code>hashString</code> argument specifies the string to add to add to the end of the URL as hash.</article>
+											</section>
+											<section class="attribute">
+												<header>encode=0|1</header>
+												<article>To have the resulting URL be URL-encoded, use the <code>encode=1</code> argument.</article>
+											</section>
+											<section class="attribute">
+												<header>absolute=0|1</header>
+												<article>To have the resulting URL be qualified with the full protocol and server name prefix, use the <code>absolute=1</code> argument.</article>
+											</section>
+										</article>
+									</section>
+									<section class="properties attributes">
+										<header>Notes</header>
+										<article>
+											<ul class="notes">
+												<li>
+													<p>
+														The arguments may optionally be surrounded with either single or double quotes, this is not required, however.
+													</p>
+													<blockquote>
+														<header class="outdent small">Input</header>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<a href="${url:link(book-catalog, genre=sf;order=byname)}">science-fiction books</a>
+																	<a href="${url:link(book-catalog, 'genre=sf;order=byname')}">science-fiction books</a>
+																	<a href="${url:link('book-catalog', 'genre=sf;order=byname')}">science-fiction books</a>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+														<header class="outdent small">Result</header>
+													</blockquote>
+												</li>
+												<li>
+													<p>
+														All arguments after <code>linkId</code> are optional; they can be skipped by simply omitting them, without having to pass in a null or an empty string.
+													</p>
+													<blockquote>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<a href="${url:link(book-catalog)}">science-fiction books</a>
+																	<a href="${url:link(book-catalog, absolute=1}">science-fiction books</a>
+																	<a href="${url:link(book-catalog, #isaac-asimov)}">science-fiction books</a>
+																	<a href="${url:link(book-catalog, category=1;page=1, #isaac-asimov)}">science-fiction books</a>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</blockquote>
+												</li>
+												<li>
+													<p>
+														If the function is called with two arguments after <code>linkId</code> other than <code>encode=0</code> or <code>absolute=0</code>, the first is considered to be the <code>queryParameters</code> argument and the second to be the <code>hashString</code> argument.
+													</p>
+													<blockquote>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<a href="${url:link(book-catalog, category=1;page=1, isaac-asimov)}">science-fiction books</a>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</blockquote>
+												</li>
+												<li>
+													<p>
+														To use only the <code>hashString</code> without specifying the <code>queryParameters</code> argument too, prefix the <code>hashString</code> with a hash symbol ('#').
+													</p>
+													<blockquote>
+														<mod:XmlTree>
+															<mod:data>
+																<sage:literal>
+																	<a href="${url:link(book-catalog, #isaac-asimov)}">science-fiction books</a>
+																</sage:literal>
+															</mod:data>
+														</mod:XmlTree>
+													</blockquote>
+												</li>
+											</ul>
+										</article>
+									</section>
+								</article>
+							</section>
+							<section class="element" id="url:self" data-index="yes">
+								<header>url:self function</header>
+								<article>
+									<summary>
+										The <code class="accent">url:self</code> function generates a qualified URL for the current view.
+									</summary>
+									<section class="properties syntax">
+										<header>Syntax</header>
+										<article>
+											<code class="principal">${<code class="accent">url:self</code>([queryParameters][, hashString][, encode=(0)|1]][, absolute=(0)|1])}</code>
+										</article>
+									</section>
+									<section class="properties attributes">
+										<header>Arguments</header>
+										<article>
+											<section class="attribute">
+												<header>queryParameters</header>
+												<article>
+													Specifies the list of name/value pairs of substitution values to use when generating the URL. The names are separated from values with the <code>=</code> symbol, and the name/value pairs are separated with either an ampersand, comma or a semicolon (eg. <code>param1=value1;param2=value2;param3=value3</code>).
+												</article>
+											</section>
+											<section class="attribute">
+												<header>hashString</header>
+												<article>The <code>hashString</code> argument specifies the string to add to add to the end of the URL as hash.</article>
+											</section>
+											<section class="attribute">
+												<header>encode=0|1</header>
+												<article>To have the resulting URL be URL-encoded, use the <code>encode=1</code> argument.</article>
+											</section>
+											<section class="attribute">
+												<header>absolute=0|1</header>
+												<article>To have the resulting URL be qualified with the full protocol and server name prefix, use the <code>absolute=1</code> argument.</article>
+											</section>
+										</article>
+									</section>
+								</article>
+							</section>
+						</article>
+					</section>
+				</article>
+			</section>
+		</div>
+	</body>
+</html>
