@@ -106,6 +106,32 @@ namespace Sage.XsltExtensions
 		}
 
 		/// <summary>
+		/// Substitutes the placeholders in the specified <paramref name="pattern" /> using the parameters specified.
+		/// </summary>
+		/// <param name="pattern">The pattern string with placeholders.</param>
+		/// <param name="name1">The name1.</param>
+		/// <param name="value1">The value1.</param>
+		/// <returns>The formatted version of the specified <paramref name="pattern" />.</returns>
+		public string substitute(string pattern, string name1, string value1)
+		{
+			return substitute(pattern, string.Concat(name1, "=", value1));
+		}
+
+		/// <summary>
+		/// Substitutes the placeholders in the specified <paramref name="pattern" /> using the parameters specified.
+		/// </summary>
+		/// <param name="pattern">The pattern string with placeholders.</param>
+		/// <param name="name1">The name1.</param>
+		/// <param name="value1">The value1.</param>
+		/// <param name="name2">The name2.</param>
+		/// <param name="value2">The value2.</param>
+		/// <returns>The formatted version of the specified <paramref name="pattern" />.</returns>
+		public string substitute(string pattern, string name1, string value1, string name2, string value2)
+		{
+			return substitute(pattern, string.Concat(name1, "=", value1, "&", name2, "=", value2));
+		}
+
+		/// <summary>
 		/// Formats the specified string <paramref name="value"/> using the specified formatting parameters.
 		/// </summary>
 		/// <param name="value">The string to format.</param>
