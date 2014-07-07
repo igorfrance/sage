@@ -246,7 +246,6 @@
     <EmbeddedResource Include="Resources\metaviews\xmlx.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\xslt\Installer.xslt" />
     <EmbeddedResource Include="Resources\xslt\global.xslt">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -255,6 +254,7 @@
     <EmbeddedResource Include="Resources\metaviews\config.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\xslt\tree.xsl" />
     <Content Include="System.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
