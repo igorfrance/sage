@@ -24,7 +24,7 @@
 		encoding="utf-8" media-type="text/xml" indent="yes"
 		doctype-system="about:legacy-compat"/>
 
-	<xsl:template match="/sage:view">
+	<xsl:template match="/sage:view" priority="10">
 		<xsl:choose>
 			<xsl:when test="count($response/sage:model/node()) = 0">
 				<html>VOID MODEL</html>
