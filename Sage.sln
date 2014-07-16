@@ -1,5 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp", "Kelp\Kelp\Kelp.csproj", "{AA487E40-4F39-46BF-A8FD-E15A146F32BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp.Test", "Kelp\Kelp.Test\Kelp.Test.csproj", "{500E8A15-7A75-4F62-BFFA-49784CC4E851}"
@@ -21,8 +23,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.Tools", "Sage.Tools\Sage.Tools.csproj", "{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documentation", "Examples\Documentation\Documentation.csproj", "{1C77B540-713B-11E1-AFDF-90264924019B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.DevTools", "Extensions\Sage.DevTools\Sage.DevTools.csproj", "{4D5A21A6-5313-48B1-933B-A22CDA666944}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.ClientSide", "Extensions\Sage.ClientSide\Sage.ClientSide.csproj", "{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB}"
@@ -43,6 +43,27 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kelp", "Kelp", "{1C7B87D0-46B5-441A-B73B-6B63B0C35CA2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp.App", "Kelp\Kelp.App\Kelp.App.csproj", "{2CEA4138-7E4E-442E-A50C-32F1FAA0E0CF}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Documentation", "http://localhost:58937", "{FC693422-9484-4CFE-9BAA-486E1D0D6257}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_58937"
+		Debug.AspNetCompiler.PhysicalPath = "Examples\Documentation\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_58937\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_58937"
+		Release.AspNetCompiler.PhysicalPath = "Examples\Documentation\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_58937\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "Examples\Documentation\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,16 +127,6 @@ Global
 		{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}.Release|x86.ActiveCfg = Release|x86
 		{41EA3ECA-F83D-4CC3-812B-1B10C96F3A1F}.Release|x86.Build.0 = Release|x86
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{1C77B540-713B-11E1-AFDF-90264924019B}.Release|x86.ActiveCfg = Release|Any CPU
 		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D5A21A6-5313-48B1-933B-A22CDA666944}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -166,18 +177,28 @@ Global
 		{2CEA4138-7E4E-442E-A50C-32F1FAA0E0CF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2CEA4138-7E4E-442E-A50C-32F1FAA0E0CF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2CEA4138-7E4E-442E-A50C-32F1FAA0E0CF}.Release|x86.ActiveCfg = Release|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257}.Release|x86.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{1C77B540-713B-11E1-AFDF-90264924019B} = {CA8DD914-A675-4668-97BD-5B9153CD7E99}
+		{AA487E40-4F39-46BF-A8FD-E15A146F32BA} = {1C7B87D0-46B5-441A-B73B-6B63B0C35CA2}
+		{500E8A15-7A75-4F62-BFFA-49784CC4E851} = {1C7B87D0-46B5-441A-B73B-6B63B0C35CA2}
 		{4D5A21A6-5313-48B1-933B-A22CDA666944} = {1D0D8969-502E-4404-9435-5D15895328F7}
 		{E5F33FD5-0CE1-4040-8574-7EE55F2D47EB} = {1D0D8969-502E-4404-9435-5D15895328F7}
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9} = {7942E581-561C-4AC0-BC17-898C6A50F7F5}
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B} = {7942E581-561C-4AC0-BC17-898C6A50F7F5}
-		{AA487E40-4F39-46BF-A8FD-E15A146F32BA} = {1C7B87D0-46B5-441A-B73B-6B63B0C35CA2}
-		{500E8A15-7A75-4F62-BFFA-49784CC4E851} = {1C7B87D0-46B5-441A-B73B-6B63B0C35CA2}
 		{2CEA4138-7E4E-442E-A50C-32F1FAA0E0CF} = {1C7B87D0-46B5-441A-B73B-6B63B0C35CA2}
+		{FC693422-9484-4CFE-9BAA-486E1D0D6257} = {CA8DD914-A675-4668-97BD-5B9153CD7E99}
 	EndGlobalSection
 EndGlobal
