@@ -7,15 +7,20 @@
 	<property name="buildConfiguration" value="Debug"/>
 	<property name="kelpBuildPath" value="kelp/kelp/bin/${buildConfiguration}"/>
 	<property name="sageBuildPath" value="sage/bin/${buildConfiguration}"/>
+	<property name="kelpTestPath" value="kelp/kelp.test/bin/${buildConfiguration}"/>
+	<property name="sageTestPath" value="sage.test/bin/${buildConfiguration}"/>
 	<property name="extensionBuilder" value="sage.tools/bin/${buildConfiguration}/sage.tools.exe"/>
 	<property name="exampleSitePath" value="examples/documentation"/>
 
 	<property name="msbuildPath" value="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe"/>
+	<property name="mspecPath" value="G:\cycle99\tools\mspec\mspec-clr4.exe"/>
 
 	<target name="default">
 		<call target="clean"/>
 		<call target="build-solution"/>
+		<call target="run-tests"/>
 		<call target="build-extensions"/>
+		<call target="configure-example-project"/>
 	</target>
 
 	<target name="clean">
@@ -24,15 +29,15 @@
 
 	<target name="build-solution">
 		<exec program="${msbuildPath}"
-          workingdir="."
-          basedir="."
-          commandline="./${solutionFile}"
-          failonerror="true" >
+					workingdir="."
+					basedir="."
+					commandline="./${solutionFile}"
+					failonerror="true" >
 
-        <arg value="/p:Platform=Any CPU" />
-        <arg value="/p:Configuration=${buildConfiguration}" />
-        <arg value="/t:Rebuild" />
-    </exec>
+				<arg value="/p:Platform=Any CPU" />
+				<arg value="/p:Configuration=${buildConfiguration}" />
+				<arg value="/t:Rebuild" />
+		</exec>
 
 		<copy todir="${outputPath}/kelp">
 			<fileset basedir="${kelpBuildPath}">
@@ -59,6 +64,9 @@
 			</fileset>
 		</copy>
 
+	</target>
+
+	<target name="configure-example-project">
 		<set-xml-attribute
 			file="${targetSite}/bin/Project.config"
 			xpath="/p:project/@debugMode"
@@ -82,7 +90,6 @@
 			file="${targetSite}/web.config"
 			xpath="/configuration/system.web/compilation/@debug"
 			value="false"/>
-
 	</target>
 
 	<target name="build-extensions">
@@ -95,11 +102,38 @@
 			todir="releases/latest/examples/documentation/extensions"/>
 	</target>
 
+	<target name="run-tests">
+		<echo>Running unit tests...</echo>
+
+		<exec program="${mspecPath}" workingdir=".">
+			<arg value="--html"/>
+			<arg path="${outputPath}/test-results.html"/>
+			<arg value="--xml"/>
+			<arg path="${outputPath}/test-results.xml"/>
+			<arg path="${kelpTestPath}/Kelp.Test.dll"/>
+			<arg path="${sageTestPath}/Sage.Test.dll"/>
+		</exec>
+		<!--<style style="${BUILD_TOOLS}/mspec/mspec2nunit.xsl"-->
+					 <!--in="${outputPath}/test-results/mspec/WhiteLabel.Engine.Test.Results.xml"-->
+					 <!--out="${outputPath}/test-results/nunit/WhiteLabel.Engine.Test.Results.MSpec.xml"/>-->
+		<!--<exec program="${BUILD_TOOLS}/mspec/mspec.exe"-->
+			<!--workingdir="${BUILD_TOOLS}/mspec">-->
+			<!--<arg value="- -html"/>-->
+			<!--<arg path="${outputPath}/test-results/mspec/WhiteLabel.ResourceHandling.Test.Results.html"/>-->
+			<!--<arg value="- -xml"/>-->
+			<!--<arg path="${outputPath}/test-results/mspec/WhiteLabel.ResourceHandling.Test.Results.xml"/>-->
+			<!--<arg path="${outputPathTest2}/WhiteLabel.ResourceHandling.Test.dll"/>-->
+		<!--</exec>-->
+		<!--<style style="${BUILD_TOOLS}/mspec/mspec2nunit.xsl"-->
+					 <!--in="${outputPath}/test-results/mspec/WhiteLabel.ResourceHandling.Test.Results.xml"-->
+					 <!--out="${outputPath}/test-results/nunit/WhiteLabel.ResourceHandling.Test.Results.Mspec.xml"/>-->
+	</target>
+
 	<script language="C#" prefix="test" >
-    <references>
-        <include name="System.Xml.dll" />
-    </references>
-    <code>
+		<references>
+			<include name="System.Xml.dll" />
+		</references>
+		<code>
 
 				<![CDATA[
 					[TaskName("set-xml-attribute")]
@@ -228,7 +262,7 @@
 						}
 					}
 				]]>
-    </code>
-  </script>
+		</code>
+	</script>
 
 </project>
