@@ -12,7 +12,6 @@
 	<property name="extensionBuilder" value="sage.tools/bin/${buildConfiguration}/sage.tools.exe"/>
 	<property name="exampleSitePath" value="examples/documentation"/>
 
-	<property name="msbuildPath" value="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe" overwrite="false"/>
 	<property name="mspecPath" value="G:\cycle99\tools\mspec\mspec-clr4.exe" overwrite="false"/>
 
 	<target name="default">
@@ -91,9 +90,14 @@
 			<arg value="build-extension"/>
 			<arg value="-source:&quot;extensions/Sage.DevTools&quot;"/>
 		</exec>
-		<move
-			file="extensions/Sage.DevTools.zip"
-			todir="releases/latest/examples/documentation/extensions"/>
+		<exec program="${extensionBuilder}" basedir=".">
+			<arg value="build-extension"/>
+			<arg value="-source:&quot;extensions/Sage.ClientSide&quot;"/>
+		</exec>
+		<copy file="extensions/Sage.DevTools.zip" todir="releases/latest/extensions"/>
+		<copy file="extensions/Sage.ClientSide.zip" todir="releases/latest/extensions"/>
+		<move file="extensions/Sage.DevTools.zip" todir="releases/latest/examples/assets/extensions"/>
+		<move file="extensions/Sage.ClientSide.zip" todir="releases/latest/examples/assets/extensions"/>
 	</target>
 
 	<target name="run-tests">
