@@ -35,7 +35,7 @@ namespace Sage.Test
 	/// <summary>
 	/// This class serves to hold temporary code snippets that can be run using the test runner.
 	/// </summary>
-	[Tags(Categories.TestBench), Ignore("This is for local testing only")]
+	[Tags(Categories.TestBench), Ignore("This is for local ")]
 	public class TestBench
 	{
 		static readonly ILog log = LogManager.GetLogger(typeof(TestBench).FullName);
