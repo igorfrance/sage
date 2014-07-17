@@ -102,7 +102,7 @@
 		<set-xml-attribute
 			file="${kelpTestPath}/Kelp.Test.dll.config"
 			xpath="/configuration/resourceHandling/@tempDir"
-			value="C:\TeamCity\temp\cache">
+			value="C:\TeamCity\temp\cache\">
 			<namespaces>
 				<namespace prefix="p" uri="http://www.cycle99.com/schemas/sage/configuration/project.xsd"/>
 			</namespaces>
