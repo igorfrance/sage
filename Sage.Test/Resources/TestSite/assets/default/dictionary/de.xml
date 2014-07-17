@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<intl:dictionary xmlns:intl="http://www.cycle99.com/schemas/sage/internationalization.xsd">
+
+	<intl:phrase id="test.homepage.label3">This node appears in german only</intl:phrase>
+	<intl:phrase id="test.gallery.TestPhrase">Test phrase in german</intl:phrase>
+
+</intl:dictionary>

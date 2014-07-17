@@ -40,7 +40,7 @@ namespace Sage.Test.ResourceManagement
 				Project.Initialize(context);
 				context = new SageContext(context);
 
-				string itemPath = context.Path.Expand("configuration/tests/internationalization-test1.xml");
+				string itemPath = context.Path.Expand("tests/internationalization-test1.xml");
 				resource = new XmlResource(itemPath, context);
 
 				Internationalizer globalizer = new Internationalizer(context);
