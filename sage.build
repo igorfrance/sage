@@ -99,6 +99,15 @@
 	<target name="run-tests">
 		<echo>Running unit tests...</echo>
 
+		<set-xml-attribute
+			file="${kelpTestPath}/Kelp.Test.dll.config"
+			xpath="/configuration/resourceHandling/@tempDir"
+			value="C:\TeamCity\temp\cache">
+			<namespaces>
+				<namespace prefix="p" uri="http://www.cycle99.com/schemas/sage/configuration/project.xsd"/>
+			</namespaces>
+		</set-xml-attribute>
+
 		<exec program="${mspecPath}" workingdir=".">
 			<arg value="--html"/>
 			<arg path="${outputPath}/test-results.html"/>
