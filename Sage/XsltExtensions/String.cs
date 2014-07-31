@@ -18,6 +18,8 @@ namespace Sage.XsltExtensions
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
+	using System.Xml;
+	using System.Xml.XPath;
 
 	using Kelp;
 	using Kelp.Extensions;
@@ -35,6 +37,7 @@ namespace Sage.XsltExtensions
 		Justification = "This is an XSLT extension class, these methods will not be used from C#.")]
 	public class String
 	{
+		private static readonly XmlDocument document = new XmlDocument();
 		private static readonly ILog log = LogManager.GetLogger(typeof(Sage.XsltExtensions.String).FullName);
 
 		/// <summary>
@@ -419,6 +422,26 @@ namespace Sage.XsltExtensions
 			}
 
 			return initialSpace + subject;
+		}
+
+		/// <summary>
+		/// Splits the specified subject, using the specified separator and returns a node iterator around the generated result.
+		/// </summary>
+		/// <param name="subject">The subject.</param>
+		/// <param name="separator">The separator.</param>
+		/// <returns>XPathNodeIterator.</returns>
+		public XPathNodeIterator split(string subject, string separator)
+		{
+			XmlDocumentFragment result = document.CreateDocumentFragment();
+			var split = subject.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
+
+			foreach (var value in split)
+			{
+				XmlNode part = result.AppendChild(document.CreateElement("value"));
+				part.InnerText = value;
+			}
+
+			return result.CreateNavigator().Select("*");
 		}
 
 		private string unquoteReplacement(string replacement)

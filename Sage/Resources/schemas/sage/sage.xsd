@@ -67,13 +67,15 @@
 	</xs:complexType>
 
 	<xs:complexType name="link">
-		<xs:complexContent>
+		<xs:complexContent mixed="true">
 			<xs:extension base="sage:generic">
 				<xs:attribute name="id" use="optional"/>
 				<xs:attribute name="ref" use="optional"/>
 				<xs:attribute name="values" use="optional"/>
 				<xs:attribute name="encode" use="optional" type="xs:boolean" default="false"/>
 				<xs:attribute name="raw" use="optional" type="xs:boolean" default="false"/>
+				<xs:attribute name="title" use="optional" type="xs:string" default="false"/>
+				<xs:attribute name="class" use="optional" type="xs:string" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
