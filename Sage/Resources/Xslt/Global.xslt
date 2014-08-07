@@ -53,7 +53,7 @@
 	</xsl:template>
 
 	<xsl:template match="xhtml:html">
-		<html>
+		<html data-ctrl="{$view/@controller}" data-action="{$view/@action}">
 			<xsl:apply-templates select="@*"/>
 			<xsl:attribute name="class">
 				<xsl:value-of select="$view/@controller"/>
@@ -80,6 +80,7 @@
 		<head>
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="*[local-name() != 'script' and local-name() != 'link' and local-name() != 'style']"/>
+			<xsl:apply-templates select="." mode="global-metatags"/>
 			<xsl:apply-templates select="set:distinct($styles, '@href', true())"/>
 			<xsl:apply-templates select="set:distinct($scripts, '@src', true())"/>
 			<xsl:apply-templates select="comment()"/>
@@ -207,5 +208,7 @@
 	</xsl:template>
 
 	<xsl:template match="*" mode="execute-libraries"/>
+	
+	<xsl:template match="*" mode="global-metatags"/>
 
 </xsl:stylesheet>
