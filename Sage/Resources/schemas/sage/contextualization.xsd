@@ -5,16 +5,26 @@
 		xmlns:context="http://www.cycle99.com/schemas/sage/contextualization.xsd"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		xmlns="http://www.cycle99.com/schemas/sage/contextualization.xsd">
-		
+
 	<xs:element name="value" type="context:value" />
 
 	<xs:element name="switch" type="context:switch" />
-		
+
+	<xs:element name="if" type="context:if" />
+
 	<xs:complexType name="value" mixed="true">
-		<xs:attribute name="property" type="contextProperty" use="required"/>
+		<xs:attribute name="property" type="contextProperty" use="optional"/>
 		<xs:attribute name="key" use="optional"/>
 	</xs:complexType>
-	
+
+	<xs:complexType name="if" mixed="true">
+		<xs:attribute name="property" type="contextProperty" use="optional"/>
+		<xs:attribute name="key" use="optional"/>
+		<xs:attribute name="equals" use="optional"/>
+		<xs:attribute name="not-equals" use="optional"/>
+		<xs:attribute name="expression" use="optional"/>
+	</xs:complexType>
+
 	<xs:complexType name="switch">
 		<xs:choice>
 			<xs:element name="case" minOccurs="1" maxOccurs="unbounded">
@@ -29,7 +39,7 @@
 		<xs:attribute name="property" type="contextProperty" use="required"/>
 		<xs:attribute name="key" use="optional"/>
 	</xs:complexType>
-	
+
 	<xs:simpleType name="contextProperty">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="application"/>

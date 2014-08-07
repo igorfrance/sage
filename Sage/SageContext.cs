@@ -656,6 +656,57 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Selects the case that matches the condition specified with the <paramref name="node"/> and returns it's contents.
+		/// </summary>
+		/// <param name="context">The current context with which the method is being invoked.</param>
+		/// <param name="node">The node that specifies the condition</param>
+		/// <returns>An <see cref="XmlDocumentFragment"/> populated with the content of the selected case node,
+		/// or the original <paramref name="node"/> is the condition has been improperly specified.</returns>
+		/// <example>
+		/// &lt;context:switch property="QueryString" key="Test"&gt;
+		///   &lt;context:case test="ABC"&gt;...%lt;/context:case&gt;
+		///   &lt;context:case test="DEF"&gt;...%lt;/context:case&gt;
+		///   &lt;context:default&gt;...%lt;/context:default&gt;
+		/// &lt;/context:switch&gt;
+		/// </example>
+		[NodeHandler(XmlNodeType.Element, "if", XmlNamespaces.ContextualizationNamespace)]
+		internal static XmlNode ProcessContextIfNode(SageContext context, XmlNode node)
+		{
+			if (node.SelectSingleElement("ancestor::sage:literal", XmlNamespaces.Manager) != null)
+				return node;
+
+			XmlElement element = (XmlElement) node;
+			XmlDocumentFragment result = node.OwnerDocument.CreateDocumentFragment();
+
+			string expression = element.GetAttribute("expression");
+			string propName = element.GetAttribute("property");
+			string key = element.GetAttribute("key");
+			string equals = element.GetAttribute("equals");
+			string notEquals = element.GetAttribute("not-equals");
+			bool nodeValid = false;
+			
+			if (!string.IsNullOrWhiteSpace(expression))
+			{
+				var text = context.textEvaluator.Process(expression);
+				nodeValid = !string.IsNullOrWhiteSpace(text);
+			}
+			else
+			{
+				string propValue = GetContextProperty(context, propName, key);
+				if (notEquals != string.Empty) nodeValid = propValue != notEquals;
+				else if (equals != string.Empty) nodeValid = propValue == equals;
+			}
+
+			if (!nodeValid)
+				return null;
+
+			foreach (XmlNode child in node.SelectNodes("node()"))
+				result.AppendChild(context.ProcessNode(child));
+
+			return result;
+		}
+
+		/// <summary>
 		/// Selects the case that matches the condition specified with the <paramref name="switchNode"/> and returns it's contents.
 		/// </summary>
 		/// <param name="context">The current context with which the method is being invoked.</param>
@@ -749,6 +800,10 @@ namespace Sage
 			XmlElement valueElem = (XmlElement) node;
 
 			string propName = valueElem.GetAttribute("property");
+
+			if (string.IsNullOrWhiteSpace(propName))
+				return node.OwnerDocument.CreateTextNode(context.textEvaluator.Process(valueElem.InnerText));
+
 			string propKey = valueElem.GetAttribute("key");
 			string propValue = SageContext.GetContextProperty(context, propName, propKey);
 
@@ -816,6 +871,67 @@ namespace Sage
 			}
 
 			return variable;
+		}
+
+		[TextFunction(Name = "ctx:query")]
+		internal static string GetQueryParam(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length == 0)
+				return string.Empty;
+
+			return context.Query[arguments[0]];
+		}
+
+		[TextFunction(Name = "ctx:form")]
+		internal static string GetFormParam(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length == 0)
+				return string.Empty;
+
+			return context.Request.Form[arguments[0]];
+		}
+
+		[TextFunction(Name = "ctx:session")]
+		internal static string GetSessionParam(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length == 0)
+				return string.Empty;
+
+			return context.Session[arguments[0]] as string;
+		}
+
+		[TextFunction(Name = "ctx:request")]
+		internal static string GetRequestParam(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length == 0)
+				return string.Empty;
+
+			return context.Request[arguments[0]];
+		}
+
+		[TextFunction(Name = "ctx:iif")]
+		internal static string IIf(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			string condition = context.textEvaluator.Process(arguments[0]);
+			string result1 = arguments[1];
+			string result2 = arguments[2];
+
+			return !string.IsNullOrWhiteSpace(condition) ? result1 : result2;
+		}
+
+		[TextFunction(Name = "ctx:isnull")]
+		internal static string IsNull(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 2)
+				return string.Empty;
+
+			string result1 = arguments[0];
+			string result2 = arguments[1];
+
+			return !string.IsNullOrWhiteSpace(result1) ? result1 : result2;
 		}
 
 		/// <summary>
