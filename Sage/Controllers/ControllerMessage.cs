@@ -16,11 +16,17 @@
 namespace Sage.Controllers
 {
 	using System;
+	using System.Diagnostics.Contracts;
+	using System.Xml;
+
+	using Kelp;
+
+	using XmlNamespaces = Sage.XmlNamespaces;
 
 	/// <summary>
 	/// Represents a single message that a controller is sending to the view.
 	/// </summary>
-	public class ControllerMessage
+	public class ControllerMessage : IXmlConvertible
 	{
 		/// <summary>
 		/// Gets or sets the type of this message.
@@ -41,6 +47,34 @@ namespace Sage.Controllers
 		public override string ToString()
 		{
 			return string.Format("{0} ({1})", this.Name, this.Type);
+		}
+
+		/// <summary>
+		/// Parses the specified <paramref name="element" /> into the current object.
+		/// </summary>
+		/// <param name="element">The element to parse.</param>
+		public void Parse(XmlElement element)
+		{
+			MessageType type;
+			if (Enum.TryParse(element.GetAttribute("type"), false, out type))
+				this.Type = type;
+
+			this.Name = element.GetAttribute("name");
+			this.Text = element.InnerText;
+		}
+
+		/// <summary>
+		/// Generates an <see cref="XmlElement" /> that represents this instance.
+		/// </summary>
+		/// <param name="document">The document to use to create the element with.</param>
+		/// <returns>An <see cref="XmlElement" /> that represents this instance.</returns>
+		public XmlElement ToXml(XmlDocument document)
+		{
+			var result = document.CreateElement("sage:message", XmlNamespaces.SageNamespace);
+			result.SetAttribute("type", this.Type.ToString());
+			result.SetAttribute("name", this.Name);
+			result.InnerText = this.Text;
+			return result;
 		}
 	}
 }
