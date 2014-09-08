@@ -44,7 +44,9 @@ sage.dev.Toolbar = new function Toolbar()
 		$toolbar.find(".button.log").click(onLogCommandClick);
 		$toolbar.find(".button.inspect").click(onInspectCommandClick);
 		$toolbar.hover(onToolbarMouseOver, onToolbarMouseOut);
-		$toolbar.show();
+
+		if (atom.cookie.get("devtools") != "off")
+			$toolbar.show();
 
 		jQuery(document).bind("keydown", onDocumentKeyDown);
 
@@ -337,16 +339,21 @@ sage.dev.Toolbar = new function Toolbar()
 	this.show = function DeveloperToolbar$show()
 	{
 		$toolbar.show();
+		atom.cookie.set("devtools", "on");
 	};
 
 	this.hide = function DeveloperToolbar$hide()
 	{
 		$toolbar.hide();
+		atom.cookie.set("devtools", "off");
 	};
 
 	this.toggle = function DeveloperToolbar$toggle()
 	{
-		$toolbar.toggle();
+		if ($toolbar.is(":visible"))
+			this.hide();
+		else
+			this.show();
 	};
 
 	$(window).load(setup);
