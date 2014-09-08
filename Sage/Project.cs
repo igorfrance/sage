@@ -355,7 +355,7 @@ namespace Sage
 			projectIsReady = true;
 		}
 
-		internal static void InitializeConfiguration(SageContext context)
+		internal static SageContext InitializeConfiguration(SageContext context)
 		{
 			string projectConfigPathBinDir = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
 			string projectConfigPathProjDir = Path.Combine(AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
@@ -371,7 +371,7 @@ namespace Sage
 			if (!File.Exists(projectConfigPath))
 			{
 				log.Warn("Project configuration file not found; configuration initialized with default values");
-				return;
+				return new SageContext(context);
 			}
 
 			installOrder = new List<string>();
@@ -459,6 +459,8 @@ namespace Sage
 					context.LmCache.Put(ConfigWatchName, DateTime.Now, projectConfig.Files);
 				}
 			}
+
+			return context;
 		}
 
 		/// <summary>
@@ -539,13 +541,13 @@ namespace Sage
 			if (context.LmCache.Get(ConfigWatchName) == null)
 				InitializeConfiguration(context);
 
-			if (!Project.IsStarted)
+			if (!IsStarted)
 			{
 				lock (lck)
 				{
-					if (!Project.IsStarted)
+					if (!IsStarted)
 					{
-						Project.Start(context);
+						Start(context);
 					}
 				}
 			}

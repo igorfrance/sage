@@ -104,11 +104,12 @@ namespace Sage.Test.ResourceManagement
 		private Establish ctx = () =>
 		{
 			context = Mother.CreateSageContext("default", "com");
+			context = Project.InitializeConfiguration(context);
 			resourceManager = new ResourceManager(context);
 		};
 
 		private Because of = () => xmlDocument = resourceManager.LoadXml(
-			Utilities.ExpandResourcePath("TestSite/assets/default/configuration/dictionary/en.xml"));
+			Utilities.ExpandResourcePath("TestSite/assets/default/dictionary/en.xml"));
 
 		private It Should_Not_be_Null = () => xmlDocument.ShouldNotBeNull();
 	}
