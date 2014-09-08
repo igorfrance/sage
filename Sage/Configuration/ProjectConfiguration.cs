@@ -83,6 +83,10 @@ namespace Sage.Configuration
 				? new MetaViewDictionary(initConfiguration.MetaViews)
 				: new MetaViewDictionary();
 
+			this.ErrorViews = initConfiguration != null
+				? new Dictionary<string, ErrorViewInfo>(initConfiguration.ErrorViews)
+				: new Dictionary<string, ErrorViewInfo>();
+
 			this.Environment = initConfiguration != null
 				? new EnvironmentConfiguration(initConfiguration.Environment)
 				: new EnvironmentConfiguration();
@@ -246,6 +250,11 @@ namespace Sage.Configuration
 		/// Gets the collection of global, shared meta views as defined in the configuration file.
 		/// </summary>
 		public MetaViewDictionary MetaViews { get; private set; }
+
+		/// <summary>
+		/// Gets the collection of global, shared error views as defined in the configuration file.
+		/// </summary>
+		public Dictionary<string, ErrorViewInfo> ErrorViews { get; private set; }
 
 		/// <summary>
 		/// Gets the dictionary of module configurations
@@ -462,6 +471,13 @@ namespace Sage.Configuration
 					target.AppendChild(metaViewInfo.ToXml(ownerDoc));
 			}
 
+			if (this.ErrorViews.Count != 0)
+			{
+				XmlNode target = result.AppendChild(ownerDoc.CreateElement("errorViews", Ns));
+				foreach (ErrorViewInfo info in this.ErrorViews.Values)
+					target.AppendChild(info.ToXml(ownerDoc));
+			}
+
 			foreach (XmlElement custom in this.customElements)
 				result.AppendChild(ownerDoc.ImportNode(custom, true));
 
@@ -672,6 +688,13 @@ namespace Sage.Configuration
 				this.MetaViews[name] = info;
 			}
 
+			foreach (XmlElement viewNode in configNode.SelectNodes("p:errorViews/p:view", nm))
+			{
+				var error = viewNode.GetAttribute("error");
+				var info = new ErrorViewInfo(viewNode);
+				this.ErrorViews[error] = info;
+			}
+
 			this.Package = new PackageConfiguration(packageElement);
 
 			if (this.Changed != null)
@@ -769,6 +792,19 @@ namespace Sage.Configuration
 				MetaViewInfo info = extensionConfig.MetaViews[name];
 				info.Extension = extensionName;
 				this.MetaViews.Add(name, info);
+			}
+
+			foreach (string number in extensionConfig.ErrorViews.Keys)
+			{
+				if (this.ErrorViews.ContainsKey(number))
+				{
+					log.WarnFormat("Skipped registering error view '{0}' from extension '{1}' because an error view with the same number already exists.", number, extensionName);
+					continue;
+				}
+
+				ErrorViewInfo info = extensionConfig.ErrorViews[number];
+				info.Extension = extensionName;
+				this.ErrorViews.Add(number, info);
 			}
 
 			foreach (string name in extensionConfig.Modules.Keys)

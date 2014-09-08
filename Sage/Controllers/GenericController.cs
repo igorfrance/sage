@@ -29,9 +29,9 @@ namespace Sage.Controllers
 	/// </summary>
 	/// <remarks>
 	/// Most of the times, a Sage view will not require a specific controller, since all that is needed is for
-	/// the framework to transform the view's configuration file with the appropriate XSLT stylesheet. If a view
+	/// the framework to transform the view's configuration file with the appropriate XSLT style sheet. If a view
 	/// has it's own configuration file, this controller will process it and transform it with the appropriate 
-	/// XSLT stylesheet.
+	/// XSLT style sheet.
 	/// </remarks>
 	public class GenericController : SageController
 	{
@@ -65,15 +65,7 @@ namespace Sage.Controllers
 				return this.View(this.genericViewInfo.Action, result);
 			}
 
-			Context.Response.StatusCode = 404;
-			Context.Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
-			Context.Response.Cache.SetNoStore();
-
-			var errorMessage = Context.IsDeveloperRequest
-				? string.Format("TODO: Decent 404 page (friendly and dev)<br/>Path:{0}<br/>Controller={1}<br/>Action={2}", Context.Request.Path, this.Name, this.genericViewInfo.Action)
-				: "Not Found";
-
-			return new ContentResult { Content = errorMessage, ContentType = "text/html" };
+			return this.PageNotFound(this.genericViewInfo.Action);
 		}
 
 		/// <summary>

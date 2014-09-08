@@ -17,6 +17,7 @@ namespace Sage.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
@@ -52,6 +53,8 @@ namespace Sage.Controllers
 		private readonly IModuleFactory moduleFactory = new SageModuleFactory();
 		private readonly Dictionary<string, ViewInfo> viewInfos = new Dictionary<string, ViewInfo>();
 
+		private readonly string typeName;
+
 		static SageController()
 		{
 			DiscoverViewXmlFilters();
@@ -63,6 +66,7 @@ namespace Sage.Controllers
 		/// </summary>
 		protected SageController()
 		{
+			this.typeName = this.GetType().Name.Replace("Controller", string.Empty).ToLower();
 			this.messages = new ControllerMessages();
 			this.ViewData["messages"] = this.messages;
 			this.IsShared = this.GetType().GetCustomAttributes(typeof(SharedControllerAttribute), true).Count() != 0;
@@ -85,7 +89,7 @@ namespace Sage.Controllers
 		{
 			get
 			{
-				return this.GetType().Name.Replace("Controller", string.Empty).ToLower();
+				return this.typeName;
 			}
 		}
 
@@ -120,12 +124,42 @@ namespace Sage.Controllers
 		}
 
 		/// <summary>
-		/// Sets the HTTP status to not found (404) and returns an <see cref="EmptyResult"/>.
+		/// Sets the HTTP status to not found (404) and returns an <see cref="EmptyResult" />.
 		/// </summary>
+		/// <param name="action">Optional name of the action that could not be found.</param>
 		/// <returns>Empty result</returns>
-		public ActionResult PageNotFound()
+		public ActionResult PageNotFound(string action = null)
 		{
-			Context.Response.StatusCode = 404;
+			this.Context.Response.StatusCode = 404;
+			this.Context.Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
+			this.Context.Response.Cache.SetNoStore();
+
+			var view404 = new ViewInfo(this, "404", "_system");
+			if (view404.Exists)
+			{
+				var info = new ViewInfo(this, "404", "_system");
+				this.viewInfos.Add("404", info);
+
+				ViewInput result = this.ProcessView(info);
+				return this.View(info.Action, result);
+			}
+
+			if (this.Context.ProjectConfiguration.ErrorViews.ContainsKey("404"))
+			{
+				var view = this.Context.ProjectConfiguration.ErrorViews["404"];
+				var content = this.Context.IsDeveloperRequest ? view.DeveloperContent : view.DefaultContent;
+				content = this.Context.ProcessText(content);
+
+				var errorMessage = content.Substitute(new NameValueCollection
+				{ 
+					{ "path", this.Context.Request.Path },
+					{ "controller", this.Name },
+					{ "action", action },
+				});
+
+				return new ContentResult { Content = errorMessage, ContentType = "text/html" };
+			}
+
 			return new EmptyResult();
 		}
 
@@ -219,6 +253,35 @@ namespace Sage.Controllers
 			viewRoot.AppendElement(this.Context.ToXml(result));
 
 			XmlElement responseNode = viewRoot.AppendElement("sage:response", XmlNamespaces.SageNamespace);
+
+			if (this.messages.Count > 0)
+			{
+				XmlElement messagesNode = responseNode.AppendElement("sage:messages", XmlNamespaces.SageNamespace);
+				foreach (var message in this.messages)
+				{
+					messagesNode.AppendChild(message.ToXml(result));
+				}
+			}
+
+			var viewDataItems = this.ViewData.Keys.Where(k => k != "messages").ToList();
+			if (viewDataItems.Count > 0)
+			{
+				XmlElement messagesNode = responseNode.AppendElement("sage:viewData", XmlNamespaces.SageNamespace);
+				foreach (var key in viewDataItems)
+				{
+					XmlElement itemNode = messagesNode.AppendElement("sage:item", XmlNamespaces.SageNamespace);
+					itemNode.SetAttribute("key", key);
+					if (this.ViewData[key] == null)
+						continue;
+
+					IXmlConvertible convertible = this.ViewData[key] as IXmlConvertible;
+					if (convertible != null)
+						itemNode.AppendChild(convertible.ToXml(result));
+					else
+						itemNode.InnerText = this.ViewData[key].ToString();
+				}
+			}
+
 
 			try
 			{

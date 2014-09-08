@@ -68,6 +68,29 @@
 					<xs:field xpath="@name"/>
 				</xs:unique>
 			</xs:element>
+			<xs:element name="errorViews" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="view"  minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:choice minOccurs="2" maxOccurs="2">
+									<xs:element name="developer" minOccurs="1" maxOccurs="1">
+										<xs:complexType mixed="true"/>
+									</xs:element>
+									<xs:element name="default" minOccurs="1" maxOccurs="1">
+										<xs:complexType mixed="true"/>
+									</xs:element>
+								</xs:choice>
+								<xs:attribute name="error" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+				<xs:unique name="uniqueErrorNumber">
+					<xs:selector xpath="p:view"/>
+					<xs:field xpath="@error"/>
+				</xs:unique>
+			</xs:element>
 			<xs:element name="modules" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
