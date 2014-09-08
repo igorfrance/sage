@@ -45,24 +45,29 @@ namespace Sage.Views
 		private bool? isNoCacheView;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ViewInfo"/> class, using the specified 
-		/// <paramref name="controller"/> and <paramref name="action"/>.
+		/// Initializes a new instance of the <see cref="ViewInfo" /> class, using the specified
+		/// <paramref name="controller" /> and <paramref name="action" />.
 		/// </summary>
 		/// <param name="controller">The controller for which to create this instance.</param>
 		/// <param name="action">The controller action for which to create this instance.</param>
-		public ViewInfo(SageController controller, string action)
+		/// <param name="controllerName">Optional name of the controller to use for resolving configuration and template paths.</param>
+		public ViewInfo(SageController controller, string action, string controllerName = null)
 		{
 			this.context = controller.Context;
 			this.ContentType = "text/html";
 			this.Controller = controller;
+
 			this.Action = action;
 			this.ConfigPath = null;
 
 			this.ViewSource = ViewSource.BuiltIn;
 			this.ViewPath = DefaultBuiltInStylesheetPath;
 
+			if (controllerName == null)
+				controllerName = controller.Name;
+
 			string pathTemplate = controller.ViewPathTemplate;
-			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controller.Name));
+			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controllerName));
 			string basePath = context.MapPath(string.Format("{0}/{1}", folderPath, action));
 
 			foreach (string extension in ConfigExtensions)
@@ -72,7 +77,7 @@ namespace Sage.Views
 					continue;
 
 				this.ConfigPath = path;
-				this.ConfigName = string.Concat(controller.Name, "/", Path.GetFileName(this.ConfigPath));
+				this.ConfigName = string.Concat(controllerName, "/", Path.GetFileName(this.ConfigPath));
 				this.ConfigExists = true;
 				break;
 			}
@@ -107,18 +112,18 @@ namespace Sage.Views
 		{
 			get
 			{
-				if (configDoc == null)
+				if (this.configDoc == null)
 				{
-					if (ConfigExists)
+					if (this.ConfigExists)
 					{
 						try
 						{
-							configDoc = context.Resources.LoadXml(ConfigPath);
+							this.configDoc = context.Resources.LoadXml(ConfigPath);
 							string defaultNamespace = configDoc.DocumentElement.GetAttribute("xmlns");
 							if (string.IsNullOrEmpty(defaultNamespace))
 								configDoc.DocumentElement.SetAttribute("xmlns", XmlNamespaces.XHtmlNamespace);
 
-							configDoc.LoadXml(configDoc.InnerXml);
+							this.configDoc.LoadXml(configDoc.InnerXml);
 						}
 						catch (Exception ex)
 						{
@@ -131,12 +136,13 @@ namespace Sage.Views
 					}
 				}
 
-				return configDoc;
+				return this.configDoc;
 			}
 
 			internal set
 			{
-				configDoc = value;
+				this.configDoc = value;
+				this.ConfigExists = true;
 			}
 		}
 
@@ -326,7 +332,7 @@ namespace Sage.Views
 		/// Gets the path to the view file (either the XML template or XSLT style sheet) 
 		/// corresponding to this object.
 		/// </summary>
-		public string ViewPath { get; private set; }
+		public string ViewPath { get; internal set; }
 
 		/// <summary>
 		/// Gets a number indicating the source of the view style sheet (specific, global or category).
