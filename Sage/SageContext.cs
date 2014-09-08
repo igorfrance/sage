@@ -18,12 +18,14 @@ namespace Sage
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Configuration;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Reflection;
 	using System.Web;
+	using System.Web.Configuration;
 	using System.Web.Hosting;
 	using System.Web.Mvc;
 	using System.Web.Routing;
@@ -64,6 +66,7 @@ namespace Sage
 		private readonly NodeEvaluator nodeEvaluator;
 		private readonly Func<string, string> pathMapper;
 		private readonly TextEvaluator textEvaluator;
+		private bool? sessionsEnabled = null;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
@@ -450,6 +453,30 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether sessions are enabled.
+		/// </summary>
+		/// <value><c>true</c> if sessions are enabled; otherwise, <c>false</c>.</value>
+		public bool SessionsEnabled
+		{
+			get
+			{
+				if (sessionsEnabled == null)
+				{
+					try
+					{
+						sessionsEnabled = this.HttpContext.Session != null;
+					}
+					catch (Exception)
+					{
+						sessionsEnabled = false;
+					}
+				}
+
+				return sessionsEnabled.Value; 
+			}
+		}
+
+		/// <summary>
 		/// Gets <see cref="UrlGenerator"/> to be used with the current context.
 		/// </summary>
 		public UrlGenerator Url { get; private set; }
@@ -472,7 +499,7 @@ namespace Sage
 		/// <returns>The value of the project variable with the specified <paramref name="name"/>.</returns>
 		public string GetProjectVariable(string name, string locale = null)
 		{
-			if (locale == null || !this.ProjectConfiguration.Locales.ContainsKey(locale))
+			if (string.IsNullOrWhiteSpace(locale) || !this.ProjectConfiguration.Locales.ContainsKey(locale))
 				locale = this.Locale;
 
 			return this.ProjectConfiguration.GetVariable(name, locale);
@@ -534,7 +561,7 @@ namespace Sage
 		/// <param name="node">The node to process.</param>
 		/// <returns>The processed version of the node.</returns>
 		public XmlNode ProcessNode(XmlNode node)
-		{
+		{	
 			return this.nodeEvaluator.Process(node);
 		}
 
@@ -622,6 +649,8 @@ namespace Sage
 			if (this.Session != null)
 			{
 				XmlElement sessionElem = resultElement.AppendElement("sage:session", XmlNamespaces.SageNamespace);
+				sessionElem.SetAttribute("id", this.Session.SessionID);
+
 				foreach (string key in this.Session.Keys)
 				{
 					var sessionObject = this.Session[key];
@@ -633,9 +662,9 @@ namespace Sage
 					{
 						itemElem.SetAttribute("type", sessionObject.GetType().FullName);
 						if (sessionObject is IXmlConvertible)
-							sessionElem.AppendChild(((IXmlConvertible) sessionObject).ToXml(ownerDocument));
+							itemElem.AppendChild(((IXmlConvertible) sessionObject).ToXml(ownerDocument));
 						else
-							sessionElem.InnerText = sessionObject.ToString();
+							itemElem.InnerText = sessionObject.ToString();
 					}
 				}
 			}
@@ -693,8 +722,10 @@ namespace Sage
 			else
 			{
 				string propValue = GetContextProperty(context, propName, key);
-				if (notEquals != string.Empty) nodeValid = propValue != notEquals;
-				else if (equals != string.Empty) nodeValid = propValue == equals;
+				if (notEquals != string.Empty)
+					nodeValid = !propValue.Equals(notEquals, StringComparison.InvariantCultureIgnoreCase);
+				else if (equals != string.Empty)
+					nodeValid = propValue.Equals(equals, StringComparison.InvariantCultureIgnoreCase);
 			}
 
 			if (!nodeValid)
@@ -757,7 +788,7 @@ namespace Sage
 					continue;
 				}
 
-				if (testValue == propValue)
+				if (testValue.Equals(propValue, StringComparison.InvariantCultureIgnoreCase))
 				{
 					foreach (XmlNode node in caseNode.SelectNodes("node()"))
 						result.AppendChild(context.ProcessNode(node));
@@ -799,6 +830,13 @@ namespace Sage
 
 			XmlElement valueElem = (XmlElement) node;
 
+			string xpath = valueElem.GetAttribute("xpath");
+			if (!string.IsNullOrWhiteSpace(xpath))
+			{
+				XmlNode value = node.SelectSingleNode(xpath, XmlNamespaces.Manager);
+				node.OwnerDocument.CreateTextNode(value.InnerText);
+			}
+
 			string propName = valueElem.GetAttribute("property");
 
 			if (string.IsNullOrWhiteSpace(propName))
@@ -810,6 +848,7 @@ namespace Sage
 			if (propValue != null)
 				return node.OwnerDocument.CreateTextNode(propValue);
 
+			// default: return node as is
 			return node;
 		}
 
@@ -932,6 +971,18 @@ namespace Sage
 			string result2 = arguments[1];
 
 			return !string.IsNullOrWhiteSpace(result1) ? result1 : result2;
+		}
+
+		[TextFunction(Name = "intl:variable")]
+		internal static string GetVariable(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 1)
+				return string.Empty;
+
+			string name = arguments[0];
+			string locale = arguments.Length < 2 ? null : arguments[1];
+
+			return context.GetProjectVariable(name, locale);
 		}
 
 		/// <summary>
