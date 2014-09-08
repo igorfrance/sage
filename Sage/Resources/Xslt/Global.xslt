@@ -70,6 +70,7 @@
 			<xsl:attribute name="data-thread">
 				<xsl:value-of select="$request/@thread" />
 			</xsl:attribute>
+			<xsl:apply-templates select="." mode="html-attributes"/>
 			<xsl:apply-templates select="node()"/>
 		</html>
 	</xsl:template>
@@ -79,21 +80,24 @@
 		<xsl:variable name="scripts" select="$response/sage:resources/sage:head/xhtml:script | xhtml:script"/>
 		<head>
 			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="." mode="hook-after-head-start"/>
 			<xsl:apply-templates select="*[local-name() != 'script' and local-name() != 'link' and local-name() != 'style']"/>
 			<xsl:apply-templates select="." mode="global-metatags"/>
 			<xsl:apply-templates select="set:distinct($styles, '@href', true())"/>
 			<xsl:apply-templates select="set:distinct($scripts, '@src', true())"/>
 			<xsl:apply-templates select="comment()"/>
+			<xsl:apply-templates select="." mode="hook-before-head-end"/>
 		</head>
 	</xsl:template>
 
 	<xsl:template match="xhtml:body">
 		<body>
 			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates select="." mode="hook-after-body-start"/>
 			<xsl:apply-templates select="node()"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:link"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:script"/>
-			<xsl:apply-templates select="." mode="execute-libraries"/>
+			<xsl:apply-templates select="." mode="hook-before-body-end"/>
 		</body>
 	</xsl:template>
 
@@ -207,8 +211,20 @@
 		<xsl:value-of select="."/>
 	</xsl:template>
 
+	<xsl:template match="*" mode="hook-after-head-start"/>
+	
+	<xsl:template match="*" mode="hook-before-head-end"/>
+	
+	<xsl:template match="*" mode="hook-after-body-start"/>
+	
+	<xsl:template match="*" mode="hook-before-body-end">
+		<xsl:apply-templates select="." mode="execute-libraries"/>
+	</xsl:template>
+	
 	<xsl:template match="*" mode="execute-libraries"/>
 	
 	<xsl:template match="*" mode="global-metatags"/>
+	
+	<xsl:template match="*" mode="html-attributes"/>
 
 </xsl:stylesheet>
