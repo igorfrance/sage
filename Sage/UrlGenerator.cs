@@ -193,9 +193,9 @@ namespace Sage
 		/// </remarks>
 		public string GetUrl(XmlElement linkElement)
 		{
-			string linkName = linkElement.GetAttribute("ref");
-			string linkValues = linkElement.GetAttribute("values");
-			string linkHash = linkElement.GetAttribute("hash");
+			string linkName = this.Context.ProcessText(linkElement.GetAttribute("ref"));
+			string linkValues = this.Context.ProcessText(linkElement.GetAttribute("values"));
+			string linkHash = this.Context.ProcessText(linkElement.GetAttribute("hash"));
 			bool urlEncode = linkElement.GetAttribute("encode").ContainsAnyOf("yes", "true", "1");
 			bool qualify = linkElement.GetAttribute("absolute").ContainsAnyOf("yes", "true", "1");
 
@@ -260,7 +260,7 @@ namespace Sage
 				return node;
 
 			XmlElement linkElem = (XmlElement) node;
-			string linkName = linkElem.GetAttribute("ref");
+			string linkName = context.ProcessText(linkElem.GetAttribute("ref"));
 			bool rawString = linkElem.GetAttribute("raw").EqualsAnyOf("1", "yes", "true");
 
 			if (!string.IsNullOrEmpty(linkName) && rawString)
@@ -277,6 +277,15 @@ namespace Sage
 			if (!string.IsNullOrEmpty(linkHref))
 			{
 				linkElem.SetAttribute("href", linkHref);
+			}
+
+			foreach (XmlNode child in node.ChildNodes)
+			{
+				XmlNode processed = NodeEvaluator.GetNodeHandler(child)(context, child);
+				if (processed != null)
+					node.ReplaceChild(processed, child);
+				else
+					node.RemoveChild(child);
 			}
 
 			return linkElem;
