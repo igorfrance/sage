@@ -105,10 +105,13 @@ sage.dev.Toolbar = new function Toolbar()
 		if (statusText)
 		{
 			$icon.attr("title", errorText);
+			$icon.data("tooltip", errorText);
 			$text.find("label").text(statusText);
 
 			if ((status.errors + status.warnings) != 0)
 			{
+				$toolbar.show();
+
 				var targetWidth = getToolbarMinWidth();
 				$toolbar.animate({ width: targetWidth }, 50, function onExpandComplete()
 				{
