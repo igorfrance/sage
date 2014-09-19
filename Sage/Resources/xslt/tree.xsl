@@ -20,7 +20,7 @@
 	</xsl:template>
 
 	<xsl:template match="*" mode="xmlroot">
-		<xsl:param name="expandLevels" select="4"/>
+		<xsl:param name="expandLevels" select="5"/>
 		<div class="xmltree">
 			<xsl:apply-templates select="." mode="xmltree-toolbar"/>
 			&#160;

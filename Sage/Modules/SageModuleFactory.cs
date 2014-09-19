@@ -97,26 +97,5 @@ namespace Sage.Modules
 
 			return Modules[tagName];
 		}
-
-		////private static Dictionary<string, ModuleConfiguration> DiscoverAvailableModules()
-		////{
-		////	var types = new Dictionary<string, ModuleConfiguration>();
-		////	foreach (var asm in Project.RelevantAssemblies)
-		////	{
-		////		var modules = asm.GetTypes().Where(t => 
-		////			typeof(IModule).IsAssignableFrom(t) && !t.IsInterface && t != typeof(NullModule));
-
-		////		foreach (var type in modules)
-		////		{
-		////			var config = new ModuleConfiguration(type);
-		////			foreach (string tagName in config.TagNames)
-		////			{
-		////				types.Add(tagName, config);
-		////			}
-		////		}
-		////	}
-
-		////	return types;
-		////}
 	}
 }

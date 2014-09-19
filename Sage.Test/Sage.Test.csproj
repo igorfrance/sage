@@ -84,7 +84,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -119,6 +118,10 @@
     <ProjectReference Include="..\Sage\Sage.csproj">
       <Project>{E647EBD1-64CF-48EB-B20D-0133C24899F6}</Project>
       <Name>Sage</Name>
+    </ProjectReference>
+    <ProjectReference Include="H:\source\.net\aspnet.mvc\src\System.Web.Mvc\System.Web.Mvc.csproj">
+      <Project>{3d3ffd8a-624d-4e9b-954b-e1c105507975}</Project>
+      <Name>System.Web.Mvc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

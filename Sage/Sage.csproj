@@ -84,12 +84,10 @@
       <HintPath>$(SolutionDir).nuget\packages\Saxon-HE.9.5.1.5\lib\net35\saxon9he-api.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -276,6 +274,10 @@
     <ProjectReference Include="..\Kelp\Kelp\Kelp.csproj">
       <Project>{AA487E40-4F39-46BF-A8FD-E15A146F32BA}</Project>
       <Name>Kelp</Name>
+    </ProjectReference>
+    <ProjectReference Include="H:\source\.net\aspnet.mvc\src\System.Web.Mvc\System.Web.Mvc.csproj">
+      <Project>{3d3ffd8a-624d-4e9b-954b-e1c105507975}</Project>
+      <Name>System.Web.Mvc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

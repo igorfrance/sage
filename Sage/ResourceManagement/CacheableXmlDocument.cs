@@ -230,7 +230,7 @@ namespace Sage.ResourceManagement
 				}
 				else
 				{
-					if (fallbackNode != null)
+					if (includedNode == null && fallbackNode != null)
 					{
 						var fragment = elementDocument.CreateDocumentFragment();
 						foreach (XmlNode childNode in fallbackNode.ChildNodes)
@@ -255,8 +255,8 @@ namespace Sage.ResourceManagement
 							var debugElement = this.CreateErrorElement(errorMessage);
 							elementParent.ReplaceChild(elementDocument.ImportNode(debugElement, true), includingElement);
 						}
-
-						elementParent.RemoveChild(includingElement);
+						else
+							elementParent.RemoveChild(includingElement);
 					}
 				}
 			}

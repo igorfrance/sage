@@ -35,7 +35,10 @@ namespace Sage.Controllers
 	/// </remarks>
 	public class GenericController : SageController
 	{
-		private ViewInfo genericViewInfo;
+		/// <summary>
+		/// The generic view information
+		/// </summary>
+		protected ViewInfo genericViewInfo;
 		private string name;
 
 		/// <summary>

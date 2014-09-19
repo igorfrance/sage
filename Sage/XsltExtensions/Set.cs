@@ -76,8 +76,8 @@ namespace Sage.XsltExtensions
 			if (nodeset.Count < 2)
 				return nodeset;
 
-			List<NodeInfo> result = new List<NodeInfo>();
-			List<string> selections = new List<string>();
+			var result = new List<NodeInfo>();
+			var selections = new List<string>();
 
 			XPathNodeIterator clone = nodeset.Clone();
 
