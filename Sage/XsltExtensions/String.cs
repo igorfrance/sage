@@ -16,6 +16,7 @@
 namespace Sage.XsltExtensions
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text.RegularExpressions;
 	using System.Xml;
@@ -442,6 +443,24 @@ namespace Sage.XsltExtensions
 			}
 
 			return result.CreateNavigator().Select("*");
+		}
+
+		/// <summary>
+		/// Joins the specified selection using the specified separator.
+		/// </summary>
+		/// <param name="selection">The selection.</param>
+		/// <param name="separator">The separator.</param>
+		/// <returns>The string values of all nodes from selection, joined with the separator</returns>
+		public string join(XPathNodeIterator selection, string separator)
+		{
+			var result = new List<string>();
+
+			while (selection.MoveNext())
+			{
+				result.Add(selection.Current.InnerXml);
+			}
+
+			return string.Join(separator, result);
 		}
 
 		private string unquoteReplacement(string replacement)
