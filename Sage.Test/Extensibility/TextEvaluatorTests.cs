@@ -33,8 +33,8 @@ namespace Sage.Test.Extensibility
 
 		It Should_throw_exceptions_with_null_parameters = () =>
 		{
-			Catch.Exception(() => TextEvaluator.RegisterVariable(null, null)).ShouldBeOfType<ArgumentNullException>();
-			Catch.Exception(() => TextEvaluator.RegisterVariable(varName, null)).ShouldBeOfType<ArgumentNullException>();
+			Catch.Exception(() => TextEvaluator.RegisterVariable(null, null)).ShouldBeAssignableTo<ArgumentNullException>();
+			Catch.Exception(() => TextEvaluator.RegisterVariable(varName, null)).ShouldBeAssignableTo<ArgumentNullException>();
 		};
 
 		It Should_use_the_handler_correctly = () =>

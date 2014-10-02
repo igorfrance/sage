@@ -44,13 +44,13 @@ namespace Sage.Test.ResourceManagement
 		};
 
 		It Should_throw_ArgumentNullException_with_null_filepath = () =>
-			Catch.Exception(() => ResourceManager.LoadXmlDocument(string.Empty, null)).ShouldBeOfType(typeof(ArgumentNullException));
+			Catch.Exception(() => ResourceManager.LoadXmlDocument(string.Empty, null)).ShouldBeAssignableTo<ArgumentNullException>();
 
 		It Should_correctly_load_xml_document_that_exists = () =>
-			ResourceManager.LoadXmlDocument(filePath, null).ShouldBe(typeof(CacheableXmlDocument));
+			ResourceManager.LoadXmlDocument(filePath, null).ShouldBeAssignableTo<CacheableXmlDocument>();
 
 		It Should_throw_IOException_when_attempting_to_load_a_missing_file = () =>
-			Catch.Exception(() => ResourceManager.LoadXmlDocument(filePathMissing, null)).ShouldBe(typeof(IOException));
+			Catch.Exception(() => ResourceManager.LoadXmlDocument(filePathMissing, null)).ShouldBeAssignableTo<IOException>();
 
 		It Should_load_document_globalized_to_english_if_the_document_is_globalizable_and_language_is_english = () =>
 			ResourceManager.LoadXmlDocument(filePath, Mother.CreateSageContext("default", "uk"))
@@ -91,7 +91,7 @@ namespace Sage.Test.ResourceManagement
 		};
 
 		private Because of = () => exception = Catch.Exception(() => resourceManager.LoadXml("Imaginary/Path.Xml"));
-		private It Should_Throw_a_FileNotFoundException = () => exception.ShouldBeOfType<FileNotFoundException>();
+		private It Should_Throw_a_FileNotFoundException = () => exception.ShouldBeAssignableTo<FileNotFoundException>();
 	}
 
 	[Subject(typeof(ResourceManager)), Tags(Categories.ResourceManagement)]

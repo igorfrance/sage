@@ -71,6 +71,6 @@ namespace Sage.Test.ResourceManagement
 
 		private Because of = () => exception = Catch.Exception(() => localeInfo = new LocaleInfo(null));
 
-		private It Should_Fail = () => exception.ShouldBeOfType<ArgumentNullException>();
+		private It Should_Fail = () => exception.ShouldBeAssignableTo<ArgumentNullException>();
 	}
 }

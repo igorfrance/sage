@@ -40,8 +40,8 @@ namespace Sage.Test.Extensibility
 
 		It Should_throw_exceptions_with_null_parameters = () =>
 		{
-			Catch.Exception(() => NodeEvaluator.RegisterNodeHandler(XmlNodeType.Element, string.Empty, string.Empty, null)).ShouldBeOfType<ArgumentNullException>();
-			Catch.Exception(() => NodeEvaluator.RegisterNodeHandler(XmlNodeType.Element, "node1", string.Empty, null)).ShouldBeOfType<ArgumentNullException>();
+			Catch.Exception(() => NodeEvaluator.RegisterNodeHandler(XmlNodeType.Element, string.Empty, string.Empty, null)).ShouldBeAssignableTo<ArgumentNullException>();
+			Catch.Exception(() => NodeEvaluator.RegisterNodeHandler(XmlNodeType.Element, "node1", string.Empty, null)).ShouldBeAssignableTo<ArgumentNullException>();
 		};
 
 		It Should_register_the_handler_correctly = () =>
