@@ -16,7 +16,9 @@
 namespace Sage
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
+	using System.Text;
 	using System.Xml;
 
 	/// <summary>
@@ -25,6 +27,13 @@ namespace Sage
 	internal class SageHelpException : SageException
 	{
 		private const string DefaultStylesheetPath = @"sageresx://sage/resources/xslt/assistanceerror.xslt";
+		private static readonly Dictionary<string, Func<Exception, ProblemInfo>> parsers;
+
+		static SageHelpException()
+		{
+			parsers = new Dictionary<string, Func<Exception, ProblemInfo>>();
+			parsers.Add("DbEntityValidationException", ParseEntityExceptionError);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageHelpException"/> class.
@@ -83,6 +92,12 @@ namespace Sage
 				else
 					problem = new ProblemInfo(ProblemType.InvalidMarkup, path);
 			}
+			else
+			{
+				var typeName = ex.GetType().Name;
+				if (parsers.ContainsKey(typeName))
+					problem = parsers[typeName].Invoke(ex);
+			}
 
 			if (problem.Type == ProblemType.Unknown && suggestedProblem != ProblemType.Unknown)
 				problem.Type = suggestedProblem;
@@ -105,6 +120,29 @@ namespace Sage
 				arguments.Add("path", this.Problem.FilePath);
 
 			return arguments;
+		}
+
+		private static ProblemInfo ParseEntityExceptionError(Exception e)
+		{
+			var errors = e.GetType().GetProperty("EntityValidationErrors").GetValue(e ) as IEnumerable;
+			var errorMessage = new StringBuilder();
+			
+			var dictionary = new Dictionary<string, string>();
+			foreach (var err1 in errors)
+			{
+				var validationErrors = err1.GetType().GetProperty("ValidationErrors").GetValue(err1) as IEnumerable;
+				foreach (var err2 in validationErrors)
+				{
+					var message = err2.GetType().GetProperty("ErrorMessage").GetValue(err2) as string;
+					var property = err2.GetType().GetProperty("PropertyName").GetValue(err2) as string;
+
+					dictionary.Add(property, message);
+				}
+			}
+
+			var problem = new ProblemInfo(ProblemType.EntityValidationError);
+			problem.InfoBlocks.Add("ValidationErrors", dictionary);
+			return problem;
 		}
 	}
 }

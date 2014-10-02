@@ -49,6 +49,7 @@
 			<xs:enumeration value="category"/>
 			<xs:enumeration value="isDeveloperRequest"/>
 			<xs:enumeration value="locale"/>
+			<xs:enumeration value="data"/>
 			<xs:enumeration value="path"/>
 			<xs:enumeration value="physicalApplicationPath"/>
 			<xs:enumeration value="query"/>

@@ -594,8 +594,10 @@ namespace Sage
 			TextWriter writer = new StringWriter(html);
 			SageContext context = new SageContext(this.Context);
 
-			SageException sageException = exception is SageException
-				? (SageException) exception
+			SageException sageException = SageHelpException.Create(exception);
+			if (((SageHelpException) sageException).Problem.Type == ProblemType.Unknown)
+				sageException = exception is SageHelpException
+				? (SageHelpException) exception
 				: new SageException(exception);
 
 			if (this.IsRequestAvailable)

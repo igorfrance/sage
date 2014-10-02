@@ -189,6 +189,11 @@ namespace Sage
 		/// Occurs if an exception is raised during loading of an XSLT style-sheet.
 		/// </summary>
 		XsltLoadError,
+
+		/// <summary>
+		/// EntityValidationError
+		/// </summary>
+		EntityValidationError,
 	}
 
 	/// <summary>

@@ -67,6 +67,7 @@ namespace Sage
 		private readonly Func<string, string> pathMapper;
 		private readonly TextEvaluator textEvaluator;
 		private bool? sessionsEnabled = null;
+		private string ipAddress;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SageContext"/> class, using an existing context instance.
@@ -214,6 +215,7 @@ namespace Sage
 			this.Query = new QueryString(queryString);
 			this.Cache = new CacheWrapper(httpContext);
 			this.LmCache = new LastModifiedCache(this);
+			this.Data = new QueryString();
 
 			this.HttpContext = httpContext;
 
@@ -358,6 +360,33 @@ namespace Sage
 		}
 
 		/// <summary>
+		/// Gets the remote client's IP address.
+		/// </summary>
+		public string IpAddress
+		{
+			get
+			{
+				if (ipAddress != null)
+					return ipAddress;
+
+				var address = this.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+				if (!string.IsNullOrEmpty(address))
+				{
+					string[] addresses = address.Split(',');
+					if (addresses.Length != 0)
+					{
+						address = addresses[0];
+					}
+				}
+				else
+					address = this.Request.ServerVariables["REMOTE_ADDR"];
+
+				return ipAddress = address;
+			}
+		}
+
+		/// <summary>
 		/// Gets the last modification date cache.
 		/// </summary>
 		public LastModifiedCache LmCache { get; private set; }
@@ -398,6 +427,11 @@ namespace Sage
 		/// Gets the query string active within the current context.
 		/// </summary>
 		public QueryString Query { get; private set; }
+
+		/// <summary>
+		/// Gets the data dictionary for this context.
+		/// </summary>
+		public QueryString Data { get; private set; }
 
 		/// <summary>
 		/// Gets the URL of the client request that linked to the current URL.
@@ -597,7 +631,7 @@ namespace Sage
 			resultElement.SetAttribute("method", request.HttpMethod);
 			resultElement.SetAttribute("basehref", this.BaseHref);
 			resultElement.SetAttribute("localAddress", request.ServerVariables["LOCAL_ADDR"]);
-			resultElement.SetAttribute("remoteAddress", request.ServerVariables["REMOTE_ADDR"]);
+			resultElement.SetAttribute("remoteAddress", this.IpAddress);
 
 			resultElement.SetAttribute("category", this.Category);
 			resultElement.SetAttribute("locale", this.Locale);
@@ -946,6 +980,15 @@ namespace Sage
 				return string.Empty;
 
 			return context.Request[arguments[0]];
+		}
+
+		[TextFunction(Name = "ctx:data")]
+		internal static string GetDataParam(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length == 0)
+				return string.Empty;
+
+			return context.Data[arguments[0]];
 		}
 
 		[TextFunction(Name = "ctx:iif")]

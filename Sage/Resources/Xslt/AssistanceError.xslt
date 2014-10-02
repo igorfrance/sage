@@ -209,8 +209,11 @@
 			<xsl:when test="$problemType = 'MissingExtensionDependency'">
 				Missing extension dependency.
 			</xsl:when>
+			<xsl:when test="$problemType = 'EntityValidationError'">
+				Entity validation error
+			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="$problemType"/>				
+				<xsl:value-of select="@type"/>				
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -275,6 +278,9 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'MissingExtensionDependency'">
 				One or more of the project extensions is missing it's own dependencies.
+			</xsl:when>
+			<xsl:when test="$problemType = 'EntityValidationError'">
+				A validation error occurred.
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -386,6 +392,9 @@
 			</xsl:when>
 			<xsl:when test="$problemType = 'MissingExtensionDependency'">
 				Make sure that all dependencies used by the extension exist in the project's <code>extensions</code> directory.
+			</xsl:when>
+			<xsl:when test="$problemType = 'EntityValidationError'">
+				Fix any validation errors
 			</xsl:when>
 			<xsl:otherwise>
 				<p>Read the error description and try to look for the cause indicated by the text.</p>
