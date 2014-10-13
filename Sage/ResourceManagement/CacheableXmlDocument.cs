@@ -154,7 +154,8 @@ namespace Sage.ResourceManagement
 			XmlReader xmlReader;
 			XmlReaderSettings settings = CreateReaderSettings(resolver);
 
-			Uri uri = new Uri(filename, UriKind.RelativeOrAbsolute);
+			var resolvedUri = context == null ? filename : context.Path.Resolve(filename);
+			Uri uri = new Uri(resolvedUri, UriKind.RelativeOrAbsolute);
 			IDisposable reader = resolver.GetEntity(uri, null, null) as IDisposable;
 			if (reader is XmlReader)
 				xmlReader = (XmlReader) reader;
