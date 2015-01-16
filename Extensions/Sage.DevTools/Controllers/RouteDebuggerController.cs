@@ -162,7 +162,7 @@ namespace Sage.DevTools.Controllers
 			<head>
 				<title>Route Debugger</title>
 				<style type='text/css'>
-				* {{ font-size: 11px; font-family: Lucida Sans Unicode; }}
+				* {{ font-size: 11px; font-family: Courier; }}
 				table {{ table-layout: fixed; border-collapse:collapse }}
 				td {{ border: solid 1px black; padding:3px; }}
 				td div {{ height: 14px; overflow: hidden; }}
