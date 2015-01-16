@@ -100,14 +100,17 @@
 				<xs:key name="moduleName">
 					<xs:selector xpath="p:module"/>
 					<xs:field xpath="@name"/>
+					<xs:field xpath="@category"/>
 				</xs:key>
 				<xs:keyref name="moduleRef" refer="moduleName">
 					<xs:selector xpath="module/dependencies/module"/>
-					<xs:field xpath="@ref"/>
+					<xs:field xpath="@name"/>
+					<xs:field xpath="@category"/>
 				</xs:keyref>
 				<xs:unique name="unique-module-name">
 					<xs:selector xpath="p:module"/>
 					<xs:field xpath="@name"/>
+					<xs:field xpath="@category"/>
 				</xs:unique>
 			</xs:element>
 			<xs:element name="linking" minOccurs="0" maxOccurs="1" type="linking"/>
@@ -241,7 +244,8 @@
 					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="module" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
-								<xs:attribute name="ref" use="required" type="xs:Name"/>
+								<xs:attribute name="name" use="required" type="xs:Name"/>
+								<xs:attribute name="category" use="required" type="xs:Name"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="library" minOccurs="0" maxOccurs="unbounded">

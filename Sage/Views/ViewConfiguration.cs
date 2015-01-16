@@ -166,14 +166,16 @@ namespace Sage.Views
 						if (string.IsNullOrEmpty(moduleSelectXPath)) 
 						{
 							List<string> parts = new List<string>();
-							foreach (string name in SageModuleFactory.Modules.Keys)
+							foreach (ModuleConfiguration config in Project.Configuration.Modules.Values)
 							{
-								var config = SageModuleFactory.Modules[name];
-								var pattern = string.IsNullOrWhiteSpace(config.Category)
-									? ModuleSelectPattern
-									: ModuleSelectPatternCategorized;
+								foreach (string tagName in config.TagNames)
+								{
+									var pattern = string.IsNullOrWhiteSpace(config.Category)
+										? ModuleSelectPattern
+										: ModuleSelectPatternCategorized;
 
-								parts.Add(string.Format(pattern, name, config.Category));
+									parts.Add(string.Format(pattern, tagName, config.Category));
+								}
 							}
 
 							moduleSelectXPath = string.Join("|", parts);
@@ -216,9 +218,14 @@ namespace Sage.Views
 			{
 				var moduleElement = (XmlElement) input.ConfigNode.SelectSingleNode(string.Format("//mod:*[@id='{0}']", moduleId), XmlNamespaces.Manager);
 				string moduleName = moduleElement.LocalName;
+				string moduleCategory = moduleElement.GetAttribute("category");
 
-				ModuleConfiguration moduleConfig = null;
-				if (Context.ProjectConfiguration.Modules.TryGetValue(moduleName, out moduleConfig))
+				string moduleKey = string.IsNullOrWhiteSpace(moduleCategory)
+					? moduleName
+					: moduleCategory + "/" + moduleName;
+
+				ModuleConfiguration moduleConfig;
+				if (Context.ProjectConfiguration.Modules.TryGetValue(moduleKey, out moduleConfig))
 				{
 					XmlElement moduleDefaults = moduleConfig.GetDefault(this.Context);
 					if (moduleDefaults != null)
@@ -233,7 +240,7 @@ namespace Sage.Views
 				}
 				catch (Exception ex)
 				{
-					log.ErrorFormat("Error procesing module element {0}: {1}", moduleElement.Name, ex.Message);
+					log.ErrorFormat("Error procesing module element {0}: {1}", moduleKey, ex.Message);
 				}
 				finally
 				{
@@ -243,7 +250,7 @@ namespace Sage.Views
 					}
 					else
 					{
-						input.AddModuleResult(moduleName, result);
+						input.AddModuleResult(moduleKey, result);
 						if (result.ResultElement != null)
 						{
 							XmlNode newElement = moduleElement.OwnerDocument.ImportNode(result.ResultElement, true);

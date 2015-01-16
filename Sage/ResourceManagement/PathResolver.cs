@@ -282,15 +282,15 @@ namespace Sage.ResourceManagement
 
 		/// <summary>
 		/// Expands the specified <paramref name="childPath"/> to its full path within the module with the specified
-		/// <paramref name="moduleName"/>.
+		/// <paramref name="moduleKey"/>.
 		/// </summary>
-		/// <param name="moduleName">The name of the module for which the path is being expanded.</param>
+		/// <param name="moduleKey">The name (or combination of category/name) of the module for which the path is being expanded.</param>
 		/// <param name="childPath">The path to expand</param>
 		/// <returns>The expended version of the specified <paramref name="childPath"/>. If the <paramref name="childPath"/>
 		/// is either an absolute web or absolute local path, the path will not be expanded.</returns>
-		public string GetModulePath(string moduleName, string childPath)
+		public string GetModulePath(string moduleKey, string childPath)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(moduleName));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(moduleKey));
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(childPath));
 
 			bool isRooted = new Uri(childPath, UriKind.RelativeOrAbsolute).IsAbsoluteUri || Path.IsPathRooted(childPath);
@@ -300,14 +300,7 @@ namespace Sage.ResourceManagement
 			if (childPath.StartsWith("~/"))
 				return this.context.MapPath(childPath);
 
-			string currentModulePath = this.ModulePath;
-			ModuleConfiguration moduleConfig;
-			if (config.Modules.TryGetValue(moduleName, out moduleConfig))
-			{
-				currentModulePath += moduleConfig.Category.Trim('/') + "/";
-			}
-
-			string templatePath = string.Concat(currentModulePath, moduleName.Replace("Module", string.Empty), "/", childPath);
+			string templatePath = string.Concat(this.ModulePath, moduleKey.Replace("Module", string.Empty), "/", childPath);
 			return this.Resolve(templatePath);
 		}
 

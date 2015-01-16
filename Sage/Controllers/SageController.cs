@@ -263,26 +263,6 @@ namespace Sage.Controllers
 				}
 			}
 
-			var viewDataItems = this.ViewData.Keys.Where(k => k != "messages").ToList();
-			if (viewDataItems.Count > 0)
-			{
-				XmlElement messagesNode = responseNode.AppendElement("sage:viewData", XmlNamespaces.SageNamespace);
-				foreach (var key in viewDataItems)
-				{
-					XmlElement itemNode = messagesNode.AppendElement("sage:item", XmlNamespaces.SageNamespace);
-					itemNode.SetAttribute("key", key);
-					if (this.ViewData[key] == null)
-						continue;
-
-					IXmlConvertible convertible = this.ViewData[key] as IXmlConvertible;
-					if (convertible != null)
-						itemNode.AppendChild(convertible.ToXml(result));
-					else
-						itemNode.InnerText = this.ViewData[key].ToString();
-				}
-			}
-
-
 			try
 			{
 				if (input != null && input.ConfigNode != null)
@@ -348,7 +328,8 @@ namespace Sage.Controllers
 				throw new SageHelpException(new ProblemInfo(ProblemType.ResourceProcessingError), ex);
 			}
 
-			foreach (var key in viewContext.ViewData.Keys)
+			var viewDataItems = this.ViewData.Keys.Where(k => k != "messages").ToList();
+			foreach (var key in viewDataItems)
 			{
 				object value = viewContext.ViewData[key];
 				if (value == null)

@@ -17,6 +17,7 @@ namespace Sage.Modules
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Reflection;
 	using System.Xml;
 
@@ -28,47 +29,51 @@ namespace Sage.Modules
 	public class SageModuleFactory : IModuleFactory
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageModuleFactory).FullName);
-		private static IDictionary<string, ModuleConfiguration> moduleDictionary;
+		//private static IDictionary<string, ModuleConfiguration> moduleDictionary;
 
-		/// <summary>
-		/// Gets the dictionary of modules that can be used in the current project.
-		/// </summary>
-		/// <remarks>
-		/// The keys in this dictionary are the module tag names.
-		/// </remarks>
-		public static IDictionary<string, ModuleConfiguration> Modules
-		{
-			get
-			{
-				if (moduleDictionary == null) 
-				{
-					lock (log)
-					{
-						if (moduleDictionary == null) 
-						{
-							var temp = new Dictionary<string, ModuleConfiguration>();
-							foreach (ModuleConfiguration config in Project.Configuration.Modules.Values)
-							{
-								if (config.Type == null)
-									continue;
+		/////// <summary>
+		/////// Gets the dictionary of modules that can be used in the current project.
+		/////// </summary>
+		/////// <remarks>
+		/////// The keys in this dictionary are the module tag names.
+		/////// </remarks>
+		////public static IDictionary<string, ModuleConfiguration> Modules
+		////{
+		////	get
+		////	{
+		////		if (moduleDictionary == null) 
+		////		{
+		////			lock (log)
+		////			{
+		////				if (moduleDictionary == null) 
+		////				{
+		////					var temp = new Dictionary<string, ModuleConfiguration>();
+		////					foreach (var moduleKey in Project.Configuration.Modules.Keys)
+		////					{
+		////						var config = Project.Configuration.Modules[moduleKey];
+		////						if (config.Type == null)
+		////							continue;
 
-								foreach (string tagName in config.TagNames)
-								{
-									if (temp.ContainsKey(tagName))
-										temp[tagName] = config;
-									else
-										temp.Add(tagName, config);
-								}
-							}
+		////						foreach (string tagName in config.TagNames)
+		////						{
+		////							if (temp.ContainsKey(tagName))
+		////								temp[tagName] = config;
+		////							else
+		////								temp.Add(tagName, config);
+		////						}
 
-							moduleDictionary = temp;
-						}
-					}
-				}
+		////						if (!temp.ContainsKey(moduleKey))
+		////							temp.Add(moduleKey, config);
+		////					}
 
-				return moduleDictionary;
-			}
-		}
+		////					moduleDictionary = temp;
+		////				}
+		////			}
+		////		}
+
+		////		return moduleDictionary;
+		////	}
+		////}
 
 		/// <inheritdoc/>
 		public IModule CreateModule(XmlElement moduleNode)
@@ -77,25 +82,14 @@ namespace Sage.Modules
 				throw new ArgumentNullException("moduleNode");
 
 			string tagName = moduleNode.LocalName;
-			if (!Modules.ContainsKey(tagName))
+			string category = moduleNode.GetAttribute("category");
+			ModuleConfiguration config = Project.Configuration.Modules.Values.FirstOrDefault(m => m.Category == category && m.TagNames.Contains(tagName));
+			if (config == null)
 				return null;
 
-			Type moduleType = Modules[tagName].Type;
-
-			ConstructorInfo[] constructors = moduleType.GetConstructors();
+			ConstructorInfo[] constructors = config.Type.GetConstructors();
 			IModule result = (IModule) constructors[0].Invoke(new object[] { });
 			return result;
-		}
-
-		internal static ModuleConfiguration GetModuleConfiguration(string tagName)
-		{
-			if (string.IsNullOrEmpty(tagName))
-				throw new ArgumentNullException("tagName");
-
-			if (!Modules.ContainsKey(tagName))
-				throw new ArgumentException(string.Format("The tag name '{0}' is not valid", tagName));
-
-			return Modules[tagName];
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace Sage.Modules
 	using Kelp.Extensions;
 
 	using log4net;
-
+	using Sage.Configuration;
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 	using Sage.Views;
@@ -113,6 +113,11 @@ namespace Sage.Modules
 		public string Name { get; private set; }
 
 		/// <summary>
+		/// Gets the key of this module.
+		/// </summary>
+		public string Key { get; private set; }
+
+		/// <summary>
 		/// Optional name of extension that defines this module.
 		/// </summary>
 		public string Extension { get; internal set; }
@@ -196,6 +201,9 @@ namespace Sage.Modules
 
 			this.TypeName = element.GetAttribute("type");
 			this.TagNames = new List<string>();
+			this.Key = string.IsNullOrWhiteSpace(this.Category)
+				? this.Name
+				: this.Category + "/" + this.Name;
 
 			var tagNameNodes = element.SelectNodes("p:tags/p:tag", XmlNamespaces.Manager);
 			if (tagNameNodes.Count == 0)
@@ -213,7 +221,13 @@ namespace Sage.Modules
 			var dependencyNodes = element.SelectNodes("p:dependencies/p:module", XmlNamespaces.Manager);
 			foreach (XmlElement dependencyNode in dependencyNodes)
 			{
-				this.ModuleDependencies.Add(dependencyNode.GetAttribute("ref"));
+				var name = dependencyNode.GetAttribute("name");
+				var category = dependencyNode.GetAttribute("category");
+				var moduleKey = string.IsNullOrWhiteSpace(category)
+					? name
+					: category + "/" + name;
+
+				this.ModuleDependencies.Add(moduleKey);
 			}
 
 			var libraryNodes = element.SelectNodes("p:dependencies/p:library", XmlNamespaces.Manager);
@@ -225,7 +239,7 @@ namespace Sage.Modules
 			var resourceNodes = element.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
 			foreach (XmlElement scriptNode in resourceNodes)
 			{
-				this.resources.Add(new ModuleResource(scriptNode, this.Name, this.ProjectId));
+				this.resources.Add(new ModuleResource(scriptNode, this.Key, this.ProjectId));
 			}
 
 			var stylesheetNodes = element.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);
@@ -276,7 +290,21 @@ namespace Sage.Modules
 
 			XmlNode dependenciesNode = result.AppendChild(document.CreateElement("dependencies", Ns));
 			foreach (string name in this.ModuleDependencies)
-				dependenciesNode.AppendElement(document.CreateElement("module", Ns)).SetAttribute("ref", name);
+			{
+				string refName = name;
+				string refCategory = string.Empty;
+
+				if (name.IndexOf("/") != -1)
+				{
+					string[] pair = name.Split('/');
+					refCategory = pair[0];
+					refName = pair[1];
+				}
+
+				var refNode = dependenciesNode.AppendElement(document.CreateElement("module", Ns));
+				refNode.SetAttribute("name", refName);
+				refNode.SetAttribute("category", refCategory);
+			}
 
 			foreach (string name in this.LibraryDependencies)
 				dependenciesNode.AppendElement(document.CreateElement("library", Ns)).SetAttribute("ref", name);
@@ -301,11 +329,12 @@ namespace Sage.Modules
 			CacheableXmlDocument resultDoc = new CacheableXmlDocument();
 			resultDoc.LoadXml(DefaultXslt);
 
-			foreach (ModuleConfiguration config in context.ProjectConfiguration.Modules.Values)
+			foreach (var moduleKey in context.ProjectConfiguration.Modules.Keys)
 			{
+				var config = context.ProjectConfiguration.Modules[moduleKey];
 				foreach (string path in config.Stylesheets)
 				{
-					string stylesheetPath = context.Path.GetModulePath(config.Name, path);
+					string stylesheetPath = context.Path.GetModulePath(moduleKey, path);
 					CopyXslElements(context, stylesheetPath, resultDoc);
 				}
 			}
@@ -346,7 +375,7 @@ namespace Sage.Modules
 		/// <returns>The element with module's defaults, if one is provided in the module's resource directory.</returns>
 		internal XmlElement GetDefault(SageContext context)
 		{
-			string documentPath = context.Path.GetModulePath(this.Name, this.Name + ".xml");
+			string documentPath = context.Path.GetModulePath(this.Key, this.Name + ".xml");
 			if (File.Exists(documentPath))
 			{
 				XmlDocument document = context.Resources.LoadXml(documentPath);
@@ -409,10 +438,11 @@ namespace Sage.Modules
 		private static IEnumerable<ModuleConfiguration> ResolveDependencies(ModuleConfiguration config)
 		{
 			List<ModuleConfiguration> result = new List<ModuleConfiguration>();
-			foreach (string name in config.ModuleDependencies)
+
+			foreach (string moduleKey in config.ModuleDependencies)
 			{
 				ModuleConfiguration reference;
-				if (SageModuleFactory.Modules.TryGetValue(name, out reference))
+				if (Project.Configuration.Modules.TryGetValue(moduleKey, out reference))
 				{
 					result.Add(reference);
 					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);

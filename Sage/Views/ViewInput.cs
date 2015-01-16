@@ -141,12 +141,12 @@ namespace Sage.Views
 		/// </summary>
 		public Dictionary<string, List<ModuleResult>> ModuleResults { get; private set; }
 
-		internal void AddModuleResult(string moduleTagName, ModuleResult result)
+		internal void AddModuleResult(string moduleKey, ModuleResult result)
 		{
-			if (!this.ModuleResults.ContainsKey(moduleTagName))
-				this.AddModuleType(moduleTagName);
+			if (!this.ModuleResults.ContainsKey(moduleKey))
+				this.AddModuleType(moduleKey);
 
-			this.ModuleResults[moduleTagName].Add(result);
+			this.ModuleResults[moduleKey].Add(result);
 		}
 
 		internal void AddModuleLibraryReference(string libraryName, string moduleName)
@@ -175,29 +175,29 @@ namespace Sage.Views
 			AddLibraryReference(libraryName);
 		}
 
-		private void AddModuleType(string moduleTagName)
+		private void AddModuleType(string moduleKey)
 		{
 			var config = this.context.ProjectConfiguration;
 
-			this.ModuleResults.Add(moduleTagName, new List<ModuleResult>());
-			if (this.modules.ContainsKey(moduleTagName))
+			this.ModuleResults.Add(moduleKey, new List<ModuleResult>());
+			if (this.modules.ContainsKey(moduleKey))
 				return;
 
 			// add the module and all its references to this object's module dictionary
-			ModuleConfiguration moduleConfig = SageModuleFactory.GetModuleConfiguration(moduleTagName);
-			this.modules.Add(moduleTagName, moduleConfig);
+			ModuleConfiguration moduleConfig = config.Modules.Values.FirstOrDefault(m => m.Key == moduleKey);
+			this.modules.Add(moduleKey, moduleConfig);
 
-			foreach (string name in moduleConfig.ModuleDependencies.Where(n => !this.modules.ContainsKey(n)))
+			foreach (string key in moduleConfig.ModuleDependencies.Where(n => !this.modules.ContainsKey(n)))
 			{
-				if (!config.Modules.ContainsKey(name))
+				if (!config.Modules.ContainsKey(key))
 				{
 					log.ErrorFormat("Module '{0}' referenced from module '{1}' was not found.",
-						name, moduleConfig.Name);
+						key, moduleConfig.Key);
 
 					continue;
 				}
 
-				this.modules.Add(name, this.context.ProjectConfiguration.Modules[name]);
+				this.modules.Add(key, config.Modules[key]);
 			}
 
 			// reorder the modules by dependencies
@@ -207,12 +207,12 @@ namespace Sage.Views
 			{
 				ModuleConfiguration module = temp[index];
 				bool changed = false;
-				foreach (string name in module.ModuleDependencies)
+				foreach (string dependencyKey in module.ModuleDependencies.Distinct())
 				{
-					if (!context.ProjectConfiguration.Modules.ContainsKey(name))
+					if (!context.ProjectConfiguration.Modules.ContainsKey(dependencyKey))
 						continue;
 
-					ModuleConfiguration reference = context.ProjectConfiguration.Modules[name];
+					ModuleConfiguration reference = context.ProjectConfiguration.Modules[dependencyKey];
 					int other = temp.IndexOf(reference);
 					if (other <= index)
 						continue;
@@ -232,7 +232,7 @@ namespace Sage.Views
 
 			foreach (ModuleConfiguration module in temp)
 			{
-				this.modules.Add(module.Name, module);
+				this.modules.Add(module.Key, module);
 				foreach (string name in module.LibraryDependencies)
 				{
 					this.AddModuleLibraryReference(name, module.Name);

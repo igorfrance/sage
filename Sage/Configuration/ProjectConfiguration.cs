@@ -632,7 +632,12 @@ namespace Sage.Configuration
 			foreach (XmlElement moduleNode in configNode.SelectNodes("p:modules/p:module", nm))
 			{
 				ModuleConfiguration moduleConfig = new ModuleConfiguration(moduleNode, this.Id);
-				this.Modules.Add(moduleConfig.Name, moduleConfig);
+
+				var moduleKey = string.IsNullOrWhiteSpace(moduleConfig.Category)
+					? moduleConfig.Name
+					: moduleConfig.Category + "/" + moduleConfig.Name;
+
+				this.Modules.Add(moduleKey, moduleConfig);
 			}
 
 			var localeNodes = configNode.SelectNodes("p:internationalization/p:locale", nm);

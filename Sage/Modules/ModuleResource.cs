@@ -30,25 +30,25 @@ namespace Sage.Modules
 		/// Initializes a new instance of the <see cref="ModuleResource"/> class.
 		/// </summary>
 		/// <param name="resourceNode">The XML configuration node that represent this resource.</param>
-		/// <param name="moduleName">The name of the module this resource belongs to.</param>
+		/// <param name="moduleKey">The name of the module this resource belongs to.</param>
 		/// <param name="projectId">The identification string of the project this library belongs to.</param>
-		public ModuleResource(XmlElement resourceNode, string moduleName, string projectId)
+		public ModuleResource(XmlElement resourceNode, string moduleKey, string projectId)
 			: base(resourceNode, projectId)
 		{
-			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(moduleName));
+			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(moduleKey));
 
-			this.ModuleName = moduleName;
+			this.ModuleKey = moduleKey;
 		}
 
 		/// <summary>
-		/// Gets the name of the module this resource belongs to.
+		/// Gets the key of the module this resource belongs to.
 		/// </summary>
-		public string ModuleName { get; private set; }
+		public string ModuleKey { get; private set; }
 
 		/// <inheritdoc/>
 		public override string GetResolvedPhysicalPath(SageContext context)
 		{
-			return context.Path.GetModulePath(this.ModuleName, this.Path);
+			return context.Path.GetModulePath(this.ModuleKey, this.Path);
 		}
 	}
 }
