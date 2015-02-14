@@ -5,14 +5,33 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 {
 	var scroller = this;
 	var scrollers = [];
-	var orientation = { VERTICAL: 0, HORIZONTAL: 1};
 	var sizing = { FIXED: 0, PROPORTIONAL: 1 };
 	var lineHeight = 20;
+	var scrollbarSize = null;
 
-	var props =
+	var Orientation = { VERTICAL: 1, HORIZONTAL: 2 };
+	var PROPS =
 	{
-		"0": { scrollSize: "scrollHeight", scrollPos: "scrollTop", size: "height", position: "top" },
-		"1": { scrollSize: "scrollWidth", scrollPos: "scrollLeft", size: "width", position: "left" }
+		"1": {
+			scrollSize: "scrollHeight",
+			scrollPos: "scrollTop",
+			offsetPos: "offsetY",
+			size: "height",
+			outerSize: "outerHeight",
+			position: "top",
+			scrollPadding: "paddingRight",
+			scrollPaddingSize: "width"
+		},
+		"2": {
+			scrollSize: "scrollWidth",
+			scrollPos: "scrollLeft",
+			offsetPos: "offsetX",
+			size: "width",
+			outerSize: "outerWidth",
+			position: "left",
+			scrollPadding: "paddingBottom",
+			scrollPaddingSize: "height"
+		}
 	};
 
 	var className = {
@@ -49,23 +68,21 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 	this.redraw = function redraw()
 	{
 		for (var i = 0; i < scroller.instances.length; i++)
-			redrawInstance(scroller.instances[i]);
+			scroller.instances[i].redraw();
 	};
 
 	/**
 	 * Defines the settings of the <c>Tooltip</c> control.
-	 * @constructor
 	 * @extends {atom.Settings}
 	 * @param {Object} data The object with initial settings.
 	 * @param {Object} element The object with overriding settings. If a setting exist both in
 	 * <c>data</c> and in <c>override</c> objects, the setting from <c>override</c> takes precedence.
 	 */
-	this.Settings = atom.Settings.extend(function (element, settings)
+	this.Settings = atom.Settings.extend(function ScrollerSettings(element, settings)
 	{
 		var sizingValue = this.getString("sizing", element, settings, "").toLowerCase();
 		this.sizing = sizingValue == "fixed" ? sizing.FIXED : sizing.PROPORTIONAL;
 		this.animate = this.getBoolean("animate", element, settings, true);
-		this.orientation = $(element).hasClass("horizontal") ? orientation.HORIZONTAL : orientation.VERTICAL;
 	});
 
 	/**
@@ -75,91 +92,136 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 	 * @event dragstart
 	 * @event dragend
 	 */
-	this.Control = atom.HtmlControl.extend(function ScrollerControl(element, settings)
+	this.Control = function ScrollerControl(element, settings)
 	{
 		this.construct(element, "scroll", "dragstart", "dragend");
 
 		this.settings = new scroller.Settings(element, settings);
-		this.props = props[this.settings.orientation];
+		this.mouseInRange = false;
 
-		this.$element.html(atom.string.format(
-			"<div class='atom-scroller'><div class='atom-scrollcontent'>{0}</div></div>"+
-			"<div class='atom-scrolltrack'><div class='atom-scrollgrip'/></div>",
-				this.$element.html()));
+		if (scrollbarSize == null)
+			scrollbarSize = measureScrollbarSize();
 
-		atom.controls.update(this.$element);
+		// if the target element already has the markup that looks like what we
+		// need, assume that the element has already been setup and proceed without
+		// creating the wrapping elements. it is up to the author of element's html
+		// to ensure that the markup is setup correctly.
+		if (this.$element.find("> .atom-scroller").length == 0)
+		{
+			this.$element.html(atom.string.format(
+				"<div class='atom-scroller'><div class='atom-scrollcontent'>{0}</div></div>"+
+				"<div class='atom-scrolltrack vertical'><div class='atom-scrollgrip'/></div>" +
+				"<div class='atom-scrolltrack horizontal'><div class='atom-scrollgrip'/></div>",
+					this.$element.html()));
+
+			atom.controls.update(this.$element);
+		}
 
 		this.$scroller = this.$element.find("> .atom-scroller");
 		this.$content = this.$scroller.find("> .atom-scrollcontent");
-		this.$track = this.$element.find("> .atom-scrolltrack");
-		this.$grip = this.$track.find("> .atom-scrollgrip");
 
-		this.$grip.on("mousedown", $.proxy(onGripMouseDown, this));
+		this.$trackVertical = this.$element.find("> .atom-scrolltrack.vertical");
+		this.$gripVertical = this.$trackVertical.find("> .atom-scrollgrip");
+		this.$trackHorizontal = this.$element.find("> .atom-scrolltrack.horizontal");
+		this.$gripHorizontal = this.$trackHorizontal.find("> .atom-scrollgrip");
+		this.$content.css("padding", this.$element.css("padding"));
+		this.$content.data("_paddingRight", parseInt(this.$content.css("paddingRight")) || 0);
+		this.$content.data("_paddingBottom", parseInt(this.$content.css("paddingBottom")) || 0);
+
+		this.$scroller.css({
+			right: -scrollbarSize.width,
+			bottom: -scrollbarSize.height
+		});
+
+		this.scrollRatio = {};
+
 		this.$scroller.on("scroll", $.proxy(onScroll, this));
 
 		this.onDragMove = $.proxy(onDragMove, this);
 		this.onDragEnd = $.proxy(onDragEnd, this);
 
-		this.offset = parseInt(this.$grip.css(this.props.position)) || 0;
+		this.offsetVertical = parseInt(this.$gripVertical.css("top")) || 0;
+		this.offsetHorizontal = parseInt(this.$gripHorizontal.css("left")) || 0;
+
+		this.scrollOrientation = null;
 		this.enabled = true;
 		this.overflow = this.$scroller.css("overflow");
 
 		this.switches =
 		{
-			HOT: { id: 0, duration: 2000 },
-			ENGAGED: { id: 0, duration: 500 }
+			HOVER: { id: 0, duration: 2000 },
+			ENGAGED: { id: 0, duration: 500 },
+			HOT: { id: 0, duration: 1500 }
 		};
 
-		if (this.settings.orientation == orientation.HORIZONTAL)
+		if (!atom.dom.isTouchDevice())
 		{
-			var totalSize = 0;
-			this.$content.find("> *").each(function(i, element)
-			{
-				totalSize += $(element).outerWidth(true);
-			});
-
-			this.$content.css("width", totalSize);
-			this.$scroller
-				.on("mousewheel", $.proxy(onMouseWheel, this))
-				.on("DOMMouseScroll", $.proxy(onDOMMouseScroll, this));
+			$(document).on("mousemove", $.proxy(onDocumentMouseMove, this));
 		}
 
-		this.$element
-			.on("mouseenter", $.proxy(onMouseOver, this))
-			.on("mouseleave", $.proxy(onMouseOut, this));
+		this.$gripVertical
+			.data("orientation", Orientation.VERTICAL)
+			.on("mousedown", $.proxy(onGripMouseDown, this))
+			.on("click", atom.event.cancel);
+		this.$gripHorizontal
+			.data("orientation", Orientation.HORIZONTAL)
+			.on("mousedown", $.proxy(onGripMouseDown, this))
+			.on("click", atom.event.cancel);
 
-		this.$track
+		this.$trackVertical
 			.on("mouseenter", $.proxy(onScrollTrackMouseOver, this))
-			.on("mouseleave", $.proxy(onScrollTrackMouseOut, this));
+			.on("mouseleave", $.proxy(onScrollTrackMouseOut, this))
+			.on("click", $.proxy(onScrollTrackClick, this));
+
+		this.$trackHorizontal
+			.on("mouseenter", $.proxy(onScrollTrackMouseOver, this))
+			.on("mouseleave", $.proxy(onScrollTrackMouseOut, this))
+			.on("click", $.proxy(onScrollTrackClick, this));
+
+		this.$scroller
+			.on("mousewheel DOMMouseScroll", $.proxy(onMouseWheel, this));
 
 		scroller.registerInstance(this);
-		redrawInstance(this);
+		this.redraw();
+	};
 
-		this.enable();
-	});
+	this.Control.inherits(atom.HtmlControl);
 
 	this.Control.prototype.enable = function scroller$enable()
 	{
 		this.enabled = true;
-		redrawInstance(this);
+		this.redraw();
 		if (this.isScrollable())
 		{
 			this.$scroller.css("overflow", atom.string.EMPTY);
-			this.$track.show();
+			this.$trackVertical.show();
 		}
 	};
 
 	this.Control.prototype.disable = function scroller$disable()
 	{
 		this.enabled = false;
-		this.$track.hide();
+		this.$trackVertical.hide();
 		this.$scroller.css("overflow", "hidden");
 	};
 
 	this.Control.prototype.isScrollable = function scroller$isScrollable()
 	{
-		var totalLength = this.$scroller.prop(this.props.scrollSize);
-		var availableLength = this.$scroller[this.props.size]();
+		return this.isScrollableVertically() || this.isScrollableHorizontally();
+	};
+
+	this.Control.prototype.isScrollableVertically = function scroller$isScrollableVertically()
+	{
+		var totalLength = this.$scroller.prop("scrollHeight");
+		var availableLength = this.$scroller["outerHeight"]();
+
+		return totalLength > availableLength;
+	};
+
+	this.Control.prototype.isScrollableHorizontally = function scroller$isScrollableHorizontally()
+	{
+		var totalLength = this.$scroller.prop("scrollWidth");
+		var availableLength = this.$scroller["outerWidth"]();
 
 		return totalLength > availableLength;
 	};
@@ -180,89 +242,215 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 		return this.$scroller.prop("scrollTop");
 	};
 
-	this.Control.prototype.scrollSize = function scroller$scrollSize(value)
+	this.Control.prototype.scrollHeight = function scroller$scrollHeight(value)
 	{
 		if (!isNaN(value) && value > 0)
 		{
-			this.$content.css(this.props.size, value);
-			redrawInstance(this);
+			this.$content.css("height", value);
+			this.redraw();
 		}
 
-		return this.$content.prop(this.props.scrollSize);
+		return this.$content.prop("scrollHeight");
 	};
 
-	this.Control.prototype.scrollMax = function scroller$scrollMax()
+	this.Control.prototype.scrollWidth = function scroller$scrollWidth(value)
 	{
-		return this.scrollSize() - this.$content[this.props.size]();
+		if (!isNaN(value) && value > 0)
+		{
+			this.$content.css("width", value);
+			this.redraw();
+		}
+
+		return this.$content.prop("scrollWidth");
 	};
 
-	this.Control.prototype.scrollPos = function scroller$scrollPos(value)
+	this.Control.prototype.scrollMaxLeft = function scroller$scrollMaxLeft()
+	{
+		return this.scrollWidth() - this.$content.width();
+	};
+
+	this.Control.prototype.scrollMaxTop = function scroller$scrollMaxTop()
+	{
+		return this.scrollHeight() - this.$content.height();
+	};
+
+	this.Control.prototype.scrollLeft = function scroller$scrollLeft(value)
 	{
 		if (this.enabled && !isNaN(value))
-			this.$scroller.prop(this.props.scrollPos, value);
+			this.$scroller.prop("scrollLeft", value);
 
-		return this.$scroller.prop(this.props.scrollPos);
+		return this.$scroller.prop("scrollLeft");
 	};
 
-	function redrawInstance(instance)
+	this.Control.prototype.scrollTop = function scroller$scrollTop(value)
 	{
-		var totalLength = instance.$scroller.prop(instance.props.scrollSize);
-		var availableLength = instance.$scroller[instance.props.size]();
+		if (this.enabled && !isNaN(value))
+			this.$scroller.prop("scrollTop", value);
 
-		var trackSize = instance.$track[instance.props.size]();
-		var gripSize = instance.$grip[instance.props.size]();
+		return this.$scroller.prop("scrollTop");
+	};
 
-		if (totalLength > availableLength)
+	this.Control.prototype.redraw = function scroller$redraw()
+	{
+		redrawAxis.call(this, Orientation.VERTICAL);
+		redrawAxis.call(this, Orientation.HORIZONTAL);
+
+		updateClasses.call(this);
+	};
+
+	function updateClasses()
+	{
+		if (this.enabled)
 		{
-			if (instance.settings.sizing == sizing.PROPORTIONAL)
-			{
-				var scrollAreaLength = trackSize - (2 * instance.offset);
-				instance.scrollRatio = scrollAreaLength / totalLength;
-
-				gripSize = Math.round(availableLength * instance.scrollRatio);
-				instance.$grip.css(instance.props.size, gripSize);
-			}
-			else
-			{
-				scrollAreaLength = totalLength - availableLength;
-				instance.scrollRatio = (availableLength - gripSize) / scrollAreaLength;
-			}
-
-			instance.minScroll = instance.offset;
-			instance.maxScroll = trackSize - gripSize - instance.offset;
-			if (instance.enabled)
-			{
-				instance.$track.show();
-			}
+			this.$element.toggleClass("atom-hscrollable", this.isScrollableHorizontally());
+			this.$element.toggleClass("atom-vscrollable", this.isScrollableVertically());
 		}
 		else
 		{
-			instance.$track.hide();
+			this.$element.removeClass("atom-hscrollable atom-vscrollable");
 		}
+	}
+
+	function toggleScrolling()
+	{
+		this.$trackVertical.toggle();
+	}
+
+	function redrawAxis(side)
+	{
+		var props = PROPS[side];
+		var $track = side == Orientation.HORIZONTAL ? this.$trackHorizontal : this.$trackVertical;
+		var $grip = side == Orientation.HORIZONTAL ? this.$gripHorizontal : this.$gripVertical;
+
+		var gripOffset1, gripOffset2;
+		if (side == Orientation.HORIZONTAL)
+		{
+			gripOffset1 = parseInt(this.$gripVertical.css("top")) || 0;
+			gripOffset2 = parseInt(this.$gripVertical.css("bottom")) || 0;
+		}
+		else
+		{
+			gripOffset1 = parseInt(this.$gripVertical.css("left")) || 0;
+			gripOffset2 = parseInt(this.$gripVertical.css("right")) || 0;
+		}
+
+		var totalLength = this[props.scrollSize]();
+		var availableLength = this.$element[props.size]();
+
+		var trackSize = $track[props.size]();
+		var gripSize = $grip[props.size]();
+
+		if (totalLength > availableLength)
+		{
+			var trackPadSize = parseInt($track.css(props.scrollPaddingSize));
+			this.$content.css(props.scrollPadding, this.$content.data("_" + props.scrollPadding) + trackPadSize);
+
+			totalLength = this[props.scrollSize]();
+			var scrollAreaLength = trackSize - (gripOffset1 + gripOffset2);
+			this.scrollRatio[side] = scrollAreaLength / totalLength;
+
+			gripSize = Math.round(availableLength * this.scrollRatio[side]);
+			$grip.css(props.size, gripSize);
+
+			$grip.data("minScroll", gripOffset1);
+			$grip.data("maxScroll", trackSize - gripSize - gripOffset2);
+
+		}
+		else
+		{
+			this.$content.css(props.scrollPadding, this.$content.data("_" + props.scrollPadding));
+		}
+	}
+
+	function scrollContentFromGripDrag()
+	{
+		var $grip = this.$scrollGrip;
+		var orientation = $grip.data("orientation");
+		var props = PROPS[orientation];
+		var gripPos = $grip.position()[props.position];
+		var targetPos = Math.round(gripPos / this.scrollRatio[orientation]);
+		this.$scroller.prop(props.scrollPos, targetPos);
+	}
+
+	function positionGripsFromScrolling()
+	{
+		var scrollTop = this.$scroller.prop("scrollTop");
+		var scrollLeft = this.$scroller.prop("scrollLeft");
+		var targetTop = Math.round(scrollTop * this.scrollRatio[Orientation.VERTICAL]);
+		var targetLeft = Math.round(scrollLeft * this.scrollRatio[Orientation.HORIZONTAL]);
+
+		this.$gripVertical.css("top",
+			Math.min(
+				Math.max(
+					this.$gripVertical.data("minScroll"), targetTop),
+					this.$gripVertical.data("maxScroll")));
+
+		this.$gripHorizontal.css("left",
+			Math.min(
+				Math.max(
+					this.$gripHorizontal.data("minScroll"), targetLeft),
+					this.$gripHorizontal.data("maxScroll")));
+	}
+
+	function switchOn(name, autoOff)
+	{
+		cancelOff.call(this, name);
+		this.$element.addClass(className[name]);
+		if (autoOff)
+		{
+			delayOff.call(this, name, true);
+		}
+	}
+
+	function switchOff(name)
+	{
+		this.$element.removeClass(className[name]);
+	}
+
+	function delayOff(name)
+	{
+		cancelOff.call(this, name);
+		this.switches[name].id = setTimeout($.proxy(switchOff, this, name), this.switches[name].duration);
+	}
+
+	function cancelOff(name)
+	{
+		if (this.switches[name])
+			clearTimeout(this.switches[name].id);
 	}
 
 	function onGripMouseDown(e)
 	{
+		var $grip = $(e.currentTarget);
+		var $track = $grip.closest(".atom-scrolltrack");
+
 		atom.drag.on("move", this.onDragMove);
 		atom.drag.on("stop", this.onDragEnd);
 
+		var vertical = $grip.data("orientation") == Orientation.VERTICAL;
+
 		var specs = {
-			moveX: this.settings.orientation == orientation.HORIZONTAL,
-			moveY: this.settings.orientation == orientation.VERTICAL,
-			minX: this.minScroll,
-			minY: this.minScroll,
-			maxX: this.maxScroll,
-			maxY: this.maxScroll
+			moveX: !vertical,
+			moveY: vertical,
+			minX: this.$gripHorizontal.data("minScroll"),
+			maxX: this.$gripHorizontal.data("maxScroll"),
+			minY: this.$gripVertical.data("minScroll"),
+			maxY: this.$gripVertical.data("maxScroll")
 		};
 
-		atom.drag.start(e, this.$grip, specs);
+		atom.drag.start(e, e.currentTarget, specs);
 		this.fireEvent("dragstart");
+		$track.addClass("active");
+
+		this.$scrollGrip = $grip;
+		this.scrollOrientation = vertical ? Orientation.VERTICAL : Orientation.HORIZONTAL;
+
 		return false;
 	}
 
 	function onDragMove()
 	{
-		scrollContentFromGripDrag(this);
+		scrollContentFromGripDrag.call(this);
 	}
 
 	function onDragEnd()
@@ -270,30 +458,89 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 		atom.drag.off("move", this.onDragMove);
 		atom.drag.off("stop", this.onDragEnd);
 
+		var $track = this.$scrollGrip.closest(".atom-scrolltrack");
+		$track.removeClass("active");
+
+		this.scrollOrientation = null;
 		this.fireEvent("dragend");
+		this.$trackVertical.removeClass("active");
 	}
 
 	function onScroll()
 	{
-		switchOn(this, "ENGAGED", true);
-		positionGripFromScrolling(this);
+		switchOn.call(this, "ENGAGED", true);
+		positionGripsFromScrolling.call(this);
 		this.fireEvent("scroll");
 	}
 
-	function onScrollTrackMouseOver()
+	function onScrollTrackMouseOver(e)
 	{
-		switchOn(this, "HOT");
+		e.stopPropagation();
 	}
 
-	function onScrollTrackMouseOut()
+	function onScrollTrackMouseOut(e)
 	{
-		delayOff(this, "HOT");
+		e.stopPropagation();
+	}
+
+	function onScrollTrackClick(e)
+	{
+		var $track = $(e.currentTarget);
+		var $grip = $track.find(".atom-scrollgrip");
+		var props = PROPS[$grip.data("orientation")];
+
+		var gripStart = parseInt($grip.css(props.position));
+		var gripEnd = parseInt(gripStart + $grip[props.size]());
+
+		var eventPos = e[props.offsetPos];
+		if (eventPos < gripStart || eventPos > gripEnd)
+		{
+			var pageSize = this.$scroller[props.size]();
+			var scrollPos = this.$scroller.prop(props.scrollPos);
+			if (eventPos < gripStart)
+			{
+				console.log("Moving from click to: " + (scrollPos - pageSize));
+				this.$scroller.prop(props.scrollPos, scrollPos - pageSize);
+			}
+			else
+			{
+				console.log("Moving from click to: " + (scrollPos + pageSize));
+				this.$scroller.prop(props.scrollPos, scrollPos + pageSize);
+			}
+		}
+	}
+
+	function onDocumentMouseMove(e)
+	{
+		if (atom.event.isMouseInRange(e, this.$element))
+		{
+			if (!this.mouseInRange)
+			{
+				switchOn.call(this, "HOVER");
+				this.mouseInRange = true;
+				onMouseOver.call(this, e);
+			}
+		}
+		if (!atom.event.isMouseInRange(e, this.$element))
+		{
+			if (this.mouseInRange)
+			{
+				switchOff.call(this, "HOVER");
+				this.mouseInRange = false;
+				onMouseOut.call(this, e);
+			}
+		}
 	}
 
 	function onMouseOver(e)
 	{
-		if (!this.isScrollable())
+		if (!this.isScrollable() || !this.enabled)
 			return;
+
+		switchOn.call(this, "HOT", true);
+		e.stopPropagation();
+
+		updateClasses.call(this);
 
 		var parent = this.$element.parent();
 		while (parent.length != 0)
@@ -301,121 +548,61 @@ atom.controls.Scroller = atom.controls.register(new function Scroller()
 			var instance = scroller.get(parent);
 			if (instance != null)
 			{
-				e.stopPropagation();
-				parent.removeClass(className.ENGAGED);
-				parent.removeClass(className.HOVER);
-				parent.removeClass(className.HOT);
+				toggleScrolling.call(this);
 			}
 
 			parent = parent.parent();
 		}
-
-		this.$element.addClass(className.HOVER);
-		this.$element.addClass(className.HOT);
-
-		delayOff(this, "HOT");
 	}
 
-	function onMouseOut()
+	function onMouseOut(e)
 	{
-		if (!this.isScrollable())
+		if (!this.isScrollable() || !this.enabled)
 			return;
 
-		this.$element.removeClass(className.ENGAGED);
-		this.$element.removeClass(className.HOT);
-		this.$element.removeClass(className.HOVER);
+		switchOff.call(this, "HOT");
+		var parent = this.$element.parent();
+		while (parent.length != 0)
+		{
+			var instance = scroller.get(parent);
+			if (instance != null)
+			{
+				toggleScrolling.call(this);
+			}
+
+			parent = parent.parent();
+		}
 	}
 
+	/**
+	 * Converts a regular scroll to a horizontal scroll automatically as required
+	 * @param e
+	 * @returns {boolean}
+	 */
 	function onMouseWheel(e)
 	{
-		if (!this.enabled)
-			return;
+		if (!this.enabled || !this.isScrollable())
+			return true;
 
-		var lines = -e.originalEvent.wheelDelta / 40;
-		scrollBy(this, lines);
-		positionGripFromScrolling(this);
+		if (this.isScrollableVertically() || e.shiftKey)
+			return true;
+
+		var delta = this.$scroller.wheelDelta(e);
+		var scrollLeft = this.scrollLeft();
+		this.scrollLeft(scrollLeft - (delta.deltaY * 30));
 	}
 
-	function onDOMMouseScroll(e)
+	function measureScrollbarSize()
 	{
-		if (!this.enabled)
-			return;
-
-		var lines = e.originalEvent.detail;
-		scrollBy(this, lines);
-		positionGripFromScrolling(this);
-	}
-
-	function scrollBy(instance, countLines)
-	{
-		var scrollPos = instance.$scroller.prop(instance.props.scrollPos);
-
-		if (instance.settings.animate)
-		{
-			countLines *= 3;
-			scrollPos += countLines * lineHeight;
-
-			var props = {};
-			props[instance.props.scrollPos] = scrollPos;
-			instance.$scroller.stop().animate(props, { easing: "easeOutExpo" });
-		}
-		else
-		{
-			scrollPos += countLines * lineHeight;
-			instance.$scroller.prop(instance.props.scrollPos, scrollPos);
-		}
-
-		instance.fireEvent("scroll");
-	}
-
-	function scrollContentFromGripDrag(instance)
-	{
-		var gripPos = instance.$grip.position()[instance.props.position];
-		var targetPos = Math.round(gripPos / instance.scrollRatio);
-		instance.$scroller.prop(instance.props.scrollPos, targetPos);
-	}
-
-	function positionGripFromScrolling(instance)
-	{
-		var scrollPos = instance.$scroller.prop(instance.props.scrollPos);
-		var targetPos = Math.round(scrollPos * instance.scrollRatio);
-
-		instance.$grip.css(instance.props.position,
-			Math.min(Math.max(instance.minScroll, targetPos), instance.maxScroll));
-	}
-
-	function switchOn(instance, name, autoOff)
-	{
-		cancelOff(instance, name);
-		instance.$element.addClass(className[name]);
-		if (autoOff)
-		{
-			delayOff(instance, name, true);
-		}
-	}
-
-	function switchOff(instance, name)
-	{
-		instance.$element.removeClass(className[name]);
-	}
-
-	function delayOff(instance, name)
-	{
-		var executeOff = function executeOff()
-		{
-			switchOff(instance, name);
-		};
-
-		cancelOff(instance, name);
-		instance.switches[name].id = setTimeout(executeOff, instance.switches[name].duration);
-	}
-
-	function cancelOff(instance, name)
-	{
-		clearTimeout(instance.switches[name].id);
-	}
-
+    var $c = $("<div style='position: absolute; top:-1000px; left:-1000px; width:100px; height:100px; overflow:scroll;'></div>").appendTo("body");
+    var dim = {
+      width: $c.width() - $c[0].clientWidth,
+      height: $c.height() - $c[0].clientHeight
+    };
+    return dim;
+  }
 });
+
 /**
  * Implements a simple slider control.
  * @constructor
@@ -511,7 +698,11 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 		this.ratio = 0;
 
 		redrawInstance(this);
-		updateControls(this);
+		updateControls(this, true);
+
+		this.initValue = parseFloat(this.$element.attr("data-value")) || 0;
+		this.value(this.initValue);
+
 		slider.registerInstance(this);
 	});
 
@@ -522,6 +713,14 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 
 	this.Control.prototype.value = function slider$value(value)
 	{
+		if (!this.$element.is(":visible"))
+		{
+			if (value)
+				this._value = value;
+
+			return this._value != null ? this._value : this.initValue;
+		}
+
 		var pos = parseInt(this.$handle.css(this.props.pos));
 		var current = this.settings.layout == layout.INVERTED
 			? this.settings.minValue + ((this.maxPos - pos) * this.ratio)
@@ -529,11 +728,14 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 
 		if (atom.type.isNumeric(value))
 		{
-			value = Math.max(Math.min(parseFloat(value), this.settings.maxValue), this.settings.minValue);
-			if (value != current)
+			var newValue = Math.max(Math.min(parseFloat(value), this.settings.maxValue), this.settings.minValue);
+			var changed = newValue != this._value;
+
+			this._value = newValue;
+			if (this._value != current)
 			{
 				// this takes into account the range between min and max values
-				var converted = value - this.settings.minValue;
+				var converted = this._value - this.settings.minValue;
 				converted = this.settings.layout == layout.INVERTED
 					? this.maxPos - converted
 					: converted;
@@ -543,14 +745,18 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 			}
 
 			updateControls(this);
-			this.fireEvent("change");
+			if (changed)
+				this.fireEvent("change");
 		}
 		else
 		{
-			value = current;
+			this._value = current;
 		}
 
-		return this.settings.roundValues ? Math.round(value) : value;
+		if (this.settings.roundValues)
+			this._value = Math.round(this._value);
+
+		return this._value;
 	};
 
 	function findElement(element, expression)
@@ -589,9 +795,7 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 
 		if (!instance.ready)
 		{
-			if (instance.settings.layout == layout.INVERTED)
-				instance.$handle.css(instance.props.pos, instance.maxPos);
-
+			instance.value(instance._value);
 			instance.ready = true;
 		}
 	}
@@ -646,30 +850,30 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 
 });
 
-atom.controls.Thumbstrip = atom.controls.register(new function Thumbstrip()
+atom.controls.XContainer = atom.controls.register(new function XContainerModule()
 {
-	var MIN_DIF_MOVE = 10;
-	var orientation = { VERTICAL: 0, HORIZONTAL: 1 };
+	var MIN_DIFF_MOVE = 10;
+	var DEFAULT_SPEED = 400;
 
 	var PROPS =
 	{
-		"0":
+		VERTICAL:
 		{
 			scrollSize: "scrollHeight", outerSize: "outerHeight", size: "height", position: "top",
 			offsetPos: "offsetTop", minPos: "minY", maxPos: "maxY", paddingStart: "paddingTop", paddingEnd: "paddingBottom",
-			marginStart: "marginTop"
+			marginStart: "marginTop", eventPos: "eventY"
 		},
-		"1":
+		HORIZONTAL:
 		{
 			scrollSize: "scrollWidth", outerSize: "outerWidth", size: "width", position: "left",
 			offsetPos: "offsetLeft", minPos: "minX", maxPos: "maxX", paddingStart: "paddingLeft", paddingEnd: "paddingRight",
-			marginStart: "marginLeft"
+			marginStart: "marginLeft", eventPos: "eventX"
 		}
 	};
 
-	var thumbstrip = this;
+	var xcontainer = this;
 
-	this.NAME = "atom.controls.Thumbstrip";
+	this.NAME = "atom.controls.XContainer";
 
 	/**
 	 * This control doesn't need asynchronous initialization.
@@ -678,13 +882,13 @@ atom.controls.Thumbstrip = atom.controls.register(new function Thumbstrip()
 	this.async = false;
 
 	/**
-	 * The css expression of elements that should be initialized as thumbstrips.
+	 * The css expression of elements that should be initialized as xcontainers.
 	 * @type {String}
 	 */
-	this.expression = ".thumbstrip";
+	this.expression = ".xcontainer";
 
 	/**
-	 * Prepares the thumbstrip control
+	 * Prepares the xcontainer control
 	 */
 	this.setup = function setup()
 	{
@@ -693,93 +897,142 @@ atom.controls.Thumbstrip = atom.controls.register(new function Thumbstrip()
 
 	this.redraw = function redraw()
 	{
-		for (var i = 0; i < thumbstrip.instances.length; i++)
-			thumbstrip.instances[i].redraw();
+		for (var i = 0; i < xcontainer.instances.length; i++)
+			xcontainer.instances[i].redraw();
 	};
 
 	/**
-	 * Defines the settings of the <c>Thumbstrip</c> control.
-	 * @constructor
+	 * Defines the settings of the <c>XContainer</c> control.
 	 * @extends {atom.Settings}
 	 * @param {Object} data The object with initial settings.
 	 * @param {Object} element The object with overriding settings. If a setting exist both in
 	 * <c>data</c> and in <c>override</c> objects, the setting from <c>override</c> takes precedence.
 	 */
-	this.Settings = atom.Settings.extend(function (element, settings)
+	this.Settings = atom.Settings.extend(function XContainerSettings(element, settings)
 	{
-		this.orientation = $(element).hasClass("vertical") ? orientation.VERTICAL : orientation.HORIZONTAL;
 		this.extraLength = this.getNumber("extra-length", element, settings, 0);
 		this.useAnimations = this.getBoolean("use-animations", element, settings, true);
+		this.mouseDraggable = this.getBoolean("mouse-draggable", element, settings, true);
 		this.autoScroll = this.getBoolean("auto-scroll", element, settings, true);
-		this.mouseDraggable = this.getBoolean("draggable", element, settings, false);
 		this.snapToItems = this.getBoolean("snap-to-items", element, settings, false);
+		this.snapDistance = this.getNumber("snap-distance", element, settings, 35);
+		this.autoCenter = this.getBoolean("center", element, settings, false);
+		this.forceSnapPoints = this.getBoolean("force-snap-points", element, settings, false);
+		this.snapItemsExpression = this.getString("snap-item-expression", element, settings, "> *");
 		this.scrollOnClick = this.getBoolean("scroll-on-click", element, settings, false);
+		this.arrowsOnHover = this.getBoolean("arrows-on-hover", element, settings, false);
+		this.animSpeed = this.getNumber("animation-speed", element, settings, DEFAULT_SPEED);
+		this.vertical = this.getBoolean("vertical", element, settings, false);
+		this.useCentering = this.getBoolean("center", element, settings, false);
 	});
 
 	/**
-	 * Defines the settings of the <c>Thumbstrip</c> control.
-	 * @constructor
+	 * Defines the settings of the <c>XContainer</c> control.
 	 * @extends {atom.HtmlControl}
 	 */
-	this.Control = atom.HtmlControl.extend(function (element, settings)
+	this.Control = atom.HtmlControl.extend(function XContainer(element, settings)
 	{
-		this.construct(element, "move", "stop", "select");
+		this.construct("move", "stop", "select");
 
-		this.settings = new thumbstrip.Settings(element, settings);
-		this.props = PROPS[this.settings.orientation];
+		this.settings = new xcontainer.Settings(element, settings);
 
-		this.$element.css({ position: "relative", overflow: "hidden" });
-		if (this.settings.orientation == orientation.HORIZONTAL)
-			this.$element.css({ whiteSpace: "nowrap" });
-
-		this.$children = this.$element.children("*");
+		this.$element = $(element);
+		this.$slides = this.$element.find(this.settings.snapItemsExpression);
 		this.$container = this.$element.parent();
 
-		this.moveEngaged = false;
+		this.props = this.settings.vertical ? PROPS.VERTICAL : PROPS.HORIZONTAL;
+
+		this.$element.css({ position: "relative", display: "block", overflow: "hidden" });
+		if (!this.settings.vertical)
+			this.$element.css({ whiteSpace: "nowrap" });
+		else
+			this.$element.addClass("vertical");
+
+		this.mouseWithinRange = false;
 		this.animEngaged = false;
 		this.wasDragged = false;
 
+		this.transitioning = false;
 		this.stripLength = 0;
-		this.currentIndex = 0;
+		this.slideAutoIndex = 0;
+		this.slideSelectedIndex = 0;
+		this.scrollMoveSize = 0;
+		this.slidesFrozen = false;
+
+		this.startPos = 0;
+		this.startEventPos = 0;
 
 		this.minMouseX = 0;
 		this.minMouseY = 0;
 		this.maxMouseX = this.$container.outerWidth();
 		this.maxMouseY = this.$container.outerHeight();
 
-		this.startPos = this.$element.position()[this.props.position];
+		this.initPos = this.$element.position()[this.props.position];
+		this.targetPos = 0;
+		this.targetDir = 0;
 
-		this.animSettings = {
-			complete: $.proxy(stopAnimation, this),
-			step: $.proxy(adjustAnimation, this),
-			duration: 400,
-			easing: "easeOutExpo"
+		this.wheelMultiplier = 1;
+		this.wheelAnimActive = false;
+		this.wheelDirection = 0;
+
+		// this should be false on IOS natural scroll devices
+		this.wheelAccellerationOn = true;
+
+		// these settings are used with jQuery animation (mouse move)
+		this.animSettings =
+		{
+			easing: "easeOutExpo",
+			step: $.proxy(onAnimationUpdate, this),
+			start: $.proxy(onAnimationStart, this),
+			complete: $.proxy(onAnimationComplete, this),
+			duration: this.settings.animSpeed
 		};
 
-		this.$element.on("mousedown touchstart", $.proxy(onElementMouseDown, this));
-		this.$element.on("click touchend", $.proxy(onElementClick, this));
+		this.$element.on(atom.dom.mouseDownEvent, $.proxy(onMouseDown, this));
+		this.$element.on(atom.dom.mouseUpEvent, $.proxy(onMouseUp, this));
+		this.$slides.on(atom.dom.mouseUpEvent, $.proxy(onSlideMouseUp, this));
+		this.$slides.on("click", $.proxy(onSlideClick, this));
+		this.$container.on("mousewheel DOMMouseScroll", $.proxy(onMouseWheel, this));
 
-		if (!atom.dom.isTouchDevice)
+		this.elementDragEndListener = $.proxy(onDragEnd, this);
+		this.elementDragMoveListener = $.proxy(onDragMove, this);
+
+		$(document).on("keydown", $.proxy(onDocumentKeyDown, this));
+		$(window).on("resize", $.proxy(onWindowResize, this));
+		$(document).on("mousemove", $.proxy(onDocumentMouseMove, this));
+
+		if (!atom.dom.isTouchDevice())
 		{
-			$(document).on("mousemove", $.proxy(onDocumentMouseMove, this));
+			if (this.settings.arrowsOnHover)
+			{
+				this.$arrowBack = $('<div class="xcontainer-arrow prev {0}"></div>'.format(this.settings.vertical ? "vertical" : ""))
+						.appendTo(this.$container);
+				this.$arrowNext = $('<div class="xcontainer-arrow next {0}"></div>'.format(this.settings.vertical ? "vertical" : ""))
+						.appendTo(this.$container);
+
+				this.$arrowBack.on("click", $.proxy(onBackArrowClicked, this));
+				this.$arrowNext.on("click", $.proxy(onNextArrowClicked, this));
+			}
 		}
 
-		this.$children.bind("click touchend", $.proxy(onChildClicked, this));
-		this.$element.on("mousewheel DOMMouseScroll", $.proxy(onMouseWheel, this));
 		this.redraw();
+		this.$element.addClass("ready");
 	});
 
 	this.Control.prototype.redraw = function redraw(maintainPosition)
 	{
 		var containerLength = this.$container[this.props.size]();
+		if (containerLength == 0)
+			return;
+
 		var stripLength =
 			(parseInt(this.$element.css(this.props.paddingStart)) || 0) +
 			(parseInt(this.$element.css(this.props.paddingEnd)) || 0);
 
-		this.$children = this.$element.children("*");
-		for (var i = 0; i < this.$children.length; i++)
+		var $children = this.$element.find("> *");
+		for (var i = 0; i < $children.length; i++)
 		{
-			var child = this.$children.eq(i);
+			var child = $children.eq(i);
 			stripLength += child[this.props.outerSize](true);
 		}
 
@@ -790,6 +1043,9 @@ atom.controls.Thumbstrip = atom.controls.register(new function Thumbstrip()
 
 		this.containerLength = containerLength;
 		this.stripLength = stripLength;
+		this.scrollMoveSize = Math.min(
+			$children.eq(0).outerWidth(true),
+			$children.eq(0).outerHeight(true));
 
 		this.maxX = 0;
 		this.maxY = 0;
@@ -797,275 +1053,794 @@ atom.controls.Thumbstrip = atom.controls.register(new function Thumbstrip()
 		this.minY = this.containerLength - this.stripLength;
 
 		var trackLength = (stripLength - containerLength)
-			+ this.startPos
+			+ this.initPos
 			+ this.settings.extraLength * 2;
 
 		this.ratio = trackLength / containerLength;
 		this.stripLength = stripLength + this.settings.extraLength;
 
-		this.$element.css(this.props.size, stripLength);
-		this.snapCoords = getSnapCoords(this);
+		this.$slides = this.$element.find(this.settings.snapItemsExpression);
+
+		// the extra one pixel ensures there is always enough size for floating children
+		this.$element.css(this.props.size, Math.ceil(stripLength) + 1);
+		this.snapCoords = getSnapCoords.call(this);
 
 		if (stripLength < containerLength)
 		{
-			this.$element.css(this.props.size, containerLength);
-			this.$element.css(this.props.position, 0);
+			if (this.settings.useCentering)
+			{
+				var center = Math.round(containerLength / 2 - stripLength / 2);
+				this.$element.css(this.props.position, center);
+			}
+			else
+			{
+				this.$element.css(this.props.size, containerLength);
+				this.$element.css(this.props.position, 0);
+			}
+			var targetPos = this.settings.autoCenter ? Math.round((containerLength / 2) - (stripLength / 2)) : 0;
+			this.$element.css(this.props.position, targetPos);
 		}
 		else
 		{
 			var current = parseInt(this.$element.css(this.props.position)) || 0;
 			if (maintainPosition)
-				current = -this.snapCoords[this.currentIndex];
+			{
+				current = -this.snapCoords[this.slideIndex()];
+			}
 
 			var minPos = this[this.props.minPos];
 			var maxPos = this[this.props.maxPos];
 
 			var target = Math.min(Math.max(current, minPos), maxPos);
 			this.$element.css(this.props.position, target);
+			this.slideAutoIndex = getNearestIndex.call(this, 0);
 		}
-
 	};
 
-	function adjustAnimation(now, tween)
+	this.Control.prototype.scrollToSlide = function scrollToSlide(index)
 	{
-		tween.end = this.targetPos;
-	}
+		if (index >= 0 && index < this.snapCoords.length)
+			scrollToSlide.call(this, index, false);
+	};
 
-	function stopAnimation()
+	this.Control.prototype.slideIndex = function slideIndex()
 	{
-		this.animEngaged = false;
-	}
+		return this.transitioning ? this.slideSelectedIndex : this.slideAutoIndex;
+	};
 
-	function getNearestIndex(instance, accel)
+	this.Control.prototype.setSlidesFrozen = function setSlidesFrozen(frozen)
 	{
-		if (accel < 0 && instance.currentIndex == instance.$children.length - 1)
-			return instance.currentIndex;
-		if (accel > 0 && instance.currentIndex == 0)
-			return instance.currentIndex;
+		this.slidesFrozen = !!frozen;
+		if (this.slidesFrozen)
+			this.hideArrows();
+	};
 
-		var minDiff = Number.POSITIVE_INFINITY;
+	this.Control.prototype.hideArrows = function hideArrows()
+	{
+		updateArrowVisibility.call(this, true);
+	};
+
+	function getNearestIndex(accel)
+	{
+		if (accel < 0 && this.slideAutoIndex == this.$slides.length - 1)
+			return this.slideAutoIndex;
+
+		if (accel > 0 && this.slideAutoIndex == 0)
+			return this.slideAutoIndex;
+
+		var maxWidth = Number.NEGATIVE_INFINITY;
 		var nearestIndex = -1;
 
-		var elemPos = -instance.$element.position()[instance.props.position];
-		for (var i = 0; i < instance.snapCoords.length; i++)
+		var viewPort = { start: this.$container.offset()[this.props.position] };
+		viewPort.end = viewPort.start + this.$container[this.props.size]();
+
+		var viewPortSize = viewPort.end - viewPort.start;
+		for (var i = 0; i < this.$slides.length; i++)
 		{
-			var itemDiff = Math.abs(elemPos - instance.snapCoords[i]);
-			if (itemDiff < minDiff)
+			var $child = this.$slides.eq(i);
+			var offset = $child.offset()[this.props.position];
+			var size = $child[this.props.size]();
+			var visibleWidth = viewPortSize -
+				Math.abs(viewPort.end - (offset + size)) -
+				Math.abs(viewPort.start - offset);
+
+			if (visibleWidth > maxWidth)
 			{
-				minDiff = itemDiff;
+				maxWidth = visibleWidth;
 				nearestIndex = i;
 			}
 		}
 
-		if (accel > 0 && nearestIndex >= instance.currentIndex)
-			nearestIndex = instance.currentIndex - 1;
+		if (accel > 0 && nearestIndex >= this.slideAutoIndex)
+			nearestIndex = this.slideAutoIndex - 1;
 
-		if (accel < 0 && nearestIndex <= instance.currentIndex)
-			nearestIndex = instance.currentIndex + 1;
+		if (accel < 0 && nearestIndex <= this.slideAutoIndex)
+			nearestIndex = this.slideAutoIndex + 1;
 
 		return nearestIndex;
 	}
 
-	function getSnapCoords(instance)
+	function getSnapCoords()
 	{
 		var coords = [];
 
-		var offset = parseInt(instance.$element.css(instance.props.paddingStart));
-		for (var i = 0; i < instance.$children.length; i++)
+		var totalWidth = 0;
+		var finalPos;
+		var offset = parseInt(this.$element.css(this.props.paddingStart));
+		for (var i = 0; i < this.$slides.length; i++)
 		{
-			var $c = instance.$children.eq(i);
-			var itemPos = instance.$children[i][instance.props.offsetPos];
-			var itemSpacing = parseInt($c.css(instance.props.marginStart)) || 0;
+			var $c = this.$slides.eq(i);
+			var itemPos = $c.prop(this.props.offsetPos);
+			var itemSpacing = parseInt($c.css(this.props.marginStart)) || 0;
+			var itemWidth = $c.width();
 
-			var finalPos = itemPos - (offset + itemSpacing);
+			finalPos = itemPos - (offset + itemSpacing);
 			coords.push(finalPos);
+
+			totalWidth = finalPos + itemWidth;
+		}
+
+		if (totalWidth < this.stripLength)
+		{
+			var diff = this.stripLength - totalWidth;
+			var additionalSteps = Math.ceil(diff / this.containerLength);
+			var maxLeft = this.stripLength - this.containerLength;
+			for (var i = 0; i < additionalSteps; i++)
+			{
+				var proposedCoord = totalWidth + i * additionalSteps;
+				coords.push(Math.max(proposedCoord, maxLeft));
+			}
 		}
 
 		return coords;
 	}
 
-	function onChildClicked(e)
+	function getNearestSnapPoint(coordinate)
 	{
-		if (this.wasDragged)
-			return;
-
-		var $el = $(e.target);
-		while (!$el.parent().is(this.$element))
+		var nearest = Number.MAX_VALUE;
+		for (var i = 0; i < this.snapCoords.length; i++)
 		{
-			$el = $el.parent();
-			if ($el.length == 0)
-				return;
+			var point = -this.snapCoords[i];
+			if (Math.abs(point - coordinate) < (nearest - coordinate))
+				nearest = point;
 		}
 
-		if (this.settings.scrollOnClick)
+		return nearest;
+	}
+
+	function getPosition(which)
+	{
+		var position = this.$element.css("position");
+		var coordinates = this.$element.position();
+		var marginTop = parseInt(this.$element.css("marginTop")) || 0;
+		var marginLeft = parseInt(this.$element.css("marginLeft")) || 0;
+		var paddingTop = parseInt(this.$element.parent().css("paddingTop")) || 0;
+		var paddingLeft = parseInt(this.$element.parent().css("paddingLeft")) || 0;
+
+		if (position != "absolute")
+			coordinates.left -= (paddingLeft + marginLeft);
+
+		if (position != "absolute")
+			coordinates.top -= (paddingTop + marginTop);
+
+		coordinates.right = coordinates.left + this.$element.width();
+		coordinates.bottom = coordinates.top + this.$element.height();
+
+		return which ? coordinates[which] : coordinates;
+	}
+
+	function getCoordinateWithinBounds(position)
+	{
+		var minPos = this[this.props.minPos];
+		var maxPos = this[this.props.maxPos];
+
+		return Math.min(Math.max(position, minPos), maxPos);
+	}
+
+	function getNormalizedWheelDelta(e)
+	{
+		var f;
+		var o = e.originalEvent || e;
+		var d = o.detail;
+		var w = o.wheelDelta;
+		var n = 225, n1 = n-1;
+
+		// Normalize delta
+		d = d ? w && (f = w/d) ? d/f : -d/0.15 : w/120;
+
+		// Quadratic scale if |d| > 1
+		d = d < 1 ? d < -1 ? (-Math.pow(d, 2) - n1) / n : d : (Math.pow(d, 2) + n1) / n;
+
+		// Delta *should* not be greater than 2...
+		return Math.min(Math.max(d / 2, -1), 1);
+	}
+
+	function smoothStop()
+	{
+		var currPos = parseInt(this.$element.css(this.props.position));
+		this.wasThrown = currPos >= this[this.props.minPos] && currPos <= this[this.props.maxPos];
+
+		var targetPos = currPos + (8 * this.accel);
+		var nearestSnap = getNearestSnapPoint.call(this, targetPos);
+
+		if (Math.abs(nearestSnap - targetPos) <= this.settings.snapDistance)
+			targetPos = nearestSnap;
+
+		if (!this.wasThrown)
+			targetPos = getCoordinateWithinBounds.call(this, targetPos);
+
+		if (currPos == targetPos)
 		{
-			scrollToSlide(this, $el.index(), true);
+			onAnimationComplete.call(this);
+			return;
+		}
+
+		var animProps = {};
+		animProps[this.props.position] = targetPos;
+
+		this.$element.velocity("stop");
+		this.$element.velocity(animProps, this.animSettings);
+	}
+
+	function scrollToSlide(index, fireSelect)
+	{
+		var props = {};
+		var targetCoord = getCoordinateWithinBounds.call(this, -this.snapCoords[index]);
+		props[this.props.position] = targetCoord;
+
+		this.slideAutoIndex = index;
+		this.slideSelectedIndex = index;
+		if (fireSelect && parseInt(this.$element.css(this.props.position)) == targetCoord)
+		{
+			this.fireEvent("select");
+			return;
+		}
+
+		var instance = this;
+		this.$element.velocity("stop");
+		this.$element.velocity(props, $.extend({}, this.animSettings,
+		{
+			complete: function ()
+			{
+				instance.animSettings.complete.apply(instance, arguments);
+				if (fireSelect)
+					instance.fireEvent("select");
+			}
+		}));
+	}
+
+	function scrollToPrevSlide(fireSelect)
+	{
+		if (this.slidesFrozen)
+			return;
+
+		var slideIndex = this.slideIndex();
+		var targetIndex = slideIndex == 0 ? 0 : slideIndex - 1;
+		scrollToSlide.call(this, targetIndex, fireSelect);
+	}
+
+	function scrollToNextSlide(fireSelect)
+	{
+		if (this.slidesFrozen)
+			return;
+
+		var slideIndex = this.slideIndex();
+		var targetIndex = slideIndex == this.snapCoords.length - 1 ? slideIndex : slideIndex + 1;
+
+		scrollToSlide.call(this, targetIndex, fireSelect);
+	}
+
+	function updateArrowVisibility(forceHide)
+	{
+		if (atom.dom.isTouchDevice() || !this.settings.arrowsOnHover)
+			return;
+
+		if (forceHide || !this.mouseWithinRange)
+		{
+			this.$arrowBack.removeClass("visible");
+			this.$arrowNext.removeClass("visible");
+		}
+		else
+		{
+			if (this.slidesFrozen)
+				return;
+
+			var position = getPosition.call(this)[this.props.position];
+
+			this.$arrowBack.toggleClass("visible", position < this.maxX);
+			this.$arrowNext.toggleClass("visible", position > this.minX);
 		}
 	}
 
-	function onMouseWheel(e)
+	function getEventInfo(e)
 	{
-		if (this.animEngaged)
+		e = e.originalEvent || e;
+
+		var html = $("html");
+		var offset = this.$container.offset();
+
+		var result = {
+			eventX: e.pageX || e.clientX || 0,
+			eventY: e.pageY || e.clientY || 0
+		};
+
+		if (e.touches && e.touches.length)
+		{
+			result.eventX = e.touches[0].clientX;
+			result.eventY = e.touches[0].clientY;
+			result.touches = e.touches;
+		}
+
+		var mouseX = (result.eventX - offset.left) + html.prop("scrollLeft");
+		var mouseY = (result.eventY - offset.top) + html.prop("scrollTop");
+
+		result.inRange =
+			mouseX >= this.minMouseX && mouseX <= this.maxMouseX &&
+			mouseY >= this.minMouseY && mouseY <= this.maxMouseY;
+
+		return result;
+	}
+
+	function keepWithinBounds()
+	{
+		var currentPos = this.$element.position()[this.props.position];
+		if (currentPos < this[this.props.minPos] || currentPos > this[this.props.maxPos])
+		{
+			this.wasCancelled = true;
+
+			var animPros = {};
+			animPros[this.props.position] = currentPos < this[this.props.minPos]
+				? this[this.props.minPos]
+				: this[this.props.maxPos];
+
+			this.$element.velocity("stop");
+			this.$element.velocity(animPros, $.extend({}, this.animSettings,
+			{
+				duration: this.settings.animSpeed / 2
+			}));
+		}
+	}
+
+	function snapToNearest()
+	{
+		if (!this.settings.snapToItems)
+			return false;
+
+		var currentPos = this.$element.position()[this.props.position];
+		var nearestSnap = getNearestSnapPoint.call(this, currentPos);
+
+		if (Math.abs(nearestSnap - currentPos) <= this.settings.snapDistance)
+		{
+			if (this.move != null)
+			{
+				this.move.kill();
+				this.move = null;
+			}
+
+			this.wasCancelled = true;
+
+			var animPros = {};
+			animPros[this.props.position] = nearestSnap;
+
+			this.$element.velocity(animPros, $.extend({}, this.animSettings,
+			{
+				duration: this.settings.animSpeed / 2
+			}));
+
+			return true;
+		}
+
+		return false;
+}
+
+	function onAnimationStart()
+	{
+		this.animEngaged = true;
+	}
+
+	function onAnimationUpdate(now, tween)
+	{
+		if (tween)
+		{
+			tween.end = this.targetPos;
+		}
+
+		var currentPosition = parseInt(this.$element.css(this.props.position));
+
+		this.fireEvent("stop", {
+			position: currentPosition,
+			start: currentPosition == this[this.props.maxPos],
+			end: currentPosition == this[this.props.minPos]
+		});
+
+		this.slideAutoIndex = getNearestIndex.call(this, 0);
+		this.fireEvent("move", {
+			atStart: currentPosition == this[this.props.maxPos],
+			atEnd: currentPosition == this[this.props.minPos]
+		});
+
+		if (this.wasCancelled)
+			return;
+		if (!this.wasThrown && !this.wasScrolled)
 			return;
 
-		var amount = -e.originalEvent.wheelDelta || e.originalEvent.detail;
-		if (amount > 0 && this.currentIndex < this.snapCoords.length - 1)
-		{
-			scrollToSlide(this, this.currentIndex + 1);
-		}
-		if (amount < 0 && this.currentIndex > 0)
-		{
-			scrollToSlide(this, this.currentIndex - 1);
-		}
+		var snapped = snapToNearest.call(this);
+		if (!snapped)
+			keepWithinBounds.call(this);
+	}
+
+	function onAnimationComplete()
+	{
+		this.targetDir = 0;
+		this.animEngaged = false;
+		this.wasThrown = false;
+		this.wasScrolled = false;
+		this.wasCancelled = false;
+
+		var currentPosition = parseInt(this.$element.css(this.props.position));
+
+		this.fireEvent("stop", {
+			position: currentPosition,
+			atStart: currentPosition == this[this.props.maxPos],
+			atEnd: currentPosition == this[this.props.minPos]
+		});
+
+		updateArrowVisibility.call(this);
 	}
 
 	function onDocumentMouseMove(e)
 	{
-		if (atom.drag.active)
-			return;
+		if (this.wasDragged)
+			return true;
 
 		var outerSize = this.$container[this.props.outerSize]();
-		if (!this.settings.autoScroll || outerSize == 0)
-			return;
+		if (outerSize == 0)
+			return true;
 
 		var html = $("html");
 		var offset = this.$container.offset();
 		var mouseX = (e.clientX - offset.left) + html.prop("scrollLeft");
 		var mouseY = (e.clientY - offset.top) + html.prop("scrollTop");
 
-		this.moveEngaged = (this.stripLength > outerSize) &&
-			(mouseX >= this.minMouseX && mouseX <= this.maxMouseX &&
-			 mouseY >= this.minMouseY && mouseY <= this.maxMouseY);
+		var eventInfo = getEventInfo.call(this, e);
+		this.mouseWithinRange = (this.stripLength > outerSize) && eventInfo.inRange;
 
-		if (!this.moveEngaged)
-			return;
-
-		var mousePos = this.settings.orientation == orientation.VERTICAL ? mouseY : mouseX;
-		var targetPos = Math.round(-(mousePos * this.ratio) + this.settings.extraLength);
-		var currentPos = parseInt(this.$element.css(this.props.position));
-		var animEngaged = Math.abs(currentPos - targetPos) > MIN_DIF_MOVE;
-
-		this.targetPos = targetPos;
-
-		if (this.settings.useAnimations && (animEngaged && !this.animEngaged))
+		if (this.mouseWithinRange && this.settings.autoScroll)
 		{
-			var props = {};
-			props[this.props.position] = targetPos;
+			var mousePos = this.settings.vertical ? mouseY : mouseX;
+			var targetPos = Math.round(-(mousePos * this.ratio) + this.settings.extraLength);
+			var currentPos = parseInt(this.$element.css(this.props.position));
+			var animEngaged = Math.abs(currentPos - targetPos) > MIN_DIFF_MOVE;
 
-			this.$element.animate(props, this.animSettings);
-			this.animEngaged = true;
+			this.targetPos = targetPos;
+
+			if (this.settings.useAnimations && (animEngaged && !this.animEngaged))
+			{
+				var props = {};
+				props[this.props.position] = targetPos;
+
+				this.$element.velocity("stop");
+				this.$element.stop().animate(props, this.animSettings);
+			}
+
+			if (!this.settings.useAnimations || !this.animEngaged)
+			{
+				this.$element.css(this.props.position, targetPos);
+			}
 		}
 
-		if (!this.settings.useAnimations || !this.animEngaged)
-		{
-			this.$element.css(this.props.position, targetPos);
-		}
+		updateArrowVisibility.call(this);
+
+		return true;
 	}
 
-	function onElementMouseDown(e)
+	function onBackArrowClicked(e)
 	{
-		if (!this.settings.mouseDraggable || this.animEngaged)
+		scrollToPrevSlide.call(this);
+		e.stopPropagation();
+		return false;
+	}
+
+	function onNextArrowClicked(e)
+	{
+		scrollToNextSlide.call(this);
+		e.stopPropagation();
+		return false;
+	}
+
+	function onSlideMouseUp(e)
+	{
+		if (this.wasDragged)
 			return true;
 
-		this.wasDragged = false;
+		if (e.type == "mouseup" && e.which != 1)
+			return true;
+
+		// retrieve the first child of slidestrip that is parent of event source
+		// so that it's index can be used.
+		var $el = $(e.target);
+		while (!$el.parent().is(this.$element))
+		{
+			$el = $el.parent();
+			if ($el.length == 0)
+				return true;
+		}
+
+		var slideIndex = this.$slides.index($el);
+		if (this.settings.scrollOnClick)
+		{
+			scrollToSlide.call(this, slideIndex, true);
+			return false;
+		}
+
+		this.slideAutoIndex =
+		this.slideSelectedIndex = slideIndex;
+
+		var event = atom.event.create(this, "select");
+		this.fireEvent(event);
+		return event.cancel !== true;
+	}
+
+	function onSlideClick()
+	{
+		return !this.wasDragged;
+	}
+
+	function onMouseWheel(e)
+	{
+		if (!this.settings.mouseDraggable || !this.mouseWithinRange || this.transitioning || this.slidesFrozen)
+			return true;
+
+		var event = e.originalEvent || e;
+		var amount = -event.wheelDelta || event.detail;
+
+		var currentPosition = getPosition.call(this, this.props.position);
+		if (amount > 0 && currentPosition == this[this.props.minPos])
+			return;
+
+		if (amount < 0 && currentPosition == this[this.props.maxPos])
+			return;
+
+		if (this.settings.forceSnapPoints)
+		{
+			if (amount > 0)
+				scrollToNextSlide.call(this);
+
+			else if (amount < 0)
+				scrollToPrevSlide.call(this);
+		}
+		else
+		{
+			var hasWheelDelta = event.wheelDelta != null;
+
+			var delta = getNormalizedWheelDelta(e);
+
+			this.accel = (hasWheelDelta ? delta * 4 : amount);
+
+			// different routines for with and w/o wheel delta
+			var nextPos = hasWheelDelta
+				? getCoordinateWithinBounds.call(this, currentPosition + (delta * this.scrollMoveSize))
+				: getCoordinateWithinBounds.call(this, currentPosition - (amount * (this.scrollMoveSize / 25)));
+
+			// for some reason, in ff the wheel amount goes up and down, causing a jerky, back and forth movement
+			// the following construct fixes this problem by allowing movement in one direction only
+			if (this.animEngaged && this.targetDir != 0)
+			{
+				if (this.targetDir == -1 && nextPos < this.targetPos)
+					nextPos = this.targetPos;
+
+				if (this.targetDir == 1 && nextPos > this.targetPos)
+					nextPos = this.targetPos;
+			}
+
+			this.targetPos = nextPos;
+			this.targetDir = amount > 0 ? 1 : -1;
+
+			if (this.wheelAccellerationOn)
+			{
+				if (this.wheelAnimActive)
+				{
+					// reset multiplier when direction of scrolling changes
+					if (this.wheelMultiplier != 1 && this.wheelDirection != this.targetDir)
+						this.wheelMultiplier = 1;
+
+					this.wheelMultiplier += .05;
+					this.wheelDirection = this.targetDir;
+				}
+
+				var diff = (this.targetPos * this.wheelMultiplier) - this.targetPos;
+
+				this.targetPos =
+					getCoordinateWithinBounds.call(this, this.targetPos + (this.targetDir * diff));
+			}
+
+			var animProps = {};
+			animProps[this.props.position] = this.targetPos;
+
+			var self = this;
+			this.wasScrolled = true;
+			this.wheelAnimActive = true;
+
+			this.$element.velocity("stop");
+			this.$element.velocity(animProps, $.extend({}, this.animSettings,
+			{
+				complete: function ()
+				{
+					self.wheelAnimActive = false;
+					self.wheelMultiplier = 1;
+					self.animSettings.complete.apply(this, arguments);
+				}
+			}));
+		}
+
+		atom.event.cancel(e);
+		return false;
+	}
+
+	function onWindowResize(e)
+	{
+		this.redraw(true);
+	}
+
+	function onDocumentKeyDown(e)
+	{
+		if (e.target.tagName.match(/^input|textarea|select$/i))
+			return true;
+
+		if (this.settings.vertical)
+		{
+			if (e.keyCode == atom.const.Key.UP)
+			{
+				scrollToPrevSlide.call(this);
+				return false;
+			}
+
+			if (e.keyCode == atom.const.Key.DOWN)
+			{
+				scrollToNextSlide.call(this);
+				return false;
+			}
+		}
+		else
+		{
+			if (e.keyCode == atom.const.Key.LEFT)
+			{
+				scrollToPrevSlide.call(this);
+				return false;
+			}
+
+			if (e.keyCode == atom.const.Key.RIGHT)
+			{
+				scrollToNextSlide.call(this);
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function onMouseDown(e)
+	{
+		if (!this.settings.mouseDraggable)
+			return true;
+
+		if (e.type == "mousedown" && e.which != 1)
+			return true;
 
 		if (this.stripLength <= this.containerLength)
 			return true;
 
-		if (atom.dom.isTouchDevice && e.originalEvent.touches.length != 1)
+		var event = getEventInfo.call(this, e);
+		if (atom.dom.isTouchDevice() && event.touches && event.touches.length != 1)
 			return true;
 
-		var options = {
-			moveX: this.settings.orientation == orientation.HORIZONTAL,
-			moveY: this.settings.orientation == orientation.VERTICAL,
-			maxX: 0,
-			maxY: 0,
-			minX: this.minX,
-			minY: this.minY
-		};
+		if (this.animEngaged)
+			this.$element.stop();
 
-		this.endListener = $.proxy(onElementDragEnd, this);
-		this.moveListener = $.proxy(onElementDragMove, this);
+		this.wasDragged = false;
 
-		atom.drag.on("stop", this.endListener);
-		atom.drag.on("move", this.moveListener);
+		this.startPos = getPosition.call(this, this.props.position);
+		this.startEventPos = event[this.props.eventPos];
 
-		return atom.drag.start(e, this.$element, options);
+		// start dragging
+		document.addEventListener("mouseup", this.elementDragEndListener, true);
+		document.addEventListener("touchend", this.elementDragEndListener, true);
+		document.addEventListener("mousemove", this.elementDragMoveListener, true);
+		document.addEventListener("touchmove", this.elementDragMoveListener, true);
+
+		return atom.event.cancel(e);
 	}
 
-	function onElementClick(e)
+	function onDragMove(e)
+	{
+		var eventInfo = getEventInfo.call(this, e);
+		if (!eventInfo.inRange)
+		{
+			onDragEnd.call(this, e);
+			return true;
+		}
+
+		if (this.move != null)
+		{
+			this.move.kill();
+			this.move = null;
+		}
+
+		var eventPos = eventInfo[this.props.eventPos];
+
+		var diff = eventPos - this.startEventPos;
+		var minPos = this[this.props.minPos];
+		var maxPos = this[this.props.maxPos];
+
+		var targetPos = this.startPos + diff;
+		if (targetPos > maxPos)
+		{
+			var excess = targetPos - maxPos;
+			var ratio = Math.max(0, 1 - excess / this.stripLength);
+			diff = Math.round(diff * ratio);
+
+			targetPos = Math.round(this.startPos + diff);
+		}
+		else if (targetPos < minPos)
+		{
+			excess = minPos - targetPos;
+			ratio = Math.max(0, 1 - excess / this.stripLength);
+			diff = Math.round(diff * ratio);
+
+			targetPos = Math.round(this.startPos + diff);
+		}
+
+		if (this.settings.snapToItems)
+		{
+			var snapPoint = getNearestSnapPoint.call(this, targetPos);
+			if (Math.abs(snapPoint - targetPos) <= this.settings.snapDistance)
+				targetPos = snapPoint;
+		}
+
+		var coord1 = getPosition.call(this, this.props.position);
+		this.$element.css(this.props.position, targetPos);
+		var coord2 = getPosition.call(this, this.props.position);
+
+		this.accel = (coord2 - coord1) * 1.5;
+
+		if (this.accel != 0)
+			this.wasDragged = true;
+
+		this.slideAutoIndex = getNearestIndex.call(this, 0);
+		this.fireEvent("move");
+
+		return atom.event.cancel(e);
+	}
+
+	function onDragEnd(e)
+	{
+		if (this.wasDragged)
+		{
+			if (this.settings.forceSnapPoints)
+			{
+				var nearestIndex = getNearestIndex.call(this, this.accel);
+				scrollToSlide.call(this, nearestIndex);
+			}
+			else
+			{
+				smoothStop.call(this);
+			}
+		}
+
+		document.removeEventListener("mouseup", this.elementDragEndListener, true);
+		document.removeEventListener("touchend", this.elementDragEndListener, true);
+		document.removeEventListener("mousemove", this.elementDragMoveListener, true);
+		document.removeEventListener("touchmove", this.elementDragMoveListener, true);
+
+		this.wasDragged = false;
+	}
+
+	function onMouseUp(e)
 	{
 		if (this.settings.mouseDraggable && this.wasDragged)
 			return atom.event.cancel(e);
 
 		return true;
-	}
-
-	function onElementDragMove()
-	{
-		this.wasDragged = true;
-		this.fireEvent("move");
-	}
-
-	function onElementDragEnd()
-	{
-		if (!this.wasDragged)
-			return;
-
-		var accel = this.settings.orientation == orientation.HORIZONTAL
-			? e.data.specs.accelX
-			: e.data.specs.accelY;
-
-		if (this.settings.snapToItems)
-		{
-			var nearestIndex = getNearestIndex(this, accel);
-			scrollToSlide(this, nearestIndex);
-		}
-		else
-		{
-			this.fireEvent("stop");
-		}
-
-		atom.drag.off("stop", this.endListener);
-	}
-
-	function scrollToSlide(instance, index, fireSelect)
-	{
-		if (this.animEngaged)
-			return;
-
-		var props = {};
-		var minPos = instance[instance.props.minPos];
-		var maxPos = instance[instance.props.maxPos];
-
-		var targetCoord = Math.min(Math.max(-instance.snapCoords[index], minPos), maxPos);
-		props[instance.props.position] = targetCoord;
-
-		if (instance.$element.position()[instance.props.position] == targetCoord)
-		{
-			instance.fireEvent("select");
-			return;
-		}
-
-		var settings = { duration: 500, easing: "easeOutExpo" };
-		settings.done = function onSnapComplete()
-		{
-			instance.animEngaged = false;
-			instance.currentIndex = index;
-			instance.fireEvent("stop");
-
-			if (fireSelect)
-			{
-				instance.fireEvent("select");
-			}
-		};
-		settings.progress = function onAnimationProgress()
-		{
-			instance.fireEvent("move");
-		};
-
-		instance.$element.stop().animate(props, settings);
-		instance.animEngaged = true;
 	}
 
 });
@@ -1081,36 +1856,36 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 	 */
 	var POPUP_ELEMENT_ID = "tooltip_popup";
 
-	var tooltip = this;
-	var tooltipInstance = null;
-	var tooltipPopup = null;
-	var tooltipArrow = null;
-	var tooltipDocument = null;
-	var tooltipContent = null;
-	var windowTop = 0;
-	var windowLeft = 0;
 	var timeoutId;
 
-	this.NAME = "atom.controls.Tooltip";
+	var tooltip = this;
+	tooltip.instance = null;
+	tooltip.$popup = null;
+	tooltip.$arrow = null;
+	tooltip.document = null;
+	tooltip.$content = null;
+	tooltip.offset = { left: 0, top: 0 };
+
+	tooltip.NAME = "atom.controls.Tooltip";
 
 	/**
 	 * This control doesn't need asynchronous initialization.
 	 * @type {Boolean}
 	 */
-	this.async = false;
+	tooltip.async = false;
 
 	/**
 	 * The css expression of elements that should be initialized as tooltips.
 	 * @type {String}
 	 */
-	this.expression = ".tooltip";
+	tooltip.expression = ".tooltip";
 
 	/**
 	 * Prepares the tooltip control
 	 */
-	this.setup = function setup()
+	tooltip.setup = function setup()
 	{
-		if (tooltipPopup != null)
+		if (tooltip.$popup != null)
 			return;
 
 		initializeCoordinates();
@@ -1127,7 +1902,7 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 	 * @param {Object} element The object with overriding settings. If a setting exist both in
 	 * <c>data</c> and in <c>override</c> objects, the setting from <c>override</c> takes precedence.
 	 */
-	this.Settings = atom.Settings.extend(function Settings(data, override)
+	tooltip.Settings = atom.Settings.extend(function Settings(data, override)
 	{
 		this.construct(data, override);
 
@@ -1136,11 +1911,15 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 		this.maxWidth = this.getString("maxWidth", data, override, null);
 		this.showOn = this.getString("showOn", data, override, "mouseover").split(/(?:\s*,\s*)|(?:\s+)/);
 		this.hideOn = this.getString("hideOn", data, override, "mouseout").split(/(?:\s*,\s*)|(?:\s+)/);
-		this.orientation = this.getString("orientation", data, override, "TL").toUpperCase();
+		this.orientation = this.getString("orientation", data, override, "TC").toUpperCase();
 		this.offset = this.getNumber("offset", data, override, 3);
-		this.delay = this.getNumber("delay", data, override, 200);
+		this.showDelay = this.getNumber("show-delay", data, override, 200);
+		this.hideDelay = this.getNumber("hide-delay", data, override, 0);
 		this.obscureOnly = this.getBoolean("obscureOnly", data, override, false);
 		this.useFades = this.getBoolean("useFades", data, override, false);
+		this.showArrow = this.getBoolean("showArrow", data, override, true);
+		this.arrowOffset = this.getNumber("arrow-offset", data, override, 5);
+		this.content = this.getString("content", data, override, null);
 	});
 
 	/**
@@ -1148,61 +1927,58 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 	 * @param {HTMLElement} element The HTML element that shows the tooltip popup.
 	 * @param {Settings} [settings] Optional settings to use with this instance.
 	 */
-	this.Control = atom.HtmlControl.extend(function Tooltip(element, settings)
+	tooltip.Control = atom.HtmlControl.extend(function Tooltip(element, settings)
 	{
 		this.construct(element);
 
 		this.settings = new tooltip.Settings(element, settings);
 		this.$element
-			.bind("mouseenter", $.proxy(tooltipOnMouseOver, this))
-			.bind("mouseleave", $.proxy(tooltipOnMouseOut, this))
-			.bind("focus", $.proxy(tooltipOnFocus, this))
-			.bind("blur", $.proxy(tooltipOnBlur, this))
-			.bind("click", $.proxy(tooltipOnClick, this));
+			.bind("mouseenter", $.proxy(onElementMouseOver, this))
+			.bind("mouseleave", $.proxy(onElementMouseOut, this))
+			.bind("focus", $.proxy(onElementFocus, this))
+			.bind("blur", $.proxy(onElementBlur, this))
+			.bind("click", $.proxy(onElementClick, this));
 
-		$(tooltipDocument).bind("keydown click", $.proxy(tooltipOnDocumentEvent, this));
+		var title = this.settings.content
+			? this.$element.find(this.settings.content).html()
+			: this.$element.data("tooltip") || this.$element.attr("title") || this.$element.attr("data-title");
+
+		this.$element.data("tooltip", title);
+		this.$element.attr("data-title", title);
+		this.$element.attr("title", atom.string.EMPTY);
 
 		this.showTooltip = $.proxy(this.show, this);
-		tooltipPopup.bind("click", $.proxy(tooltipOnClick, this));
+		this.hideTooltip = $.proxy(this.hide, this);
+
+		$(tooltip.document)
+			.on("keydown click", $.proxy(onTooltipDocumentEvent, this))
+			.on("scroll", $.proxy(onWindowScroll, this));
+
+		tooltip.$popup
+			.on("click", $.proxy(onElementClick, this))
+			.on("mouseenter", $.proxy(onTooltipMouseOver, this))
+			.on("mouseleave", $.proxy(onTooltipMouseOut, this));
+
 		tooltip.registerInstance(this);
 	});
 
 	/**
 	 * Hides the tooltip
 	 */
-	this.Control.prototype.hide = function Tooltip$hide()
+	tooltip.Control.prototype.hide = function Tooltip$hide()
 	{
-		this.$element.attr("title", this.$element.attr("_title"));
-		this.$element.removeAttr("_title");
+		tooltip.$popup.hide();
+		tooltip.$popup.removeClass(tooltip.$popup.attr("class-added"));
 
-		var className = this.settings.className;
-		if (this.settings.useFades)
-		{
-			if (tooltipPopup)
-			{
-				tooltipPopup.fadeOut(function oncomplete()
-				{
-					if (className)
-						tooltipPopup.removeClass(className);
-				});
-			}
-		}
-		else
-		{
-			tooltipPopup.hide();
-			if (className)
-				tooltipPopup.removeClass(className);
-		}
-
-		tooltipInstance = null;
+		tooltip.instance = null;
 	};
 
 	/**
 	 * Shows the tooltip
 	 */
-	this.Control.prototype.show = function Tooltip$show()
+	tooltip.Control.prototype.show = function Tooltip$show()
 	{
-		if (this.$element.hasClass("tooltip-suspend"))
+		if (this.$element.hasClass("tooltip-suspend") || this.$element.hasClass("disabled"))
 			return;
 
 		if (this.settings.obscureOnly)
@@ -1212,72 +1988,76 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 				return;
 		}
 
-		var title = this.$element.attr("title") || this.$element.attr("data-title") || this.$element.attr("_title");
+		var title = this.$element.data("tooltip");
 		if (!title)
 			return;
 
-		this.$element.attr("_title", title);
-		this.$element.attr("title", atom.string.EMPTY);
-
-		var maxWidth = this.settings.maxWidth || $(tooltipDocument).width() * .75;
-		tooltipPopup.css("max-width", maxWidth + "px");
-		tooltipContent.html(title);
+		tooltip.$content.html(title);
 
 		var orientation = this.settings.orientation;
 		var orientationP = orientation[0].match(/T|L|R|B/) ? orientation[0] : "T";
 		var orientationS = orientation[1].match(/T|L|R|B|C/) ? orientation[1] : "L";
 
-		var html = $("html", tooltipDocument)[0];
-		var body = $("body", tooltipDocument)[0];
-		var bodyWidth = html.scrollWidth || body.scrollWidth;
-		var bodyHeight = html.scrollHeight || body.scrollHeight;
+		var html = $("html", tooltip.document)[0];
+		var body = $("body", tooltip.document)[0];
+		var maxWidth = html.offsetWidth || body.offsetWidth;
+		var maxHeight = html.offsetHeight || body.offsetHeight;
 
-		tooltipPopup.css({ left: 0, top: -1000, display: "block" }).removeClass("t l r b");
+		tooltip.$popup.css({ left: 0, top: -1000, display: "block" }).removeClass("t l r b -t -l -r -b");
+		tooltip.$popup.addClass(this.settings.className).attr("class-added", this.settings.className);
+		tooltip.$arrow.toggle(this.settings.showArrow);
 
-		var offset = this.settings.offset;
-		var elementTop = this.$element.offset().top;
-		var elementLeft = this.$element.offset().left;
-		var elementHeight = this.$element.height();
-		var elementWidth = this.$element.width();
+		var primary, secondary;
 
 		if (orientationP.match(/T|B/))
 		{
-			var primary = getPrimaryTop(elementTop, elementHeight, orientationP, 0, bodyHeight, offset);
-			var secondary = getSecondaryLeft(elementLeft, elementWidth, orientationS, 0, bodyWidth);
+			primary = getPrimaryCoord.call(this, orientationP, 0, maxHeight);
+			secondary = getSecondaryCoord.call(this, orientationP, orientationS, 0, maxWidth);
 
 			var specs = {
 				popupLeft: secondary.left,
 				popupTop: primary.top,
-				arrowLeft: secondary.arrowLeft,
-				arrowRight: secondary.arrowRight,
-				arrowTop: primary.arrowTop,
-				arrowBottom: primary.arrowBottom,
-				orientation: primary.orientation
+				arrowLeft: secondary.arrow.left,
+				arrowTop: primary.arrow.top,
+				orientation: primary.orientation,
+				orientationS: secondary.orientation
 			};
 		}
 		else
 		{
-			primary = getPrimaryLeft(elementLeft, elementWidth, orientationP, 0, bodyWidth, offset);
-			secondary = getSecondaryTop(elementTop, elementHeight, orientationS, 0, bodyHeight);
+			primary = getPrimaryCoord.call(this, orientationP, 0, maxWidth);
+			secondary = getSecondaryCoord.call(this, orientationP, orientationS, 0, maxHeight);
 
 			specs = {
 				popupLeft: primary.left,
 				popupTop: secondary.top,
-				arrowLeft: primary.arrowLeft,
-				arrowRight: primary.arrowRight,
-				arrowTop: secondary.arrowTop,
-				arrowBottom: secondary.arrowBottom,
-				orientation: primary.orientation
+				arrowLeft: primary.arrow.left,
+				arrowTop: secondary.arrow.top,
+				orientation: primary.orientation,
+				orientationS: secondary.orientation
 			};
 		}
 
-		tooltipPopup.css({ left: specs.popupLeft, top: specs.popupTop });
-		tooltipArrow.css({ left: specs.arrowLeft, top: specs.arrowTop });
-		tooltipPopup.addClass(specs.orientation.toLowerCase());
-		tooltipInstance = this;
+		tooltip.$popup.css({ left: specs.popupLeft, top: specs.popupTop });
+		tooltip.$arrow.css({ left: specs.arrowLeft, top: specs.arrowTop });
 
-		if (this.settings.useFades)
-			tooltipPopup.fadeIn();
+		if (this.settings.showArrow)
+		{
+			switch(orientationP)
+			{
+				case "T": showArrow.call(this, "B"); break;
+				case "B": showArrow.call(this, "T"); break;
+				case "L": showArrow.call(this, "R"); break;
+				case "R": showArrow.call(this, "L"); break;
+			}
+		}
+
+		tooltip.$popup.addClass(specs.orientation.toLowerCase());
+		tooltip.$popup.addClass("-" + specs.orientationS.toLowerCase());
+
+		tooltip.instance = this;
+
+		tooltip.$popup.css({ display: "block", opacity: 1 });
 	};
 
 	/**
@@ -1286,7 +2066,7 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 	 * @param {Object} value The value of the setting to set.
 	 * @returns {Object} The current value of the setting with the specified <c>name</c>.
 	 */
-	this.Control.prototype.set = function Tooltip$set(name, value)
+	tooltip.Control.prototype.set = function Tooltip$set(name, value)
 	{
 		if (value && (name == "showOn" || name == "hideOn"))
 			value = value.split(/(?:\s*,\s*)|(?:\s+)/);
@@ -1297,214 +2077,155 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 		return this.settings[name];
 	};
 
-	function getPrimaryLeft(elementLeft, elementWidth, orientation, edgeL, edgeR, offset)
+	function getPrimaryCoord(orientation, edgeA, edgeB)
 	{
-		var result = { orientation: orientation, left: 0, arrowLeft: 0, arrowRight: 0 };
+		var result = { orientation: orientation, arrow: { left: 0, top: 0 } };
 
-		var arrowWidth = 6;
-		var scrollLeft = tooltipDocument.documentElement.scrollLeft;
-		var absoluteLeft = windowLeft + elementLeft - scrollLeft;
-		var popupWidth = tooltipPopup.outerWidth() + arrowWidth;
-
-		if (orientation == "L")
+		var vertical = orientation.match(/T|B/) != null;
+		var orientationRev = "B";
+		switch (orientation)
 		{
-			result.left = absoluteLeft - popupWidth - offset;
-			result.arrowLeft = "auto";
-			result.arrowRight = 0;
+			case "T": orientationRev = "B"; break;
+			case "B": orientationRev = "T"; break;
+			case "L": orientationRev = "R"; break;
+			case "R": orientationRev = "L"; break;
+		}
+		var props = vertical
+			? atom.HtmlControl.PROPS.VERTICAL
+			: atom.HtmlControl.PROPS.HORIZONTAL;
+
+		var otherArrowPos = props.position == "top" ? "bottom" : "right";
+
+		var arrowSize = this.settings.showArrow ? tooltip.$arrow[props.size]() : 0;
+		if (vertical)
+			arrowSize /= 2;
+
+		var elementOffset = this.$element.offset();
+		var scrollPos = $(tooltip.document)[props.scrollPos]();
+		var absolutePos = tooltip.offset[props.position] + elementOffset[props.position] - scrollPos;
+		var popupSize = tooltip.$popup[props.outerSize]() + arrowSize;
+		var elementSize = this.$element[props.outerSize]();
+
+		if (orientation.match(/T|L/))
+		{
+			result[props.position] = absolutePos - popupSize - this.settings.offset;
+			result.arrow[props.position] = "auto";
+			result.arrow[otherArrowPos] = 0;
 		}
 		else
 		{
-			result.left = absoluteLeft + elementWidth + arrowWidth + offset;
-			result.arrowLeft = 0;
-			result.arrowRight = "auto";
+			result[props.position] = absolutePos + elementSize + this.settings.offset;
+			result.arrow[props.position] = 0;
+			result.arrow[otherArrowPos] = "auto";
 		}
 
-		if (result.left < edgeL)
+		var isOversized = popupSize > (edgeB - edgeA);
+		if (!isOversized && result[props.position] < edgeA)
+			return getPrimaryCoord.call(this, orientationRev, edgeA, edgeB);
+
+		if (!isOversized && (result[props.position] + popupSize) > edgeB)
+			return getPrimaryCoord.call(this, orientationRev, edgeA, edgeB);
+
+		return result;
+	}
+
+	function getSecondaryCoord(orientationP, orientationS, edgeA, edgeB)
+	{
+		var result = { orientation: orientationS, arrow: { left: 1, top: 1 } };
+
+		var vertical = orientationS.match(/T|B/) != null;
+		if (orientationS == "C")
+			vertical = orientationP.match(/L|R/) != null;
+
+		var orientationRev = "B";
+		switch (orientationS)
 		{
-			result.left = absoluteLeft + elementWidth + offset;
-			result.orientation = "R";
-			result.arrowLeft = 0;
-			result.arrowRight = "auto";
+			case "T": orientationRev = "B"; break;
+			case "B": orientationRev = "T"; break;
+			case "L": orientationRev = "R"; break;
+			case "R": orientationRev = "L"; break;
+			default:
+				orientationRev = vertical ? "B" : "R"; break;
 		}
-		else if ((result.left + popupWidth) > edgeR)
+		var props = vertical
+			? atom.HtmlControl.PROPS.VERTICAL
+			: atom.HtmlControl.PROPS.HORIZONTAL;
+
+		var arrowSize = this.settings.showArrow ? tooltip.$arrow[props.size]() : 0;
+
+		var elementOffset = this.$element.offset();
+
+		var scrollPos = $(tooltip.document)[props.scrollPos]();
+		var absolutePos = tooltip.offset[props.position] + elementOffset[props.position] - scrollPos;
+		var popupSize = tooltip.$popup[props.outerSize]();
+		var elementSize = this.$element[props.outerSize]();
+
+		if (orientationS.match(/T|L/))
 		{
-			result.left = absoluteLeft - popupWidth - offset;
-			result.orientation = "L";
-			result.arrowLeft = "auto";
-			result.arrowRight = 0;
+			result[props.position] = absolutePos;
+			result.arrow[props.position] = this.settings.arrowOffset;
+//			if (popupSize > elementSize && this.settings.arrowOffset != 0)
+//			{
+//				result.arrow[props.position] += (elementSize / 2) - (this.settings.arrowOffset + arrowSize / 2);
+//			}
+		}
+		else if (orientationS.match(/B|R/))
+		{
+			result[props.position] = (absolutePos + elementSize) - popupSize;
+			result.arrow[props.position] = popupSize - arrowSize - this.settings.arrowOffset;
+//			if (popupSize > elementSize && this.settings.arrowOffset != 0)
+//			{
+//				result.arrow[props.position] -= (elementSize / 2) - (this.settings.arrowOffset + arrowSize / 2);
+//			}
+		}
+		else
+		{
+			result[props.position] = absolutePos + ((elementSize / 2) - popupSize / 2);
+			result.arrow[props.position] = (popupSize / 2) - (arrowSize / 2);
+		}
+
+		result.oversized = popupSize > (edgeB - edgeA);
+		result.beyondFirstEdge = result[props.position] < edgeA;
+		result.beyondSecondEdge = (result[props.position] + popupSize) > edgeB;
+		result.orientationRev = orientationRev;
+
+		if (!result.oversized && arguments.callee.caller != arguments.callee)
+		{
+			if (result.beyondFirstEdge || result.beyondSecondEdge)
+			{
+				var result2 = getSecondaryCoord.call(this, orientationP, orientationRev, edgeA, edgeB);
+
+				// when the secondary coordinate is (C)enter we dont know which side
+				// would be opposite side, so in that case we make an exception and
+				// make one more call if the result fell out of range
+				if (orientationS == "C")
+				{
+					if (result2.beyondFirstEdge || result2.beyondSecondEdge)
+						result2 = getSecondaryCoord.call(this, orientationP, result2.orientationRev, edgeA, edgeB);
+				}
+
+				return result2;
+			}
 		}
 
 		return result;
 	}
 
-	function getSecondaryLeft(elementLeft, elementWidth, orientation, edgeL, edgeR)
+	function onTooltipMouseOver()
 	{
-		var result = { left: 0, arrowLeft: 0, arrowRight: 0 };
-
-		var scrollLeft = tooltipDocument.documentElement.scrollLeft;
-		var absoluteLeft = windowLeft + elementLeft - scrollLeft;
-		var popupWidth = tooltipPopup.outerWidth();
-		var arrowWidth = 12;
-
-		if (orientation == "L")
-		{
-			result.left = absoluteLeft;
-			result.arrowLeft = arrowWidth;
-		}
-		else if (orientation == "R")
-		{
-			result.left = (absoluteLeft + elementWidth) - popupWidth;
-			result.arrowLeft = popupWidth - (arrowWidth * 2);
-		}
-		else
-		{
-			result.left = absoluteLeft + ((elementWidth / 2) - popupWidth / 2);
-			result.arrowLeft = (popupWidth / 2) - (arrowWidth / 2);
-		}
-
-		if (result.left < edgeL)
-		{
-			result.left = absoluteLeft;
-			result.arrowLeft = arrowWidth;
-			orientation = "L";
-			if ((result.left + popupWidth) > edgeR)
-			{
-				var difference = (result.left + popupWidth) - edgeR;
-				result.left -= difference;
-				result.arrowLeft += difference;
-			}
-		}
-		else if ((result.left + popupWidth) > edgeR)
-		{
-			result.left = (absoluteLeft + elementWidth) - popupWidth;
-			result.arrowLeft = popupWidth - (arrowWidth * 2);
-			orientation = "R";
-			if (result.left < edgeL)
-			{
-				difference = edgeL - result.left;
-				result.left += difference;
-				result.arrowLeft -= difference;
-			}
-		}
-
-		if (elementWidth < (arrowWidth * 3))
-		{
-			difference = (arrowWidth * 1.5) - elementWidth / 2;
-			if (orientation == "L")
-				result.left -= difference;
-			else
-				result.left += difference;
-		}
-
-		return result;
+		window.clearTimeout(timeoutId);
 	}
 
-	function getPrimaryTop(elementTop, elementHeight, orientation, edgeT, edgeB, offset)
+	function onTooltipMouseOut()
 	{
-		var result = { orientation: orientation, top: 0, arrowTop: 0, arrowBottom: 0 };
-
-		var arrowHeight = 6;
-		var scrollTop = $(tooltipDocument).scrollTop();
-		var absoluteTop = windowTop + elementTop - scrollTop;
-		var popupHeight = tooltipPopup.outerHeight() + arrowHeight;
-
-		if (orientation == "T")
-		{
-			result.top = absoluteTop - popupHeight - offset;
-			result.arrowTop = "auto";
-			result.arrowBottom = 0;
-		}
-		else
-		{
-			result.top = absoluteTop + elementHeight + arrowHeight + offset;
-			result.arrowTop = 0;
-			result.arrowBottom = "auto";
-		}
-
-		if (result.top < edgeT)
-		{
-			result.top = absoluteTop + elementHeight + offset;
-			result.orientation = "B";
-			result.arrowTop = 0;
-			result.arrowBottom = "auto";
-		}
-		else if ((result.top + popupHeight) > edgeB)
-		{
-			result.top = absoluteTop - popupHeight - offset;
-			result.orientation = "T";
-			result.arrowTop = "auto";
-			result.arrowBottom = 0;
-		}
-
-		return result;
+		this.hideTooltip();
 	}
 
-	function getSecondaryTop(elementTop, elementHeight, orientation, edgeT, edgeB)
-	{
-		var result = { top: 0, arrowTop: 0, arrowBottom: 0 };
-
-		var arrowHeight = 12;
-		var scrollTop = $(tooltipDocument).scrollTop();
-		var absoluteTop = windowTop + elementTop - scrollTop;
-		var popupHeight = tooltipPopup.outerHeight();
-
-		if (orientation == "B")
-		{
-			result.top = absoluteTop;
-			result.arrowTop = arrowHeight;
-		}
-		else if (orientation == "T")
-		{
-			result.top = (absoluteTop + elementHeight) - popupHeight;
-			result.arrowTop = popupHeight - (arrowHeight * 2);
-		}
-		else
-		{
-			result.top = absoluteTop + ((elementHeight / 2) - popupHeight / 2);
-			result.arrowTop = (popupHeight / 2) - (arrowHeight / 2);
-		}
-
-		if (result.top < edgeT)
-		{
-			result.top = absoluteTop;
-			result.arrowTop = arrowHeight;
-			orientation = "T";
-			if ((result.top + popupHeight) > edgeB)
-			{
-				var difference = (result.top + popupHeight) - edgeB;
-				result.top -= difference;
-				result.arrowTop += difference;
-			}
-		}
-		else if ((result.top + popupHeight) > edgeB)
-		{
-			result.top = (absoluteTop + elementHeight) - popupHeight;
-			result.arrowTop = popupHeight - (arrowHeight * 2);
-			orientation = "B";
-			if (result.top < edgeT)
-			{
-				difference = edgeT - result.top;
-				result.top += difference;
-				result.arrowTop -= difference;
-			}
-		}
-
-		if (elementHeight < (arrowHeight * 2))
-		{
-			if (orientation == "T")
-				result.top -= (arrowHeight * .8);
-			else
-				result.top += (arrowHeight * .8);
-		}
-
-		return result;
-	}
-
-	function tooltipOnMouseOver()
+	function onElementMouseOver()
 	{
 		window.clearTimeout(timeoutId);
 
-		if (tooltipInstance && tooltipInstance != this && !tooltipInstance.settings.hideOn.contains("mouseout"))
+		if (tooltip.instance && tooltip.instance != this && !tooltip.instance.settings.hideOn.contains("mouseout"))
 			return;
 
 		if (!this.settings.showOn.contains("mouseover"))
@@ -1513,76 +2234,84 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 		if (this.$element.hasClass("tooltip-suspend"))
 			return;
 
-		if (this.settings.delay > 0)
-			timeoutId = window.setTimeout(this.showTooltip, this.settings.delay);
+		if (this.settings.showDelay > 0)
+			timeoutId = window.setTimeout(this.showTooltip, this.settings.showDelay);
 		else
 			this.showTooltip();
 	}
 
-	function tooltipOnMouseOut()
+	function onElementMouseOut()
 	{
 		window.clearTimeout(timeoutId);
 
-		if (tooltipInstance != this)
+		if (tooltip.instance != this)
 			return;
 
 		if (!this.settings.hideOn.contains("mouseout"))
 			return;
 
-		this.hide();
+		if (this.settings.hideDelay > 0)
+			timeoutId = window.setTimeout(this.hideTooltip, this.settings.hideDelay);
+		else
+			this.hideTooltip();
 	}
 
-	function tooltipOnFocus()
+	function onElementFocus()
 	{
 		if (this.settings.showOn.contains("focus"))
 			this.show();
 	}
 
-	function tooltipOnBlur()
+	function onElementBlur()
 	{
 		if (this.settings.hideOn.contains("blur"))
 			this.hide();
 	}
 
-	function tooltipOnClick()
+	function onElementClick()
 	{
-		if (tooltipPopup.is(":visible") && this.settings.hideOn.contains("click"))
+		if (tooltip.$popup.is(":visible") && this.settings.hideOn.contains("click"))
 			this.hide();
 
-		else if (!tooltipPopup.is(":visible") && this.settings.showOn.contains("click"))
+		else if (!tooltip.$popup.is(":visible") && this.settings.showOn.contains("click"))
 			this.show();
 	}
 
-	function tooltipOnDocumentEvent(e)
+	function onTooltipDocumentEvent(e)
 	{
-		if (!tooltipPopup.is(":visible") || tooltipInstance != this)
+		if (!tooltip.$popup.is(":visible") || tooltip.instance != this)
 			return;
 
-		if (!jQuery.contains(this.$element[0], e.target) && !jQuery.contains(tooltipPopup[0], e.target))
+		if (!jQuery.contains(this.$element[0], e.target) && !jQuery.contains(tooltip.$popup[0], e.target))
 			this.hide();
+	}
+
+	function onWindowScroll()
+	{
+		this.hide();
 	}
 
 	function jqueryTooltip(settings)
 	{
 		return this.each(function initializeInstance(i, element)
 		{
-			initializeSingleElement(element, settings);
+			new tooltip.Control(element, settings);
 		});
 	}
 
 	function initializeCoordinates()
 	{
-		windowTop = 0;
-		windowLeft = 0;
+		tooltip.offset.top = 0;
+		tooltip.offset.left = 0;
 
 		var domainRestricted = false;
 		try
 		{
-			tooltipDocument = top.document;
+			tooltip.document = top.document;
 		}
 		catch(e)
 		{
-			tooltipDocument = document;
+			tooltip.document = document;
 			domainRestricted = true;
 		}
 
@@ -1602,8 +2331,8 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 				{
 					if (frames[i].contentWindow == window)
 					{
-						windowLeft += frames.eq(i).offset().left;
-						windowTop += frames.eq(i).offset().top;
+						tooltip.offset.left += frames.eq(i).offset().left;
+						tooltip.offset.top += frames.eq(i).offset().top;
 						foundFrame = true;
 						break;
 					}
@@ -1614,31 +2343,31 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 
 	function createPopupLayer()
 	{
-		var hlayer = $(tooltipDocument.getElementById(POPUP_ELEMENT_ID));
+		var hlayer = $(tooltip.document.getElementById(POPUP_ELEMENT_ID));
 		if (hlayer.length != 0)
 		{
-			tooltipPopup = hlayer;
+			tooltip.$popup = hlayer;
 		}
 		else
 		{
 			var tooltipHtml = atom.string.format(
-				'<div id="{0}">' +
+				'<div class="atomtooltippopup" id="{0}">' +
 					'<div class="arrow"></div>' +
 					'<div class="bg"></div>' +
 					'<div class="content"></div>' +
 				'</div>', POPUP_ELEMENT_ID);
 
-			tooltipPopup = $(tooltipHtml);
-			$(tooltipDocument.body).append(tooltipPopup);
+			tooltip.$popup = $(tooltipHtml);
+			$(tooltip.document.body).append(tooltip.$popup);
 
-			if (tooltipDocument != document)
+			if (tooltip.document != document)
 			{
 				var styleElement = $("<style id='tooltipStyles'></style>");
-				$(tooltipDocument.body).append(styleElement);
+				$(tooltip.document.body).append(styleElement);
 
 				var styleText = [];
 
-				var tooltipRules = atom.css.findRules("#tooltip");
+				var tooltipRules = atom.css.findRules(".atomtooltippopup");
 				for (var i = 0; i < tooltipRules.length; i++)
 				{
 					var rule = tooltipRules[i];
@@ -1649,9 +2378,89 @@ atom.controls.Tooltip = atom.controls.register(new function Tooltip()
 			}
 		}
 
-		tooltipContent = tooltipPopup.find(".content");
-		tooltipArrow = tooltipPopup.find(".arrow");
+		tooltip.$content = tooltip.$popup.find(".content");
+		tooltip.$arrow = tooltip.$popup.find(".arrow");
+
+		var tw = tooltip.$arrow.width();
+		var th = tooltip.$arrow.height();
+		var c1 = $('<canvas class="b" width="{0}" height="{1}"/>'.format(tw, th / 2)).appendTo(tooltip.$arrow)[0];
+		var c2 = $('<canvas class="t" width="{0}" height="{1}"/>'.format(tw, th / 2)).appendTo(tooltip.$arrow)[0];
+		var c3 = $('<canvas class="l" width="{0}" height="{1}"/>'.format(tw / 2, th)).appendTo(tooltip.$arrow)[0];
+		var c4 = $('<canvas class="r" width="{0}" height="{1}"/>'.format(tw / 2, th)).appendTo(tooltip.$arrow)[0];
+
+		tooltip.cB = c1;
+		tooltip.cT = c2;
+		tooltip.cL = c3;
+		tooltip.cR = c4;
 	}
+
+	function showArrow(side)
+	{
+		var tw = tooltip.$arrow.width();
+		var th = tooltip.$arrow.height();
+		var $bg = tooltip.$popup.find(".bg");
+
+		var borderColor = $bg.css("border-bottom-color");
+		var borderWidth = parseInt($bg.css("border-bottom-width"));
+		var backgroundColor = $bg.css("background-color");
+
+		switch (side)
+		{
+			case "L":
+				drawArrow(tooltip.cL, backgroundColor, borderColor, borderWidth, function draw(ctx)
+				{
+				  ctx.moveTo(tw / 2, 0);
+					ctx.lineTo(0, th / 2);
+					ctx.lineTo(tw / 2, th);
+				});
+				break;
+
+			case "R":
+				drawArrow(tooltip.cR, backgroundColor, borderColor, borderWidth, function draw(ctx)
+				{
+				  ctx.moveTo(0, 0);
+					ctx.lineTo(tw / 2, th / 2);
+					ctx.lineTo(0, th);
+				});
+				break;
+
+			case "B":
+				drawArrow(tooltip.cB, backgroundColor, borderColor, borderWidth, function draw(ctx)
+				{
+				  ctx.moveTo(0, 0);
+					ctx.lineTo(tw / 2, th / 2);
+					ctx.lineTo(tw, 0);
+				});
+				break;
+
+			case "T":
+				drawArrow(tooltip.cT, backgroundColor, borderColor, borderWidth, function draw(ctx)
+				{
+				  ctx.moveTo(0, th / 2);
+					ctx.lineTo(tw / 2, 0);
+					ctx.lineTo(tw, th / 2);
+				});
+				break;
+		}
+	}
+
+	function drawArrow(canvas, bgColor, fgColor, stroke, draw)
+	{
+		var ctx = canvas.getContext("2d");
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  ctx.fillStyle = bgColor;
+	  ctx.strokeStyle = fgColor;
+	  ctx.lineWidth = stroke;
+	  ctx.beginPath();
+		draw(ctx);
+	  ctx.fill();
+
+		if (stroke)
+		  ctx.stroke();
+
+	}
+
+	return tooltip;
 });
 
 

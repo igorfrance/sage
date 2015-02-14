@@ -12,6 +12,33 @@ var atom = new function atom()
 	var atom = {};
 	var $ = window.jQuery;
 
+var $object = new function()
+{
+	this.toQueryString = function (obj, separator1, separator2)
+	{
+		if (obj == null)
+			return "";
+
+		separator1 = separator1 || "=";
+		separator2 = separator2 || "&";
+
+		var result = [];
+		for (var prop in obj)
+		{
+			if (obj.hasOwnProperty(prop))
+			{
+				result.push(prop);
+				result.push(separator1);
+				result.push(obj[prop] == null ? "" : obj[prop]);
+				result.push(separator2);
+			}
+		}
+
+		result.pop();
+		return result.join($string.EMPTY);
+	};
+};
+
 /**
  * @copyright 2012 Igor France
  * Licensed under the MIT License
@@ -337,6 +364,8 @@ var $string = new function()
 	 */
 	$string.EMPTY = "";
 
+	String.EMPTY = "";
+
 	var RX_FORMAT;
 
 	function applyPadding(str, count, character, direction)
@@ -477,6 +506,16 @@ var $string = new function()
 		return result.join($string.EMPTY);
 	};
 
+	this.substitute = function substitute(subject, param)
+	{
+		if (!subject || !param)
+			return subject;
+
+		return subject.replace(/\{([^}{]+)\}/g, function ($0, $1)
+		{
+			return param[$1] != null ? param[$1] : $0;
+		});
+	};
 
 	/**
 	 * Removes characters from the beginning and the end of the current string.
@@ -1222,11 +1261,23 @@ Function.NAME_EXPR =
  */
 Function.getName = function Function$getName(fx, includeArguments, argumentsOnly)
 {
-	if (!$type.isFunction(fx))
+	if (arguments.length == 0)
 	{
 		fx = arguments.callee.caller;
 		if (!$type.isFunction(fx))
 			return null;
+	}
+	else
+	{
+		if (fx == null)
+			return null;
+
+		if (!$type.isFunction(fx))
+		{
+			fx = fx.constructor;
+			if (!$type.isFunction(fx))
+				return null;
+		}
 	}
 
 	var name = String(fx).replace(Function.NAME_EXPR, function ()
@@ -1330,6 +1381,21 @@ Function.stackTrace = function function$stackTrace(point, maxIterations)
 };
 
 /**
+ * Provides a prototype method that enables any constructor function to extend it's prototype by specifying the
+ * desired ancestor.
+ * @param {Object} ancestor The ancestor function that this function extends.
+ */
+Function.prototype.inherits = function function$inherits(ancestor)
+{
+	if (ancestor == null || ancestor == this || ancestor.prototype == null)
+		return this;
+
+	Prototype.extend.call(ancestor, this);
+	this.prototype.base = Prototype.prototype.base;
+	this.prototype.construct = Prototype.prototype.construct;
+};
+
+/**
  * @copyright 2012 Igor France
  * Licensed under the MIT License
  *
@@ -1414,6 +1480,117 @@ Prototype.prototype.base = function prototype$base(name)
 	return null;
 };
 
+Prototype.prototype.get = function get(name)
+{
+	if (arguments.length != 1 || !this.hasOwnProperty(name))
+		return undefined;
+
+	if ($type.instanceOf(this[name], Property))
+		return this[name].get();
+
+	return this[name];
+};
+
+Prototype.prototype.set = function set(name, value)
+{
+	if (arguments.length != 2 || !this.hasOwnProperty(name))
+		return;
+
+	if ($type.instanceOf(this[name], Property))
+	{
+		if (value != undefined)
+			this[name].set(value);
+	}
+	else
+		this[name] = value;
+};
+
+function Property(options)
+{
+	this.get = Property.prototype.get;
+	this.set = Property.prototype.set;
+	this.default = undefined;
+	this.value = null;
+	this.restrictTo = null;
+
+	$.extend(this, options);
+
+	this.value = this.default;
+}
+
+Property.prototype.get = function get()
+{
+	return this.getValue.apply(this, arguments);
+};
+
+Property.prototype.set = function set(value)
+{
+	this.setValue(value);
+};
+
+Property.prototype.getValue = function getValue()
+{
+	return this.value;
+};
+
+Property.prototype.setValue = function setValue(value)
+{
+	var newValue;
+
+	switch (this.type)
+	{
+		case Boolean:
+			newValue = String(value).match(/^true|1$/) != null;
+			break;
+
+		case Number:
+			newValue = parseFloat(value) || 0;
+			break;
+
+		default:
+			newValue = value == null ? value : String(value);
+			break;
+	}
+
+	var valid = true;
+	if (this.restrictTo != null)
+	{
+		if ($type.isArray(this.restrictTo))
+		{
+			valid = [].concat(this.restrictTo).indexOf(newValue) != -1;
+		}
+		else
+		{
+			valid = false;
+			for (var name in this.restrictTo)
+			{
+				if (!this.restrictTo.hasOwnProperty(name))
+					continue;
+
+				if (this.restrictTo[name] == newValue)
+				{
+					valid = true;
+					break;
+				}
+			}
+		}
+	}
+
+	if (valid)
+	{
+		this.value = newValue;
+	}
+};
+
+Property.prototype.valueOf = function valueOf()
+{
+	return this.get();
+};
+
+Property.prototype.toString = function toString()
+{
+	return String(this.get());
+};
 
 /**
  * @copyright 2012 Igor France
@@ -1426,6 +1603,7 @@ Prototype.prototype.base = function prototype$base(name)
  * Dispatches (custom) events to event listeners.
  * All arguments to the constructor will be interpreted as names of events to register.
  * @constructor
+ * @extends {Prototype}
  */
 var Dispatcher = Prototype.extend(function Dispatcher()
 {
@@ -1537,10 +1715,18 @@ Dispatcher.prototype.removeListener = function(eventName, eventListener)
 
 Dispatcher.prototype.off = Dispatcher.prototype.removeListener;
 
+Dispatcher.prototype.destroy = function Dispatcher$destroy()
+{
+	for (var eventName in this.__listeners)
+	{
+		this.off(eventName)
+	}
+};
+
 /**
  * Fires the specified event.
  * @param {Object} event The event or the name of the event to fire.
- * @param {Object} eventData The event data.
+ * @param {Object} [eventData] The event data.
  * @returns {Event} The event that was fired.
  */
 Dispatcher.prototype.fireEvent = function(event, eventData)
@@ -1636,9 +1822,10 @@ Dispatcher.prototype.toString = function()
  * var slider = new atom.controls.Slider(elem, settings);
  * @class
  */
-var Settings = Prototype.extend(function Settings()
+function Settings()
 {
-});
+}
+Settings.inherits(Prototype);
 
 /**
  * Looks up a value with the specified name from one of the specified sources, and returns it.
@@ -1656,40 +1843,58 @@ var Settings = Prototype.extend(function Settings()
  * with <c>propName</c>.
  * @param {Object} [defaultValue] The value to return if property or attribute with <c>propName</c> wasn't found in either
  * <c>data</c> or <c>override</c> arguments.
+ * @param {Object} [restrictObject] Object that supplied the valid values.
  * @return {Object} A value as discovered in the supplied arguments <c>data</c> or <c>override</c>, or the
  * <c>defaultValue</c> if the value has not been discovered.
  */
-Settings.prototype.getValue = function Settings$getValue(propName, data, override, defaultValue)
+Settings.prototype.getValue = function getValue(propName, data, override, defaultValue, restrictObject)
 {
 	data = data && data.jquery ? data[0] : data;
 	override = override && override.jquery ? override[0] : override;
 
-	if ($type.isHtmlElement(override))
+	var result = defaultValue;
+	if ($type.isElement(override))
 	{
 		if (override.getAttribute("data-" + propName))
-			return override.getAttribute("data-" + propName);
+			result = override.getAttribute("data-" + propName);
 
 		else if (override.getAttribute(propName))
-			return override.getAttribute(propName);
+			result = override.getAttribute(propName);
 	}
 	else if (override && override[propName] != undefined)
 	{
-		return override[propName];
+		result = override[propName];
 	}
-	else if ($type.isHtmlElement(data))
+	else if ($type.isElement(data))
 	{
 		if (data.getAttribute("data-" + propName))
-			return data.getAttribute("data-" + propName);
+			result = data.getAttribute("data-" + propName);
 
 		else if (data.getAttribute(propName))
-			return data.getAttribute(propName);
+			result = data.getAttribute(propName);
 	}
 	else if (data && data[propName] != undefined)
 	{
-		return data[propName];
+		result = data[propName];
 	}
 
-	return defaultValue;
+	if (restrictObject != null)
+	{
+		var valid = false;
+		for (var prop in restrictObject)
+		{
+			if (result == restrictObject[prop])
+			{
+				valid = true;
+				break;
+			}
+		}
+
+		if (!valid)
+			result = defaultValue;
+	}
+
+	return result;
 };
 
 /**
@@ -1704,7 +1909,7 @@ Settings.prototype.getValue = function Settings$getValue(propName, data, overrid
  * <c>defaultValue</c> if the value has not been discovered.
  * @see getValue
  */
-Settings.prototype.getBoolean = function Settings$getBoolean(propName, data, override, defaultValue)
+Settings.prototype.getBoolean = function getBoolean(propName, data, override, defaultValue)
 {
 	var value = String(this.getValue(propName, data, override, defaultValue)).toLowerCase();
 	return value == "1" || value == "true" || value == "yes";
@@ -1718,17 +1923,18 @@ Settings.prototype.getBoolean = function Settings$getBoolean(propName, data, ove
  * property with <c>propName</c>.
  * @param {Object} [defaultValue] The value to return if property or attribute with <c>propName</c> wasn't found in either
  * <c>data</c> or <c>override</c> arguments.
+ * @param {Object} [restrictObject] Object that supplied the valid values.
  * @return {Number} A value as discovered in the supplied arguments <c>data</c> or <c>override</c>, or the
  * <c>defaultValue</c> if the value has not been discovered.
  * @see getValue
  */
-Settings.prototype.getNumber = function Settings$getNumber(propName, data, override, defaultValue)
+Settings.prototype.getNumber = function getNumber(propName, data, override, defaultValue, restrictObject)
 {
-	var value = this.getValue(propName, data, override, defaultValue);
+	var value = this.getValue(propName, data, override, defaultValue, restrictObject);
 	if (!$type.isNumeric(value))
 		return 0;
 
-	return parseInt(value);
+	return parseFloat(value);
 };
 
 /**
@@ -1739,37 +1945,61 @@ Settings.prototype.getNumber = function Settings$getNumber(propName, data, overr
  * property with <c>propName</c>.
  * @param {Object} [defaultValue] The value to return if property or attribute with <c>propName</c> wasn't found in either
  * <c>data</c> or <c>override</c> arguments.
+ * @param {Object} [restrictObject] Object that supplied the valid values.
  * @return {String} A value as discovered in the supplied arguments <c>data</c> or <c>override</c>, or the
  * <c>defaultValue</c> if the value has not been discovered.
  * @see getValue
  */
-Settings.prototype.getString = function Settings$getString(propName, data, override, defaultValue)
+Settings.prototype.getString = function getString(propName, data, override, defaultValue, restrictObject)
 {
-	var value = this.getValue(propName, data, override, defaultValue);
+	var value = this.getValue(propName, data, override, defaultValue, restrictObject);
 	return value == null ? null : String(value);
 };
 
 /**
- * Looks up a value with the specified name from one of the specified sources, and returns a <c>Function</c>.
- * @param {String} propName The name of the value to retrieve.
- * @param {Object} data The object with properties in which to look for property with <c>propName</c>.
- * @param {Object} [override] An element with attributes or object with properties in which to look for attribute or
- * property with <c>propName</c>.
- * @param {Object} [defaultValue] The value to return if property or attribute with <c>propName</c> wasn't found in either
- * <c>data</c> or <c>override</c> arguments.
- * @return {Function} A value as discovered in the supplied arguments <c>data</c> or <c>override</c>, or the
- * <c>defaultValue</c> if the value has not been discovered.
- * @see getValue
+ *
+ * @param propName
+ * @param data
+ * @param override
+ * @param [defaultValue]
+ * @param [restrictObject]
+ * @returns {Array}
  */
-Settings.prototype.getFunction = function Settings$getFunction(propName, data, override, defaultValue)
+Settings.prototype.getArray = function getArray(propName, data, override, defaultValue, restrictObject)
 {
-	var result = this.getValue(propName, data, override, defaultValue);
-	if ($type.isFunction(result))
-		return result;
+	var value = this.getString(propName, data, override, defaultValue, restrictObject);
+	if (value == null)
+		return [];
 
-	return null;
+	var chunks = value.split(/,/);
+	var result = [];
+	for (var i = 0; i < chunks.length; i++)
+		result.push(chunks[i].trim());
+
+	return result;
 };
 
+Settings.prototype.getFunction = function getFunction(propName, data, override, defaultValue)
+{
+	var fx = this.getValue(propName, data, override, defaultValue);
+	return atom.type.isFunction(fx) ? fx : null;
+};
+
+Settings.prototype.setProperties = function setProperties(data, override)
+{
+	for (var name in this)
+	{
+		if (!this.hasOwnProperty(name))
+			continue;
+
+		if ($type.instanceOf(this[name], Property))
+		{
+			var value = this.getValue(name, data, override, undefined);
+			if (value != undefined)
+				this[name].set(value);
+		}
+	}
+};
 
 
 /**
@@ -1784,6 +2014,7 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 	type.get = type.get || getInstance;
 	type.register = type.register || registerConstructor;
 	type.dispose = type.dispose || Function.EMPTY;
+	type.start = type.start || Function.EMPTY;
 	type.instances = [];
 	type.registeredConstructors = {};
 	type.registerInstance = registerInstance;
@@ -1805,8 +2036,8 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 	 */
 	this.checkType = function (typeFunction)
 	{
-		if (!$type.isFunction(typeFunction))
-			return false;
+		if (info.type == typeFunction)
+			return true;
 
 		if (info.defaultConstructor == typeFunction)
 			return true;
@@ -1852,6 +2083,11 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 		}
 	};
 
+	this.start = function start()
+	{
+		type.start();
+	}
+
 	/**
 	 * Call the <code>dispose</code> method of the associated control.
 	 */
@@ -1889,9 +2125,6 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 	 */
 	function createInstance(element, settings)
 	{
-		var depth = arguments[2] || 0;
-		var prefix = $string.repeat("  ", depth);
-
 		if (element == null)
 		{
 			if ($type.isFunction(this.createElement))
@@ -1915,11 +2148,6 @@ var ControlTypeInfo = function ControlTypeInfo(type)
 				control.init();
 
 			registerInstance(control);
-			$log.debug("{0}Created control {1}", prefix, control);
-		}
-		else
-		{
-			$log.warn("{0}Not creating another instance of {1} for {2}.", prefix, control, element);
 		}
 
 		return control;
@@ -2041,7 +2269,7 @@ var ControlRegistry = function ControlRegistry()
 	 * This provides a single point for redraw synchronization when arbitrary code element change the screen layout in
 	 * ways that require controls to be redrawn.
 	 */
-	this.redraw = function ControlRegistry$redraw()
+	this.redraw = function redraw()
 	{
 		for (var i = 0; i < types.length; i++)
 		{
@@ -2053,7 +2281,7 @@ var ControlRegistry = function ControlRegistry()
 	 * Registers a control.
 	 * @param {Object} control An object that describes the control.
 	 */
-	this.register = function ControlRegistry$register(control)
+	this.register = function register(control)
 	{
 		$log.assert($type.isObject(control), "Argument 'control' should either be an object that describes the control or the control itself");
 
@@ -2061,13 +2289,13 @@ var ControlRegistry = function ControlRegistry()
 		types.push(typeInfo);
 		expressions.push(typeInfo.expression);
 
-		var controlName = $type.isString(control.NAME)
+		typeInfo.name = $type.isString(control.NAME)
 			? control.NAME
 			: $type.isFunction(control)
 				? Function.getName(control)
 				: Function.getName(control.constructor);
 
-		$log.info("Registered control {0}", controlName);
+		$log.info("Registered control {0}", typeInfo.name);
 
 		return control;
 	};
@@ -2079,7 +2307,7 @@ var ControlRegistry = function ControlRegistry()
 	 * the control type itself.
 	 * @returns {Control} The control associated with the specified element, and optionally $type.
 	 */
-	this.get = function ControlRegistry$get(element, type)
+	this.get = function get(element, type)
 	{
 		if (element == null)
 			return null;
@@ -2123,7 +2351,7 @@ var ControlRegistry = function ControlRegistry()
 	 * Sets up all registered controls.
 	 * @param {Function} onSetupReady The function to call when the setup completes.
 	 */
-	this.setup = function ControlRegistry$setup(onSetupReady)
+	this.setup = function setup(onSetupReady)
 	{
 		if (types.length == 0)
 		{
@@ -2153,10 +2381,20 @@ var ControlRegistry = function ControlRegistry()
 	/**
 	 * Call <code>dispose</code> method on all registered controls.
 	 */
-	this.dispose = function ControlRegistry$dispose()
+	this.dispose = function dispose()
 	{
 		for (var i = 0; i < types.length; i++)
 			types[i].dispose();
+	};
+
+	/**
+	 * Provides a method thcat can be called to signal that the outer initialization is
+	 * completed and that all controls can ow be started.
+	 */
+	this.start = function start()
+	{
+		for (var i = 0; i < types.length; i++)
+			types[i].start();
 	};
 
 	/**
@@ -2165,7 +2403,7 @@ var ControlRegistry = function ControlRegistry()
 	 * @param {Object} parent The parent element in which to discover and update controls. If omitted it defaults to
 	 * whole document.
 	 */
-	this.update = function ControlRegistry$update(parent)
+	this.update = function update(parent)
 	{
 		depth++;
 
@@ -2175,22 +2413,25 @@ var ControlRegistry = function ControlRegistry()
 
 			if (elements.length > 0)
 			{
-				if (depth == 0)
-					$log.groupCollapsed("Creating element instances for registered controls");
-
 				for (var i = 0; i < types.length; i++)
 				{
+					var count = 0;
 					var typeInfo = types[i];
 					var matches = elements.filter(typeInfo.expression);
 
 					for (var j = 0; j < matches.length; j++)
 					{
-						typeInfo.createInstance(matches[j], null, depth);
+						var control = typeInfo.getInstance(matches[j]);
+						if (control == null)
+						{
+							typeInfo.createInstance(matches[j], null, depth);
+							count++;
+						}
 					}
-				}
 
-				if (depth == 0)
-					$log.groupEnd();
+					if (count != 0)
+						console.log("Created {0} instance(s) of {1}".format(count, typeInfo.name));
+				}
 			}
 		}
 		else
@@ -2206,8 +2447,11 @@ var ControlRegistry = function ControlRegistry()
  * Provides a base class for HTML controls.
  * @param {HTMLElement} element The HTML element that this control wraps.
  * @arguments {String} [1-n] Any events that this control dispatches.
+ * @class
+ * @constructor
+ * @extends {Dispatcher}
  */
-var HtmlControl = Dispatcher.extend(function HtmlControl(element)
+function HtmlControl(element)
 {
 	this.construct($array.fromArguments(arguments, 1));
 
@@ -2215,7 +2459,13 @@ var HtmlControl = Dispatcher.extend(function HtmlControl(element)
 	 * @type {jQuery}
 	 */
 	this.$element = $(element);
-});
+
+	/**
+	 * @type {Settings}
+	 */
+	this.settings = new Settings();
+}
+HtmlControl.inherits(Dispatcher);
 
 /**
  * Gets or sets the id of the element that this control uses.
@@ -2228,6 +2478,16 @@ HtmlControl.prototype.id = function HtmlControl$id(id)
 		this.$element.attr("id", id);
 
 	return this.$element.attr("id");
+};
+
+HtmlControl.prototype.destroy = function HtmlControl$destroy()
+{
+	this.base("destroy");
+	for (var prop in this)
+	{
+		if (prop.indexOf("$") == 0)
+			delete this[prop];
+	}
 };
 
 /**
@@ -2257,7 +2517,29 @@ HtmlControl.prototype.toString = function HtmlControl$toString()
 		attrId ? "#" + attrId : $string.EMPTY);
 };
 
+HtmlControl.PROPS =
+{
+	VERTICAL:
+	{
+		scrollSize: "scrollHeight",
+		scrollPos: "scrollTop",
+		size: "height",
+		outerSize: "outerHeight",
+		position: "top"
+	},
+
+	HORIZONTAL:
+	{
+		scrollSize: "scrollWidth",
+		scrollPos: "scrollLeft",
+		size: "width",
+		outerSize: "outerWidth",
+		position: "left"
+	}
+};
+
 	/*include: controls/PageControl.js  */
+	/*include: controls/Property.js  */
 
 /**
  * @copyright 2012 Igor France
@@ -2455,14 +2737,36 @@ var $dom = new function dom()
 	var hideSpecs = [];
 	var listeningToChange = false;
 
+	var has =
+	{
+		requestAnimationFrame:
+			window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			window.msRequestAnimationFrame,
+
+		cancelAnimationFrame:
+			window.cancelAnimationFrame ||
+			window.webkitCancelAnimationFrame ||
+			window.webkitCancelRequestAnimationFrame ||
+			window.mozCancelRequestAnimationFrame ||
+			window.oCancelRequestAnimationFrame ||
+			window.msCancelRequestAnimationFrame
+	};
+
 	var dom = new Dispatcher("selectionchange");
 
-	dom.registerAutoHide = function dom$registerAudoHide(specs)
+	/**
+	 * Registers an element that should be hidden when it loses focus
+	 * @param {{ element: Object, [delay]: Number, [hide]: Function, [related]: Object }} specs
+	 */
+	dom.registerAutoHide = function dom$registerAutoHide(specs)
 	{
 		if (!specs)
 			return;
 
-		var s = { element: null, delay: 0, hide: autoHideElement };
+		var s = { element: null, delay: 0, hide: autoHideElement, related: [] };
 		if (specs.jquery)
 			s.element = $(specs);
 		else
@@ -2472,21 +2776,40 @@ var $dom = new function dom()
 				s.delay = specs.delay;
 			if ($type.isFunction(specs.hide))
 				s.hide = specs.hide;
+			if ($type.isArray(specs.related))
+				s.related = specs.related;
 		}
 
 		hideSpecs.push(s);
 		if (!listeningToChange)
 		{
-			$(document).bind("mousedown mouseup click keydown keyup", onDocumentEvent);
+			$(document).bind("mousedown touchstart keyup", onDocumentEvent);
 			listeningToChange = true;
 		}
 	};
 
-	dom.isChrome = window.navigator.userAgent.indexOf("Chrome") != -1;
+	dom.isChrome =
+		window.navigator.userAgent.indexOf("Chrome") != -1;
 
-	dom.isTouchDevice =
-		!!('ontouchstart' in window) ||
-		!!('onmsgesturechange' in window);
+	dom.isIE =
+		window.navigator.userAgent.indexOf("MSIE") != -1 ||
+		window.navigator.userAgent.indexOf("Trident") != -1;
+
+	dom.isTouchDevice = function ()
+	{
+		return !!('ontouchstart' in window) || !!('onmsgesturechange' in window);
+	};
+
+	dom.mouseDownEvent = "mousedown";
+	dom.mouseUpEvent = "mouseup";
+	dom.fastClickEvent = "click";
+
+	if (dom.isTouchDevice())
+	{
+		dom.mouseDownEvent = "touchstart";
+		dom.mouseUpEvent = "touchend";
+		dom.fastClickEvent = "touchstart";
+	}
 
 	dom.uniqueID = function dom$uniqueID(element)
 	{
@@ -2528,12 +2851,77 @@ var $dom = new function dom()
 		}
 	};
 
+	dom.requestAnimationFrame = function (callback)
+	{
+		return (has.requestAnimationFrame ||
+			// if all else fails, use setTimeout
+			function () {
+				return window.setTimeout(callback, 1000 / 60); // shoot for 60 fps
+			}
+		)(callback);
+	};
+
+	/**
+	 * Behaves the same as setInterval except uses dom.requestAnimationFrame for better performance
+	 * @param {Function} fn The callback function
+	 * @param {Number} delay The delay in milliseconds
+	 */
+	dom.requestInterval = function (fn, delay)
+	{
+		if (!has.requestAnimationFrame)
+			return window.setInterval(fn, delay);
+
+		var start = new Date().getTime();
+		var handle = {};
+
+		function loop()
+		{
+			var current = new Date().getTime();
+			var delta = current - start;
+			if (delta >= delay)
+			{
+				fn.call();
+				start = new Date().getTime();
+			}
+
+			handle.value = dom.requestAnimationFrame(loop);
+		}
+
+		handle.value = dom.requestAnimationFrame(loop);
+		return handle;
+	};
+
+	/**
+	 * Behaves the same as setTimeout except uses dom.requestAnimationFrame for better performance
+	 * @param {Function} fn The callback function
+	 * @param {Number} delay The delay in milliseconds
+	 */
+	dom.requestTimeout = function (fn, delay)
+	{
+		if (!has.requestAnimationFrame)
+			return window.setTimeout(fn, delay);
+
+		var start = new Date().getTime();
+		var handle = {};
+
+		function loop()
+		{
+			var current = new Date().getTime();
+			var delta = current - start;
+
+			delta >= delay ? fn.call() : handle.value = dom.requestAnimationFrame(loop);
+		}
+
+		handle.value = dom.requestAnimationFrame(loop);
+		return handle;
+	};
+
 	$.fn.unselectable = function unselectable(value)
 	{
 		return this.each(function unselectable()
 		{
-			dom.selectable(value);
-    		});
+			dom.unselectable(value);
+    });
 	};
 
 	function autoHideElement(element)
@@ -2545,28 +2933,42 @@ var $dom = new function dom()
 	{
 		for (var i = 0; i < hideSpecs.length; i++)
 		{
-			for (var j = 0; j < hideSpecs[i].element.length; j++)
+			var specs = hideSpecs[i];
+			for (var j = 0; j < specs.element.length; j++)
 			{
-				var $el = hideSpecs[i].element.eq(j);
+				var $el = specs.element.eq(j);
 				if (!$el.is(":visible"))
 					continue;
 
-				var delay = hideSpecs[i].delay;
-				var hideFx = $.proxy(hideSpecs[i].hide, this, $el);
+				var delay = specs.delay;
+				var hideFx = $.proxy(specs.hide, this, $el);
 
 				var isMenuRelated =
 					$el.is(e.target) || $el.has(e.target).length != 0;
 
 				if (!isMenuRelated)
 				{
+					for (var k = 0; k < specs.related.length; k++)
+					{
+						var $related = $(specs.related[k]);
+						isMenuRelated =
+							$related.is(e.target) || $related.has(e.target).length != 0;
+
+						if (isMenuRelated)
+							break;
+					}
+				}
+
+				if (!isMenuRelated)
+				{
 					if (delay)
-						hideSpecs[i].delayId = setTimeout(hideFx, delay);
+						specs.delayId = setTimeout(hideFx, delay);
 					else
 						hideFx();
 				}
 				else if (delay)
 				{
-					clearTimeout(hideSpecs[i].delayId);
+					clearTimeout(specs.delayId);
 				}
 			}
 		}
@@ -3050,8 +3452,8 @@ var $url = new function url()
 		var hash = this.components.hash;
 		var query = this.components.query;
 
-		if (hash == url.EMPTY_HASH)
-			hash = $string.EMPTY;
+		if (hash.indexOf("!") == 0)
+			hash = hash.substring(1);
 
 		this.hashParam = url.parseQuery(hash);
 		this.queryParam = url.parseQuery(query);
@@ -3197,7 +3599,7 @@ var $url = new function url()
 		var current = url(location);
 		current.removeHashParam(name);
 
-		url.setHash(url.getHash());
+		url.setHash(current.getHash());
 	};
 
 	/**
@@ -3554,12 +3956,14 @@ var $xml = new function xml()
 					break;
 
 				default:
-					if (selected.textContent != null)
+					if (selected.value != null)
+						result.push(selected.value);
+					else if (selected.textContent != null)
 						result.push(selected.textContent);
-					else if (selection.text != null)
+					else if (selected.text != null)
 						result.push(selected.text);
 					else
-						result.push(selection.innerText);
+						result.push(selected.innerText);
 					break;
 			}
 		}
@@ -3580,15 +3984,14 @@ var $xml = new function xml()
 		if ($type.isString(node))
 			node = xml.select(node)[0];
 
-		if (domcompatible)
-		{
-			if (node == document || node.ownerDocument == document)
-				return xml.serialize(node);
+		if ($dom.isIE)
+			return node.xml;
 
-			return new XMLSerializer().serializeToString(Node(node));
-		}
+		if (node == document || node.ownerDocument == document)
+			return xml.serialize(node);
 
-		return node.xml;
+		return new XMLSerializer().serializeToString(Node(node));
+
 	};
 
 	xml.serialize = function (node)
@@ -3738,7 +4141,7 @@ var $xml = new function xml()
 			subject = document;
 
 		var ownerDocument = subject.nodeType == nodeType.DOCUMENT ? subject : subject.ownerDocument;
-		if (window.ActiveXObject)
+		if ($dom.isIE)
 		{
 			var nslist = [];
 			for (var prefix in namespaces)
@@ -3819,7 +4222,16 @@ var $xml = new function xml()
 		}
 
 		var document = null;
-		if (domcompatible)
+		if ($dom.isIE)
+		{
+			document = new ActiveXObject("MSXML2.DomDocument");
+			if (source)
+			{
+				document.loadXML(source);
+				throwIfParseError(document);
+			}
+		}
+		else if (domcompatible)
 		{
 			if ($type.isString(source))
 			{
@@ -3830,15 +4242,6 @@ var $xml = new function xml()
 			else
 			{
 				document = implementation.createDocument($string.EMPTY, $string.EMPTY, null);
-			}
-		}
-		else if (window.ActiveXObject)
-		{
-			document = new ActiveXObject("MSXML2.DomDocument");
-			if (source)
-			{
-				document.loadXML(source);
-				throwIfParseError(document);
 			}
 		}
 
@@ -3852,17 +4255,17 @@ var $xml = new function xml()
 			return null;
 
 		var processor = null;
-		if (domcompatible)
-		{
-			processor = new XSLTProcessor();
-			processor.importStylesheet(source);
-		}
-		else
+		if ($dom.isIE)
 		{
 			var ftDocument = xml.document(source.xml);
 			var template = new ActiveXObject("MSXML2.XslTemplate");
 			template.stylesheet = ftDocument;
 			processor = template.createProcessor();
+		}
+		else
+		{
+			processor = new XSLTProcessor();
+			processor.importStylesheet(source);
 		}
 
 		return processor;
@@ -3874,16 +4277,16 @@ var $xml = new function xml()
 		$log.assert(!$type.isNull(processor), "Argument 'xslProcessor' is required");
 
 		var result = null;
-		if (domcompatible)
-		{
-			result = processor.transformToDocument(document);
-		}
-		else
+		if ($dom.isIE)
 		{
 			result = xml.document();
 			processor.input = document;
 			processor.output = result;
 			processor.transform();
+		}
+		else
+		{
+			result = processor.transformToDocument(document);
 		}
 
 		return result;
@@ -3905,7 +4308,21 @@ var $xml = new function xml()
 	function throwIfParseError(document)
 	{
 		var info = { name: "XML Parse Error", error: false, data: { line: 1, column: 0 }};
-		if (domcompatible)
+		if ($dom.isIE)
+		{
+			if (document.parseError != 0)
+			{
+				info.error = true;
+				info.message = document.parseError.reason;
+
+				if (document.parseError.line)
+					info.data.line = document.parseError.line;
+
+				if (document.parseError.column)
+					info.data.column = document.parseError.column;
+			}
+		}
+		else
 		{
 			var parseError = document.getElementsByTagNameNS(parseErrorNs, "parsererror")[0];
 			if (parseError != null)
@@ -3919,20 +4336,6 @@ var $xml = new function xml()
 
 				info.error = true;
 				info.message = message;
-			}
-		}
-		else
-		{
-			if (document.parseError != 0)
-			{
-				info.error = true;
-				info.message = document.parseError.reason;
-
-				if (document.parseError.line)
-					info.data.line = document.parseError.line;
-
-				if (document.parseError.column)
-					info.data.column = document.parseError.column;
 			}
 		}
 
@@ -4102,6 +4505,10 @@ var $const = new function constants()
  */
 var $evt = new function ()
 {
+	var lowestDelta;
+	var adjustOldDeltas = true;
+	var normalizeOffset = true;
+
 	/**
 	 * Returns the cross-browser event object.
 	 * @param {Event} e The event that was raised. In IE6 and lower this is null and is read from the window object.
@@ -4111,6 +4518,11 @@ var $evt = new function ()
 	{
 		return e || window.event;
 	}
+
+	evt.stopPropagation = function preventDefault(e)
+	{
+		e.stopPropagation();
+	};
 
 	/**
 	 * Calls <c>preventDefault</c> method if the event object supports it.
@@ -4173,6 +4585,115 @@ var $evt = new function ()
 		target.addEventListener(event, handler, true);
 	};
 
+	evt.release = function (target, event, handler)
+	{
+		target.removeEventListener(event, handler, true);
+	};
+
+	evt.getNormalizedWheelDelta = function (elem, event)
+	{
+		event = event.originalEvent || event;
+
+		var result = { delta: 0, deltaX: 0, deltaY: 0 };
+		var absDelta = 0;
+
+		// Old school scrollwheel delta
+		if ('detail' in event)
+			result.deltaY = event.detail * -1;
+		if ('wheelDelta' in event)
+			result.deltaY = event.wheelDelta;
+		if ('wheelDeltaY' in event)
+			result.deltaY = event.wheelDeltaY;
+		if ('wheelDeltaX' in event)
+			result.deltaX = event.wheelDeltaX * -1;
+
+		// Firefox < 17 horizontal scrolling related to DOMMouseScroll event
+		if ('axis' in event && event.axis === event.HORIZONTAL_AXIS)
+		{
+			result.deltaX = result.deltaY * -1;
+			result.deltaY = 0;
+		}
+
+		// Set delta to be deltaY or deltaX if deltaY is 0 for backwards compatabilitiy
+		result.delta = result.deltaY === 0 ? result.deltaX : result.deltaY;
+
+		// New school wheel delta (wheel event)
+		if ('deltaY' in event)
+		{
+			result.deltaY = event.deltaY * -1;
+			result.delta = result.deltaY;
+		}
+		if ('deltaX' in event)
+		{
+			result.deltaX = event.deltaX;
+			if (result.deltaY === 0)
+				result.delta = result.deltaX * -1;
+		}
+
+		// No change actually happened, no reason to go any further
+		if (result.deltaY === 0 && result.deltaX === 0)
+			return result;
+
+		// Need to convert lines and pages to pixels if we aren't already in pixels
+		// There are three delta modes:
+		// * deltaMode 0 is by pixels, nothing to do
+		// * deltaMode 1 is by lines
+		// * deltaMode 2 is by pages
+		if (event.deltaMode === 1)
+		{
+			var lineHeight = elem.lineHeight();
+			result.delta *= lineHeight;
+			result.deltaY *= lineHeight;
+			result.deltaX *= lineHeight;
+		}
+		else if (event.deltaMode === 2)
+		{
+			var pageHeight = elem.height();
+			result.delta *= pageHeight;
+			result.deltaY *= pageHeight;
+			result.deltaX *= pageHeight;
+		}
+
+		var shouldAdjustOldDeltas =
+			adjustOldDeltas && event.type === 'mousewheel' && absDelta % 120 === 0;
+
+		// Store lowest absolute delta to normalize the delta values
+		absDelta = Math.max(Math.abs(result.deltaY), Math.abs(result.deltaX));
+		if (!lowestDelta || absDelta < lowestDelta)
+		{
+			lowestDelta = absDelta;
+			if (shouldAdjustOldDeltas)
+				lowestDelta /= 40;
+		}
+
+		if (shouldAdjustOldDeltas)
+		{
+			result.delta /= 40;
+			result.deltaX /= 40;
+			result.deltaY /= 40;
+		}
+
+		result.delta = Math[result.delta >= 1 ? 'floor' : 'ceil' ](result.delta / lowestDelta);
+		result.deltaX = Math[result.deltaX >= 1 ? 'floor' : 'ceil' ](result.deltaX / lowestDelta);
+		result.deltaY = Math[result.deltaY >= 1 ? 'floor' : 'ceil' ](result.deltaY / lowestDelta);
+
+		return result;
+	};
+
+	$.fn.wheelDelta = function (event)
+	{
+		return evt.getNormalizedWheelDelta(this, event);
+	};
+
+	$.fn.lineHeight = function ()
+	{
+		var $parent = this['offsetParent' in $.fn ? 'offsetParent' : 'parent']();
+		if ($parent.length == 0)
+			$parent = $('body');
+
+		return parseInt($parent.css('fontSize')) || parseInt(this.css('fontSize')) || 16;
+	};
+
 	$.fn.capture = function (event, handler)
 	{
 		if (!$type.isString(event) || !$type.isFunction(handler))
@@ -4188,11 +4709,6 @@ var $evt = new function ()
 		return this;
 	};
 
-	evt.release = function (target, event, handler)
-	{
-		target.removeEventListener(event, handler, true);
-	};
-
 	$.fn.release = function (event, handler)
 	{
 		if (!$type.isString(event) || !$type.isFunction(handler))
@@ -4206,6 +4722,25 @@ var $evt = new function ()
 		});
 
 		return this;
+	};
+
+	evt.isMouseInRange = function isMouseInRange(e, elem)
+	{
+		if (atom.drag.active)
+			return;
+
+		var $elem = $(elem);
+		if ($elem.width() == 0 || $elem.height() == 0)
+			return false;
+
+		var offset = $elem.offset();
+		var mouseX = e.clientX + $(document).scrollLeft();
+		var mouseY = e.clientY + $(document).scrollTop();
+
+		return (
+			mouseX >= offset.left && mouseX <= (offset.left + $elem.width()) &&
+			mouseY >= offset.top && mouseY <= (offset.top + $elem.height())
+		);
 	};
 
 	/**
@@ -4261,6 +4796,7 @@ var $evt = new function ()
 				this.data[prop] = data[prop];
 	};
 
+	evt.transitionEnd = "transitionend webkitTransitionEnd";
 	return evt;
 };
 
@@ -4477,6 +5013,31 @@ var $drag = new function Dragger()
 			overlays.pop();
 		}
 	}
+
+	function onDragMouseDown(e)
+	{
+		var $this = $(this);
+		var options = $this.data("options");
+		var target = options.target;
+
+		atom.drag.start(e, target, options);
+	}
+
+	$.fn.draggable = function draggable(options)
+	{
+		this.each(function (i, instance)
+		{
+			var myOptions = $.extend({ target: instance }, options);
+			var $instance = $(instance);
+			var $handle = $instance.find(".handle");
+			if ($handle.length == 0)
+				$handle = $instance;
+
+			$handle.on("mousedown", onDragMouseDown).data("options", myOptions);
+		});
+
+		return this;
+	};
 
 	return dragger;
 };
@@ -5431,14 +5992,28 @@ var Transitions = new function Transitions()
 	return image;
 };
 
+(function jQueryPlugins($)
+{
+	$.fn.hasAttr = function (attrName)
+	{
+		if (this.length == 0)
+			return false;
+
+		return this[0].attributes[attrName] != undefined;
+	};
+
+})(jQuery);
+
 
 	atom.Prototype = Prototype;
+	atom.Property = Property;
 	atom.Dispatcher = Dispatcher;
 	atom.Settings = Settings;
 	atom.Initializer = Initializer;
 	atom.HtmlControl = HtmlControl;
 
 	atom.type = $type;
+	atom.object = $object;
 	atom.string = $string;
 	atom.array = $array;
 	atom.date = $date;
@@ -5459,9 +6034,10 @@ var Transitions = new function Transitions()
 
 	atom.init = new Initializer;
 	atom.init.register(atom.controls, true);
+	atom.init.on("done", $.proxy(atom.controls.start, atom.controls));
 
 	$(window)
-		.on("ready", atom.init.setup)
+		.on("load", atom.init.setup)
 		.on("unload", atom.init.dispose);
 
 	return atom;
