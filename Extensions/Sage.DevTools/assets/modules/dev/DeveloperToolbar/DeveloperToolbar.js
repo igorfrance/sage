@@ -197,9 +197,9 @@ sage.dev.Toolbar = new function Toolbar()
 	function loadLogData()
 	{
 		setStatusClass("loading");
-		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(document) /**/
+		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(response) /**/
 		{
-			var rows = atom.xml.select("//mod:log/mod:line", document, namespaces);
+			var rows = atom.xml.select("//mod:log/mod:line", atom.xml.document(response), namespaces);
 			var entry = null;
 			for (var i = 0; i < rows.length; i++)
 			{
