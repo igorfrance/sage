@@ -1475,7 +1475,7 @@ Prototype.prototype.base = function prototype$base(name)
 	}
 
 	if (typeof(fx) == "function")
-		return fx.apply(this, Array.prototype.splice(arguments, 1));
+		return fx.apply(this, Array.prototype.slice.call(arguments, 1));
 
 	return null;
 };
@@ -2001,6 +2001,27 @@ Settings.prototype.setProperties = function setProperties(data, override)
 	}
 };
 
+Settings.prototype.get = function get(propName)
+{
+	if ($type.instanceOf(this[propName], Property))
+		return this[propName].get();
+	else
+		return this[propName];
+};
+
+Settings.prototype.set = function setProperties(propName, propValue)
+{
+	if (this[propName] === undefined)
+		return console.warn("Current settings don't contain a property with name '{0}'.".format(propName));
+
+	if ($type.instanceOf(this[propName], Property))
+		this[propName].set(propValue);
+	else
+		this[propName] = propValue;
+
+	return this.get(propName);
+};
+
 
 /**
  * Provides information about a registered control.
@@ -2517,6 +2538,23 @@ HtmlControl.prototype.toString = function HtmlControl$toString()
 		attrId ? "#" + attrId : $string.EMPTY);
 };
 
+HtmlControl.prototype.get = function HtmlControl$set(propName)
+{
+	if (this.settings === undefined)
+		return console.warn("Can't get '{0}' because the current control doesn't have an associated settings object.".format(propName));
+
+	return this.settings.get(propName);
+};
+
+HtmlControl.prototype.set = function HtmlControl$set(propName, propValue)
+{
+	if (this.settings === undefined)
+		return console.warn("Can't set '{0}' to '{1}' because the current control doesn't have an associated settings object.".format(propName, propValue));
+
+	this.settings.set(propName, propValue);
+	return this.settings.get(propName);
+};
+
 HtmlControl.PROPS =
 {
 	VERTICAL:
@@ -2797,17 +2835,22 @@ var $dom = new function dom()
 
 	dom.isTouchDevice = function ()
 	{
+		if (window.Modernizr && Modernizr.touch !== undefined)
+			return Modernizr.touch;
+
 		return !!('ontouchstart' in window) || !!('onmsgesturechange' in window);
 	};
 
 	dom.mouseDownEvent = "mousedown";
 	dom.mouseUpEvent = "mouseup";
+	dom.mouseMoveEvent = "mousemove";
 	dom.fastClickEvent = "click";
 
 	if (dom.isTouchDevice())
 	{
 		dom.mouseDownEvent = "touchstart";
 		dom.mouseUpEvent = "touchend";
+		dom.mouseMoveEvent = "touchmove";
 		dom.fastClickEvent = "touchstart";
 	}
 
@@ -4475,6 +4518,7 @@ var $const = new function constants()
 	/**
 	 * Defines commonly used key code constants
 	 * @enum
+	 * @type {Number}
 	 */
 	this.Key =
 	{

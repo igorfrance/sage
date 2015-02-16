@@ -850,7 +850,7 @@ atom.controls.Slider = atom.controls.register(new function Slider()
 
 });
 
-atom.controls.XContainer = atom.controls.register(new function XContainerModule()
+atom.controls.FlexStrip = atom.controls.register(new function FlexStripModule()
 {
 	var MIN_DIFF_MOVE = 10;
 	var DEFAULT_SPEED = 400;
@@ -861,19 +861,21 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		{
 			scrollSize: "scrollHeight", outerSize: "outerHeight", size: "height", position: "top",
 			offsetPos: "offsetTop", minPos: "minY", maxPos: "maxY", paddingStart: "paddingTop", paddingEnd: "paddingBottom",
-			marginStart: "marginTop", eventPos: "eventY"
+			marginStart: "marginTop", eventPos: "eventY", startEventPos: "startEventY"
 		},
 		HORIZONTAL:
 		{
 			scrollSize: "scrollWidth", outerSize: "outerWidth", size: "width", position: "left",
 			offsetPos: "offsetLeft", minPos: "minX", maxPos: "maxX", paddingStart: "paddingLeft", paddingEnd: "paddingRight",
-			marginStart: "marginLeft", eventPos: "eventX"
+			marginStart: "marginLeft", eventPos: "eventX", startEventPos: "startEventX"
 		}
 	};
 
-	var xcontainer = this;
+	var MODE = { FREE: "free", SLIDE: "slide", PAGE: "page" };
 
-	this.NAME = "atom.controls.XContainer";
+	var flexstrip = this;
+
+	this.NAME = "atom.controls.FlexStrip";
 
 	/**
 	 * This control doesn't need asynchronous initialization.
@@ -882,13 +884,13 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 	this.async = false;
 
 	/**
-	 * The css expression of elements that should be initialized as xcontainers.
+	 * The css expression of elements that should be initialized as flexstrips.
 	 * @type {String}
 	 */
-	this.expression = ".xcontainer";
+	this.expression = ".flexstrip";
 
 	/**
-	 * Prepares the xcontainer control
+	 * Prepares the flexstrip control
 	 */
 	this.setup = function setup()
 	{
@@ -897,52 +899,77 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	this.redraw = function redraw()
 	{
-		for (var i = 0; i < xcontainer.instances.length; i++)
-			xcontainer.instances[i].redraw();
+		for (var i = 0; i < flexstrip.instances.length; i++)
+			flexstrip.instances[i].redraw();
 	};
 
 	/**
-	 * Defines the settings of the <c>XContainer</c> control.
+	 * Defines the settings of the <c>FlexStrip</c> control.
 	 * @extends {atom.Settings}
 	 * @param {Object} data The object with initial settings.
 	 * @param {Object} element The object with overriding settings. If a setting exist both in
 	 * <c>data</c> and in <c>override</c> objects, the setting from <c>override</c> takes precedence.
 	 */
-	this.Settings = atom.Settings.extend(function XContainerSettings(element, settings)
+	this.Settings = atom.Settings.extend(function FlexStripSettings(element, settings)
 	{
-		this.extraLength = this.getNumber("extra-length", element, settings, 0);
-		this.useAnimations = this.getBoolean("use-animations", element, settings, true);
-		this.mouseDraggable = this.getBoolean("mouse-draggable", element, settings, true);
-		this.autoScroll = this.getBoolean("auto-scroll", element, settings, true);
-		this.snapToItems = this.getBoolean("snap-to-items", element, settings, false);
-		this.snapDistance = this.getNumber("snap-distance", element, settings, 35);
-		this.autoCenter = this.getBoolean("center", element, settings, false);
-		this.forceSnapPoints = this.getBoolean("force-snap-points", element, settings, false);
-		this.snapItemsExpression = this.getString("snap-item-expression", element, settings, "> *");
-		this.scrollOnClick = this.getBoolean("scroll-on-click", element, settings, false);
-		this.arrowsOnHover = this.getBoolean("arrows-on-hover", element, settings, false);
-		this.animSpeed = this.getNumber("animation-speed", element, settings, DEFAULT_SPEED);
+		this.mode = this.getString("mode", element, settings, MODE.FREE, MODE);
+		this.extraLength = this.getNumber("extraLength", element, settings, 0);
+		this.useAnimations = this.getBoolean("useAnimations", element, settings, true);
+		this.mouseDraggable = this.getBoolean("mouseDraggable", element, settings, true);
+		this.pageMode = this.getBoolean("pageMode", element, settings, false);
+		this.dropOnMouseOut = this.getBoolean("dropOnMouseOut", element, settings, true);
+		this.autoScroll = this.getBoolean("autoScroll", element, settings, false);
+		this.snapToItems = this.getBoolean("snapToItems", element, settings, false);
+		this.snapDistance = this.getNumber("snapDistance", element, settings, 35);
+		this.forceSnapPoints = this.getBoolean("forceSnapPoints", element, settings, false);
+		this.scrollOnClick = this.getBoolean("scrollOnClick", element, settings, false);
+		this.arrowsOnHover = this.getBoolean("arrowsOnHover", element, settings, false);
+		this.animDuration = this.getNumber("animDuration", element, settings, DEFAULT_SPEED);
+		this.globalKeyReact = this.getBoolean("globalKeyReact", element, settings, false);
 		this.vertical = this.getBoolean("vertical", element, settings, false);
-		this.useCentering = this.getBoolean("center", element, settings, false);
+		this.center = this.getBoolean("center", element, settings, false);
+		this.stretch = this.getBoolean("stretch", element, settings, false);
+
+		this.consolidate();
 	});
 
+	this.Settings.prototype.consolidate = function consolidate()
+	{
+		switch (this.mode)
+		{
+			case MODE.PAGE:
+				this.autoScroll = false;
+				this.snapToItems = true;
+				this.forceSnapPoints = true;
+				break;
+
+			case MODE.SLIDE:
+				this.forceSnapPoints = true;
+				this.autoScroll = false;
+				break;
+
+			case MODE.FREE:
+				break;
+		}
+	};
+
 	/**
-	 * Defines the settings of the <c>XContainer</c> control.
+	 * Defines the settings of the <c>FlexStrip</c> control.
 	 * @extends {atom.HtmlControl}
 	 */
-	this.Control = atom.HtmlControl.extend(function XContainer(element, settings)
+	this.Control = atom.HtmlControl.extend(function FlexStrip(element, settings)
 	{
 		this.construct("move", "stop", "select");
 
-		this.settings = new xcontainer.Settings(element, settings);
+		this.settings = new flexstrip.Settings(element, settings);
 
 		this.$element = $(element);
-		this.$slides = this.$element.find(this.settings.snapItemsExpression);
+		this.$slides = this.$element.find("> *");
 		this.$container = this.$element.parent();
 
 		this.props = this.settings.vertical ? PROPS.VERTICAL : PROPS.HORIZONTAL;
 
-		this.$element.css({ position: "relative", display: "block", overflow: "hidden" });
+		this.$element.css({ position: "relative", overflow: "hidden" });
 		if (!this.settings.vertical)
 			this.$element.css({ whiteSpace: "nowrap" });
 		else
@@ -950,17 +977,19 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 		this.mouseWithinRange = false;
 		this.animEngaged = false;
-		this.wasDragged = false;
+		this.dragMode = false;
+		this.scrollMode = false;
 
 		this.transitioning = false;
 		this.stripLength = 0;
-		this.slideAutoIndex = 0;
-		this.slideSelectedIndex = 0;
+		this.autoIndex = 0;
+		this.selectedIndex = 0;
 		this.scrollMoveSize = 0;
 		this.slidesFrozen = false;
 
 		this.startPos = 0;
-		this.startEventPos = 0;
+		this.startEventX = 0;
+		this.startEventY = 0;
 
 		this.minMouseX = 0;
 		this.minMouseY = 0;
@@ -985,12 +1014,13 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			step: $.proxy(onAnimationUpdate, this),
 			start: $.proxy(onAnimationStart, this),
 			complete: $.proxy(onAnimationComplete, this),
-			duration: this.settings.animSpeed
+			duration: this.settings.animDuration
 		};
 
 		this.$element.on(atom.dom.mouseDownEvent, $.proxy(onMouseDown, this));
 		this.$element.on(atom.dom.mouseUpEvent, $.proxy(onMouseUp, this));
 		this.$slides.on(atom.dom.mouseUpEvent, $.proxy(onSlideMouseUp, this));
+
 		this.$slides.on("click", $.proxy(onSlideClick, this));
 		this.$container.on("mousewheel DOMMouseScroll", $.proxy(onMouseWheel, this));
 
@@ -999,21 +1029,15 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 		$(document).on("keydown", $.proxy(onDocumentKeyDown, this));
 		$(window).on("resize", $.proxy(onWindowResize, this));
-		$(document).on("mousemove", $.proxy(onDocumentMouseMove, this));
+		$(document).on(atom.dom.mouseMoveEvent, $.proxy(onDocumentMouseMove, this));
 
-		if (!atom.dom.isTouchDevice())
-		{
-			if (this.settings.arrowsOnHover)
-			{
-				this.$arrowBack = $('<div class="xcontainer-arrow prev {0}"></div>'.format(this.settings.vertical ? "vertical" : ""))
-						.appendTo(this.$container);
-				this.$arrowNext = $('<div class="xcontainer-arrow next {0}"></div>'.format(this.settings.vertical ? "vertical" : ""))
-						.appendTo(this.$container);
+		this.$arrowBack = $('<div class="flexstrip-arrow prev {0}"></div>'.format(this.settings.vertical ? "vertical" : ""))
+				.appendTo(this.$container);
+		this.$arrowNext = $('<div class="flexstrip-arrow next {0}"></div>'.format(this.settings.vertical ? "vertical" : ""))
+				.appendTo(this.$container);
 
-				this.$arrowBack.on("click", $.proxy(onBackArrowClicked, this));
-				this.$arrowNext.on("click", $.proxy(onNextArrowClicked, this));
-			}
-		}
+		this.$arrowBack.on("click", $.proxy(onBackArrowClicked, this));
+		this.$arrowNext.on("click", $.proxy(onNextArrowClicked, this));
 
 		this.redraw();
 		this.$element.addClass("ready");
@@ -1029,10 +1053,13 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			(parseInt(this.$element.css(this.props.paddingStart)) || 0) +
 			(parseInt(this.$element.css(this.props.paddingEnd)) || 0);
 
-		var $children = this.$element.find("> *");
-		for (var i = 0; i < $children.length; i++)
+		this.$slides = this.$element.find("> *");
+		if (this.settings.mode == MODE.PAGE)
+			this.$slides[this.props.size](containerLength);
+
+		for (var i = 0; i < this.$slides.length; i++)
 		{
-			var child = $children.eq(i);
+			var child = this.$slides.eq(i);
 			stripLength += child[this.props.outerSize](true);
 		}
 
@@ -1042,24 +1069,26 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		this.maxMouseY = this.$container.outerHeight();
 
 		this.containerLength = containerLength;
-		this.stripLength = stripLength;
-		this.scrollMoveSize = Math.min(
-			$children.eq(0).outerWidth(true),
-			$children.eq(0).outerHeight(true));
-
-		this.maxX = 0;
-		this.maxY = 0;
-		this.minX = (this.containerLength - this.stripLength) - (parseInt(this.$element.css(this.props.paddingStart)) || 0);
-		this.minY = this.containerLength - this.stripLength;
-
-		var trackLength = (stripLength - containerLength)
+		this.stripLength = stripLength
 			+ this.initPos
 			+ this.settings.extraLength * 2;
 
-		this.ratio = trackLength / containerLength;
-		this.stripLength = stripLength + this.settings.extraLength;
+		var trackLength = stripLength - containerLength;
 
-		this.$slides = this.$element.find(this.settings.snapItemsExpression);
+		this.ratio = trackLength / containerLength;
+
+		this.scrollMoveSize = Math.min(
+			this.$slides.eq(0).outerWidth(true),
+			this.$slides.eq(0).outerHeight(true));
+
+		this.maxX = this.maxY = 0;
+		this.minX = this.minY = -trackLength;
+
+		if (this.settings.mode == MODE.SLIDE)
+		{
+			var lastSlide = this.$slides.eq(this.$slides.length - 1);
+			this.minX = this.minY = -this.stripLength + lastSlide[this.props.size]();
+		}
 
 		// the extra one pixel ensures there is always enough size for floating children
 		this.$element.css(this.props.size, Math.ceil(stripLength) + 1);
@@ -1067,18 +1096,21 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 		if (stripLength < containerLength)
 		{
-			if (this.settings.useCentering)
+			this.$element.css(this.props.position, 0);
+
+			if (this.settings.stretch)
+			{
+				this.$element.css(this.props.size, containerLength);
+				this.$element.css(this.props.position, 0);
+
+				stripLength = containerLength;
+			}
+
+			if (this.settings.center)
 			{
 				var center = Math.round(containerLength / 2 - stripLength / 2);
 				this.$element.css(this.props.position, center);
 			}
-			else
-			{
-				this.$element.css(this.props.size, containerLength);
-				this.$element.css(this.props.position, 0);
-			}
-			var targetPos = this.settings.autoCenter ? Math.round((containerLength / 2) - (stripLength / 2)) : 0;
-			this.$element.css(this.props.position, targetPos);
 		}
 		else
 		{
@@ -1092,27 +1124,42 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			var maxPos = this[this.props.maxPos];
 
 			var target = Math.min(Math.max(current, minPos), maxPos);
+
 			this.$element.css(this.props.position, target);
-			this.slideAutoIndex = getNearestIndex.call(this, 0);
+			this.autoIndex = getNearestIndex.call(this, 0);
 		}
 	};
 
-	this.Control.prototype.scrollToSlide = function scrollToSlide(index)
+	this.Control.prototype.set = function set(propName, propValue)
 	{
-		if (index >= 0 && index < this.snapCoords.length)
+		this.base("set", propName, propValue);
+		this.settings.consolidate();
+	};
+
+	this.Control.prototype.prev = function nextSlide()
+	{
+		return this.select(this.selectedIndex - 1);
+	};
+
+	this.Control.prototype.next = function nextSlide()
+	{
+		return this.select(this.selectedIndex + 1);
+	};
+
+	this.Control.prototype.select = function select(index)
+	{
+		if (index >= 0 && index < this.$slides.length)
+		{
 			scrollToSlide.call(this, index, false);
+			return true;
+		}
+
+		return false;
 	};
 
 	this.Control.prototype.slideIndex = function slideIndex()
 	{
-		return this.transitioning ? this.slideSelectedIndex : this.slideAutoIndex;
-	};
-
-	this.Control.prototype.setSlidesFrozen = function setSlidesFrozen(frozen)
-	{
-		this.slidesFrozen = !!frozen;
-		if (this.slidesFrozen)
-			this.hideArrows();
+		return this.transitioning ? this.selectedIndex : this.autoIndex;
 	};
 
 	this.Control.prototype.hideArrows = function hideArrows()
@@ -1120,42 +1167,35 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		updateArrowVisibility.call(this, true);
 	};
 
-	function getNearestIndex(accel)
+	function getNearestIndex(accel, isFinal)
 	{
-		if (accel < 0 && this.slideAutoIndex == this.$slides.length - 1)
-			return this.slideAutoIndex;
+		if (accel < 0 && this.autoIndex == this.$slides.length - 1)
+			return this.autoIndex;
 
-		if (accel > 0 && this.slideAutoIndex == 0)
-			return this.slideAutoIndex;
+		if (accel > 0 && this.autoIndex == 0)
+			return this.autoIndex;
 
-		var maxWidth = Number.NEGATIVE_INFINITY;
+		var minDiff = Number.POSITIVE_INFINITY;
 		var nearestIndex = -1;
 
-		var viewPort = { start: this.$container.offset()[this.props.position] };
-		viewPort.end = viewPort.start + this.$container[this.props.size]();
-
-		var viewPortSize = viewPort.end - viewPort.start;
+		var stripPos = parseInt(this.$element.css(this.props.position)) || 0;
 		for (var i = 0; i < this.$slides.length; i++)
 		{
-			var $child = this.$slides.eq(i);
-			var offset = $child.offset()[this.props.position];
-			var size = $child[this.props.size]();
-			var visibleWidth = viewPortSize -
-				Math.abs(viewPort.end - (offset + size)) -
-				Math.abs(viewPort.start - offset);
+			var snapPoint = this.snapCoords[i];
+			var snapDiff = Math.abs(stripPos + snapPoint);
 
-			if (visibleWidth > maxWidth)
+			if (snapDiff < minDiff)
 			{
-				maxWidth = visibleWidth;
+				minDiff = snapDiff;
 				nearestIndex = i;
 			}
 		}
 
-		if (accel > 0 && nearestIndex >= this.slideAutoIndex)
-			nearestIndex = this.slideAutoIndex - 1;
+		if (accel > 0 && nearestIndex >= this.autoIndex)
+			nearestIndex = this.autoIndex - 1;
 
-		if (accel < 0 && nearestIndex <= this.slideAutoIndex)
-			nearestIndex = this.slideAutoIndex + 1;
+		if (accel < 0 && nearestIndex <= this.autoIndex)
+			nearestIndex = this.autoIndex + 1;
 
 		return nearestIndex;
 	}
@@ -1210,18 +1250,10 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	function getPosition(which)
 	{
-		var position = this.$element.css("position");
-		var coordinates = this.$element.position();
-		var marginTop = parseInt(this.$element.css("marginTop")) || 0;
-		var marginLeft = parseInt(this.$element.css("marginLeft")) || 0;
-		var paddingTop = parseInt(this.$element.parent().css("paddingTop")) || 0;
-		var paddingLeft = parseInt(this.$element.parent().css("paddingLeft")) || 0;
-
-		if (position != "absolute")
-			coordinates.left -= (paddingLeft + marginLeft);
-
-		if (position != "absolute")
-			coordinates.top -= (paddingTop + marginTop);
+		var coordinates = {
+			top: parseInt(this.$element.css("top")) || 0,
+			left: parseInt(this.$element.css("left")) || 0
+		};
 
 		coordinates.right = coordinates.left + this.$element.width();
 		coordinates.bottom = coordinates.top + this.$element.height();
@@ -1285,11 +1317,12 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 	function scrollToSlide(index, fireSelect)
 	{
 		var props = {};
-		var targetCoord = getCoordinateWithinBounds.call(this, -this.snapCoords[index]);
+		var targetCoord = -this.snapCoords[index];
 		props[this.props.position] = targetCoord;
 
-		this.slideAutoIndex = index;
-		this.slideSelectedIndex = index;
+		this.autoIndex = index;
+		this.selectedIndex = index;
+
 		if (fireSelect && parseInt(this.$element.css(this.props.position)) == targetCoord)
 		{
 			this.fireEvent("select");
@@ -1356,7 +1389,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 	{
 		e = e.originalEvent || e;
 
-		var html = $("html");
+		var $document = $(document);
 		var offset = this.$container.offset();
 
 		var result = {
@@ -1371,12 +1404,12 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			result.touches = e.touches;
 		}
 
-		var mouseX = (result.eventX - offset.left) + html.prop("scrollLeft");
-		var mouseY = (result.eventY - offset.top) + html.prop("scrollTop");
+		result.mouseX = (result.eventX - offset.left) + $document.scrollLeft();
+		result.mouseY = (result.eventY - offset.top) + $document.scrollTop();
 
 		result.inRange =
-			mouseX >= this.minMouseX && mouseX <= this.maxMouseX &&
-			mouseY >= this.minMouseY && mouseY <= this.maxMouseY;
+			result.mouseX >= this.minMouseX && result.mouseX <= this.maxMouseX &&
+			result.mouseY >= this.minMouseY && result.mouseY <= this.maxMouseY;
 
 		return result;
 	}
@@ -1396,7 +1429,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			this.$element.velocity("stop");
 			this.$element.velocity(animPros, $.extend({}, this.animSettings,
 			{
-				duration: this.settings.animSpeed / 2
+				duration: this.settings.animDuration / 2
 			}));
 		}
 	}
@@ -1424,7 +1457,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 			this.$element.velocity(animPros, $.extend({}, this.animSettings,
 			{
-				duration: this.settings.animSpeed / 2
+				duration: this.settings.animDuration / 2
 			}));
 
 			return true;
@@ -1447,13 +1480,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 		var currentPosition = parseInt(this.$element.css(this.props.position));
 
-		this.fireEvent("stop", {
-			position: currentPosition,
-			start: currentPosition == this[this.props.maxPos],
-			end: currentPosition == this[this.props.minPos]
-		});
-
-		this.slideAutoIndex = getNearestIndex.call(this, 0);
+		this.autoIndex = getNearestIndex.call(this, 0);
 		this.fireEvent("move", {
 			atStart: currentPosition == this[this.props.maxPos],
 			atEnd: currentPosition == this[this.props.minPos]
@@ -1490,7 +1517,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	function onDocumentMouseMove(e)
 	{
-		if (this.wasDragged)
+		if (this.dragMode || this.scrollMode)
 			return true;
 
 		var outerSize = this.$container[this.props.outerSize]();
@@ -1499,16 +1526,15 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 		var html = $("html");
 		var offset = this.$container.offset();
-		var mouseX = (e.clientX - offset.left) + html.prop("scrollLeft");
-		var mouseY = (e.clientY - offset.top) + html.prop("scrollTop");
 
 		var eventInfo = getEventInfo.call(this, e);
 		this.mouseWithinRange = (this.stripLength > outerSize) && eventInfo.inRange;
 
 		if (this.mouseWithinRange && this.settings.autoScroll)
 		{
-			var mousePos = this.settings.vertical ? mouseY : mouseX;
+			var mousePos = this.settings.vertical ? eventInfo.mouseY : eventInfo.mouseX;
 			var targetPos = Math.round(-(mousePos * this.ratio) + this.settings.extraLength);
+
 			var currentPos = parseInt(this.$element.css(this.props.position));
 			var animEngaged = Math.abs(currentPos - targetPos) > MIN_DIFF_MOVE;
 
@@ -1550,7 +1576,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	function onSlideMouseUp(e)
 	{
-		if (this.wasDragged)
+		if (this.dragMode || this.scrollMode)
 			return true;
 
 		if (e.type == "mouseup" && e.which != 1)
@@ -1573,9 +1599,6 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			return false;
 		}
 
-		this.slideAutoIndex =
-		this.slideSelectedIndex = slideIndex;
-
 		var event = atom.event.create(this, "select");
 		this.fireEvent(event);
 		return event.cancel !== true;
@@ -1583,7 +1606,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	function onSlideClick()
 	{
-		return !this.wasDragged;
+		return !this.dragMode && !this.scrollMode;
 	}
 
 	function onMouseWheel(e)
@@ -1684,8 +1707,14 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	function onDocumentKeyDown(e)
 	{
-		if (e.target.tagName.match(/^input|textarea|select$/i))
+		if (e.target.tagName.match(/^textarea|select$/i))
 			return true;
+
+		if (e.target.tagName == "INPUT" && !e.target.type.match(/^checkbox|radio|button|submit|reset$/i))
+			return true;
+
+		if (!this.settings.globalKeyReact && !this.mouseWithinRange)
+			return;
 
 		if (this.settings.vertical)
 		{
@@ -1737,16 +1766,23 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		if (this.animEngaged)
 			this.$element.stop();
 
-		this.wasDragged = false;
+		this.dragMode = false;
+		this.scrollMode = false;
 
 		this.startPos = getPosition.call(this, this.props.position);
+
+		var $document = $(document);
+		this.startScrollX = $document.scrollLeft();
+		this.startScrollY = $document.scrollTop();
+
+		console.log("start pos y: " + this.startPosY);
+		this.startEventX = event.eventX;
+		this.startEventY = event.eventY;
 		this.startEventPos = event[this.props.eventPos];
 
 		// start dragging
-		document.addEventListener("mouseup", this.elementDragEndListener, true);
-		document.addEventListener("touchend", this.elementDragEndListener, true);
-		document.addEventListener("mousemove", this.elementDragMoveListener, true);
-		document.addEventListener("touchmove", this.elementDragMoveListener, true);
+		document.addEventListener(atom.dom.mouseUpEvent, this.elementDragEndListener, true);
+		document.addEventListener(atom.dom.mouseMoveEvent, this.elementDragMoveListener, true);
 
 		return atom.event.cancel(e);
 	}
@@ -1754,7 +1790,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 	function onDragMove(e)
 	{
 		var eventInfo = getEventInfo.call(this, e);
-		if (!eventInfo.inRange)
+		if (this.settings.dropOnMouseOut && !eventInfo.inRange && !this.scrollMode)
 		{
 			onDragEnd.call(this, e);
 			return true;
@@ -1766,9 +1802,28 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			this.move = null;
 		}
 
-		var eventPos = eventInfo[this.props.eventPos];
+		var eventPosX = eventInfo.eventX;
+		var eventPosY = eventInfo.eventY;
 
-		var diff = eventPos - this.startEventPos;
+		var diffX = eventPosX - this.startEventX;
+		var diffY = eventPosY - this.startEventY;
+
+		var diff = this.settings.vertical ? diffY : diffX;
+		var diff2 = this.settings.vertical ? diffX : diffY;
+
+		if (!this.dragMode && Math.abs(diff2) >= MIN_DIFF_MOVE)
+			this.scrollMode = true;
+
+		if (this.scrollMode)
+		{
+			var startScroll = this.settings.vertical ? this.startScrollX : this.startScrollY;
+			var scrollFunction = this.settings.vertical ? 'scrollLeft' : 'scrollTop';
+
+			$(document)[scrollFunction](startScroll - diff2);
+			return true;
+		}
+
+
 		var minPos = this[this.props.minPos];
 		var maxPos = this[this.props.maxPos];
 
@@ -1776,7 +1831,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		if (targetPos > maxPos)
 		{
 			var excess = targetPos - maxPos;
-			var ratio = Math.max(0, 1 - excess / this.stripLength);
+			var ratio = Math.max(0, 1 - excess / (this.containerLength * 2));
 			diff = Math.round(diff * ratio);
 
 			targetPos = Math.round(this.startPos + diff);
@@ -1784,7 +1839,7 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		else if (targetPos < minPos)
 		{
 			excess = minPos - targetPos;
-			ratio = Math.max(0, 1 - excess / this.stripLength);
+			ratio = Math.max(0.5, 1 - excess / (this.containerLength * 2));
 			diff = Math.round(diff * ratio);
 
 			targetPos = Math.round(this.startPos + diff);
@@ -1804,9 +1859,11 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 		this.accel = (coord2 - coord1) * 1.5;
 
 		if (this.accel != 0)
-			this.wasDragged = true;
+		{
+			this.dragMode = true;
+		}
 
-		this.slideAutoIndex = getNearestIndex.call(this, 0);
+		this.autoIndex = getNearestIndex.call(this, 0);
 		this.fireEvent("move");
 
 		return atom.event.cancel(e);
@@ -1814,11 +1871,11 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 
 	function onDragEnd(e)
 	{
-		if (this.wasDragged)
+		if (this.dragMode)
 		{
 			if (this.settings.forceSnapPoints)
 			{
-				var nearestIndex = getNearestIndex.call(this, this.accel);
+				var nearestIndex = getNearestIndex.call(this, this.accel, true);
 				scrollToSlide.call(this, nearestIndex);
 			}
 			else
@@ -1827,17 +1884,16 @@ atom.controls.XContainer = atom.controls.register(new function XContainerModule(
 			}
 		}
 
-		document.removeEventListener("mouseup", this.elementDragEndListener, true);
-		document.removeEventListener("touchend", this.elementDragEndListener, true);
-		document.removeEventListener("mousemove", this.elementDragMoveListener, true);
-		document.removeEventListener("touchmove", this.elementDragMoveListener, true);
+		document.removeEventListener(atom.dom.mouseUpEvent, this.elementDragEndListener, true);
+		document.removeEventListener(atom.dom.mouseMoveEvent, this.elementDragMoveListener, true);
 
-		this.wasDragged = false;
+		var instance = this;
+		setTimeout(function () { instance.dragMode = false; }, 1);
 	}
 
 	function onMouseUp(e)
 	{
-		if (this.settings.mouseDraggable && this.wasDragged)
+		if (this.settings.mouseDraggable && this.dragMode)
 			return atom.event.cancel(e);
 
 		return true;
