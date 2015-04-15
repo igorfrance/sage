@@ -6,7 +6,7 @@
 	{ box-sizing: content-box; margin: 0; padding: 0; border: 0; font-size: 10px; font-family: Verdana, Arial, sans-serif; vertical-align: baseline;
 	  position: static; float: none; cursor: default; font-weight: normal; }
 #developer-toolbar
-	{ position: fixed; top: 20px; right: 20px; z-index: 9; display: none; overflow: hidden; height: 26px; width: 26px;
+	{ position: fixed; top: 20px; right: 20px; z-index: 999; display: none; overflow: hidden; height: 26px; width: 26px;
 	  background:  #E8E8E8;
 	  box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.3);
 	  -moz-box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.3);
@@ -67,7 +67,7 @@
 
 /** Frame*/
 #developer-frame
-	{ position: fixed; top: 0; left: 0; width: 100%; height: 100px; z-index: 10; display: none; background: #fff;
+	{ position: fixed; top: 0; left: 0; width: 100%; height: 100px; z-index: 998; display: none; background: #fff;
 	  box-shadow: 0px 12px 8px rgba(0, 0, 0, 0.50);
 	  -moz-box-shadow: 0px 12px 8px rgba(0, 0, 0, 0.50);
 	  -webkit-box-shadow: 0px 12px 8px rgba(0, 0, 0, 0.50);
