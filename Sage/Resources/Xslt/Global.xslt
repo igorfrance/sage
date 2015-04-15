@@ -135,12 +135,18 @@
 			<xsl:apply-templates select="node()"/>
 		</a>
 	</xsl:template>
+	
+	<xsl:template match="sage:resources">
+		<xsl:apply-templates select="node()"/>
+	</xsl:template>
 
-	<xsl:template match="sage:resource[@type='script']">
+	<xsl:template match="sage:resources/*"/>
+
+	<xsl:template match="sage:resources/sage:resource[@type='script']">
 		<script type="text/javascript" src="{@path}"></script>
 	</xsl:template>
 
-	<xsl:template match="sage:resource[@type='style']">
+	<xsl:template match="sage:resources/sage:resource[@type='style']">
 		<link type="text/css" rel="stylesheet" href="{@path}" />
 	</xsl:template>
 
