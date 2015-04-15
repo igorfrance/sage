@@ -84,36 +84,33 @@ namespace Sage.Views
 		/// <inheritdoc/>
 		public override void Transform(XmlNode inputXml, XmlWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{
-			Action executor = delegate
+			var startTime = DateTime.Now.Ticks;
+
+			XmlWriter xmlWriter = XmlWriter.Create(outputWriter, this.OutputSettings);
+			XmlWriter output = new XHtmlXmlWriter(xmlWriter);
+			XmlNodeReader reader = new XmlNodeReader(inputXml);
+
+			UrlResolver resolver = new UrlResolver(context);
+			XsltArgumentList transformArgs = this.GetArguments(arguments);
+
+			try
 			{
-				XmlWriter xmlWriter = XmlWriter.Create(outputWriter, this.OutputSettings);
-				XmlWriter output = new XHtmlXmlWriter(xmlWriter);
-				XmlNodeReader reader = new XmlNodeReader(inputXml);
+				this.processor.Transform(reader, transformArgs, output, resolver);
+			}
+			catch (Exception ex)
+			{
+				ProblemInfo problem = this.DetectProblemType(ex);
+				throw new SageHelpException(problem, ex);
+			}
+			finally
+			{
+				reader.Close();
+				output.Close();
+				xmlWriter.Close();
+			}
 
-				UrlResolver resolver = new UrlResolver(context);
-				XsltArgumentList transformArgs = this.GetArguments(arguments);
-
-				try
-				{
-					this.processor.Transform(reader, transformArgs, output, resolver);
-				}
-				catch (Exception ex)
-				{
-					ProblemInfo problem = this.DetectProblemType(ex);
-					throw new SageHelpException(problem, ex);
-				}
-				finally
-				{
-					reader.Close();
-					output.Close();
-					xmlWriter.Close();
-				}
-			};
-
-			Stopwatch sw = new Stopwatch();
-			log.DebugFormat("XSLT transform start");
-			long milliseconds = sw.TimeMilliseconds(executor);
-			log.DebugFormat("XSLT transform end: {0}ms", milliseconds);
+			var ellapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+			log.DebugFormat("XSLT transform completed in {0}ms", ellapsed.Milliseconds);
 		}
 
 		private ProblemInfo DetectProblemType(Exception ex)

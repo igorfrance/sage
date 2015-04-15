@@ -21,7 +21,7 @@ namespace Sage.Controllers
 	using System.Text.RegularExpressions;
 	using System.Web.Mvc;
 	using System.Web.Routing;
-
+	using log4net;
 	using Sage.Views;
 
 	/// <summary>
@@ -39,6 +39,7 @@ namespace Sage.Controllers
 		/// The generic view information
 		/// </summary>
 		protected ViewInfo genericViewInfo;
+		private static readonly ILog log = LogManager.GetLogger(typeof(SageController).FullName);
 		private string name;
 
 		/// <summary>
@@ -64,6 +65,7 @@ namespace Sage.Controllers
 		{
 			if (this.genericViewInfo.Exists)
 			{
+				log.DebugFormat("Generic view {0}/{1}", this.Name, this.genericViewInfo.Action);
 				ViewInput result = this.ProcessView(this.genericViewInfo);
 				return this.View(this.genericViewInfo.Action, result);
 			}

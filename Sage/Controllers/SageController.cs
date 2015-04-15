@@ -207,8 +207,13 @@ namespace Sage.Controllers
 		{
 			try
 			{
+				var startTime = DateTime.Now.Ticks;
 				ViewConfiguration config = ViewConfiguration.Create(this, viewInfo);
-				return config.Process();
+				var result = config.Process();
+
+				var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+				log.DebugFormat("Completed processing view {0} in {1}ms", viewInfo.Action, elapsed.Milliseconds);
+				return result;
 			}
 			catch (Exception ex)
 			{
@@ -234,6 +239,7 @@ namespace Sage.Controllers
 		/// </returns>
 		public XmlDocument PrepareViewXml(ViewContext viewContext)
 		{
+			var startTime = DateTime.Now.Ticks;
 			ViewInput input = viewContext.ViewData.Model as ViewInput;
 
 			string action = "action";
@@ -252,6 +258,7 @@ namespace Sage.Controllers
 			viewRoot.SetAttribute("action", action);
 			viewRoot.AppendElement(this.Context.ToXml(result));
 
+			log.DebugFormat("Document create");
 			XmlElement responseNode = viewRoot.AppendElement("sage:response", XmlNamespaces.SageNamespace);
 
 			if (this.messages.Count > 0)
@@ -286,6 +293,7 @@ namespace Sage.Controllers
 							})
 						.ToList();
 
+					log.DebugFormat("Resources ordered");
 					if (inputResources.Count != 0)
 					{
 						XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
@@ -300,6 +308,7 @@ namespace Sage.Controllers
 							foreach (Resource resource in dataResources)
 							{
 								dataNode.AppendChild(resource.ToXml(result, this.Context));
+								log.DebugFormat("Added '{0}' to sage:data", resource.Name);
 							}
 						}
 
@@ -307,14 +316,20 @@ namespace Sage.Controllers
 						{
 							XmlNode headNode = resourceRoot.AppendElement("sage:head", XmlNamespaces.SageNamespace);
 							foreach (Resource resource in headResources)
+							{
 								headNode.AppendChild(resource.ToXml(result, this.Context));
+								log.DebugFormat("Added '{0}' to sage:head", resource.Name.Or(resource.Path));
+							}
 						}
 
 						if (bodyResources.Count != 0)
 						{
 							XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
 							foreach (Resource resource in bodyResources)
+							{
 								bodyNode.AppendChild(resource.ToXml(result, this.Context));
+								log.DebugFormat("Added '{0}' to sage:body", resource.Name.Or(resource.Path));
+							}
 						}
 					}
 
@@ -322,6 +337,8 @@ namespace Sage.Controllers
 						.AppendElement("sage:model", XmlNamespaces.SageNamespace)
 						.AppendChild(result.ImportNode(input.ConfigNode, true));
 				}
+
+				log.DebugFormat("Resources added");
 			}
 			catch (Exception ex)
 			{
@@ -359,11 +376,18 @@ namespace Sage.Controllers
 					elem.SetAttribute("id", key);
 					elem.InnerText = value.ToString();
 				}
+
+				log.DebugFormat("Added '{0}' to sage:response", key);
 			}
 
 			try
 			{
-				return this.FilterViewXml(viewContext, result);
+				var finalResult = this.FilterViewXml(viewContext, result);
+
+				var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+				log.DebugFormat("Completed preparing view XML view in {0}ms", elapsed.Milliseconds);
+
+				return finalResult;
 			}
 			catch (Exception ex)
 			{

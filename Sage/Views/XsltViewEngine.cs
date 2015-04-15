@@ -17,10 +17,9 @@ namespace Sage.Views
 {
 	using System;
 	using System.Web.Mvc;
-
+	using log4net;
 	using Sage.Configuration;
 	using Sage.Controllers;
-	using Sage.Views;
 	using Sage.Views.Meta;
 
 	/// <summary>
@@ -28,6 +27,8 @@ namespace Sage.Views
 	/// </summary>
 	public class XsltViewEngine : VirtualPathProviderViewEngine
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(XsltViewEngine).FullName);
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XsltViewEngine"/> class.
 		/// </summary>
@@ -57,6 +58,7 @@ namespace Sage.Views
 		/// <returns>The <see cref="IView"/> for the specified <paramref name="controllerContext"/>.</returns>
 		protected override IView CreateView(ControllerContext controllerContext, string viewName, string masterPath)
 		{
+			var startTime = DateTime.Now.Ticks;
 			ViewInfo viewInfo = GetViewInfo(controllerContext, viewName);
 			IView result = new XsltView(viewInfo.Processor);
 
@@ -71,6 +73,8 @@ namespace Sage.Views
 				}
 			}
 
+			var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+			log.DebugFormat("Created view {0} in {1}ms", viewName, elapsed.Milliseconds);
 			return result;
 		}
 

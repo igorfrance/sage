@@ -236,7 +236,11 @@ namespace Sage.Views
 				ModuleResult result = null;
 				try
 				{
+					var startTime = DateTime.Now.Ticks;
 					result = module.ProcessElement(moduleElement, this);
+
+					var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+					log.DebugFormat("Completed processing module {0} in {1}ms", moduleConfig.Key, elapsed.Milliseconds);
 				}
 				catch (Exception ex)
 				{

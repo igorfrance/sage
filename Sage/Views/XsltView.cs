@@ -20,7 +20,7 @@ namespace Sage.Views
 	using System.IO;
 	using System.Web.Mvc;
 	using System.Xml;
-
+	using log4net;
 	using Sage.Controllers;
 
 	/// <summary>
@@ -28,6 +28,7 @@ namespace Sage.Views
 	/// </summary>
 	public class XsltView : IView
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(XsltView).FullName);
 		private readonly XsltTransform processor;
 
 		/// <summary>
@@ -49,7 +50,11 @@ namespace Sage.Views
 		/// <param name="textWriter">The destination <see cref="TextWriter"/> that receives the rendered result.</param>
 		public virtual void Render(ViewContext viewContext, TextWriter textWriter)
 		{
+			var startTime = DateTime.Now.Ticks;
 			this.Transform(viewContext, textWriter, this.processor);
+
+			var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+			log.DebugFormat("Completed rendering view in {0}ms", elapsed.Milliseconds);
 		}
 
 		/// <summary>
