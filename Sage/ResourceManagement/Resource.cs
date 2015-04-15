@@ -292,7 +292,6 @@ namespace Sage.ResourceManagement
 				{
 					XmlElement script = ownerDocument.CreateElement("xhtml:script", XmlNamespaces.XHtmlNamespace);
 					script.SetAttribute("type", "text/javascript");
-					script.SetAttribute("language", "javascript");
 					script.SetAttribute("src", webPath);
 					result.AppendChild(script);
 				}
