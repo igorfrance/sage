@@ -3,7 +3,7 @@
  */
 .logviewer,
 .logviewer *
-	{ margin: 0; padding: 0; border: 0; font-size: 10px; font-family: Verdana; vertical-align: baseline;
+	{ margin: 0; padding: 0; border: 0; font-size: 10px; line-height: 13px; font-family: Verdana; vertical-align: baseline;
 	  position: static; float: none; cursor: default; background: #fff; }
 .logviewer
 	{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
