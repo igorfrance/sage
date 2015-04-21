@@ -307,8 +307,9 @@ namespace Sage.Controllers
 							XmlNode dataNode = resourceRoot.AppendElement("sage:data", XmlNamespaces.SageNamespace);
 							foreach (Resource resource in dataResources)
 							{
+								var time = DateTime.Now;
 								dataNode.AppendChild(resource.ToXml(result, this.Context));
-								log.DebugFormat("Added '{0}' to sage:data", resource.Name);
+								log.DebugFormat("Added '{0}' to sage:data in {1}ms", resource.Name, Math.Round((DateTime.Now - time).TotalMilliseconds));
 							}
 						}
 
@@ -317,8 +318,9 @@ namespace Sage.Controllers
 							XmlNode headNode = resourceRoot.AppendElement("sage:head", XmlNamespaces.SageNamespace);
 							foreach (Resource resource in headResources)
 							{
+								var time = DateTime.Now;
 								headNode.AppendChild(resource.ToXml(result, this.Context));
-								log.DebugFormat("Added '{0}' to sage:head", resource.Name.Or(resource.Path));
+								log.DebugFormat("Added '{0}' to sage:head in {1}ms", resource.Name.Or(resource.Path), Math.Round((DateTime.Now - time).TotalMilliseconds));
 							}
 						}
 
@@ -327,8 +329,9 @@ namespace Sage.Controllers
 							XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
 							foreach (Resource resource in bodyResources)
 							{
+								var time = DateTime.Now;
 								bodyNode.AppendChild(resource.ToXml(result, this.Context));
-								log.DebugFormat("Added '{0}' to sage:body", resource.Name.Or(resource.Path));
+								log.DebugFormat("Added '{0}' to sage:body in {1}ms", resource.Name.Or(resource.Path), Math.Round((DateTime.Now - time).TotalMilliseconds));
 							}
 						}
 					}

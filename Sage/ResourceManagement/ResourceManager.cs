@@ -130,6 +130,7 @@ namespace Sage.ResourceManagement
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
+			var before = DateTime.Now;
 			if (UrlResolver.GetScheme(path) == "file" && context != null && !File.Exists(context.Path.Resolve(path)))
 			{
 				throw new FileNotFoundException(string.Format("The xml document '{0}' could not be loaded", path));
@@ -158,6 +159,7 @@ namespace Sage.ResourceManagement
 				result = LoadSourceDocument(path, context);
 			}
 
+			log.DebugFormat("Loaded '{0}' to sage:data in {1}ms", path, Math.Round((DateTime.Now - before).TotalMilliseconds));
 			return result;
 		}
 
