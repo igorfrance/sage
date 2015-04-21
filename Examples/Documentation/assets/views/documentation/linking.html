@@ -56,7 +56,7 @@
 								At its simplest, a link is defined using a name and a URL.
 							</p>
 							<blockquote>
-								<mod:XmlTree>
+								<mod:XmlTree category="dev">
 									<mod:data>
 										<link name="book-catalog" url="catalog/books"/>
 									</mod:data>
@@ -68,7 +68,7 @@
 							<blockquote>
 								<small>Before:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(book-catalog)}">books</a>
@@ -78,7 +78,7 @@
 								</div>
 								<small>After:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<sage:literal>
 												<a href="/catalog/books">books</a>
@@ -106,7 +106,7 @@
 								The names within curly braces <code>{...}</code> represent placeholders for named parameters to be substituted with dynamic values.
 							</p>
 							<blockquote>
-								<mod:XmlTree>
+								<mod:XmlTree category="dev">
 									<mod:data>
 										<link name="book-catalog" url="catalog/books/{genre}/{order}"/>
 									</mod:data>
@@ -118,7 +118,7 @@
 							<blockquote>
 								<small>Before:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(book-catalog, genre=sf;order=byname)}">science-fiction books</a>
@@ -128,7 +128,7 @@
 								</div>
 								<small>After:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<sage:literal>
 												<a href="/catalog/books/sf/byname">science-fiction books</a>
@@ -157,7 +157,7 @@
 							<blockquote>
 								<small>Before:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(subscription-manager, url=url:self(encode=1))}">Manage subscriptions</a>
@@ -167,7 +167,7 @@
 								</div>
 								<small>After:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<a href="manage/subscriptions/?return=${url:self(encode=1)}">Manage subscriptions</a>
 										</mod:data>
@@ -183,7 +183,7 @@
 							<p>
 								Linking configuration provides support for reusable format strings. Their purpose is to reduce the duplication of parts of the link URL across a large number of links. They can also contain substitution placeholders.
 							</p>
-							<mod:XmlTree>
+							<mod:XmlTree category="dev">
 								<mod:data>
 									<sage:literal>
 										<linking>
@@ -205,7 +205,7 @@
 							<blockquote>
 								<small>Before:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<sage:literal>
 												<a href="${url:link(registration)}">Register</a>
@@ -215,7 +215,7 @@
 								</div>
 								<small>After:</small>
 								<div class="indent">
-									<mod:XmlTree>
+									<mod:XmlTree category="dev">
 										<mod:data>
 											<a href="/swimming/uk/manage/subscriptions/registration.html">Register</a>
 										</mod:data>

@@ -54,7 +54,7 @@
 											<p>
 												A few simple examples:
 											</p>
-											<mod:XmlTree>
+											<mod:XmlTree category="dev">
 												<mod:config>
 													<mod:show namespaces="true"/>
 												</mod:config>
@@ -78,7 +78,7 @@
 											<p>
 												Conditions can also be nested, as deep as required:
 											</p>
-											<mod:XmlTree>
+											<mod:XmlTree category="dev">
 												<mod:config>
 													<mod:show namespaces="true"/>
 													<mod:expandLevels>2</mod:expandLevels>
@@ -129,7 +129,7 @@
 														<header>Example:</header>
 														<article>
 															<summary>An AND condition:</summary>
-															<mod:XmlTree>
+															<mod:XmlTree category="dev">
 																<mod:data>
 																	<sage:literal>
 																		<logic:and id="isFirefox">
@@ -139,7 +139,7 @@
 																</mod:data>
 															</mod:XmlTree>
 															<summary>An OR condition:</summary>
-															<mod:XmlTree>
+															<mod:XmlTree category="dev">
 																<mod:data>
 																	<sage:literal>
 																		<logic:or id="isChromeOrFirefox">
@@ -170,7 +170,7 @@
 																	<section class="properties example">
 																		<header>Example:</header>
 																		<article>
-																			<mod:XmlTree>
+																			<mod:XmlTree category="dev">
 																				<mod:data>
 																					<sage:literal>
 																						<logic:clause object="useragent" property="name" equals="firefox"/>
@@ -233,7 +233,7 @@
 																		<header>Example:</header>
 																		<article>
 																			<p>The <code>logic:and[<b>ref</b>=isFirefox]</code> element refers to <code>logic:and[<b>id</b>=isFirefox]</code> element; the actual group is processed inline instead of the reference element, just as if it was there.</p>
-																			<mod:XmlTree>
+																			<mod:XmlTree category="dev">
 																				<mod:config>
 																					<mod:highlight/>
 																				</mod:config>
@@ -283,7 +283,7 @@
 										<article>
 											<p>A possible scenario where a fictional navigation item displays different text depending on whether the current user is registered, unregistered or just registered with email confirmation pending.
 											</p>
-											<mod:XmlTree>
+											<mod:XmlTree category="dev">
 												<mod:config>
 													<mod:highlight>
 														<mod:namespace>http://www.cycle99.com/schemas/sage/logic.xsd</mod:namespace>
@@ -322,7 +322,7 @@
 													<section class="properties example">
 														<header>Example:</header>
 														<article>
-															<mod:XmlTree>
+															<mod:XmlTree category="dev">
 																<mod:config>
 																	<mod:highlight>
 																		<mod:namespace>http://www.cycle99.com/schemas/sage/logic.xsd</mod:namespace>
@@ -356,7 +356,7 @@
 													<section class="properties example">
 														<header>Example:</header>
 														<article>
-															<mod:XmlTree>
+															<mod:XmlTree category="dev">
 															<mod:config>
 																<mod:highlight>
 																	<mod:namespace>http://www.cycle99.com/schemas/sage/logic.xsd</mod:namespace>
@@ -392,7 +392,7 @@
 										<header>Example:</header>
 										<article>
 											<summary></summary>
-											<mod:XmlTree>
+											<mod:XmlTree category="dev">
 												<mod:data>
 													<sage:literal>
 														<html>

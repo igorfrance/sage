@@ -22,18 +22,18 @@
 				</header>
 				<article>
 
-					<!-- <img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-expand.png" alt="Expand modules"/> -->
-
 					<summary>
 						<dfn>
 							Modules are the formal way of providing reusable pieces of functionality in Sage. The way to invoke a module is to reference it with one of it's XML element tags within a controller view.
 						</dfn>
 					</summary>
 
+					 <img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-expand.png" alt="Expand modules"/>
+
 					<section class="topic">
 						<header>How it works</header>
 						<article>
-							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-expand-detail.png" alt="XSLT Transform details"/>
+							<img class="internationalization-detail" src="${assetpath}/images/diagrams/xml-flow-expand-detail.png" alt="XSLT Transform details"/>
 
 							<p>
 								When processing the controller view, the document is scanned for register module elements, and then for each of the modules it's back-end code (if any) is supplied a reference to that element, with the chance to modify it in any way. This step will typically populate the module's <code>mode:data</code> element with any dynamic data that it is responsible of producing.
@@ -44,7 +44,7 @@
 							</p>
 
 							<h5 class="caption clear">The module's markup as it appears in the template, before it gets expanded:</h5>
-							<mod:XmlTree>
+							<mod:XmlTree category="dev">
 								<mod:data>
 									<mod:WeatherWidget>
 										<mod:config>
@@ -55,7 +55,7 @@
 							</mod:XmlTree>
 
 							<h5 class="caption">The module's markup after it is expanded:</h5>
-							<mod:XmlTree>
+							<mod:XmlTree category="dev">
 								<mod:data>
 									<mod:WeatherWidget>
 										<mod:config>

@@ -23,18 +23,18 @@
 				</header>
 				<article>
 
-					<!-- <img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow-internationalize.png" alt="Internationalization"/> -->
-
 					<summary>
 						<dfn>
 							In the internationalization step, any XML documents that reference <a href="${url:link(sage-namespaces-internationalization)}">internationalization namespace</a> are processed and generated separately for each of the project's locales.
 						</dfn>
 					</summary>
 
+					<img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-internationalize.png" alt="Internationalization"/>
+
 					<section class="topic">
 						<header>How it works</header>
 						<article>
-							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-internationalize-detail.png" alt="Internationalization details"/>
+							<img class="internationalization-detail" src="${assetpath}/images/diagrams/xml-flow-internationalize-detail.png" alt="Internationalization details"/>
 
 							<ul class="notes">
 								<li>When internationalizng a resource, Sage generates a separate file for each locale in the project.</li>
@@ -54,7 +54,7 @@
 							<p>
 								When selecting this locale-specific file however, a list of names is considered. The list is defined with the <span>resourceNames</span> attribute on the locale element of the <a href="${url:link(configuration-project-internationalization)}">project internationalization configuration</a>:
 							</p>
-							<mod:XmlTree>
+							<mod:XmlTree category="dev">
 								<mod:data>
 									<locale name="ar" dictionaryNames="ar,la,es,en" resourceNames="ar,la,es,default"/>
 								</mod:data>

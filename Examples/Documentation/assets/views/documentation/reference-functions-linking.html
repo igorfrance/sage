@@ -73,7 +73,7 @@
 													</p>
 													<blockquote>
 														<header class="outdent small">Input</header>
-														<mod:XmlTree>
+														<mod:XmlTree category="dev">
 															<mod:data>
 																<sage:literal>
 																	<a href="${url:link(book-catalog, genre=sf;order=byname)}">science-fiction books</a>
@@ -90,7 +90,7 @@
 														All arguments after <code>linkId</code> are optional; they can be skipped by simply omitting them, without having to pass in a null or an empty string.
 													</p>
 													<blockquote>
-														<mod:XmlTree>
+														<mod:XmlTree category="dev">
 															<mod:data>
 																<sage:literal>
 																	<a href="${url:link(book-catalog)}">science-fiction books</a>
@@ -107,7 +107,7 @@
 														If the function is called with two arguments after <code>linkId</code> other than <code>encode=0</code> or <code>absolute=0</code>, the first is considered to be the <code>queryParameters</code> argument and the second to be the <code>hashString</code> argument.
 													</p>
 													<blockquote>
-														<mod:XmlTree>
+														<mod:XmlTree category="dev">
 															<mod:data>
 																<sage:literal>
 																	<a href="${url:link(book-catalog, category=1;page=1, isaac-asimov)}">science-fiction books</a>
@@ -121,7 +121,7 @@
 														To use only the <code>hashString</code> without specifying the <code>queryParameters</code> argument too, prefix the <code>hashString</code> with a hash symbol ('#').
 													</p>
 													<blockquote>
-														<mod:XmlTree>
+														<mod:XmlTree category="dev">
 															<mod:data>
 																<sage:literal>
 																	<a href="${url:link(book-catalog, #isaac-asimov)}">science-fiction books</a>

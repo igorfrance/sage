@@ -24,11 +24,11 @@
 				</header>
 				<article>
 
-					<!-- <img class="internationalization-title" src="${assetpath}images/diagrams/xml-flow-wrap-n-prep.png" alt="Prepare input document"/> -->
-
 					<summary><dfn>
 						Contextualized and expanded XHTML views are wrapped within a standard XML envelope before being served to the nearest XSLT processor for transformation.
 					</dfn></summary>
+
+					<img class="internationalization-title" src="${assetpath}/images/diagrams/xml-flow-wrap-n-prep.png" alt="Prepare input document"/>
 
 					<p>
 						For a real-world example of the actual input document XML for this page, <a href="${url:self(?view=xmlx)}" target="_blank" title="View the input XML of this page">click here</a>.
@@ -37,7 +37,7 @@
 					<section class="topic">
 						<header>How it works</header>
 						<article>
-							<img class="internationalization-detail" src="${assetpath}images/diagrams/xml-flow-wrap-n-prep-detail.png" alt="Prepare input document details"/>
+							<img class="internationalization-detail" src="${assetpath}/images/diagrams/xml-flow-wrap-n-prep-detail.png" alt="Prepare input document details"/>
 
 							<p>
 								This step is actually done together with <i>expanding modules</i> in the previous step, but for clarity they are here discussed separately.
@@ -52,7 +52,7 @@
 								<p>
 									Consider this very rudimentary view:
 								</p>
-								<mod:XmlTree>
+								<mod:XmlTree category="dev">
 									<mod:data>
 										<sage:literal>
 											<html>
@@ -73,7 +73,7 @@
 									</article>
 								</section>
 
-								<mod:XmlTree>
+								<mod:XmlTree category="dev">
 									<mod:config>
 										<mod:show wrapped="false" toolbar="true"/>
 										<mod:highlight>

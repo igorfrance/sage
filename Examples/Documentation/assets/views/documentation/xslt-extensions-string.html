@@ -52,7 +52,7 @@
 					</dl>
 					<h6 class="tiny">Example</h6>
 					<blockquote>
-						<mod:XmlTree>
+						<mod:XmlTree category="dev">
 							<mod:data>
 								<sage:literal>
 									<xsl:variable name="date" select="/sage:view/sage:request/sage:dateTime"/>
@@ -89,7 +89,7 @@
 					</dl>
 					<h6 class="tiny">Example</h6>
 					<blockquote>
-						<mod:XmlTree>
+						<mod:XmlTree category="dev">
 							<mod:data>
 								<sage:literal>
 									<xsl:value-of select="string:replace(./@fullName, '^(\w+) (\w+)$', '$2 $1')"/>
@@ -123,7 +123,7 @@
 					</dl>
 					<h6 class="tiny">Example</h6>
 					<blockquote>
-						<mod:XmlTree>
+						<mod:XmlTree category="dev">
 							<mod:data>
 								<sage:literal>
 									<xsl:variable name="forbiddenChars" select="[^\w$\-.]"/>
