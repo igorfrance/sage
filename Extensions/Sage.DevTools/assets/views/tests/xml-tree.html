@@ -110,7 +110,7 @@
 <!--
 
 		<h2>Embedding the xml directly in mod:data element</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:data>
 				<xml>
 					<node>I have been embedded directly in the data element. I have been embedded directly in the data element. I have been embedded directly in the data element.</node>
@@ -119,14 +119,14 @@
 		</mod:XmlTree>
 
 		<h2>X-including an xml in mod:data element using sage:include element</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:data>
 				<sage:include href="../shared/elements.html"/>
 			</mod:data>
 		</mod:XmlTree>
 
 		<h2>Showing the sage:include element without processing it</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:data>
 				<sage:literal>
 					<sage:include href="../shared/elements.html"/>
@@ -135,14 +135,14 @@
 		</mod:XmlTree>
 
 		<h2>Loading an external document</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:config>
 				<mod:source>../shared/elements.html</mod:source>
 			</mod:config>
 		</mod:XmlTree>
 
 		<h2>Filtering to just a portion of the document</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:config>
 				<mod:source>../shared/elements.html</mod:source>
 				<mod:xpath>//li</mod:xpath>
@@ -153,7 +153,7 @@
 		</mod:XmlTree>
 
 		<h2>Adding highlighting to specified elements</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:config>
 				<mod:highlight>
 					<mod:element>intl:localize</mod:element>
@@ -184,7 +184,7 @@
 		</mod:XmlTree>
 
 		<h2>Adding highlighting to specified namespace</h2>
-		<mod:XmlTree>
+		<mod:XmlTree category="dev">
 			<mod:config>
 				<mod:highlight>
 					<mod:namespace>http://www.cycle99.com/schemas/sage/internationalization.xsd</mod:namespace>

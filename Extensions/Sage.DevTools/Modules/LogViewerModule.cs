@@ -38,7 +38,7 @@ namespace Sage.DevTools.Modules
 		private const string DefaultLoggerName = "MainLogger";
 		private const string LineFindExpression = @"\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d+ \[{0}\][\s\S]*?(?=(?:\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d+)|$)";
 		private const string LinePartsExpression = @"(?'Date'(?'YY'\d\d\d\d)-(?'MM'\d\d)-(?'DD'\d\d)) +(?'Time'(?'HH'\d\d):(?'MIN'\d\d):(?'SEC'\d\d),(?'MILLI'\d+)) +\[(?'Thread'\S+)\] +(?'Severity'\S+) +(?'Logger'\S+) - (?'Message'[\s\S]*)";
-		private const string TimingExpression = @"\b(\d+)ms\b";
+		private const string TimingExpression = @"\b(\d+(?:\.\d+)?)ms\b";
 		#region configuration-example
 
 		private const string ConfigurationExample = @"
