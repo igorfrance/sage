@@ -16,11 +16,10 @@
 namespace Sage.Views
 {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
 	using System.Xml;
-
-	using Kelp.Http;
 
 	using Sage.Controllers;
 	using Sage.ResourceManagement;
@@ -33,13 +32,10 @@ namespace Sage.Views
 		internal const string DefaultBuiltInStylesheetPath = "sageresx://sage/resources/xslt/global.xslt";
 		internal const string DefaultStylesheet = "default";
 
-		internal static readonly string[] ConfigExtensions = 
-			new[] { ".xml", ".html", ".txt" };
+		internal static readonly string[] ConfigExtensions = { ".xml", ".html", ".txt" };
 
-		internal static readonly string[] ViewExtensions =
-			new[] { ".aspx", ".xsl", ".xslt" };
+		internal static readonly string[] ViewExtensions = { ".aspx", ".xsl", ".xslt" };
 
-		private readonly SageContext context;
 		private CacheableXmlDocument configDoc;
 		private XsltTransform processor;
 		private bool? isNoCacheView;
@@ -53,7 +49,7 @@ namespace Sage.Views
 		/// <param name="controllerName">Optional name of the controller to use for resolving configuration and template paths.</param>
 		public ViewInfo(SageController controller, string action, string controllerName = null)
 		{
-			this.context = controller.Context;
+			this.Context = controller.Context;
 			this.ContentType = "text/html";
 			this.Controller = controller;
 
@@ -67,8 +63,8 @@ namespace Sage.Views
 				controllerName = controller.Name;
 
 			string pathTemplate = controller.ViewPathTemplate;
-			string folderPath = context.MapPath(string.Format("{0}/{1}", pathTemplate, controllerName));
-			string basePath = context.MapPath(string.Format("{0}/{1}", folderPath, action));
+			string folderPath = this.Context.MapPath(string.Format("{0}/{1}", pathTemplate, controllerName));
+			string basePath = this.Context.MapPath(string.Format("{0}/{1}", folderPath, action));
 
 			foreach (string extension in ConfigExtensions)
 			{
@@ -93,9 +89,9 @@ namespace Sage.Views
 				break;
 			}
 
-			if (this.ViewSource == ViewSource.BuiltIn && File.Exists(context.Path.DefaultStylesheetPath))
+			if (this.ViewSource == ViewSource.BuiltIn && File.Exists(this.Context.Path.DefaultStylesheetPath))
 			{
-				this.ViewPath = context.Path.DefaultStylesheetPath;
+				this.ViewPath = this.Context.Path.DefaultStylesheetPath;
 				this.ViewSource = ViewSource.Project;
 			}
 		}
@@ -118,7 +114,7 @@ namespace Sage.Views
 					{
 						try
 						{
-							this.configDoc = context.Resources.LoadXml(ConfigPath);
+							this.configDoc = this.Context.Resources.LoadXml(ConfigPath);
 							string defaultNamespace = configDoc.DocumentElement.GetAttribute("xmlns");
 							if (string.IsNullOrEmpty(defaultNamespace))
 								configDoc.DocumentElement.SetAttribute("xmlns", XmlNamespaces.XHtmlNamespace);
@@ -150,6 +146,11 @@ namespace Sage.Views
 		/// Gets a value indicating whether this view's configuration file exists.
 		/// </summary>
 		public bool ConfigExists { get; private set; }
+
+		/// <summary>
+		/// Gets the current context associated with this object.
+		/// </summary>
+		public SageContext Context { get; private set; }
 
 		/// <summary>
 		/// Gets the file extension associated with this view's configuration file.
@@ -245,18 +246,18 @@ namespace Sage.Views
 				}
 				else
 				{
-					lastModified1 = this.context.LmCache.Get(this.ViewPath);
+					lastModified1 = this.Context.LmCache.Get(this.ViewPath);
 				}
 
 				if (this.ConfigExists)
-					lastModified2 = this.context.LmCache.Get(this.ConfigPath);
+					lastModified2 = this.Context.LmCache.Get(this.ConfigPath);
 
 				if (lastModified1 == null)
 				{
 					if (this.ViewPath != null)
 					{
 						lastModified1 = this.Processor.LastModified;
-						context.LmCache.Put(this.ViewPath, lastModified1.Value, this.Processor.Dependencies.ToList());
+						this.Context.LmCache.Put(this.ViewPath, lastModified1.Value, this.Processor.Dependencies.ToList());
 					}
 					else
 					{
@@ -269,7 +270,7 @@ namespace Sage.Views
 					if (this.ConfigExists)
 					{
 						lastModified2 = this.ConfigDocument.LastModified;
-						context.LmCache.Put(this.ConfigPath, lastModified2.Value, this.ConfigDocument.Dependencies.ToList());
+						this.Context.LmCache.Put(this.ConfigPath, lastModified2.Value, this.ConfigDocument.Dependencies.ToList());
 					}
 					else
 					{
@@ -294,7 +295,7 @@ namespace Sage.Views
 					{
 						try
 						{
-							processor = XsltTransform.Create(this.context, this.ViewPath);
+							processor = XsltTransform.Create(this.Context, this.ViewPath);
 						}
 						catch (Exception ex)
 						{
@@ -304,7 +305,7 @@ namespace Sage.Views
 					}
 					else
 					{
-						processor = XsltTransform.Create(this.context, DefaultBuiltInStylesheetPath);
+						processor = XsltTransform.Create(this.Context, DefaultBuiltInStylesheetPath);
 					}
 				}
 
@@ -338,6 +339,17 @@ namespace Sage.Views
 		/// Gets a number indicating the source of the view style sheet (specific, global or category).
 		/// </summary>
 		public ViewSource ViewSource { get; private set; }
+
+		/// <summary>
+		/// Gets the list of all files that this view depends on (dependencies).
+		/// </summary>
+		public IEnumerable<string> Dependencies
+		{
+			get
+			{
+				return this.ConfigDocument.Dependencies.Concat(this.Processor.Dependencies);
+			}
+		}
 
 		/// <inheritdoc/>
 		public override string ToString()
