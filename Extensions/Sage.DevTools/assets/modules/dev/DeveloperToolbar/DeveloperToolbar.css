@@ -14,7 +14,7 @@
 #developer-toolbar .background
 	{ position: absolute; top: 0; left: 0; bottom: 0; right: 0; z-index: 0; }
 #developer-toolbar .content
-	{ position: relative; z-index: 1; height: 16px; overflow: hidden; padding: 5px; padding-left: 26px;white-space: nowrap; }
+	{ position: relative; z-index: 1; height: 16px; overflow: hidden; padding: 5px; padding-left: 26px; white-space: nowrap; }
 
 /** Icon*/
 #developer-toolbar .icon
@@ -67,10 +67,14 @@
 
 /** Frame*/
 #developer-frame
-	{ position: fixed; top: 0; left: 0; width: 100%; height: 100px; z-index: 998; display: none; background: #fff;
+	{ position: fixed; top: 0; left: 0; width: 100%; height: 100px; z-index: 998; background: #fff; display: none;
 	  box-shadow: 0px 12px 8px rgba(0, 0, 0, 0.50);
 	  -moz-box-shadow: 0px 12px 8px rgba(0, 0, 0, 0.50);
 	  -webkit-box-shadow: 0px 12px 8px rgba(0, 0, 0, 0.50);
+		-webkit-transition: height .5s;
+		-moz-transition: height .5s;
+		-ms-transition: height .5s;
+		transition: height .5s;
 	}
 #developer-frame iframe
 	{ position: relative; z-index: 0; width: 100%; height: 100%; }

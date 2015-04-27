@@ -43,7 +43,9 @@ sage.dev.Toolbar = new function Toolbar()
 		$toolbar.find(".meta .button").click(onMetaViewCommandClick);
 		$toolbar.find(".button.log").click(onLogCommandClick);
 		$toolbar.find(".button.inspect").click(onInspectCommandClick);
-		$toolbar.hover(onToolbarMouseOver, onToolbarMouseOut);
+		$toolbar
+			.on("mouseenter", onToolbarMouseOver)
+			.on("mouseleave", onToolbarMouseOut);
 
 		if (atom.cookie.get("devtools") != "off")
 			$toolbar.show();
@@ -131,7 +133,7 @@ sage.dev.Toolbar = new function Toolbar()
 		}
 
 		setStatusClass(statusClass);
-		$toolbar.find(".content").css({ width: getTotalToolbarWidth() });
+		$toolbar.find(".content");
 	}
 
 	function expandToolbar()
@@ -141,15 +143,19 @@ sage.dev.Toolbar = new function Toolbar()
 			tooltip.hide();
 		}
 
-		var totalWidth = getTotalToolbarWidth();
-		$toolbar.find(".content").css({ width: getTotalToolbarWidth() });
-		$toolbar.animate({ width: totalWidth }, 50);
+		var currentWidth = $toolbar.width();
+		if ($toolbar.data("oldwidth") == null)
+			$toolbar.data("oldwidth", currentWidth);
+
+		$toolbar.stop().css("width", "auto");
+
+		var targetWidth = $toolbar.width() + 2;
+		$toolbar.css("width", currentWidth).animate({ width: targetWidth }, 150);
 	}
 
 	function shrinkToolbar()
 	{
-		var targetWidth = getToolbarMinWidth();
-		$toolbar.animate({ width: targetWidth }, 50);
+		$toolbar.stop().animate({ width: $toolbar.data("oldwidth") }, 150);
 	}
 
 	function getTotalToolbarWidth()
@@ -327,6 +333,7 @@ sage.dev.Toolbar = new function Toolbar()
 		for (var i = 0; i < children.length; i++)
 			targetHeight += children.eq(i).prop("scrollHeight");
 
+		targetHeight = Math.max(targetHeight, 150);
 		$frame.css({ visibility: "visible", height: Math.min(maxHeight, targetHeight) });
 		logFrameLoaded = true;
 	}
