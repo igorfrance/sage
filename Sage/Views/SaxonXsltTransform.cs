@@ -33,15 +33,15 @@
 
 			UrlResolver resolver = new UrlResolver(context);
 
-			this.processor = new Processor();
+			processor = new Processor();
 
-			XdmNode input = this.processor.NewDocumentBuilder().Build(stylesheetMarkup);
+			XdmNode input = processor.NewDocumentBuilder().Build(stylesheetMarkup);
 			XsltTransformer transformer = processor.NewXsltCompiler().Compile(XmlReader.Create(stylesheetMarkup.OuterXml)).Load();
 
 			try
 			{
 				//this.processor.Load(stylesheetMarkup, XsltSettings.TrustedXslt, resolver);
-				this.dependencies.AddRange(resolver.Dependencies);
+				dependencies.AddRange(resolver.Dependencies);
 			}
 			catch //(Exception ex)
 			{

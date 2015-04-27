@@ -49,10 +49,10 @@ namespace Sage.Controllers
 		{
 			get
 			{
-				if (this.name == null)
-					return SageController.DefaultController;
+				if (name == null)
+					return DefaultController;
 
-				return this.name;
+				return name;
 			}
 		}
 
@@ -63,14 +63,14 @@ namespace Sage.Controllers
 		[Cacheable]
 		public ActionResult Action()
 		{
-			if (this.genericViewInfo.Exists)
+			if (genericViewInfo.Exists)
 			{
-				log.DebugFormat("Generic view {0}/{1}", this.Name, this.genericViewInfo.Action);
-				ViewInput result = this.ProcessView(this.genericViewInfo);
-				return this.View(this.genericViewInfo.Action, result);
+				log.DebugFormat("Generic view {0}/{1}", this.Name, genericViewInfo.Action);
+				ViewModel result = this.GetViewModel(genericViewInfo);
+				return this.View(genericViewInfo.Action, result);
 			}
 
-			return this.PageNotFound(this.genericViewInfo.Action);
+			return this.PageNotFound(genericViewInfo.Action);
 		}
 
 		/// <summary>
@@ -82,7 +82,7 @@ namespace Sage.Controllers
 		/// </returns>
 		public override DateTime? GetLastModificationDate(string viewName)
 		{
-			return this.genericViewInfo.LastModified;
+			return genericViewInfo.LastModified;
 		}
 
 		/// <summary>
@@ -93,25 +93,25 @@ namespace Sage.Controllers
 		{
 			base.Initialize(requestContext);
 
-			string action = SageController.DefaultAction;
-			string childPath = Regex.Replace(Context.Request.Path, "^" + Context.Request.ApplicationPath, string.Empty, RegexOptions.IgnoreCase);
-			string testPath = string.Concat(Context.Path.ViewPath, childPath.TrimStart('/'));
+			string action = DefaultAction;
+			string childPath = Regex.Replace(this.Context.Request.Path, "^" + this.Context.Request.ApplicationPath, string.Empty, RegexOptions.IgnoreCase);
+			string testPath = string.Concat(this.Context.Path.ViewPath, childPath.TrimStart('/'));
 
 			var pathParts = childPath.TrimStart('/').Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 			if (pathParts.Length >= 1)
 			{
-				this.name = pathParts[0];
+				name = pathParts[0];
 			}
 
 			if (pathParts.Length >= 2)
 			{
 				action = string.Join("/", pathParts.Skip(1).ToArray());
 
-				if (Directory.Exists(Context.MapPath(testPath)))
-					action = string.Join("/", action, SageController.DefaultAction);
+				if (Directory.Exists(this.Context.MapPath(testPath)))
+					action = string.Join("/", action, DefaultAction);
 			}
 
-			this.genericViewInfo = this.GetViewInfo(action);
+			genericViewInfo = this.GetViewInfo(action);
 		}
 	}
 }

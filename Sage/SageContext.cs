@@ -18,14 +18,11 @@ namespace Sage
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Configuration;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
-	using System.Linq;
 	using System.Reflection;
 	using System.Web;
-	using System.Web.Configuration;
 	using System.Web.Hosting;
 	using System.Web.Mvc;
 	using System.Web.Routing;
@@ -37,6 +34,7 @@ namespace Sage
 	using Sage.Configuration;
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
+	using Sage.Views;
 
 	/// <summary>
 	/// Provides the working environment for code within Sage.
@@ -92,7 +90,7 @@ namespace Sage
 			: this(context.HttpContext, config)
 		{
 			this.Category = categoryName;
-			this.pathMapper = context.MapPath;
+			pathMapper = context.MapPath;
 		}
 
 		/// <summary>
@@ -142,7 +140,7 @@ namespace Sage
 			: this(httpContext, config)
 		{
 			this.Category = categoryName;
-			this.pathMapper = httpContext.Server.MapPath;
+			pathMapper = httpContext.Server.MapPath;
 		}
 
 		/// <summary>
@@ -158,7 +156,7 @@ namespace Sage
 		{
 			this.Category = categoryName;
 			this.Locale = localeName;
-			this.pathMapper = httpContext.Server.MapPath;
+			pathMapper = httpContext.Server.MapPath;
 		}
 
 		/// <summary>
@@ -188,10 +186,6 @@ namespace Sage
 			Contract.Requires<ArgumentNullException>(httpContext != null);
 			Contract.Requires<ArgumentNullException>(pathMapper != null);
 
-			this.pathMapper = pathMapper;
-			this.textEvaluator = new TextEvaluator(this);
-			this.nodeEvaluator = new NodeEvaluator(this);
-
 			//// In certain cases, an instance of Sage context is needed while the request
 			//// may not be available (when creating it from Application_Start event for instance)
 			//// This variable checks for that scenario, so that we can then initialize this instance
@@ -212,6 +206,12 @@ namespace Sage
 			}
 
 			this.ProjectConfiguration = config ?? Sage.Project.Configuration;
+
+			this.pathMapper = pathMapper;
+			textEvaluator = new TextEvaluator(this);
+			nodeEvaluator = new NodeEvaluator(this);
+			this.ViewCache = new ViewCache(this);
+
 			this.Query = new QueryString(queryString);
 			this.Cache = new CacheWrapper(httpContext);
 			this.LmCache = new LastModifiedCache(this);
@@ -295,10 +295,42 @@ namespace Sage
 		}
 
 		/// <summary>
-		/// Gets the current <see cref="Cache"/>.
+		/// Gets the local path of the current request's <c>URL</c>.
+		/// </summary>
+		public string LocalPath
+		{
+			get
+			{
+				if (this.Request == null || this.Request.Url == null)
+					return null;
+
+				return this.Request.Url.LocalPath;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the current request is a no-cache request.
+		/// </summary>
+		/// <value><c>true</c> if the current request is a no-cache request; otherwise, <c>false</c>.</value>
+		public bool IsNoCacheRequest
+		{
+			get
+			{
+				return Kelp.Http.Util.IsNoCacheRequest(this.HttpContext);
+			}
+		}
+
+		/// <summary>
+		/// Gets the current <see cref="System.Web.Caching.Cache"/>.
 		/// </summary>
 		/// <value>The cache.</value>
 		public CacheWrapper Cache { get; private set; }
+
+		/// <summary>
+		/// Gets the current <see cref="ViewCache"/>.
+		/// </summary>
+		/// <value>The cache.</value>
+		public ViewCache ViewCache { get; private set; }
 
 		/// <summary>
 		/// Gets the currently applicable category.
@@ -404,7 +436,7 @@ namespace Sage
 		{
 			get
 			{
-				return ProjectConfiguration.Locales[this.Locale];
+				return this.ProjectConfiguration.Locales[this.Locale];
 			}
 		}
 
@@ -555,7 +587,7 @@ namespace Sage
 			if (path.Contains("://"))
 				return path;
 
-			return BaseHref.TrimEnd('/') + '/' + path.TrimStart('/');
+			return this.BaseHref.TrimEnd('/') + '/' + path.TrimStart('/');
 		}
 
 		/// <summary>
@@ -579,7 +611,7 @@ namespace Sage
 			if (path.ContainsAnyOf(":", "\\\\"))
 				return path;
 
-			return this.pathMapper.Invoke(path);
+			return pathMapper.Invoke(path);
 		}
 
 		/// <inheritdoc/>
@@ -596,7 +628,7 @@ namespace Sage
 		/// <returns>The processed version of the node.</returns>
 		public XmlNode ProcessNode(XmlNode node)
 		{	
-			return this.nodeEvaluator.Process(node);
+			return nodeEvaluator.Process(node);
 		}
 
 		/// <summary>
@@ -607,7 +639,7 @@ namespace Sage
 		/// <returns>The processed version of the text.</returns>
 		public string ProcessText(string text)
 		{
-			return this.textEvaluator.Process(text);
+			return textEvaluator.Process(text);
 		}
 
 		/// <summary>
@@ -638,7 +670,7 @@ namespace Sage
 			resultElement.SetAttribute("language", this.LocaleInfo.Language);
 			resultElement.SetAttribute("thread", System.Threading.Thread.CurrentThread.Name);
 			resultElement.SetAttribute("developer", this.IsDeveloperRequest ? "1" : "0");
-			resultElement.SetAttribute("debug", ProjectConfiguration.IsDebugEnabled ? "1" : "0");
+			resultElement.SetAttribute("debug", this.ProjectConfiguration.IsDebugEnabled ? "1" : "0");
 
 			XmlElement addressNode = (XmlElement) resultElement.AppendChild(this.CreateAddressNode(requestUri, ownerDocument));
 			addressNode.SetAttribute("basehref", this.BaseHref);
@@ -755,7 +787,7 @@ namespace Sage
 			}
 			else
 			{
-				string propValue = GetContextProperty(context, propName, key);
+				string propValue = SageContext.GetContextProperty(context, propName, key);
 				if (notEquals != string.Empty)
 					nodeValid = !propValue.Equals(notEquals, StringComparison.InvariantCultureIgnoreCase);
 				else if (equals != string.Empty)
@@ -804,7 +836,7 @@ namespace Sage
 				return switchNode;
 			}
 
-			string propValue = GetContextProperty(context, propName, key);
+			string propValue = SageContext.GetContextProperty(context, propName, key);
 
 			int caseNum = 0;
 			bool caseFound = false;

@@ -32,7 +32,7 @@ namespace Sage
 		static SageHelpException()
 		{
 			parsers = new Dictionary<string, Func<Exception, ProblemInfo>>();
-			parsers.Add("DbEntityValidationException", ParseEntityExceptionError);
+			parsers.Add("DbEntityValidationException", SageHelpException.ParseEntityExceptionError);
 		}
 
 		/// <summary>

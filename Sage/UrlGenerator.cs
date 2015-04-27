@@ -59,7 +59,7 @@ namespace Sage
 		{
 			get
 			{
-				return this.context;
+				return context;
 			}
 		}
 
@@ -85,10 +85,7 @@ namespace Sage
 			get
 			{
 				return string.Format(
-					"{0}://{1}{2}",
-					context.Request.Url.Scheme,
-					context.Request.Url.Host,
-					context.Request.Url.Port != 80 ? ":" + context.Request.Url.Port : string.Empty);
+					"{0}://{1}{2}", context.Request.Url.Scheme, context.Request.Url.Host, context.Request.Url.Port != 80 ? ":" + context.Request.Url.Port : string.Empty);
 			}
 		}
 
@@ -487,7 +484,7 @@ namespace Sage
 					if (parameter.IndexOf("#") == 0)
 						this.HashString = parameter.Trim('#');
 					else
-						this.QueryString.Merge(new QueryString(parameter, UrlGenerator.parameterSeparators));
+						this.QueryString.Merge(new QueryString(parameter, parameterSeparators));
 				}
 			}
 

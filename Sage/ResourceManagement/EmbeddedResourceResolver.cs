@@ -27,7 +27,7 @@ namespace Sage.ResourceManagement
 	/// <summary>
 	/// Implements a resolver that can be used with embedded resources.
 	/// </summary>
-	[UrlResolver(Scheme = EmbeddedResourceResolver.Scheme)]
+	[UrlResolver(Scheme = Scheme)]
 	internal class EmbeddedResourceResolver : IUrlResolver
 	{
 		public const string Scheme = "sageresx";
@@ -65,7 +65,7 @@ namespace Sage.ResourceManagement
 
 		public EntityResult GetEntity(UrlResolver parent, SageContext context, string uri)
 		{
-			Stream reader = GetStream(uri);
+			Stream reader = EmbeddedResourceResolver.GetStream(uri);
 			if (reader == null)
 				throw new ArgumentException(string.Format("The uri '{0}' could not be resolved", uri));
 

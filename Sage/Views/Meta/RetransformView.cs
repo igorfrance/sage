@@ -41,7 +41,7 @@ namespace Sage.Views.Meta
 		public RetransformView(MetaViewInfo viewInfo, IView wrapped)
 			: base(viewInfo, wrapped)
 		{
-			this.processor = viewInfo.Processor;
+			processor = viewInfo.Processor;
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace Sage.Views.Meta
 					XmlDocument viewXml = new XmlDocument();
 					viewXml.Load(reader);
 
-					this.processor.Transform(viewXml, writer, controller.Context);
+					processor.Transform(viewXml, writer, controller.Context);
 				}
 
 				this.DisableCaching(viewContext);

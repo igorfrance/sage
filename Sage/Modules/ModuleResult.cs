@@ -75,8 +75,8 @@ namespace Sage.Modules
 		{
 			get
 			{
-				if (ResultElement != null)
-					return ResultElement.OwnerDocument;
+				if (this.ResultElement != null)
+					return this.ResultElement.OwnerDocument;
 
 				return null;
 			}
@@ -97,7 +97,7 @@ namespace Sage.Modules
 		/// </remarks>
 		public XmlElement AppendDataElement(XmlNode dataElement = null)
 		{
-			return (XmlElement) AppendDataNode(dataElement);
+			return (XmlElement) this.AppendDataNode(dataElement);
 		}
 
 		/// <summary>
@@ -118,9 +118,9 @@ namespace Sage.Modules
 			Contract.Requires<InvalidOperationException>(this.ResultElement != null, "The ModuleResult.ResultElement property is null");
 			
 			if (dataNode == null)
-				dataNode = OwnerDocument.CreateElement("mod:data", XmlNamespaces.ModulesNamespace);
+				dataNode = this.OwnerDocument.CreateElement("mod:data", XmlNamespaces.ModulesNamespace);
 
-			return AppendOrPrependDataNode(dataNode, false);
+			return this.AppendOrPrependDataNode(dataNode, false);
 		}
 
 		private XmlNode AppendOrPrependDataNode(XmlNode dataNode, bool prepend)

@@ -31,7 +31,7 @@ namespace Sage.ResourceManagement
 	/// and script files, and provides a reader around a document generated with elements representing the 
 	/// the included files.
 	/// </summary>
-	[UrlResolver(Scheme = CodeFileUnmergeResolver.Scheme)]
+	[UrlResolver(Scheme = Scheme)]
 	public class CodeFileUnmergeResolver : IUrlResolver
 	{
 		/// <summary>

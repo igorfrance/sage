@@ -184,8 +184,8 @@ namespace Sage.Controllers
 		/// <param name="filterContext">The filter context.</param>
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			var lastModified = GetLastModified(filterContext);
-			if (this.duration == null && lastModified == null)
+			var lastModified = CacheableAttribute.GetLastModified(filterContext);
+			if (duration == null && lastModified == null)
 				return;
 
 			var context = filterContext.HttpContext;
@@ -195,7 +195,7 @@ namespace Sage.Controllers
 				DateTime cachedDate = DateTime.Parse(context.Request.Headers["If-Modified-Since"]);
 				bool changed;
 
-				if (this.duration != null)
+				if (duration != null)
 				{
 					TimeSpan elapsed = DateTime.Now - cachedDate;
 					changed = elapsed > duration.Value;
@@ -209,8 +209,7 @@ namespace Sage.Controllers
 				if (!changed)
 				{
 					log.DebugFormat("Cache date {0} is not older than {1}d {2}h {3}m {4}s, status: not-modified. Action method will not execute",
-						cachedDate.ToString("dd-MMM-yyyy hh:mm:ss"),
-						Days, Hours, Minutes, Seconds);
+						cachedDate.ToString("dd-MMM-yyyy hh:mm:ss"), this.Days, this.Hours, this.Minutes, this.Seconds);
 
 					var response = context.Response;
 					response.StatusCode = (int) HttpStatusCode.NotModified;
@@ -236,7 +235,7 @@ namespace Sage.Controllers
 
 			var context = filterContext.HttpContext;
 			var response = context.Response;
-			var lastModified = GetLastModified(filterContext);
+			var lastModified = CacheableAttribute.GetLastModified(filterContext);
 
 			response.Cache.SetCacheability(HttpCacheability.Public);
 			response.Cache.SetLastModified(lastModified != null ? lastModified.Value : DateTime.Now);

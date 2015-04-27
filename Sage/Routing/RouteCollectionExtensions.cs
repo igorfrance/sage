@@ -110,7 +110,7 @@ namespace Sage.Routing
 		/// <param name="namespaces">The route namespaces.</param>
 		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults, string[] namespaces)
 		{
-			MapRouteLowercase(routes, name, url, defaults, null, namespaces);
+			RouteCollectionExtensions.MapRouteLowercase(routes, name, url, defaults, null, namespaces);
 		}
 
 		/// <summary>
@@ -123,7 +123,7 @@ namespace Sage.Routing
 		/// <param name="constraints">The route parameter constraints.</param>
 		public static void MapRouteLowercase(this RouteCollection routes, string name, string url, IDictionary<string, object> defaults, IDictionary<string, object> constraints)
 		{
-			MapRouteLowercase(routes, name, url, defaults, constraints, null);
+			RouteCollectionExtensions.MapRouteLowercase(routes, name, url, defaults, constraints, null);
 		}
 
 		/// <summary>

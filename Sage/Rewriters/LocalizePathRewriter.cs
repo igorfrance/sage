@@ -33,7 +33,7 @@ namespace Sage.Rewriters
 		/// <param name="application">The current web application.</param>
 		public void Init(HttpApplication application)
 		{
-			application.BeginRequest += (sender, e) => RewritePath((HttpApplication) sender);
+			application.BeginRequest += (sender, e) => LocalizePathRewriter.RewritePath((HttpApplication) sender);
 		}
 
 		/// <summary>

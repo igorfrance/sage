@@ -138,7 +138,7 @@ namespace Sage
 							var currentAssembly = Assembly.GetExecutingAssembly();
 							var list = new List<Assembly> { currentAssembly };
 
-							var directories = new List<string> { AssemblyCodeBaseDirectory };
+							var directories = new List<string> { Project.AssemblyCodeBaseDirectory };
 
 							//// This part is required for dynamically built asp.net websites,
 							//// and will fail when ran from command line
@@ -198,7 +198,7 @@ namespace Sage
 		{
 			get
 			{
-				return Project.installOrder;
+				return installOrder;
 			}
 		}
 
@@ -261,7 +261,7 @@ namespace Sage
 
 			if (typeName.IndexOf(",", StringComparison.Ordinal) != -1)
 			{
-				return GetType(typeName.ReplaceAll(@",.*$", string.Empty));
+				return Project.GetType(typeName.ReplaceAll(@",.*$", string.Empty));
 			}
 
 			return result;
@@ -315,7 +315,7 @@ namespace Sage
 
 							if (sitePath == serverRootPath)
 							{
-								virtualDirectories = GetVirtualDirectories(root, string.Empty);
+								virtualDirectories = Project.GetVirtualDirectories(root, string.Empty);
 								break;
 							}
 						}
@@ -340,11 +340,11 @@ namespace Sage
 			ViewEngines.Engines.Add(new XsltViewEngine());
 			ViewEngines.Engines.Add(new WebFormViewEngine());
 
-			InitializeConfiguration(context);
+			Project.InitializeConfiguration(context);
 
 			//// The routes need to be re-registered after the assemblies get updated
-			Project.AssembliesUpdated += (sender, args) => RegisterRoutes();
-			RegisterRoutes();
+			Project.AssembliesUpdated += (sender, args) => Project.RegisterRoutes();
+			Project.RegisterRoutes();
 
 			log.Debug("Manually registering route '*' to GenericController.Action");
 			RouteTable.Routes.MapRouteLowercase(
@@ -357,8 +357,8 @@ namespace Sage
 
 		internal static SageContext InitializeConfiguration(SageContext context)
 		{
-			string projectConfigPathBinDir = Path.Combine(AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
-			string projectConfigPathProjDir = Path.Combine(AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
+			string projectConfigPathBinDir = Path.Combine(Project.AssemblyCodeBaseDirectory, ProjectConfiguration.ProjectConfigName);
+			string projectConfigPathProjDir = Path.Combine(Project.AssemblyCodeBaseDirectory, "..\\" + ProjectConfiguration.ProjectConfigName);
 
 			string projectConfigPath = projectConfigPathBinDir;
 			if (File.Exists(projectConfigPathProjDir))
@@ -539,15 +539,15 @@ namespace Sage
 
 			var context = new SageContext(this.Context);
 			if (context.LmCache.Get(ConfigWatchName) == null)
-				InitializeConfiguration(context);
+				Project.InitializeConfiguration(context);
 
-			if (!IsStarted)
+			if (!Project.IsStarted)
 			{
 				lock (lck)
 				{
-					if (!IsStarted)
+					if (!Project.IsStarted)
 					{
-						Start(context);
+						Project.Start(context);
 					}
 				}
 			}
@@ -581,7 +581,7 @@ namespace Sage
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		protected virtual void Application_Error(object sender, EventArgs e)
 		{
-			Exception exception = Server.GetLastError();
+			Exception exception = this.Server.GetLastError();
 			if (exception == null)
 				return;
 
@@ -630,7 +630,7 @@ namespace Sage
 				string key = string.Concat(path, "/", entry.Name);
 				result.Add(key, entry.Properties["path"].Value.ToString().ToLower().TrimEnd('\\'));
 
-				Dictionary<string, string> childDirs = GetVirtualDirectories(entry, key);
+				Dictionary<string, string> childDirs = Project.GetVirtualDirectories(entry, key);
 				foreach (string childKey in childDirs.Keys)
 				{
 					result.Add(childKey, childDirs[childKey]);
@@ -647,12 +647,12 @@ namespace Sage
 				prefix = "INIT";
 			else
 			{
-				if (Project.threadPrefixIndex < threadNamePrefixes.Length - 1)
-					Project.threadPrefixIndex += 1;
+				if (threadPrefixIndex < threadNamePrefixes.Length - 1)
+					threadPrefixIndex += 1;
 				else
-					Project.threadPrefixIndex = 0;
+					threadPrefixIndex = 0;
 
-				prefix = threadNamePrefixes[Project.threadPrefixIndex];
+				prefix = threadNamePrefixes[threadPrefixIndex];
 			}
 
 			return string.Format("{0}-{1}", prefix, DateTime.Now.Ticks.ToString(CultureInfo.InvariantCulture));
@@ -660,7 +660,7 @@ namespace Sage
 	
 		private static void RegisterRoutes()
 		{
-			UrlRoutingUtility.RegisterRoutesToMethodsWithAttributes(RelevantAssemblies.ToArray());
+			UrlRoutingUtility.RegisterRoutesToMethodsWithAttributes(Project.RelevantAssemblies.ToArray());
 		}
 	}
 }

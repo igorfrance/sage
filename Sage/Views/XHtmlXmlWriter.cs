@@ -81,7 +81,7 @@ namespace Sage.Views
 			if (Array.IndexOf(collapsibleElements, lastStartElement) > -1)
 				base.WriteEndElement();
 			else
-				WriteFullEndElement();
+				this.WriteFullEndElement();
 		}
 	}
 }

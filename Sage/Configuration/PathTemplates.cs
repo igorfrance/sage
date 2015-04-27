@@ -34,10 +34,11 @@ namespace Sage.Configuration
 			// initialize with default values.
 			this.View = "{assetpath}/views/";
 			this.Module = "{assetpath}/lib/modules/";
-			this.Extension = "~/extensions/";
+			this.Extension = "{assetpath}/extensions/";
 			this.CategoryConfiguration = "{assetpath}/configuration/Category.config";
 			this.DefaultStylesheet = "{assetpath}/views/xslt/default.xsl";
 			this.Dictionary = "{assetpath}/configuration/dictionary/{locale}.xml";
+			this.CacheDirectory = "~/tmp/cache/";
 			this.SiteMap = "{assetpath}/configuration/sitemap.xml";
 			this.GlobalizedDirectory = "_target/";
 			this.GlobalizedDirectoryForNonFileResources = "~/_target/";
@@ -61,6 +62,7 @@ namespace Sage.Configuration
 			this.Extension = init.Extension;
 			this.CategoryConfiguration = init.CategoryConfiguration;
 			this.DefaultStylesheet = init.DefaultStylesheet;
+			this.CacheDirectory = init.CacheDirectory;
 			this.Dictionary = init.Dictionary;
 			this.SiteMap = init.SiteMap;
 			this.GlobalizedDirectory = init.GlobalizedDirectory;
@@ -71,6 +73,11 @@ namespace Sage.Configuration
 		/// Gets the template for constructing paths to views.
 		/// </summary>
 		public string View { get; private set; }
+
+		/// <summary>
+		/// Gets the path to the cache directory.
+		/// </summary>
+		public string CacheDirectory { get; private set; }
 
 		/// <summary>
 		/// Gets the template for constructing paths to module directories.

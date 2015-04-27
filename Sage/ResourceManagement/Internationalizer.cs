@@ -52,7 +52,7 @@ namespace Sage.ResourceManagement
 		/// <param name="context">The context under which the code is being executed.</param>
 		public Internationalizer(SageContext context)
 		{
-			this.processor = XsltTransform.Create(context, Internationalizer.XsltPath);
+			processor = XsltTransform.Create(context, XsltPath);
 			this.context = new SageContext(context);
 		}
 
@@ -77,7 +77,7 @@ namespace Sage.ResourceManagement
 				File.SetAttributes(resource.TargetDirectory, FileAttributes.Hidden);
 			}
 
-			DictionaryFileCollection coll = GetTranslationDictionaryCollection(context);
+			DictionaryFileCollection coll = Internationalizer.GetTranslationDictionaryCollection(context);
 			CategoryInfo categoryInfo = context.ProjectConfiguration.Categories[context.Category];
 			InternationalizationSummary summary = new InternationalizationSummary(resource, categoryInfo);
 
@@ -165,11 +165,11 @@ namespace Sage.ResourceManagement
 			arguments.Add("fallbacks", fallbacks);
 			arguments.Add("mode", type.ToString().ToLower());
 
-			var projectConfig = this.context.ProjectConfiguration;
+			var projectConfig = context.ProjectConfiguration;
 			if (projectConfig.VariablesNode != null)
 				arguments.Add("globalvariables", projectConfig.VariablesNode);
 
-			var categoryConfig = this.context.CategoryConfiguration;
+			var categoryConfig = context.CategoryConfiguration;
 			if (categoryConfig != null && categoryConfig.Variables != null)
 				arguments.Add("categoryvariables", categoryConfig.Variables);
 

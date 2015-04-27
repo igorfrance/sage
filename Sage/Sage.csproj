@@ -97,9 +97,11 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Configuration\CachingConfiguration.cs" />
     <Compile Include="Configuration\EnvironmentConfiguration.cs" />
     <Compile Include="Configuration\ExtensionString.cs" />
     <Compile Include="Configuration\ErrorViewInfo.cs" />
+    <Compile Include="Configuration\IViewInfo.cs" />
     <Compile Include="Extensibility\IOFunctions.cs" />
     <Compile Include="Modules\Module.cs" />
     <Compile Include="ProjectInitializationException.cs" />
@@ -153,8 +155,10 @@
     <Compile Include="Rewriters\MetaExtensionRewriter.cs" />
     <Compile Include="SageException.cs" />
     <Compile Include="SageHelpException.cs" />
+    <Compile Include="Views\CachedView.cs" />
     <Compile Include="Views\Meta\ConfigView.cs" />
     <Compile Include="Views\SaxonXsltTransform.cs" />
+    <Compile Include="Views\ViewCache.cs" />
     <Compile Include="Views\ViewConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Controllers\ControllerMessage.cs" />
@@ -172,7 +176,7 @@
     <Compile Include="Views\Meta\JsonView.cs" />
     <Compile Include="Views\Meta\MetaView.cs" />
     <Compile Include="Views\Meta\RetransformView.cs" />
-    <Compile Include="Views\ViewInput.cs" />
+    <Compile Include="Views\ViewModel.cs" />
     <Compile Include="Extensibility\ViewXmlFilterAttribute.cs" />
     <Compile Include="LastModifiedCache.cs" />
     <Compile Include="Modules\IModuleFactory.cs" />
@@ -256,6 +260,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\xslt\tree.xsl" />
+    <EmbeddedResource Include="Resources\xslt\uncache.xslt" />
     <Content Include="System.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

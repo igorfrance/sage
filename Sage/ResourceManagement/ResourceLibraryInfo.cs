@@ -93,7 +93,7 @@ namespace Sage.ResourceManagement
 			this.Name = element.GetAttribute("name");
 			this.Resources = new List<Resource>();
 			this.LibraryDependencies = new List<string>();
-			this.includePaths = new List<Regex>();
+			includePaths = new List<Regex>();
 
 			foreach (XmlElement resourceElem in element.SelectNodes("p:resources/p:resource", nm))
 				this.Resources.Add(new Resource(resourceElem, this.ProjectId));
@@ -112,7 +112,7 @@ namespace Sage.ResourceManagement
 					try
 					{
 						Regex matchExpr = new Regex(matchText);
-						this.includePaths.Add(matchExpr);
+						includePaths.Add(matchExpr);
 					}
 					catch (Exception ex)
 					{
@@ -142,13 +142,13 @@ namespace Sage.ResourceManagement
 			foreach (Resource resource in this.Resources)
 				resourcesNode.AppendElement(resource.ToXml(document));
 
-			if (this.IncludeAlways || this.includePaths.Count != 0)
+			if (this.IncludeAlways || includePaths.Count != 0)
 			{
 				XmlNode includeNode = result.AppendChild(document.CreateElement("include", Ns));
 				if (this.IncludeAlways)
 					includeNode.AppendChild(document.CreateElement("always", Ns));
 
-				foreach (Regex expression in this.includePaths)
+				foreach (Regex expression in includePaths)
 				{
 					includeNode.AppendChild(document.CreateElement("path", Ns)).InnerText = expression.ToString();
 				}
@@ -162,7 +162,7 @@ namespace Sage.ResourceManagement
 			if (this.IncludeAlways)
 				return true;
 
-			foreach (Regex test in this.includePaths)
+			foreach (Regex test in includePaths)
 			{
 				if (test.IsMatch(url))
 					return true;

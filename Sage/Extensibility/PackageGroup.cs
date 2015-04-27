@@ -59,31 +59,31 @@ namespace Sage.Extensibility
 			foreach (string include in this.Includes)
 			{
 				if ((match = wildcardFolder.Match(include)).Success)
-					result.AddRange(GetAllFilesInDirectory(context, match.Groups[1].Value));
+					result.AddRange(PackageGroup.GetAllFilesInDirectory(context, match.Groups[1].Value));
 
 				else if ((match = wildcardFileType.Match(include)).Success)
-					result.AddRange(GetAllFilesOfTypeInDirectory(context, match.Groups[1].Value, match.Groups[2].Value));
+					result.AddRange(PackageGroup.GetAllFilesOfTypeInDirectory(context, match.Groups[1].Value, match.Groups[2].Value));
 
 				else if ((match = wildcardFilePath.Match(include)).Success)
-					result.AddRange(GetAllFilesStartingWithInDirectory(context, match.Groups[1].Value));
+					result.AddRange(PackageGroup.GetAllFilesStartingWithInDirectory(context, match.Groups[1].Value));
 
 				else
-					result.AddRange(GetAllFilesFrom(context, include));
+					result.AddRange(PackageGroup.GetAllFilesFrom(context, include));
 			}
 
 			foreach (string exclude in this.Excludes)
 			{
 				if ((match = wildcardFolder.Match(exclude)).Success)
-					result = ExcludeAllFilesInDirectory(result, context, match.Groups[1].Value);
+					result = PackageGroup.ExcludeAllFilesInDirectory(result, context, match.Groups[1].Value);
 
 				else if ((match = wildcardFileType.Match(exclude)).Success)
-					result = ExcludeAllFilesOfTypeInDirectory(result, context, match.Groups[1].Value, match.Groups[2].Value);
+					result = PackageGroup.ExcludeAllFilesOfTypeInDirectory(result, context, match.Groups[1].Value, match.Groups[2].Value);
 
 				else if ((match = wildcardFilePath.Match(exclude)).Success)
-					result = ExcludeAllFilesStartingWithInDirectory(result, context, match.Groups[1].Value);
+					result = PackageGroup.ExcludeAllFilesStartingWithInDirectory(result, context, match.Groups[1].Value);
 
 				else
-					result = ExcludeAllFilesFrom(result, context, exclude);
+					result = PackageGroup.ExcludeAllFilesFrom(result, context, exclude);
 			}
 
 			return result;
@@ -218,7 +218,7 @@ namespace Sage.Extensibility
 
 		private static List<string> ExcludeAllFilesFrom(IEnumerable<string> files, SageContext context, string filepath)
 		{
-			IEnumerable<string> excludeFiles = GetAllFilesFrom(context, filepath);
+			IEnumerable<string> excludeFiles = PackageGroup.GetAllFilesFrom(context, filepath);
 
 			return files.Where(f => excludeFiles.Count(e => e.ToLower() == f.ToLower()) == 0).ToList();
 		}

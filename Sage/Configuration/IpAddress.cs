@@ -187,7 +187,7 @@ namespace Sage.Configuration
 			if (this.To == 0)
 				return test == this.Address;
 
-			return Address <= test && test <= To;
+			return this.Address <= test && test <= this.To;
 		}
 
 		/// <inheritdoc/>
@@ -195,10 +195,10 @@ namespace Sage.Configuration
 		{
 			if (this.To != 0)
 				return string.Format("{0} to {1}",
-					FromNumber(this.Address),
-					FromNumber(this.To));
+					IpAddress.FromNumber(this.Address),
+					IpAddress.FromNumber(this.To));
 
-			return FromNumber(this.Address);
+			return IpAddress.FromNumber(this.Address);
 		}
 
 		/// <summary>

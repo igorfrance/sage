@@ -122,7 +122,7 @@ namespace Sage.ResourceManagement
 			if (other == null)
 				return false;
 
-			if (ReferenceEquals(this, other))
+			if (object.ReferenceEquals(this, other))
 				return true;
 
 			return 

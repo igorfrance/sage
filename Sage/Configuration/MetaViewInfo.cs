@@ -28,6 +28,7 @@ namespace Sage.Configuration
 	/// </summary>
 	public class MetaViewInfo : IXmlConvertible
 	{
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MetaViewInfo"/> class.
 		/// </summary>
@@ -70,9 +71,14 @@ namespace Sage.Configuration
 		public string TypeName { get; private set; }
 
 		/// <summary>
+		/// Gets the view info context.
+		/// </summary>
+
+		/// <summary>
 		/// Gets the XSLT transform associated with the meta view this object represents.
 		/// </summary>
 		public XsltTransform Processor { get; private set; }
+
 
 		/// <inheritdoc/>
 		public void Parse(XmlElement element)
@@ -114,12 +120,10 @@ namespace Sage.Configuration
 		{
 			return string.Format("{0} ({1}) ({2}) ({3})", this.Name, this.ContentType, this.ViewPath, this.TypeName);
 		}
-
 		internal MetaViewInfo Load(SageContext context)
 		{
 			if (!string.IsNullOrWhiteSpace(this.ViewPath))
 				this.Processor = XsltTransform.Create(context, this.ViewPath);
-
 			return this;
 		}
 	}

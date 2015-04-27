@@ -50,7 +50,7 @@ namespace Sage.Configuration
 
 		internal CategoryInfo()
 		{
-			this.Name = CategoryInfo.DefaultLocale;
+			this.Name = DefaultLocale;
 			this.Locales = new List<string>();
 		}
 

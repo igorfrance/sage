@@ -55,8 +55,8 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		public CacheableXmlDocument()
 		{
-			this.dependencies = new List<string>();
-			this.Dependencies = this.dependencies.AsReadOnly();
+			dependencies = new List<string>();
+			this.Dependencies = dependencies.AsReadOnly();
 		}
 
 		/// <summary>
@@ -70,12 +70,12 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				if (this.lastModified == null)
+				if (lastModified == null)
 				{
-					this.lastModified = Util.GetDateLastModified(this.Dependencies);
+					lastModified = Kelp.Util.GetDateLastModified(this.Dependencies);
 				}
 
-				return this.lastModified.Value;
+				return lastModified.Value;
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace Sage.ResourceManagement
 			UrlResolver resolver = new UrlResolver(context);
 
 			XmlReader xmlReader;
-			XmlReaderSettings settings = CreateReaderSettings(resolver);
+			XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(resolver);
 
 			var resolvedUri = context == null ? filename : context.Path.Resolve(filename);
 			Uri uri = new Uri(resolvedUri, UriKind.RelativeOrAbsolute);
@@ -181,7 +181,7 @@ namespace Sage.ResourceManagement
 				}
 			}
 
-			this.baseUri = uri.ToString();
+			baseUri = uri.ToString();
 
 			if (processIncludes)
 				this.ProcessIncludes(this.DocumentElement, context);
@@ -247,7 +247,7 @@ namespace Sage.ResourceManagement
 					}
 					else
 					{
-						var includeId = GetIncludeId(includingElement);
+						var includeId = this.GetIncludeId(includingElement);
 						var errorMessage = string.Format("NOT FOUND: {0}", includeId);
 						log.ErrorFormat(errorMessage);
 
@@ -276,7 +276,7 @@ namespace Sage.ResourceManagement
 				return null;
 			}
 
-			var includeId = GetIncludeId(element);
+			var includeId = this.GetIncludeId(element);
 			if (state.IncludeStack.Count >= MaxIncludeDepth)
 			{
 				state.ErrorMessage = string.Format(Messages.MaxIncludeDepthExceeded, includeId, MaxIncludeDepth);
@@ -456,13 +456,13 @@ namespace Sage.ResourceManagement
 			{
 				get
 				{
-					return this.errorMessage;
+					return errorMessage;
 				}
 
 				set
 				{
 					this.IsError = true;
-					this.errorMessage = value;
+					errorMessage = value;
 				}
 			}
 

@@ -24,6 +24,7 @@
 						<xs:element name="Dictionary" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="SiteMap" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CacheDirectory" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultCategoryStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="CategoryConfiguration" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="GlobalizedDirectory" type="textelement" minOccurs="0" maxOccurs="1">
@@ -35,6 +36,7 @@
 					</xs:all>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="viewcaching" type="viewcaching" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
@@ -97,7 +99,7 @@
 						<xs:element name="module" type="module" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:complexType>
-				<xs:key name="moduleName">
+				<!--<xs:key name="moduleName">
 					<xs:selector xpath="p:module"/>
 					<xs:field xpath="@name"/>
 					<xs:field xpath="@category"/>
@@ -111,7 +113,7 @@
 					<xs:selector xpath="p:module"/>
 					<xs:field xpath="@name"/>
 					<xs:field xpath="@category"/>
-				</xs:unique>
+				</xs:unique>-->
 			</xs:element>
 			<xs:element name="linking" minOccurs="0" maxOccurs="1" type="linking"/>
 			<xs:element name="routing" minOccurs="0" maxOccurs="1">
@@ -177,6 +179,60 @@
 		<xs:attribute name="sharedCategory" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
+	
+	<xs:complexType name="viewcaching">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="directory" minOccurs="1" maxOccurs="1">
+				<xs:complexType mixed="true"/>
+			</xs:element>
+			<xs:element name="groups" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="group" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:choice minOccurs="0" maxOccurs="2">
+									<xs:element name="savefilter" minOccurs="0" maxOccurs="2">
+										<xs:complexType>
+											<xs:choice minOccurs="1" maxOccurs="unbounded">
+												<xs:element name="replace" type="replacefilter"/>
+												<xs:element name="transform" type="transformfilter"/>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="loadfilter" minOccurs="0" maxOccurs="2">
+										<xs:complexType>
+											<xs:choice minOccurs="1" maxOccurs="unbounded">
+												<xs:element name="replace" type="replacefilter"/>
+												<xs:element name="transform" type="transformfilter"/>
+											</xs:choice>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+								<xs:attribute name="name" use="required" type="nonEmptyString"/>
+								<xs:attribute name="extension" use="required" type="nonEmptyString"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+		<xs:attribute name="enabled" use="required" type="xs:boolean"/>
+	</xs:complexType>
+	
+	<xs:complexType name="transformfilter" mixed="true">
+	</xs:complexType>
+	
+	<xs:complexType name="replacefilter">
+		<xs:sequence>
+			<xs:element name="from" minOccurs="1" maxOccurs="1">
+				<xs:complexType mixed="true"/>
+			</xs:element>
+			<xs:element name="to" minOccurs="1" maxOccurs="1">
+				<xs:complexType mixed="true"/>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
 	<xs:complexType name="package">
 		<xs:choice minOccurs="0" maxOccurs="7">
 			<xs:element name="dependencies" type="packagegroup" minOccurs="0" maxOccurs="1"/>

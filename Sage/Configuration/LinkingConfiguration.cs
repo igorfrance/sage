@@ -42,10 +42,10 @@ namespace Sage.Configuration
 		/// </summary>
 		public LinkingConfiguration()
 		{
-			this.links = new Dictionary<string, ExtensionString>();
-			this.formats = new Dictionary<string, ExtensionString>();
-			this.Links = new ReadOnlyDictionary<string, ExtensionString>(this.links);
-			this.Formats = new ReadOnlyDictionary<string, ExtensionString>(this.formats);
+			links = new Dictionary<string, ExtensionString>();
+			formats = new Dictionary<string, ExtensionString>();
+			this.Links = new ReadOnlyDictionary<string, ExtensionString>(links);
+			this.Formats = new ReadOnlyDictionary<string, ExtensionString>(formats);
 		}
 
 		/// <summary>
@@ -68,10 +68,10 @@ namespace Sage.Configuration
 		/// <param name="init">The object to copy the contents from.</param>
 		internal LinkingConfiguration(LinkingConfiguration init)
 		{
-			this.links = new Dictionary<string, ExtensionString>(init.links);
-			this.formats = new Dictionary<string, ExtensionString>(init.formats);
-			this.Links = new ReadOnlyDictionary<string, ExtensionString>(this.links);
-			this.Formats = new ReadOnlyDictionary<string, ExtensionString>(this.formats);
+			links = new Dictionary<string, ExtensionString>(init.links);
+			formats = new Dictionary<string, ExtensionString>(init.formats);
+			this.Links = new ReadOnlyDictionary<string, ExtensionString>(links);
+			this.Formats = new ReadOnlyDictionary<string, ExtensionString>(formats);
 		}
 
 		/// <summary>
@@ -123,10 +123,10 @@ namespace Sage.Configuration
 			const string Ns = XmlNamespaces.ProjectConfigurationNamespace;
 			XmlElement result = document.CreateElement("linking", Ns);
 
-			if (this.formats.Count != 0)
+			if (formats.Count != 0)
 			{
 				XmlElement linksElement = result.AppendElement(document.CreateElement("formats", Ns));
-				foreach (KeyValuePair<string, ExtensionString> format in this.formats)
+				foreach (KeyValuePair<string, ExtensionString> format in formats)
 				{
 					XmlElement element = linksElement.AppendElement(document.CreateElement("format", Ns));
 					element.SetAttribute("name", format.Key);
@@ -137,10 +137,10 @@ namespace Sage.Configuration
 				}
 			}
 
-			if (this.links.Count != 0)
+			if (links.Count != 0)
 			{
 				XmlElement linksElement = result.AppendElement(document.CreateElement("links", Ns));
-				foreach (KeyValuePair<string, ExtensionString> link in this.links)
+				foreach (KeyValuePair<string, ExtensionString> link in links)
 				{
 					XmlElement element = linksElement.AppendElement(document.CreateElement("link", Ns));
 					element.SetAttribute("name", link.Key);
@@ -171,7 +171,7 @@ namespace Sage.Configuration
 				linkUrl = string.Concat(applicationPath.TrimEnd('/'), "/", linkUrl);
 
 			ExtensionString result = new ExtensionString(linkUrl);
-			this.links[linkName] = result;
+			links[linkName] = result;
 			return result;
 		}
 
@@ -186,7 +186,7 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(formatValue));
 
 			ExtensionString result = new ExtensionString(formatValue);
-			this.formats[formatName] = result;
+			formats[formatName] = result;
 			return result;
 		}
 

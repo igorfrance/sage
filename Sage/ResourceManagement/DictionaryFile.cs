@@ -146,7 +146,7 @@ namespace Sage.ResourceManagement
 
 		private XmlDocument CombineVariations()
 		{
-			this.constituents = new List<string>();
+			constituents = new List<string>();
 
 			LocaleInfo localeInfo;
 			if (!context.ProjectConfiguration.Locales.TryGetValue(this.Locale, out localeInfo))
@@ -171,7 +171,7 @@ namespace Sage.ResourceManagement
 					CacheableXmlDocument cacheable = new CacheableXmlDocument();
 					cacheable.Load(documentPath);
 
-					Dependencies.AddRange(cacheable.Dependencies);
+					this.Dependencies.AddRange(cacheable.Dependencies);
 					langDictionaries.Add(cacheable);
 				}
 

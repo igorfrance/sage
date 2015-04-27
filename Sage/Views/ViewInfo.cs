@@ -108,18 +108,18 @@ namespace Sage.Views
 		{
 			get
 			{
-				if (this.configDoc == null)
+				if (configDoc == null)
 				{
 					if (this.ConfigExists)
 					{
 						try
 						{
-							this.configDoc = this.Context.Resources.LoadXml(ConfigPath);
+							configDoc = this.Context.Resources.LoadXml(this.ConfigPath);
 							string defaultNamespace = configDoc.DocumentElement.GetAttribute("xmlns");
 							if (string.IsNullOrEmpty(defaultNamespace))
 								configDoc.DocumentElement.SetAttribute("xmlns", XmlNamespaces.XHtmlNamespace);
 
-							this.configDoc.LoadXml(configDoc.InnerXml);
+							configDoc.LoadXml(configDoc.InnerXml);
 						}
 						catch (Exception ex)
 						{
@@ -132,12 +132,12 @@ namespace Sage.Views
 					}
 				}
 
-				return this.configDoc;
+				return configDoc;
 			}
 
 			internal set
 			{
-				this.configDoc = value;
+				configDoc = value;
 				this.ConfigExists = true;
 			}
 		}
@@ -202,17 +202,17 @@ namespace Sage.Views
 			get
 			{
 				if (isNoCacheView != null)
-					return this.isNoCacheView.Value;
+					return isNoCacheView.Value;
 
 				if (!this.ConfigExists)
-					return (this.isNoCacheView = false).Value;
+					return (isNoCacheView = false).Value;
 
 				XmlNamespaceManager nm = XmlNamespaces.Manager;
-				this.isNoCacheView =
+				isNoCacheView =
 					this.ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='cache-control' and @content='no-cache']", nm) != null ||
 					this.ConfigDocument.SelectSingleNode("//xhtml:meta[@http-equiv='pragma' and @content='no-cache']", nm) != null;
 
-				return this.isNoCacheView.Value;
+				return isNoCacheView.Value;
 			}
 		}
 
@@ -354,7 +354,7 @@ namespace Sage.Views
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return string.Format("{0}/{1} ({2})", Controller, Action, ViewPath);
+			return string.Format("{0}/{1} ({2})", this.Controller, this.Action, this.ViewPath);
 		}
 	}
 }

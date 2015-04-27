@@ -27,14 +27,12 @@ namespace Sage.Views
 	using System.Reflection;
 	using System.Web.Caching;
 	using System.Xml;
-	using System.Xml.XPath;
 	using System.Xml.Xsl;
 
 	using Kelp.Extensions;
-	using Kelp.Http;
 
 	using log4net;
-
+	using Sage.Configuration;
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 
@@ -58,13 +56,13 @@ namespace Sage.Views
 
 		static XsltTransform()
 		{
-			DiscoverXsltExtensionObjects();
-			Project.AssembliesUpdated += OnAssembliesUpdated;
+			XsltTransform.DiscoverXsltExtensionObjects();
+			Project.AssembliesUpdated += XsltTransform.OnAssembliesUpdated;
 		}
 
 		internal XsltTransform()
 		{
-			this.Dependencies = this.dependencies.AsReadOnly();
+			this.Dependencies = dependencies.AsReadOnly();
 			this.Arguments = new XsltArgumentList();
 			this.LastModified = null;
 
@@ -132,13 +130,13 @@ namespace Sage.Views
 			long milliseconds = new Stopwatch().TimeMilliseconds(() =>
 			{
 				CacheableXmlDocument stylesheetDocument = ResourceManager.LoadXmlDocument(stylesheetPath, context);
-				OmitNamespacePrefixResults(stylesheetDocument);
+				XsltTransform.OmitNamespacePrefixResults(stylesheetDocument);
 
 				result = XsltTransform.Create(context, stylesheetDocument);
 				result.dependencies.AddRange(stylesheetDocument.Dependencies);
 
 				IEnumerable<string> fileDependencies = result.Dependencies.Where(d => UrlResolver.GetScheme(d) == "file").ToList();
-				result.LastModified = Util.GetDateLastModified(fileDependencies);
+				result.LastModified = Kelp.Util.GetDateLastModified(fileDependencies);
 				context.Cache.Insert(key, result, new CacheDependency(fileDependencies.ToArray()));
 			});
 
@@ -273,7 +271,7 @@ namespace Sage.Views
 
 		private static void OnAssembliesUpdated(object sender, EventArgs arg)
 		{
-			DiscoverXsltExtensionObjects();
+			XsltTransform.DiscoverXsltExtensionObjects();
 		}
 	}
 

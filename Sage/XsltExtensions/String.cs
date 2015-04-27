@@ -118,7 +118,7 @@ namespace Sage.XsltExtensions
 		/// <returns>The formatted version of the specified <paramref name="pattern" />.</returns>
 		public string substitute(string pattern, string name1, string value1)
 		{
-			return substitute(pattern, string.Concat(name1, "=", value1));
+			return this.substitute(pattern, string.Concat(name1, "=", value1));
 		}
 
 		/// <summary>
@@ -132,7 +132,7 @@ namespace Sage.XsltExtensions
 		/// <returns>The formatted version of the specified <paramref name="pattern" />.</returns>
 		public string substitute(string pattern, string name1, string value1, string name2, string value2)
 		{
-			return substitute(pattern, string.Concat(name1, "=", value1, "&", name2, "=", value2));
+			return this.substitute(pattern, string.Concat(name1, "=", value1, "&", name2, "=", value2));
 		}
 
 		/// <summary>
@@ -222,7 +222,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string replace(string value, string expression, string replacement)
 		{
-			return replace(value, expression, replacement, (int) RegexOptions.IgnoreCase);
+			return this.replace(value, expression, replacement, (int) RegexOptions.IgnoreCase);
 		}
 
 		/// <summary>
@@ -241,7 +241,7 @@ namespace Sage.XsltExtensions
 			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(expression))
 				return value;
 
-			replacement = unquoteReplacement(replacement);
+			replacement = this.unquoteReplacement(replacement);
 
 			RegexOptions options = (RegexOptions) regexOptions;
 			try
@@ -373,7 +373,7 @@ namespace Sage.XsltExtensions
 		/// <returns>The trimmed version of <paramref name="subject" />.</returns>
 		public string trimSourceCode(string subject)
 		{
-			return trimSourceCode(subject, "  ");
+			return this.trimSourceCode(subject, "  ");
 		}
 
 		/// <summary>
@@ -384,7 +384,7 @@ namespace Sage.XsltExtensions
 		/// <returns>The trimmed version of <paramref name="subject" />.</returns>
 		public string trimSourceCode(string subject, string tabChars)
 		{
-			return trimSourceCode(subject, "  ", "  ");
+			return this.trimSourceCode(subject, "  ", "  ");
 		}
 
 		/// <summary>

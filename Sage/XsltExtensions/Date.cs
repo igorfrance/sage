@@ -45,7 +45,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed.</returns>
 		public string date(string dateTime)
 		{
-			return date(dateTime, DefaultDateFormat);
+			return this.date(dateTime, DefaultDateFormat);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string date(string dateTime, string dateFormat)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? string.Empty : date.Value.ToString(dateFormat);
 		}
 
@@ -73,7 +73,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed.</returns>
 		public string time(string dateTime)
 		{
-			return time(dateTime, DefaultTimeFormat);
+			return this.time(dateTime, DefaultTimeFormat);
 		}
 
 		/// <summary>
@@ -88,7 +88,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string time(string dateTime, string timeFormat)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? string.Empty : date.Value.ToString(timeFormat);
 		}
 
@@ -100,7 +100,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed.</returns>
 		public int year(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : date.Value.Year;
 		}
 
@@ -112,7 +112,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed.</returns>
 		public int quarter(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : 1 + (int) Math.Floor((decimal) date.Value.Month / 4);
 		}
 
@@ -124,7 +124,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed.</returns>
 		public int month(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : date.Value.Month;
 		}
 
@@ -136,7 +136,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed.</returns>
 		public int day(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : date.Value.Day;
 		}
 
@@ -148,7 +148,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed, or the <paramref name="dateTime"/> string doesn't specify the time.</returns>
 		public int hour(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : date.Value.Hour;
 		}
 
@@ -160,7 +160,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed, or the <paramref name="dateTime"/> string doesn't specify the time.</returns>
 		public int minute(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : date.Value.Minute;
 		}
 
@@ -172,7 +172,7 @@ namespace Sage.XsltExtensions
 		/// not be parsed, or the <paramref name="dateTime"/> string doesn't specify the time.</returns>
 		public int second(string dateTime)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			return date == null ? 0 : date.Value.Second;
 		}
 
@@ -190,7 +190,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string nearestWeekday(string dateTime, byte weekDay)
 		{
-			return nearestWeekday(dateTime, weekDay, DefaultDateFormat);
+			return this.nearestWeekday(dateTime, weekDay, DefaultDateFormat);
 		}
 
 		/// <summary>
@@ -208,7 +208,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public string nearestWeekday(string dateTime, byte weekDay, string dateFormat)
 		{
-			DateTime? date = parse(dateTime);
+			DateTime? date = Date.parse(dateTime);
 			if (date == null)
 				return string.Empty;
 
@@ -226,7 +226,7 @@ namespace Sage.XsltExtensions
 		/// <returns>The difference, in days, between <paramref name="dateTime1"/> and <paramref name="dateTime2"/>.</returns>
 		public int difference(string dateTime1, string dateTime2)
 		{
-			return difference(dateTime1, dateTime2, "days");
+			return this.difference(dateTime1, dateTime2, "days");
 		}
 
 		/// <summary>
@@ -243,8 +243,8 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public int difference(string dateTime1, string dateTime2, string unit)
 		{
-			DateTime? date1 = parse(dateTime1);
-			DateTime? date2 = parse(dateTime2);
+			DateTime? date1 = Date.parse(dateTime1);
+			DateTime? date2 = Date.parse(dateTime2);
 
 			if (date1 == null || date2 == null)
 				return -1;

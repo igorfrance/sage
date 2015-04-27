@@ -41,7 +41,7 @@ namespace Sage.ResourceManagement
         /// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
 		public void ProcessRequest(HttpContext context)
 		{
-			ProcessRequest(new HttpContextWrapper(context), context.Server.MapPath);
+	        this.ProcessRequest(new HttpContextWrapper(context), context.Server.MapPath);
 		}
 
         /// <summary>
@@ -71,12 +71,12 @@ namespace Sage.ResourceManagement
 				{
 					SageContext sageContext = new SageContext(context, mapPath);
 					CacheableXmlDocument document = sageContext.Resources.LoadXml(absolutePath);
-					SendContent(context, document);
+					ResourceHandler.SendContent(context, document);
 				}
 				catch (Exception ex)
 				{
 					log.ErrorFormat("Failed to send '{0}' as XML to response: {1}", absolutePath, ex.Message);
-					SendContent(context, absolutePath);
+					ResourceHandler.SendContent(context, absolutePath);
 				}
 			}
 			else

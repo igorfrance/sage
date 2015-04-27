@@ -59,7 +59,7 @@ namespace Sage.XsltExtensions
 		/// </returns>
 		public XPathNodeIterator distinct(XPathNodeIterator nodeset, string xpath)
 		{
-			return distinct(nodeset, xpath, false);
+			return this.distinct(nodeset, xpath, false);
 		}
 
 		/// <summary>
@@ -129,7 +129,7 @@ namespace Sage.XsltExtensions
 
 					if (!string.IsNullOrEmpty(node.NamespaceURI))
 					{
-						string prefix = GetPrefix(node);
+						string prefix = this.GetPrefix(node);
 						name = string.Concat(prefix, ":", node.LocalName);
 					}
 

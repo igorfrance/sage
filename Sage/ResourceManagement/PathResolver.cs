@@ -60,7 +60,7 @@ namespace Sage.ResourceManagement
 		public PathResolver(SageContext context)
 		{
 			this.context = context;
-			this.config = context.ProjectConfiguration;
+			config = context.ProjectConfiguration;
 		}
 
 		/// <summary>
@@ -104,8 +104,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.viewPath ?? (this.viewPath =
-					this.context.ProjectConfiguration.PathTemplates.View
+				return viewPath ?? (viewPath =
+					context.ProjectConfiguration.PathTemplates.View
 						.Replace("{assetpath}", this.AssetPath)
 						.ReplaceAll("(?<!:)//", "/"));
 			}
@@ -118,8 +118,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.modulePath ?? (this.modulePath =
-					this.config.PathTemplates.Module
+				return modulePath ?? (modulePath =
+					config.PathTemplates.Module
 						.Replace("{assetpath}", this.AssetPath)
 						.ReplaceAll("(?<!:)//", "/"));
 			}
@@ -132,8 +132,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.extensionPath ?? (this.extensionPath =
-					this.Resolve(this.config.PathTemplates.Extension));					 
+				return extensionPath ?? (extensionPath =
+					this.Resolve(config.PathTemplates.Extension));					 
 			}
 		}
 
@@ -144,8 +144,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.physicalViewPath ?? (this.physicalViewPath =
-					this.context.MapPath(this.ViewPath));
+				return physicalViewPath ?? (physicalViewPath =
+					context.MapPath(this.ViewPath));
 			}
 		}
 
@@ -156,8 +156,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.categoryConfigurationPath ?? (this.categoryConfigurationPath =
-					this.Substitute(this.config.PathTemplates.CategoryConfiguration));
+				return categoryConfigurationPath ?? (categoryConfigurationPath =
+					this.Substitute(config.PathTemplates.CategoryConfiguration));
 			}
 		}
 
@@ -168,7 +168,7 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.physicalCategoryConfigurationPath ?? (this.physicalCategoryConfigurationPath =
+				return physicalCategoryConfigurationPath ?? (physicalCategoryConfigurationPath =
 					this.Resolve(this.CategoryConfigurationPath));
 			}
 		}
@@ -180,8 +180,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.sharedViewPath ?? (this.sharedViewPath =
-					this.config.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath));
+				return sharedViewPath ?? (sharedViewPath =
+					config.PathTemplates.View.Replace("{assetpath}", this.SharedAssetPath));
 			}
 		}
 
@@ -192,8 +192,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.physicalSharedViewPath ?? (this.physicalSharedViewPath =
-					this.Resolve(this.config.PathTemplates.View, new QueryString { { "category", this.config.SharedCategory } }));
+				return physicalSharedViewPath ?? (physicalSharedViewPath =
+					this.Resolve(config.PathTemplates.View, new QueryString { { "category", config.SharedCategory } }));
 			}
 		}
 
@@ -204,8 +204,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.siteMapPath ?? (this.siteMapPath =
-					this.Resolve(this.config.PathTemplates.SiteMap));
+				return siteMapPath ?? (siteMapPath =
+					this.Resolve(config.PathTemplates.SiteMap));
 			}
 		}
 
@@ -216,8 +216,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.assetPath ?? (this.assetPath = 
-					this.GetAssetPath(this.context.Category));
+				return assetPath ?? (assetPath = 
+					this.GetAssetPath(context.Category));
 			}
 		}
 
@@ -228,8 +228,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.sharedAssetPath ?? (this.sharedAssetPath = 
-					this.GetAssetPath(this.config.SharedCategory));
+				return sharedAssetPath ?? (sharedAssetPath = 
+					this.GetAssetPath(config.SharedCategory));
 			}
 		}
 
@@ -240,8 +240,8 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.defaultStylesheetPath ?? (this.defaultStylesheetPath =
-					this.Resolve(this.config.PathTemplates.DefaultStylesheet));
+				return defaultStylesheetPath ?? (defaultStylesheetPath =
+					this.Resolve(config.PathTemplates.DefaultStylesheet));
 			}
 		}
 
@@ -253,7 +253,7 @@ namespace Sage.ResourceManagement
 			get
 			{
 				return virtualDirectories ?? (virtualDirectories = 
-					Project.GetVirtualDirectories(this.context));
+					Project.GetVirtualDirectories(context));
 			}
 		}
 
@@ -264,7 +264,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The physical path to the assets folder of the specified <paramref name="category"/></returns>
 		public string GetAssetPath(string category)
 		{
-			return this.config.AssetPath.Replace("{category}", category).TrimEnd('/');
+			return config.AssetPath.Replace("{category}", category).TrimEnd('/');
 		}
 
 		/// <summary>
@@ -298,7 +298,7 @@ namespace Sage.ResourceManagement
 				return childPath;
 
 			if (childPath.StartsWith("~/"))
-				return this.context.MapPath(childPath);
+				return context.MapPath(childPath);
 
 			string templatePath = string.Concat(this.ModulePath, moduleKey.Replace("Module", string.Empty), "/", childPath);
 			return this.Resolve(templatePath);
@@ -338,7 +338,7 @@ namespace Sage.ResourceManagement
 				return childPath;
 
 			if (childPath.StartsWith("~/"))
-				return this.context.MapPath(childPath);
+				return context.MapPath(childPath);
 
 			string templatePath = string.Concat(this.ExtensionPath, pluginName, "/", childPath);
 			return this.Resolve(templatePath);
@@ -356,9 +356,9 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public string GetDictionaryPath(string locale = null, string category = null)
 		{
-			return this.Resolve(this.config.PathTemplates.Dictionary, 
-				category ?? this.context.Category, 
-				locale ?? this.context.Locale);
+			return this.Resolve(config.PathTemplates.Dictionary, 
+				category ?? context.Category, 
+				locale ?? context.Locale);
 		}
 
 		/// <summary>
@@ -368,7 +368,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The physical path to the assets folder of the specified <paramref name="category"/></returns>
 		public string GetPhysicalCategoryPath(string category = null)
 		{
-			return this.Resolve(this.GetAssetPath(category ?? this.context.Category));
+			return this.Resolve(this.GetAssetPath(category ?? context.Category));
 		}
 
 		/// <summary>
@@ -378,7 +378,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The physical path to the views folder of the specified <paramref name="category"/></returns>
 		public string GetViewPath(string category = null)
 		{
-			return this.Substitute("{assetpath}", category ?? this.context.Category);
+			return this.Substitute("{assetpath}", category ?? context.Category);
 		}
 
 		/// <summary>
@@ -388,7 +388,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The physical path to the views folder of the specified <paramref name="category"/></returns>
 		public string GetPhysicalViewPath(string category = null)
 		{
-			return this.Resolve(GetViewPath(category ?? this.context.Category));
+			return this.Resolve(this.GetViewPath(category ?? context.Category));
 		}
 
 		/// <summary>
@@ -424,17 +424,17 @@ namespace Sage.ResourceManagement
 
 				if (!replaced)
 				{
-					var applicationPath = this.context.PhysicalApplicationPath.ToLower();
+					var applicationPath = context.PhysicalApplicationPath.ToLower();
 					path = path.ToLower().Replace(applicationPath, string.Empty).Replace("\\", "/");
 				}
 			}
 
-			path = path.Replace("~", this.context.ApplicationPath.TrimEnd('/'));
+			path = path.Replace("~", context.ApplicationPath.TrimEnd('/'));
 			if (path.Contains(Uri.SchemeDelimiter))
 				return path;
 
-			if (prependApplicationPath && !path.StartsWith(this.context.ApplicationPath))
-				path = string.Concat(this.context.ApplicationPath, path);
+			if (prependApplicationPath && !path.StartsWith(context.ApplicationPath))
+				path = string.Concat(context.ApplicationPath, path);
 
 			return path;
 		}
@@ -472,10 +472,10 @@ namespace Sage.ResourceManagement
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
 			LocaleInfo localeInfo;
-			if (!this.config.Locales.TryGetValue(locale, out localeInfo))
+			if (!config.Locales.TryGetValue(locale, out localeInfo))
 				throw new UnconfiguredLocaleException(locale);
 
-			CategoryInfo category = this.config.Categories[context.Category];
+			CategoryInfo category = config.Categories[context.Category];
 			foreach (string suffix in localeInfo.ResourceNames)
 			{
 				string localizedName = new ResourceName(path, category).ToLocalePath(suffix);
@@ -494,8 +494,8 @@ namespace Sage.ResourceManagement
 		/// <returns>The expanded relative path</returns>
 		public string Expand(string relativePath)
 		{
-			if (relativePath.ToLower().StartsWith(this.config.SharedCategory + "/"))
-				return this.Expand(relativePath, this.config.SharedCategory);
+			if (relativePath.ToLower().StartsWith(config.SharedCategory + "/"))
+				return this.Expand(relativePath, config.SharedCategory);
 
 			return this.Expand(relativePath, context.Category);
 		}
@@ -508,13 +508,13 @@ namespace Sage.ResourceManagement
 		/// <returns>The expanded relative path.</returns>
 		public string Expand(string relativePath, string category)
 		{
-			var categoryAssetPath = GetAssetPath(category);
+			var categoryAssetPath = this.GetAssetPath(category);
 			var templatePath = Path.IsPathRooted(relativePath) || relativePath.StartsWith(categoryAssetPath)
 				? relativePath
 				: Path.Combine(categoryAssetPath, relativePath);
 
-			var substituted = Substitute(templatePath, new QueryString { { "category", category } });
-			return this.context.MapPath(substituted);
+			var substituted = this.Substitute(templatePath, new QueryString { { "category", category } });
+			return context.MapPath(substituted);
 		}
 
 		/// <summary>
@@ -584,11 +584,11 @@ namespace Sage.ResourceManagement
 				string separator = path.Contains("\\") ? "\\" : "/";
 				string directory = Path.GetDirectoryName(path);
 
-				CategoryInfo category = this.config.Categories[context.Category];
+				CategoryInfo category = config.Categories[context.Category];
 				return string.Concat(directory, separator, new ResourceName(path, category).ToLocale(suffix));
 			}
 
-			return mapPath ? Resolve(path) : path;
+			return mapPath ? this.Resolve(path) : path;
 		}
 
 		/// <summary>
@@ -601,7 +601,7 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public string Resolve(string templatePath)
 		{
-			return this.Resolve(templatePath, this.context);
+			return this.Resolve(templatePath, context);
 		}
 
 		/// <summary>
@@ -690,7 +690,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The substituted version of the specified <paramref name="templatePath"/>.</returns>
 		public string Substitute(string templatePath)
 		{
-			return this.Substitute(templatePath, this.context);
+			return this.Substitute(templatePath, context);
 		}
 
 		/// <summary>
@@ -704,7 +704,7 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public string Substitute(string templatePath, SageContext context)
 		{
-			return Substitute(templatePath, new QueryString { { "category", context.Category } });
+			return this.Substitute(templatePath, new QueryString { { "category", context.Category } });
 		}
 
 		/// <summary>
@@ -722,7 +722,7 @@ namespace Sage.ResourceManagement
 
 			QueryString values = new QueryString();
 			values.Add("category", category);
-			values.Add("resourcepath", GetAssetPath(category));
+			values.Add("resourcepath", this.GetAssetPath(category));
 
 			return this.Substitute(templatePath, values);
 		}
@@ -742,9 +742,9 @@ namespace Sage.ResourceManagement
 			Contract.Requires<ArgumentNullException>(values != null);
 
 			if (values["category"] == null)
-				values.Add("category", this.context.Category);
+				values.Add("category", context.Category);
 			if (values["locale"] == null)
-				values.Add("locale", this.context.Locale);
+				values.Add("locale", context.Locale);
 			if (values["assetpath"] == null)
 				values.Add("assetpath", this.GetAssetPath(values["category"]));
 

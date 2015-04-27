@@ -50,9 +50,9 @@ namespace Sage.Configuration
 		{
 			this.Name = DefaultLocale;
 			this.Language = DefaultLanguage;
-			this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
-			this.shortDateFormat = "d";
-			this.longDateFormat = "D";
+			culture = new CultureInfo(DefaultLocale);
+			shortDateFormat = "d";
+			longDateFormat = "D";
 			this.DictionaryNames = new List<string> { "en" };
 			this.ResourceNames = new List<string> { "en", "default" };
 		}
@@ -88,12 +88,12 @@ namespace Sage.Configuration
 		{
 			get
 			{
-				return this.culture;
+				return culture;
 			}
 
 			set
 			{
-				this.culture = value;
+				culture = value;
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace Sage.Configuration
 		/// <returns>The specified <paramref name="date"/> converted to a long date string as configured for this locale.</returns>
 		public string FormatAsLongDate(DateTime date)
 		{
-			return date.ToString(this.longDateFormat, this.culture);
+			return date.ToString(longDateFormat, culture);
 		}
 
 		/// <summary>
@@ -164,7 +164,7 @@ namespace Sage.Configuration
 				return dateString;
 			}
 
-			return FormatAsLongDate(date);
+			return this.FormatAsLongDate(date);
 		}
 
 		/// <summary>
@@ -174,7 +174,7 @@ namespace Sage.Configuration
 		/// <returns>The specified <paramref name="date"/> converted to a short date string as configured for this locale.</returns>
 		public string FormatAsShortDate(DateTime date)
 		{
-			return date.ToString(this.shortDateFormat, this.culture);
+			return date.ToString(shortDateFormat, culture);
 		}
 
 		/// <summary>
@@ -198,7 +198,7 @@ namespace Sage.Configuration
 				return dateString;
 			}
 
-			return FormatAsShortDate(date);
+			return this.FormatAsShortDate(date);
 		}
 
 		/// <inheritdoc/>
@@ -218,18 +218,18 @@ namespace Sage.Configuration
 			XmlElement formatElement = element.SelectSingleElement("p:format", XmlNamespaces.Manager);
 			try
 			{
-				this.culture = new CultureInfo(formatElement.GetAttribute("culture"));
+				culture = new CultureInfo(formatElement.GetAttribute("culture"));
 			}
 			catch (ArgumentException)
 			{
-				this.culture = new CultureInfo(LocaleInfo.DefaultLocale);
+				culture = new CultureInfo(DefaultLocale);
 			}
 
 			var shortDate = formatElement.GetAttribute("shortDate");
 			var longDate = formatElement.GetAttribute("longDate");
 
-			this.shortDateFormat = string.IsNullOrEmpty(shortDate) ? "d" : shortDate;
-			this.longDateFormat = string.IsNullOrEmpty(longDate) ? "D" : longDate;
+			shortDateFormat = string.IsNullOrEmpty(shortDate) ? "d" : shortDate;
+			longDateFormat = string.IsNullOrEmpty(longDate) ? "D" : longDate;
 
 			this.DictionaryNames = new List<string>(element.GetAttribute("dictionaryNames")
 				.Replace(" ", string.Empty)
@@ -255,8 +255,8 @@ namespace Sage.Configuration
 			result.SetAttribute("resourceNames", string.Join(",", this.ResourceNames));
 
 			formatElem.SetAttribute("culture", this.Culture.Name);
-			formatElem.SetAttribute("shortDate", this.shortDateFormat);
-			formatElem.SetAttribute("longDate", this.longDateFormat);
+			formatElem.SetAttribute("shortDate", shortDateFormat);
+			formatElem.SetAttribute("longDate", longDateFormat);
 
 			return result;
 		}

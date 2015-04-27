@@ -54,7 +54,7 @@ namespace Sage
 				try
 				{
 					initialCount = context.Cache.Count;
-					this.cache = context.Cache;
+					cache = context.Cache;
 				}
 				catch (NullReferenceException)
 				{
@@ -74,10 +74,10 @@ namespace Sage
 		{
 			get
 			{
-				if (this.cache != null)
-					return this.cache.Count;
+				if (cache != null)
+					return cache.Count;
 
-				return this.dictionary.Count;
+				return dictionary.Count;
 			}
 		}
 
@@ -101,10 +101,10 @@ namespace Sage
 		/// <returns>The retrieved cache item, or null if the key is not found</returns>
 		public object Get(string key)
 		{
-			if (this.cache != null)
-				return this.cache.Get(key);
+			if (cache != null)
+				return cache.Get(key);
 
-			if (this.dictionary.ContainsKey(key))
+			if (dictionary.ContainsKey(key))
 				return dictionary[key];
 
 			return null;
@@ -117,13 +117,13 @@ namespace Sage
 		/// <returns>The item removed from the cache. If the value in the key parameter is not found, returns null</returns>
 		public object Remove(string key)
 		{
-			if (this.cache != null)
-				return this.cache.Get(key);
+			if (cache != null)
+				return cache.Get(key);
 
-			if (this.dictionary.ContainsKey(key))
+			if (dictionary.ContainsKey(key))
 			{
-				object result = this.dictionary[key];
-				this.dictionary.Remove(key);
+				object result = dictionary[key];
+				dictionary.Remove(key);
 				return result;
 			}
 
@@ -152,9 +152,9 @@ namespace Sage
 		/// You can use this to update the cached item and ensure that it is not removed from the cache.</param>
 		public void Insert(string key, object value, CacheDependency dependencies, DateTime absoluteExpiration, TimeSpan slidingExpiration, CacheItemUpdateCallback callback)
 		{
-			if (this.cache != null)
+			if (cache != null)
 			{
-				this.cache.Insert(key, value, dependencies, absoluteExpiration, slidingExpiration, callback);
+				cache.Insert(key, value, dependencies, absoluteExpiration, slidingExpiration, callback);
 				return;
 			}
 
@@ -185,9 +185,9 @@ namespace Sage
 		/// You can use this to update the cached item and ensure that it is not removed from the cache.</param>
 		public void Insert(string key, object value, CacheDependency dependencies, DateTime absoluteExpiration, TimeSpan slidingExpiration, CacheItemPriority priority, CacheItemRemovedCallback callback)
 		{
-			if (this.cache != null)
+			if (cache != null)
 			{
-				this.cache.Insert(key, value, dependencies, absoluteExpiration, slidingExpiration, priority, callback);
+				cache.Insert(key, value, dependencies, absoluteExpiration, slidingExpiration, priority, callback);
 				return;
 			}
 
@@ -213,9 +213,9 @@ namespace Sage
 		/// sliding expiration, the absoluteExpiration parameter must be set to <see cref="Cache.NoAbsoluteExpiration"/>.</param>
 		public void Insert(string key, object value, CacheDependency dependencies, DateTime absoluteExpiration, TimeSpan slidingExpiration)
 		{
-			if (this.cache != null)
+			if (cache != null)
 			{
-				this.cache.Insert(key, value, dependencies, absoluteExpiration, slidingExpiration);
+				cache.Insert(key, value, dependencies, absoluteExpiration, slidingExpiration);
 				return;
 			}
 
@@ -232,9 +232,9 @@ namespace Sage
 		/// contains null.</param>
 		public void Insert(string key, object value, CacheDependency dependencies)
 		{
-			if (this.cache != null)
+			if (cache != null)
 			{
-				this.cache.Insert(key, value, dependencies);
+				cache.Insert(key, value, dependencies);
 				return;
 			}
 
@@ -243,7 +243,7 @@ namespace Sage
 
 		private void InsertToDictionary(string key, object value)
 		{
-			if (this.dictionary.ContainsKey(key))
+			if (dictionary.ContainsKey(key))
 				dictionary[key] = value;
 			else
 				dictionary.Add(key, value);

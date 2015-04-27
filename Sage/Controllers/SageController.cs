@@ -21,6 +21,7 @@ namespace Sage.Controllers
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web.Mvc;
 	using System.Web.Routing;
@@ -46,6 +47,8 @@ namespace Sage.Controllers
 		internal const string DefaultController = "home";
 		internal const string DefaultAction = "index";
 
+		private const string HtmlGroup = "xhtml";
+
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageController).FullName);
 		private static readonly List<ViewXmlFilter> xmlFilters = new List<ViewXmlFilter>();
 
@@ -57,8 +60,8 @@ namespace Sage.Controllers
 
 		static SageController()
 		{
-			DiscoverViewXmlFilters();
-			Project.AssembliesUpdated += OnAssembliesUpdated;
+			SageController.DiscoverViewXmlFilters();
+			Project.AssembliesUpdated += SageController.OnAssembliesUpdated;
 		}
 
 		/// <summary>
@@ -66,9 +69,9 @@ namespace Sage.Controllers
 		/// </summary>
 		protected SageController()
 		{
-			this.typeName = this.GetType().Name.Replace("Controller", string.Empty).ToLower();
-			this.messages = new ControllerMessages();
-			this.ViewData["messages"] = this.messages;
+			typeName = this.GetType().Name.Replace("Controller", string.Empty).ToLower();
+			messages = new ControllerMessages();
+			this.ViewData["messages"] = messages;
 			this.IsShared = this.GetType().GetCustomAttributes(typeof(SharedControllerAttribute), true).Count() != 0;
 		}
 
@@ -89,7 +92,7 @@ namespace Sage.Controllers
 		{
 			get
 			{
-				return this.typeName;
+				return typeName;
 			}
 		}
 
@@ -138,9 +141,9 @@ namespace Sage.Controllers
 			if (view404.Exists)
 			{
 				var info = new ViewInfo(this, "404", "_system");
-				this.viewInfos.Add("404", info);
+				viewInfos.Add("404", info);
 
-				ViewInput result = this.ProcessView(info);
+				ViewModel result = this.GetViewModel(info);
 				return this.View(info.Action, result);
 			}
 
@@ -171,39 +174,65 @@ namespace Sage.Controllers
 		/// <returns>The action result.</returns>
 		public ActionResult SageView(string viewName)
 		{
-			ViewInfo info = new ViewInfo(this, viewName);
-			if (info.Exists)
+			log.DebugFormat("Running view '{0}' on controller '{1}'.", viewName, this.Name);
+			ViewInfo view = new ViewInfo(this, viewName);
+
+			if (!view.Exists)
 			{
-				ViewInput result = this.ProcessView(info);
-				return this.View(result.Action, result);
+				log.FatalFormat("The specified view name '{0}' doesn't exist.", viewName);
+				return this.PageNotFound();
+			}
+			var cache = this.Context.ViewCache;
+			var caching = this.Context.ProjectConfiguration.ViewCaching;
+			var cachingEnabled = !view.IsNoCacheView && !this.Context.IsNoCacheRequest && caching.Enabled;
+			var localName = this.Context.LocalPath;
+			var isCached = false;
+
+			if (cachingEnabled)
+			{
+				var cacheDate = cache.GetLastModified(localName, HtmlGroup);
+				isCached = cacheDate != null && cacheDate.Value > view.LastModified;
 			}
 
-			log.FatalFormat("The specified view name '{0}' doesn't exist.", viewName);
-			return this.PageNotFound();
+			if (isCached)
+			{
+				var time = DateTime.Now;
+				var cachedContent = cache.Get(localName, HtmlGroup);
+				log.DebugFormat("View {0} loaded from cache in {1}ms", localName, (DateTime.Now - time).Milliseconds);
+				return new ContentResult
+				{
+					Content = cachedContent,
+					ContentType = "text/html",
+					ContentEncoding = Encoding.UTF8
+				};
+			}
+
+			ViewModel model = this.GetViewModel(view);
+			return this.View(model.Action, model);
 		}
 
 		/// <summary>
 		/// Processes the view configuration associated with the specified <paramref name="viewName"/>, 
-		/// and returns a <see cref="ViewInput"/> instance that contains the result.
+		/// and returns a <see cref="ViewModel"/> instance that contains the result.
 		/// </summary>
 		/// <param name="viewName">The name of the view to process.</param>
 		/// <returns>
 		/// An object that contains the result of processing the view configuration
 		/// </returns>
-		public virtual ViewInput ProcessView(string viewName)
+		public virtual ViewModel GetViewModel(string viewName)
 		{
-			return this.ProcessView(new ViewInfo(this, viewName));
+			return this.GetViewModel(new ViewInfo(this, viewName));
 		}
 
 		/// <summary>
 		/// Processes the view configuration associated with the specified <paramref name="viewInfo"/>, 
-		/// and returns a <see cref="ViewInput"/> instance that contains the result.
+		/// and returns a <see cref="ViewModel"/> instance that contains the result.
 		/// </summary>
 		/// <param name="viewInfo">The object that contains information about the view.</param>
 		/// <returns>
 		/// An object that contains the result of processing the view configuration
 		/// </returns>
-		public virtual ViewInput ProcessView(ViewInfo viewInfo)
+		public virtual ViewModel GetViewModel(ViewInfo viewInfo)
 		{
 			try
 			{
@@ -224,7 +253,7 @@ namespace Sage.Controllers
 		/// <inheritdoc/>
 		public virtual IModule CreateModule(XmlElement moduleElement)
 		{
-			return this.moduleFactory.CreateModule(moduleElement);
+			return moduleFactory.CreateModule(moduleElement);
 		}
 
 		/// <summary>
@@ -232,7 +261,7 @@ namespace Sage.Controllers
 		/// information about the current request, and the resources referenced by the modules and libraries in use by the 
 		/// the view.
 		/// </summary>
-		/// <param name="viewContext">The view context that contains the <see cref="ViewInput"/> that resulted from
+		/// <param name="viewContext">The view context that contains the <see cref="ViewModel"/> that resulted from
 		/// previously processing the view configuration.</param>
 		/// <returns>
 		/// The actual XML document that will be used as input for the final XSLT transform.
@@ -240,12 +269,12 @@ namespace Sage.Controllers
 		public XmlDocument PrepareViewXml(ViewContext viewContext)
 		{
 			var startTime = DateTime.Now.Ticks;
-			ViewInput input = viewContext.ViewData.Model as ViewInput;
+			ViewModel model = viewContext.ViewData.Model as ViewModel;
 
 			string action = "action";
-			if (input != null)
+			if (model != null)
 			{
-				action = input.ViewConfiguration.Name;
+				action = model.ViewConfiguration.Name;
 			}
 			else if (this.ViewData["Action"] != null)
 			{
@@ -261,10 +290,10 @@ namespace Sage.Controllers
 			log.DebugFormat("Document create");
 			XmlElement responseNode = viewRoot.AppendElement("sage:response", XmlNamespaces.SageNamespace);
 
-			if (this.messages.Count > 0)
+			if (messages.Count > 0)
 			{
 				XmlElement messagesNode = responseNode.AppendElement("sage:messages", XmlNamespaces.SageNamespace);
-				foreach (var message in this.messages)
+				foreach (var message in messages)
 				{
 					messagesNode.AppendChild(message.ToXml(result));
 				}
@@ -272,14 +301,14 @@ namespace Sage.Controllers
 
 			try
 			{
-				if (input != null && input.ConfigNode != null)
+				if (model != null && model.ConfigNode != null)
 				{
 					//// make sure resources are ordered properly:
 					////  1. by resource type (icon, style, script)
 					////  2. by project dependency
 					////  3. by module dependency
 					var installOrder = Project.InstallOrder;
-					var inputResources = input.Resources
+					var inputResources = model.Resources
 						.Where(r => r.IsValidFor(this.Context.UserAgentID))
 						.OrderBy((r1, r2) =>
 							{
@@ -287,7 +316,7 @@ namespace Sage.Controllers
 									return r1.Type.CompareTo(r2.Type);
 
 								if (r1.ProjectId == r2.ProjectId)
-									return input.Resources.IndexOf(r1).CompareTo(input.Resources.IndexOf(r2));
+									return model.Resources.IndexOf(r1).CompareTo(model.Resources.IndexOf(r2));
 
 								return installOrder.IndexOf(r1.ProjectId).CompareTo(installOrder.IndexOf(r2.ProjectId));
 							})
@@ -309,7 +338,9 @@ namespace Sage.Controllers
 							{
 								var time = DateTime.Now;
 								dataNode.AppendChild(resource.ToXml(result, this.Context));
-								log.DebugFormat("Added '{0}' to sage:data in {1}ms", resource.Name, Math.Round((DateTime.Now - time).TotalMilliseconds));
+								var elapsed = (DateTime.Now - time).Milliseconds;
+								if (elapsed > 0)
+									log.DebugFormat("Added '{0}' to sage:data in {1}ms", resource.Name, elapsed);
 							}
 						}
 
@@ -320,7 +351,9 @@ namespace Sage.Controllers
 							{
 								var time = DateTime.Now;
 								headNode.AppendChild(resource.ToXml(result, this.Context));
-								log.DebugFormat("Added '{0}' to sage:head in {1}ms", resource.Name.Or(resource.Path), Math.Round((DateTime.Now - time).TotalMilliseconds));
+								var elapsed = (DateTime.Now - time).Milliseconds;
+								if (elapsed > 0)
+									log.DebugFormat("Added '{0}' to sage:head in {1}ms", resource.Name.Or(resource.Path), elapsed);
 							}
 						}
 
@@ -331,14 +364,16 @@ namespace Sage.Controllers
 							{
 								var time = DateTime.Now;
 								bodyNode.AppendChild(resource.ToXml(result, this.Context));
-								log.DebugFormat("Added '{0}' to sage:body in {1}ms", resource.Name.Or(resource.Path), Math.Round((DateTime.Now - time).TotalMilliseconds));
+								var elapsed = (DateTime.Now - time).Milliseconds;
+								if (elapsed > 0)
+									log.DebugFormat("Added '{0}' to sage:body in {1}ms", resource.Name.Or(resource.Path), elapsed);
 							}
 						}
 					}
 
 					responseNode
 						.AppendElement("sage:model", XmlNamespaces.SageNamespace)
-						.AppendChild(result.ImportNode(input.ConfigNode, true));
+						.AppendChild(result.ImportNode(model.ConfigNode, true));
 				}
 
 				log.DebugFormat("Resources added");
@@ -408,11 +443,11 @@ namespace Sage.Controllers
 		/// </returns>
 		public virtual ViewInfo GetViewInfo(string viewName)
 		{
-			if (!this.viewInfos.ContainsKey(viewName))
-				this.viewInfos.Add(viewName,
+			if (!viewInfos.ContainsKey(viewName))
+				viewInfos.Add(viewName,
 					new ViewInfo(this, viewName));
 
-			return this.viewInfos[viewName];
+			return viewInfos[viewName];
 		}
 
 		/// <summary>
@@ -477,7 +512,7 @@ namespace Sage.Controllers
 
 			var text = string.Format(messageText, formatValues);
 			var message = new ControllerMessage { Type = type, Text = text };
-			this.messages.Add(message);
+			messages.Add(message);
 		}
 
 		/// <summary>
@@ -494,7 +529,7 @@ namespace Sage.Controllers
 			var phrase = this.Context.Resources.GetPhrase(phraseId);
 			var text = string.Format(phrase, formatValues);
 			var message = new ControllerMessage { Type = type, Text = text };
-			this.messages.Add(message);
+			messages.Add(message);
 		}
 
 		/// <summary>
@@ -540,7 +575,7 @@ namespace Sage.Controllers
 
 		private static void OnAssembliesUpdated(object sender, EventArgs arg)
 		{
-			DiscoverViewXmlFilters();
+			SageController.DiscoverViewXmlFilters();
 		}
 	}
 }

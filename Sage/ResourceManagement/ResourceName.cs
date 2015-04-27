@@ -43,10 +43,10 @@ namespace Sage.ResourceManagement
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(filePath));
 			Contract.Requires<ArgumentNullException>(category != null);
 
-			this.separator = filePath.Contains("/") ? "/" : Path.DirectorySeparatorChar.ToString();
+			separator = filePath.Contains("/") ? "/" : Path.DirectorySeparatorChar.ToString();
 
 			this.FilePath = filePath;
-			this.FileDirectory = fixScheme.Replace((Path.GetDirectoryName(filePath) ?? string.Empty).Replace("\\", this.separator), "://");
+			this.FileDirectory = fixScheme.Replace((Path.GetDirectoryName(filePath) ?? string.Empty).Replace("\\", separator), "://");
 			this.FileName = Path.GetFileNameWithoutExtension(filePath);
 			this.Extension = Path.GetExtension(filePath);
 
@@ -73,7 +73,7 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return Path.GetFileName(FileDirectory);
+				return Path.GetFileName(this.FileDirectory);
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return string.Concat(this.FileDirectory, this.separator, this.FileName, this.Extension);
+				return string.Concat(this.FileDirectory, separator, this.FileName, this.Extension);
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return Path.Combine(this.FileDirectory, LocalePattern).Replace("\\", this.separator);
+				return Path.Combine(this.FileDirectory, this.LocalePattern).Replace("\\", separator);
 			}
 		}
 
@@ -190,7 +190,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The version of this resource name for the specified locale.</returns>
 		public string ToLocalePath(string locale)
 		{
-			return Path.Combine(this.FileDirectory, this.ToLocale(locale)).Replace("\\", this.separator);
+			return Path.Combine(this.FileDirectory, this.ToLocale(locale)).Replace("\\", separator);
 		}
 
 		private string DiscoverLocale(string fileName, CategoryInfo category)

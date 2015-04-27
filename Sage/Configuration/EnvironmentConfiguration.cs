@@ -41,8 +41,8 @@ namespace Sage.Configuration
 		/// </summary>
 		public EnvironmentConfiguration()
 		{
-			this.BlockedIPs = this.blockedIPs.AsReadOnly();
-			this.DeveloperIPs = this.developerIPs.AsReadOnly();
+			this.BlockedIPs = blockedIPs.AsReadOnly();
+			this.DeveloperIPs = developerIPs.AsReadOnly();
 		}
 
 		/// <summary>
@@ -52,10 +52,10 @@ namespace Sage.Configuration
 		/// <param name="init">The object to copy the contents from.</param>
 		internal EnvironmentConfiguration(EnvironmentConfiguration init)
 		{
-			this.blockedIPs = new List<IpAddress>(init.blockedIPs);
-			this.developerIPs = new List<IpAddress>(init.developerIPs);
-			this.BlockedIPs = this.blockedIPs.AsReadOnly();
-			this.DeveloperIPs = this.developerIPs.AsReadOnly();
+			blockedIPs = new List<IpAddress>(init.blockedIPs);
+			developerIPs = new List<IpAddress>(init.developerIPs);
+			this.BlockedIPs = blockedIPs.AsReadOnly();
+			this.DeveloperIPs = developerIPs.AsReadOnly();
 		}
 
 		/// <summary>
@@ -112,8 +112,8 @@ namespace Sage.Configuration
 				}
 
 				var address = new IpAddress(element);
-				if (!this.developerIPs.Contains(address))
-					this.developerIPs.Add(address);
+				if (!developerIPs.Contains(address))
+					developerIPs.Add(address);
 			}
 
 			foreach (XmlElement element in configuration.SelectNodes("p:addresses/p:blocked/p:ip", XmlNamespaces.Manager))
@@ -125,8 +125,8 @@ namespace Sage.Configuration
 				}
 
 				var address = new IpAddress(element);
-				if (!this.blockedIPs.Contains(address))
-					this.blockedIPs.Add(address);
+				if (!blockedIPs.Contains(address))
+					blockedIPs.Add(address);
 			}
 		}
 
@@ -137,18 +137,18 @@ namespace Sage.Configuration
 			XmlElement result = document.CreateElement("environment", Ns);
 
 			XmlNode addresses = result.AppendChild(document.CreateElement("addresses", Ns));
-			if (this.developerIPs.Count != 0)
+			if (developerIPs.Count != 0)
 			{
 				XmlNode blockedNode = addresses.AppendChild(document.CreateElement("developers", Ns));
-				foreach (IpAddress ip in this.developerIPs)
+				foreach (IpAddress ip in developerIPs)
 				{
 					blockedNode.AppendChild(ip.ToXml(document));
 				}
 			}
-			if (this.blockedIPs.Count != 0)
+			if (blockedIPs.Count != 0)
 			{
 				XmlNode blockedNode = addresses.AppendChild(document.CreateElement("blocked", Ns));
-				foreach (IpAddress ip in this.blockedIPs)
+				foreach (IpAddress ip in blockedIPs)
 				{
 					blockedNode.AppendChild(ip.ToXml(document));
 				}

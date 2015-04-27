@@ -30,7 +30,7 @@ namespace Sage.Extensibility
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return this.Path;
+			return Path;
 		}
 	}
 }

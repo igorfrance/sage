@@ -39,7 +39,7 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.writer.Settings;
+				return writer.Settings;
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.writer.WriteState;
+				return writer.WriteState;
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.writer.XmlLang;
+				return writer.XmlLang;
 			}
 		}
 
@@ -66,7 +66,7 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.writer.XmlSpace;
+				return writer.XmlSpace;
 			}
 		}
 
@@ -75,205 +75,205 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.writer;
+				return writer;
 			}
 
 			set
 			{
-				this.writer = value;
+				writer = value;
 			}
 		}
 
 		/// <inheritdoc/>
 		public override void Close()
 		{
-			this.writer.Close();
+			writer.Close();
 		}
 
 		/// <inheritdoc/>
 		public override void Flush()
 		{
-			this.writer.Flush();
+			writer.Flush();
 		}
 
 		/// <inheritdoc/>
 		public override string LookupPrefix(string ns)
 		{
-			return this.writer.LookupPrefix(ns);
+			return writer.LookupPrefix(ns);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteBase64(byte[] buffer, int index, int count)
 		{
-			this.writer.WriteBase64(buffer, index, count);
+			writer.WriteBase64(buffer, index, count);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteCData(string text)
 		{
-			this.writer.WriteCData(text);
+			writer.WriteCData(text);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteCharEntity(char ch)
 		{
-			this.writer.WriteCharEntity(ch);
+			writer.WriteCharEntity(ch);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteChars(char[] buffer, int index, int count)
 		{
-			this.writer.WriteChars(buffer, index, count);
+			writer.WriteChars(buffer, index, count);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteComment(string text)
 		{
-			this.writer.WriteComment(text);
+			writer.WriteComment(text);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteDocType(string name, string pubId, string sysId, string subset)
 		{
-			this.writer.WriteDocType(name, pubId, sysId, subset);
+			writer.WriteDocType(name, pubId, sysId, subset);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteEndAttribute()
 		{
-			this.writer.WriteEndAttribute();
+			writer.WriteEndAttribute();
 		}
 
 		/// <inheritdoc/>
 		public override void WriteEndDocument()
 		{
-			this.writer.WriteEndDocument();
+			writer.WriteEndDocument();
 		}
 
 		/// <inheritdoc/>
 		public override void WriteEndElement()
 		{
-			this.writer.WriteEndElement();
+			writer.WriteEndElement();
 		}
 
 		/// <inheritdoc/>
 		public override void WriteEntityRef(string name)
 		{
-			this.writer.WriteEntityRef(name);
+			writer.WriteEntityRef(name);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteFullEndElement()
 		{
-			this.writer.WriteFullEndElement();
+			writer.WriteFullEndElement();
 		}
 
 		/// <inheritdoc/>
 		public override void WriteProcessingInstruction(string name, string text)
 		{
-			this.writer.WriteProcessingInstruction(name, text);
+			writer.WriteProcessingInstruction(name, text);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteRaw(string data)
 		{
-			this.writer.WriteRaw(data);
+			writer.WriteRaw(data);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteRaw(char[] buffer, int index, int count)
 		{
-			this.writer.WriteRaw(buffer, index, count);
+			writer.WriteRaw(buffer, index, count);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteStartAttribute(string prefix, string localName, string ns)
 		{
-			this.writer.WriteStartAttribute(prefix, localName, ns);
+			writer.WriteStartAttribute(prefix, localName, ns);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteStartDocument()
 		{
-			this.writer.WriteStartDocument();
+			writer.WriteStartDocument();
 		}
 
 		/// <inheritdoc/>
 		public override void WriteStartDocument(bool standalone)
 		{
-			this.writer.WriteStartDocument(standalone);
+			writer.WriteStartDocument(standalone);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteStartElement(string prefix, string localName, string ns)
 		{
-			this.writer.WriteStartElement(prefix, localName, ns);
+			writer.WriteStartElement(prefix, localName, ns);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteString(string text)
 		{
-			this.writer.WriteString(text);
+			writer.WriteString(text);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteSurrogateCharEntity(char lowChar, char highChar)
 		{
-			this.writer.WriteSurrogateCharEntity(lowChar, highChar);
+			writer.WriteSurrogateCharEntity(lowChar, highChar);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(bool value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(DateTime value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(decimal value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(double value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(int value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(long value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(object value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(float value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <inheritdoc/>
 		public override void WriteValue(string value)
 		{
-			this.writer.WriteValue(value);
+			writer.WriteValue(value);
 		}
 
 		/// <summary>
@@ -282,13 +282,13 @@ namespace Sage.Views
 		/// <param name="ws">The string of white space characters.</param>
 		public override void WriteWhitespace(string ws)
 		{
-			this.writer.WriteWhitespace(ws);
+			writer.WriteWhitespace(ws);
 		}
 
 		/// <inheritdoc/>
 		protected override void Dispose(bool disposing)
 		{
-			((IDisposable) this.writer).Dispose();
+			((IDisposable) writer).Dispose();
 		}
 	}
 }

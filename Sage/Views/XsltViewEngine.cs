@@ -34,8 +34,8 @@ namespace Sage.Views
 		/// </summary>
 		public XsltViewEngine()
 		{
-			ViewLocationFormats = new[] { "{1}/{0}" };
-			PartialViewLocationFormats = ViewLocationFormats;
+			this.ViewLocationFormats = new[] { "{1}/{0}" };
+			this.PartialViewLocationFormats = this.ViewLocationFormats;
 		}
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace Sage.Views
 		/// <returns>The <see cref="IView"/> for the specified <see cref="ControllerContext"/>.</returns>
 		protected override IView CreatePartialView(ControllerContext controllerContext, string viewName)
 		{
-			return CreateView(controllerContext, viewName, null);
+			return this.CreateView(controllerContext, viewName, null);
 		}
 
 		/// <summary>
@@ -59,8 +59,8 @@ namespace Sage.Views
 		protected override IView CreateView(ControllerContext controllerContext, string viewName, string masterPath)
 		{
 			var startTime = DateTime.Now.Ticks;
-			ViewInfo viewInfo = GetViewInfo(controllerContext, viewName);
-			IView result = new XsltView(viewInfo.Processor);
+			ViewInfo viewInfo = this.GetViewInfo(controllerContext, viewName);
+			IView result = new XsltView(viewInfo);
 
 			var controller = controllerContext.Controller as SageController;
 			if (controller != null)
@@ -86,18 +86,10 @@ namespace Sage.Views
 		/// <returns><c>true</c> if the specified view exists; otherwise <c>false</c>.</returns>
 		protected override bool FileExists(ControllerContext controllerContext, string viewName)
 		{
-			ViewInfo viewInfo = GetViewInfo(controllerContext, viewName);
+			ViewInfo viewInfo = this.GetViewInfo(controllerContext, viewName);
 			return viewInfo != null && viewInfo.Exists;
 		}
 
-		/// <summary>
-		/// Gets the info about the view and the corresponding content type for the specified 
-		/// <paramref name="controllerContext"/> and <paramref name="viewName"/>.
-		/// </summary>
-		/// <param name="controllerContext">The controller context.</param>
-		/// <param name="viewName">The view name.</param>
-		/// <returns>the full viewPath</returns>
-		/// <exception cref="ArgumentException">The view name argument is missing the mandatory '/' slash character.</exception>
 		private ViewInfo GetViewInfo(ControllerContext controllerContext, string viewName)
 		{
 			var controller = controllerContext.Controller as SageController;
@@ -106,7 +98,6 @@ namespace Sage.Views
 				return controller.GetViewInfo(viewName.Replace(
 					controller.GetType().Name.Replace("Controller", string.Empty) + "/", string.Empty));
 			}
-
 			return null;
 		}
 	}

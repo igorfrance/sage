@@ -36,7 +36,7 @@ namespace Sage.ResourceManagement
 	/// <see cref="XmlProviderAttribute"/>. The name that you specify in the constructor for
 	/// <c>XmlProviderAttribute</c> is the string that follows <c>sageres://</c>.
 	/// </remarks>
-	[UrlResolver(Scheme = SageResourceResolver.Scheme)]
+	[UrlResolver(Scheme = Scheme)]
 	public class SageResourceResolver : IUrlResolver
 	{
 		/// <summary>
@@ -50,14 +50,14 @@ namespace Sage.ResourceManagement
 
 		static SageResourceResolver()
 		{
-			DiscoverXmlProviders();
-			Project.AssembliesUpdated += OnAssembliesUpdated;
+			SageResourceResolver.DiscoverXmlProviders();
+			Project.AssembliesUpdated += SageResourceResolver.OnAssembliesUpdated;
 		}
 
 		/// <inheritdoc/>
 		public EntityResult GetEntity(UrlResolver parent, SageContext context, string resourceUri)
 		{
-			string resourceName = GetResourceName(resourceUri);
+			string resourceName = this.GetResourceName(resourceUri);
 				XmlReaderSettings settings = CacheableXmlDocument.CreateReaderSettings(parent);
 
 			CacheableXmlDocument resourceDoc;
@@ -122,12 +122,12 @@ namespace Sage.ResourceManagement
 
 		private static void OnAssembliesUpdated(object sender, EventArgs arg)
 		{
-			DiscoverXmlProviders();
+			SageResourceResolver.DiscoverXmlProviders();
 		}
 
 		private string GetResourceName(string uri)
 		{
-			return uri.Replace(GetResourcePrefix(), string.Empty).TrimEnd('/', '\\');
+			return uri.Replace(this.GetResourcePrefix(), string.Empty).TrimEnd('/', '\\');
 		}
 
 		private string GetResourcePrefix()

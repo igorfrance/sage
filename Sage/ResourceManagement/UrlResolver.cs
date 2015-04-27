@@ -45,8 +45,8 @@ namespace Sage.ResourceManagement
 
 		static UrlResolver()
 		{
-			DiscoverUrlResolvers();
-			Project.AssembliesUpdated += OnAssembliesUpdated;
+			UrlResolver.DiscoverUrlResolvers();
+			Project.AssembliesUpdated += UrlResolver.OnAssembliesUpdated;
 		}
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace Sage.ResourceManagement
 		/// </summary>
 		public UrlResolver()
 		{
-			this.instances = new Dictionary<string, IUrlResolver>();
+			instances = new Dictionary<string, IUrlResolver>();
 		}
 
 		/// <summary>
@@ -74,7 +74,7 @@ namespace Sage.ResourceManagement
 		{
 			get
 			{
-				return this.dependencies;
+				return dependencies;
 			}
 		}
 
@@ -102,13 +102,13 @@ namespace Sage.ResourceManagement
 		/// <param name="resolver">The resolver.</param>
 		public void RegisterResolver(string scheme, IUrlResolver resolver)
 		{
-			if (this.instanceResolvers.ContainsKey(scheme))
+			if (instanceResolvers.ContainsKey(scheme))
 			{
 				log.WarnFormat("Overwriting existing resolver {0} for scheme '{1}' with resolver {2}",
-					this.instanceResolvers[scheme].GetType().FullName, scheme, resolver.GetType().FullName);
+					instanceResolvers[scheme].GetType().FullName, scheme, resolver.GetType().FullName);
 			}
 
-			this.instanceResolvers[scheme] = resolver;
+			instanceResolvers[scheme] = resolver;
 		}
 
 		/// <inheritdoc/>
@@ -117,16 +117,16 @@ namespace Sage.ResourceManagement
 			IUrlResolver resolver = this.GetResolver(uri.Scheme);
 			if (resolver != null)
 			{
-				EntityResult result = resolver.GetEntity(this, this.context, uri.ToString().Replace("\\", "/"));
-				this.dependencies.AddRange(result.Dependencies);
-				this.resolved.Add(uri.ToString());
+				EntityResult result = resolver.GetEntity(this, context, uri.ToString().Replace("\\", "/"));
+				dependencies.AddRange(result.Dependencies);
+				resolved.Add(uri.ToString());
 				return result.Entity;
 			}
 
 			try
 			{
-				this.dependencies.Add(uri.LocalPath);
-				this.resolved.Add(uri.ToString());
+				dependencies.Add(uri.LocalPath);
+				resolved.Add(uri.ToString());
 				return base.GetEntity(uri, role, returnObject);
 			}
 			catch (NotSupportedException ex)
@@ -169,22 +169,22 @@ namespace Sage.ResourceManagement
 
 		private static void OnAssembliesUpdated(object sender, EventArgs arg)
 		{
-			DiscoverUrlResolvers();
+			UrlResolver.DiscoverUrlResolvers();
 		}
 
 		private IUrlResolver GetResolver(string scheme)
 		{
-			if (this.instanceResolvers.ContainsKey(scheme))
-				return this.instanceResolvers[scheme];
+			if (instanceResolvers.ContainsKey(scheme))
+				return instanceResolvers[scheme];
 
-			if (this.instances.ContainsKey(scheme))
-				return this.instances[scheme];
+			if (instances.ContainsKey(scheme))
+				return instances[scheme];
 
 			if (staticResolvers.ContainsKey(scheme))
 			{
 				ConstructorInfo constructor = staticResolvers[scheme].GetConstructor(new Type[] { });
 				IUrlResolver resolver = (IUrlResolver) constructor.Invoke(new object[] { });
-				this.instances[scheme] = resolver;
+				instances[scheme] = resolver;
 				return resolver;
 			}
 

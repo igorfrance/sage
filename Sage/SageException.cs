@@ -50,7 +50,7 @@ namespace Sage
 		public SageException(Exception exception)
 			: base(exception.Message, exception)
 		{
-			this.actual = exception;
+			actual = exception;
 		}
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace Sage
 
 			protected set
 			{
-				this.actual = value;
+				actual = value;
 			}
 		}
 

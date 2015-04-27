@@ -41,7 +41,7 @@ namespace Sage.Routing
 		/// <param name="assemblies">Assemblies that contain the methods to register.</param>
 		internal static void RegisterRoutesToMethodsWithAttributes(Assembly[] assemblies)
 		{
-			List<MapRouteParams> routeParams = GetRouteParamsFromAttributes(
+			List<MapRouteParams> routeParams = UrlRoutingUtility.GetRouteParamsFromAttributes(
 				Project.RelevantAssemblies.ToArray());
 
 			routeParams.Sort((a, b) => a.Order.CompareTo(b.Order));
@@ -104,8 +104,8 @@ namespace Sage.Routing
 								ControllerName = controllerName,
 								ActionName = methodInfo.Name,
 								Order = routeAttrib.Order,
-								Constraints = GetConstraints(methodInfo),
-								Defaults = GetDefaults(methodInfo),
+								Constraints = UrlRoutingUtility.GetConstraints(methodInfo),
+								Defaults = UrlRoutingUtility.GetDefaults(methodInfo),
 								ControllerNamespace = type.Namespace,
 							});
 						}

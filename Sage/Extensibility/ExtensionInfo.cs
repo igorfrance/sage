@@ -116,7 +116,7 @@ namespace Sage.Extensibility
 				fs.Close();
 			} 
 			
-			this.orderedLogs = from i in this.InstallHistory
+			orderedLogs = from i in this.InstallHistory
 							   orderby i.Date
 							   select i;
 		}
@@ -137,7 +137,7 @@ namespace Sage.Extensibility
 		{
 			get
 			{
-				return this.orderedLogs.Last(l => l.Result == InstallState.Installed).Date;
+				return orderedLogs.Last(l => l.Result == InstallState.Installed).Date;
 			}
 		}
 
@@ -156,7 +156,7 @@ namespace Sage.Extensibility
 			get
 			{
 				if (assemblies == null)
-					LoadAssemblies();
+					this.LoadAssemblies();
 
 				return assemblies;
 			}
@@ -166,20 +166,20 @@ namespace Sage.Extensibility
 		{
 			get
 			{
-				if (this.installHistory == null)
+				if (installHistory == null)
 				{
-					this.installHistory = new List<InstallLog>();
+					installHistory = new List<InstallLog>();
 					if (File.Exists(this.InstallLogFile))
 					{
 						XmlDocument logDoc = new XmlDocument();
 						logDoc.Load(this.InstallLogFile);
 
 						foreach (XmlElement element in logDoc.SelectNodes("/plugin/install"))
-							this.installHistory.Add(new InstallLog(element));
+							installHistory.Add(new InstallLog(element));
 					}
 				}
 
-				return this.installHistory;
+				return installHistory;
 			}
 		}
 
@@ -221,8 +221,8 @@ namespace Sage.Extensibility
 
 		public void Update(bool forceUpdate = false)
 		{
-			Uninstall(true, forceUpdate);
-			Install();
+			this.Uninstall(true, forceUpdate);
+			this.Install();
 		}
 
 		public void Install()
@@ -290,7 +290,7 @@ namespace Sage.Extensibility
 				fs.Close();
 				extensionArchive.Close();
 
-				SaveLog(installLog);
+				this.SaveLog(installLog);
 			}
 
 			log.DebugFormat("Installation of extension '{0}' {1}.", this.Name, 
@@ -332,19 +332,19 @@ namespace Sage.Extensibility
 
 			var installLog = orderedLogs.Last();
 			this.Rollback(installLog, deleteChangedFiles);
-			SaveLog(installLog);
+			this.SaveLog(installLog);
 		}
 
 		public void LoadAssemblies()
 		{
-			if (this.isLoaded)
+			if (isLoaded)
 				return;
 
 			FileStream fs = File.OpenRead(this.ArchiveFileName);
 			ZipFile extensionArchive = new ZipFile(fs);
 			try
 			{
-				this.assemblies = new List<Assembly>();
+				assemblies = new List<Assembly>();
 				foreach (ExtensionFile[] assemblyPair in this.AssemblyFiles)
 				{
 					ExtensionFile dll = assemblyPair[0];
@@ -354,10 +354,10 @@ namespace Sage.Extensibility
 						? Assembly.Load(dll.Read(extensionArchive), pdb.Read(extensionArchive))
 						: Assembly.Load(dll.Read(extensionArchive));
 
-					this.assemblies.Add(extensionAssembly);
+					assemblies.Add(extensionAssembly);
 				}
 
-				this.isLoaded = true;
+				isLoaded = true;
 			}
 			finally 
 			{
@@ -380,7 +380,7 @@ namespace Sage.Extensibility
 
 		public CacheableXmlDocument GetDictionary(string locale)
 		{
-			SageContext pluginContext = GetExtensionContext();
+			SageContext pluginContext = this.GetExtensionContext();
 			string path = pluginContext.Path.GetDictionaryPath(locale);
 			if (File.Exists(path))
 				return pluginContext.Resources.LoadXml(path);
@@ -412,7 +412,7 @@ namespace Sage.Extensibility
 					continue;
 				}
 
-				ExtensionFile archiveFile = GetArchiveFile(installItem.Path);
+				ExtensionFile archiveFile = this.GetArchiveFile(installItem.Path);
 
 				//// CRC of the file in the current application
 				string currentCrc = Crc32.GetHash(installItem.Path);

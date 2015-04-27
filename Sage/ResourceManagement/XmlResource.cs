@@ -59,7 +59,7 @@ namespace Sage.ResourceManagement
 			}
 			else
 			{
-				string converted = path.ReplaceAll(this.convertScheme, "$1/$2");
+				string converted = path.ReplaceAll(convertScheme, "$1/$2");
 				string expanded = Path.Combine(context.ProjectConfiguration.PathTemplates.GlobalizedDirectoryForNonFileResources, converted);
 
 				this.SourceDirectory =
@@ -103,7 +103,7 @@ namespace Sage.ResourceManagement
 						this.Name.Extension,
 					string.Join("|", category.Locales.ToArray())));
 
-				IEnumerable<string> localizedFiles = Directory.GetFiles(SourceDirectory, pattern1, SearchOption.TopDirectoryOnly)
+				IEnumerable<string> localizedFiles = Directory.GetFiles(this.SourceDirectory, pattern1, SearchOption.TopDirectoryOnly)
 					.Where(n => pattern2.IsMatch(n));
 
 				DateTime maxDate = DateTime.MinValue;
@@ -143,7 +143,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The earliest modification date of all versions generated from this resource file.</returns>
 		public DateTime? GetDateFirstGlobalized(List<string> locales)
 		{
-			if (!Directory.Exists(TargetDirectory))
+			if (!Directory.Exists(this.TargetDirectory))
 				return null;
 
 			DateTime minDate = DateTime.MaxValue;
@@ -199,7 +199,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The globalized name and optionally, path to this resource file.</returns>
 		public string GetInternationalizedName(string locale, bool appendPath)
 		{
-			string globName = Name.ToLocale(locale);
+			string globName = this.Name.ToLocale(locale);
 			return appendPath ? Path.Combine(this.TargetDirectory, globName) : globName;
 		}
 
@@ -242,8 +242,7 @@ namespace Sage.ResourceManagement
 				dependencies.Add(this.GetSourcePath(locale));
 				dependencies.AddRange(dictionary.Dependencies);
 
-				bool generateNew =
-					context.ForceRefresh ||
+				bool generateNew = context.ForceRefresh ||
 					(resourceFirstGlobalized == null) ||
 					(this.DateLastModified > resourceFirstGlobalized) ||
 					(dictionaries.DateLastModified > resourceFirstGlobalized);
@@ -274,7 +273,7 @@ namespace Sage.ResourceManagement
 			}
 
 			CacheableXmlDocument document = new CacheableXmlDocument();
-			document.Load(fullPath, this.context);
+			document.Load(fullPath, context);
 			return document;
 		}
 
@@ -282,7 +281,7 @@ namespace Sage.ResourceManagement
 		{
 			string fullPath = this.GetSourcePath(locale);
 			CacheableXmlDocument document = new CacheableXmlDocument();
-			document.Load(fullPath, this.context);
+			document.Load(fullPath, context);
 			return document;
 		}
 
@@ -290,7 +289,7 @@ namespace Sage.ResourceManagement
 		{
 			string fullPath = this.GetInternationalizedName(locale, true);
 			CacheableXmlDocument document = new CacheableXmlDocument();
-			document.Load(fullPath, this.context);
+			document.Load(fullPath, context);
 			return document;
 		}
 	}

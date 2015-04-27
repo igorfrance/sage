@@ -82,7 +82,7 @@ namespace Sage
 
 			string itemKey = string.Format(CacheKeyName, resourcePath);
 			IEnumerable<string> files = dependencies.Where(d => UrlResolver.GetScheme(d) == "file");
-			this.context.Cache.Insert(itemKey, lastModificationDate, new CacheDependency(files.ToArray()), Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, OnCacheItemExpired);
+			context.Cache.Insert(itemKey, lastModificationDate, new CacheDependency(files.ToArray()), Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, LastModifiedCache.OnCacheItemExpired);
 		}
 
 		private static void OnCacheItemExpired(string key, CacheItemUpdateReason reason, out object expensiveObject, out CacheDependency dependency, out DateTime absoluteExpiration, out TimeSpan slidingExpiration)

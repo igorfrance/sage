@@ -26,7 +26,6 @@ namespace Sage.Modules
 	using Kelp.Extensions;
 
 	using log4net;
-	using Sage.Configuration;
 	using Sage.Extensibility;
 	using Sage.ResourceManagement;
 	using Sage.Views;
@@ -134,8 +133,8 @@ namespace Sage.Modules
 		{
 			get
 			{
-				List<ModuleResource> result = new List<ModuleResource>(this.resources);
-				IEnumerable<ModuleConfiguration> configs = ResolveDependencies(this);
+				List<ModuleResource> result = new List<ModuleResource>(resources);
+				IEnumerable<ModuleConfiguration> configs = ModuleConfiguration.ResolveDependencies(this);
 
 				foreach (ModuleConfiguration config in configs)
 				{
@@ -169,22 +168,22 @@ namespace Sage.Modules
 		{
 			get
 			{
-				if (this.moduleType == null)
+				if (moduleType == null)
 				{
 					if (!string.IsNullOrEmpty(this.TypeName))
 					{
-						this.moduleType = Project.GetType(this.TypeName);
-						if (this.moduleType == null)
+						moduleType = Project.GetType(this.TypeName);
+						if (moduleType == null)
 						{
 							log.ErrorFormat("The specified type '{0}' for module '{1}' could not be loaded", this.TypeName, this.Name);
-							this.moduleType = typeof(NullModule);
+							moduleType = typeof(NullModule);
 						}
 					}
 					else
-						this.moduleType = typeof(NullModule);
+						moduleType = typeof(NullModule);
 				}
 
-				return this.moduleType;
+				return moduleType;
 			}
 		}
 
@@ -239,7 +238,7 @@ namespace Sage.Modules
 			var resourceNodes = element.SelectNodes("p:resources/p:resource", XmlNamespaces.Manager);
 			foreach (XmlElement scriptNode in resourceNodes)
 			{
-				this.resources.Add(new ModuleResource(scriptNode, this.Key, this.ProjectId));
+				resources.Add(new ModuleResource(scriptNode, this.Key, this.ProjectId));
 			}
 
 			var stylesheetNodes = element.SelectNodes("p:stylesheets/p:stylesheet", XmlNamespaces.Manager);
@@ -310,7 +309,7 @@ namespace Sage.Modules
 				dependenciesNode.AppendElement(document.CreateElement("library", Ns)).SetAttribute("ref", name);
 
 			XmlNode resourcesNode = result.AppendChild(document.CreateElement("resources", Ns));
-			foreach (ModuleResource resource in this.resources)
+			foreach (ModuleResource resource in resources)
 				resourcesNode.AppendElement(resource.ToXml(document));
 
 			XmlNode stylesheetsNode = result.AppendChild(document.CreateElement("stylesheets", Ns));
@@ -335,7 +334,7 @@ namespace Sage.Modules
 				foreach (string path in config.Stylesheets)
 				{
 					string stylesheetPath = context.Path.GetModulePath(moduleKey, path);
-					CopyXslElements(context, stylesheetPath, resultDoc);
+					ModuleConfiguration.CopyXslElements(context, stylesheetPath, resultDoc);
 				}
 			}
 
@@ -409,7 +408,7 @@ namespace Sage.Modules
 				Uri includeHrefUri = new Uri(includeHref, UriKind.RelativeOrAbsolute);
 				string includePath = includeHrefUri.IsAbsoluteUri ? includeHref : string.Join("/", stylesheetDirectory, includeHref);
 
-				CopyXslElements(context, includePath, targetDocument);
+				ModuleConfiguration.CopyXslElements(context, includePath, targetDocument);
 				targetDocument.AddDependencies(includePath);
 			}
 
@@ -445,7 +444,7 @@ namespace Sage.Modules
 				if (Project.Configuration.Modules.TryGetValue(moduleKey, out reference))
 				{
 					result.Add(reference);
-					IEnumerable<ModuleConfiguration> innerDependencies = ResolveDependencies(reference);
+					IEnumerable<ModuleConfiguration> innerDependencies = ModuleConfiguration.ResolveDependencies(reference);
 					result.AddRange(innerDependencies.Where(innerConfig => !result.Contains(innerConfig)));
 				}
 			}

@@ -35,8 +35,8 @@ namespace Sage.Extensibility
 
 		static NodeEvaluator()
 		{
-			DiscoverNodeHandlers();
-			Project.AssembliesUpdated += OnAssembliesUpdated;
+			NodeEvaluator.DiscoverNodeHandlers();
+			Project.AssembliesUpdated += NodeEvaluator.OnAssembliesUpdated;
 		}
 
 		public NodeEvaluator(SageContext context)
@@ -57,7 +57,7 @@ namespace Sage.Extensibility
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(nodeName));
 			Contract.Requires<ArgumentNullException>(handler != null);
 
-			string qualifiedName = QualifyName(nodeType, nodeName, nodeNamespace);
+			string qualifiedName = NodeEvaluator.QualifyName(nodeType, nodeName, nodeNamespace);
 			if (nodeHandlers.ContainsKey(qualifiedName))
 			{
 				if (nodeHandlers[qualifiedName] == handler)
@@ -127,7 +127,7 @@ namespace Sage.Extensibility
 
 		public XmlNode Process(XmlNode node)
 		{
-			return NodeEvaluator.Process(this.context, node);
+			return NodeEvaluator.Process(context, node);
 		}
 
 		/// <summary>
@@ -168,7 +168,7 @@ namespace Sage.Extensibility
 
 		private static void OnAssembliesUpdated(object sender, EventArgs arg)
 		{
-			DiscoverNodeHandlers();
+			NodeEvaluator.DiscoverNodeHandlers();
 		}
 
 		private static void DiscoverNodeHandlers()
@@ -191,7 +191,7 @@ namespace Sage.Extensibility
 							foreach (NodeHandlerAttribute attrib in methodInfo.GetCustomAttributes(typeof(NodeHandlerAttribute), false))
 							{
 								NodeHandler handler = (NodeHandler) Delegate.CreateDelegate(typeof(NodeHandler), methodInfo);
-								RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, handler);
+								NodeEvaluator.RegisterNodeHandler(attrib.NodeType, attrib.NodeName, attrib.Namespace, handler);
 							}
 						}
 					}

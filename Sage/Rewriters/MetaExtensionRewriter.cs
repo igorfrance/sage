@@ -62,7 +62,7 @@ namespace Sage.Rewriters
 		/// <param name="application">The application.</param>
 		public void Init(HttpApplication application)
 		{
-			application.BeginRequest += OnApplicationRequestStart;
+			application.BeginRequest += MetaExtensionRewriter.OnApplicationRequestStart;
 		}
 
 		/// <summary>
@@ -91,7 +91,7 @@ namespace Sage.Rewriters
 				//// Meta view extension gets removed from the path
 				//// Path is rewritten with ?view=$1
 
-				string path = MetaViewExpression.Replace(context.Request.Path, delegate(Match m)
+				string path = MetaExtensionRewriter.MetaViewExpression.Replace(context.Request.Path, delegate(Match m)
 				{
 					if (view == null)
 						view = m.Groups[1].Value;

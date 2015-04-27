@@ -145,7 +145,7 @@ namespace Sage.DevTools.Modules
 						lineNode.SetAttribute("severity", match.Groups["Severity"].Value);
 						lineNode.SetAttribute("date", match.Groups["Date"].Value);
 						lineNode.SetAttribute("time", match.Groups["Time"].Value);
-						lineNode.SetAttribute("elapsed", Math.Round(elapsed.TotalMilliseconds, 0).ToString());
+						lineNode.SetAttribute("elapsed", elapsed.Milliseconds.ToString());
 
 						Match m;
 						if ((m = logTimeExpr.Match(message)).Success)

@@ -47,8 +47,8 @@ namespace Sage.Extensibility
 
 		static TextEvaluator()
 		{
-			DiscoverFunctionsAndVariables();
-			Project.AssembliesUpdated += OnAssembliesUpdated;
+			TextEvaluator.DiscoverFunctionsAndVariables();
+			Project.AssembliesUpdated += TextEvaluator.OnAssembliesUpdated;
 		}
 
 		/// <summary>
@@ -233,7 +233,7 @@ namespace Sage.Extensibility
 		/// <returns>Processed version of the specified <paramref name="value"/>.</returns>
 		public string Process(string value)
 		{
-			return TextEvaluator.Process(value, this.context);
+			return TextEvaluator.Process(value, context);
 		}
 
 		private static string ProcessChunk(SageContext context, string value)
@@ -246,7 +246,7 @@ namespace Sage.Extensibility
 				string varName = varMatch.Groups["name"].Value;
 				string varValue = variables.ContainsKey(varName)
 					? TextEvaluator.InvokeVariable(context, varName)
-					: TextEvaluator.Undefined;
+					: Undefined;
 
 				values.Add(varValue);
 				return string.Format("@@V{0}", values.Count - 1);
@@ -259,13 +259,13 @@ namespace Sage.Extensibility
 				string functionName = functMatch.Groups["name"].Value;
 				string functionArguments = functMatch.Groups["arguments"].Value;
 
-				string functionValue = TextEvaluator.Undefined;
+				string functionValue = Undefined;
 				if (functions.ContainsKey(functionName))
 				{
 					while ((valuesMatch = valueExpression.Match(functionArguments)).Success)
 					{
 						int index = int.Parse(valuesMatch.Groups["index"].Value);
-						string resultValue = values.Count > index ? values[index] : TextEvaluator.Undefined;
+						string resultValue = values.Count > index ? values[index] : Undefined;
 						functionArguments = functionArguments.Replace(valuesMatch.Groups[0].Value, resultValue);
 					}
 
@@ -280,7 +280,7 @@ namespace Sage.Extensibility
 			while ((valuesMatch = valueExpression.Match(result)).Success)
 			{
 				int index = int.Parse(valuesMatch.Groups["index"].Value);
-				string resultValue = values.Count > index ? values[index] : TextEvaluator.Undefined;
+				string resultValue = values.Count > index ? values[index] : Undefined;
 				result = result.Replace(valuesMatch.Groups[0].Value, resultValue);
 			}
 
@@ -323,7 +323,7 @@ namespace Sage.Extensibility
 
 		private static void OnAssembliesUpdated(object sender, EventArgs arg)
 		{
-			DiscoverFunctionsAndVariables();
+			TextEvaluator.DiscoverFunctionsAndVariables();
 		}
 	}
 }

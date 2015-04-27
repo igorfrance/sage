@@ -50,12 +50,12 @@ namespace Sage.Views
 
 			UrlResolver resolver = new UrlResolver(context);
 
-			this.processor = new XslCompiledTransform();
+			processor = new XslCompiledTransform();
 
 			try
 			{
-				this.processor.Load(stylesheetMarkup, XsltSettings.TrustedXslt, resolver);
-				this.dependencies.AddRange(resolver.Dependencies);
+				processor.Load(stylesheetMarkup, XsltSettings.TrustedXslt, resolver);
+				dependencies.AddRange(resolver.Dependencies);
 			}
 			catch (Exception ex)
 			{
@@ -71,14 +71,14 @@ namespace Sage.Views
 		{
 			get
 			{
-				return this.processor.OutputSettings;
+				return processor.OutputSettings;
 			}
 		}
 
 		/// <inheritdoc/>
 		public override void Transform(XmlNode inputXml, TextWriter outputWriter, SageContext context, Dictionary<string, object> arguments = null)
 		{
-			Transform(inputXml, XmlWriter.Create(outputWriter, this.OutputSettings), context, arguments);
+			this.Transform(inputXml, XmlWriter.Create(outputWriter, this.OutputSettings), context, arguments);
 		}
 
 		/// <inheritdoc/>
@@ -95,7 +95,7 @@ namespace Sage.Views
 
 			try
 			{
-				this.processor.Transform(reader, transformArgs, output, resolver);
+				processor.Transform(reader, transformArgs, output, resolver);
 			}
 			catch (Exception ex)
 			{

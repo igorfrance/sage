@@ -65,8 +65,8 @@ namespace Sage.Configuration
 		static ProjectConfiguration()
 		{
 			defaultConfiguration = new ProjectConfiguration();
-			if (File.Exists(SystemConfigurationPath))
-				defaultConfiguration.Parse(SystemConfigurationPath);
+			if (File.Exists(ProjectConfiguration.SystemConfigurationPath))
+				defaultConfiguration.Parse(ProjectConfiguration.SystemConfigurationPath);
 		}
 
 		private ProjectConfiguration(ProjectConfiguration initConfiguration = null)
@@ -106,6 +106,10 @@ namespace Sage.Configuration
 			this.ResourceLibraries = initConfiguration != null
 				? new Dictionary<string, ResourceLibraryInfo>(initConfiguration.ResourceLibraries)
 				: new Dictionary<string, ResourceLibraryInfo>();
+
+			this.ViewCaching = initConfiguration != null
+				? initConfiguration.ViewCaching
+				: new CachingConfiguration();
 
 			this.Type = initConfiguration != null
 				? initConfiguration.Type
@@ -155,7 +159,7 @@ namespace Sage.Configuration
 				Locales = this.Locales.Keys.ToList() 
 			};
 
-			this.customElements = initConfiguration != null
+			customElements = initConfiguration != null
 				? new List<XmlElement>(initConfiguration.customElements)
 				: new List<XmlElement>();
 
@@ -174,7 +178,7 @@ namespace Sage.Configuration
 		{
 			get
 			{
-				return Path.Combine(Project.AssemblyCodeBaseDirectory, ProjectConfiguration.SystemConfigName);
+				return Path.Combine(Project.AssemblyCodeBaseDirectory, SystemConfigName);
 			}
 		}
 
@@ -214,6 +218,11 @@ namespace Sage.Configuration
 		/// Gets the environment configuration.
 		/// </summary>
 		public EnvironmentConfiguration Environment { get; private set; }
+
+		/// <summary>
+		/// Gets the view caching configuration.
+		/// </summary>
+		internal CachingConfiguration ViewCaching { get; private set; }
 
 		/// <summary>
 		/// Gets the identification string of the project this configuration represents.
@@ -339,7 +348,7 @@ namespace Sage.Configuration
 
 			XmlDocument document = new XmlDocument { PreserveWhitespace = true };
 			document.Load(configStream);
-			return Create(document);
+			return ProjectConfiguration.Create(document);
 		}
 
 		/// <summary>
@@ -352,7 +361,7 @@ namespace Sage.Configuration
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(configPath));
 
 			XmlDocument document = ResourceManager.LoadXmlDocument(configPath);
-			return Create(document);
+			return ProjectConfiguration.Create(document);
 		}
 
 		/// <summary>
@@ -364,7 +373,7 @@ namespace Sage.Configuration
 		{
 			Contract.Requires<ArgumentNullException>(configDoc != null);
 
-			var result = Create();
+			var result = ProjectConfiguration.Create();
 			result.Parse(configDoc.DocumentElement);
 			return result;
 		}
@@ -478,7 +487,7 @@ namespace Sage.Configuration
 					target.AppendChild(info.ToXml(ownerDoc));
 			}
 
-			foreach (XmlElement custom in this.customElements)
+			foreach (XmlElement custom in customElements)
 				result.AppendChild(ownerDoc.ImportNode(custom, true));
 
 			return result;
@@ -517,7 +526,7 @@ namespace Sage.Configuration
 			foreach (XmlElement child in configNode.SelectNodes(
 				string.Format("*[namespace-uri() != '{0}']", XmlNamespaces.ProjectConfigurationNamespace)))
 			{
-				this.customElements.Add(child);
+				customElements.Add(child);
 			}
 
 			foreach (XmlElement element in configNode.SelectNodes("p:dependencies/p:extension", nm))
@@ -623,6 +632,10 @@ namespace Sage.Configuration
 			if (environmentNode != null)
 				this.Environment.Parse(environmentNode);
 
+			XmlElement cachingNode = configNode.SelectSingleElement("p:viewcaching", nm);
+			if (cachingNode != null)
+				this.ViewCaching.Parse(cachingNode);
+
 			foreach (XmlElement libraryNode in configNode.SelectNodes("p:libraries/p:library", nm))
 			{
 				ResourceLibraryInfo info = new ResourceLibraryInfo(libraryNode, this.Id);
@@ -713,7 +726,7 @@ namespace Sage.Configuration
 
 			string extensionName = extensionConfig.Name;
 
-			ProjectConfiguration.extensions[extensionName] = extensionConfig;
+			extensions[extensionName] = extensionConfig;
 			this.MergeExtension(extensionConfig);
 		}
 

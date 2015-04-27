@@ -58,11 +58,11 @@ namespace Sage.Views
 			this.Info = viewInfo;
 			this.Modules = new OrderedDictionary<string, IModule>();
 
-			if (string.IsNullOrWhiteSpace(ModuleSelectXPath))
+			if (string.IsNullOrWhiteSpace(ViewConfiguration.ModuleSelectXPath))
 				return;
 
 			var moduleDependencies = new Dictionary<string, List<string>>(); 
-			var moduleNodes = this.Info.ConfigDocument.SelectNodes(ModuleSelectXPath, XmlNamespaces.Manager);
+			var moduleNodes = this.Info.ConfigDocument.SelectNodes(ViewConfiguration.ModuleSelectXPath, XmlNamespaces.Manager);
 			var moduleList = moduleNodes.ToList();
 
 			// tag all modules with unique ids
@@ -103,6 +103,7 @@ namespace Sage.Views
 
 				var contains = moduleDependencies[parentId].Contains(childId);
 				return contains ? 1 : 0;
+
 			}).ToList();
 
 			// create the modules and populate the modules dictionary
@@ -210,13 +211,13 @@ namespace Sage.Views
 		/// <returns>
 		/// An object that contains the result of processing this configuration.
 		/// </returns>
-		public ViewInput Process()
+		public ViewModel Process()
 		{
-			ViewInput input = new ViewInput(this, configElement);
+			ViewModel model = new ViewModel(this, configElement);
 
 			foreach (string moduleId in this.Modules.Keys)
 			{
-				var moduleElement = (XmlElement) input.ConfigNode.SelectSingleNode(string.Format("//mod:*[@id='{0}']", moduleId), XmlNamespaces.Manager);
+				var moduleElement = (XmlElement) model.ConfigNode.SelectSingleNode(string.Format("//mod:*[@id='{0}']", moduleId), XmlNamespaces.Manager);
 				string moduleName = moduleElement.LocalName;
 				string moduleCategory = moduleElement.GetAttribute("category");
 
@@ -225,7 +226,7 @@ namespace Sage.Views
 					: moduleCategory + "/" + moduleName;
 
 				ModuleConfiguration moduleConfig;
-				if (Context.ProjectConfiguration.Modules.TryGetValue(moduleKey, out moduleConfig))
+				if (this.Context.ProjectConfiguration.Modules.TryGetValue(moduleKey, out moduleConfig))
 				{
 					XmlElement moduleDefaults = moduleConfig.GetDefault(this.Context);
 					if (moduleDefaults != null)
@@ -254,7 +255,7 @@ namespace Sage.Views
 					}
 					else
 					{
-						input.AddModuleResult(moduleKey, result);
+						model.AddModuleResult(moduleKey, result);
 						if (result.ResultElement != null)
 						{
 							XmlNode newElement = moduleElement.OwnerDocument.ImportNode(result.ResultElement, true);
@@ -265,15 +266,15 @@ namespace Sage.Views
 			}
 
 			// this section adds library reference for <sage:library[@ref]/> elements
-			XmlNodeList libraries = input.ConfigNode.SelectNodes(LibrarySelectXpath, XmlNamespaces.Manager);
+			XmlNodeList libraries = model.ConfigNode.SelectNodes(LibrarySelectXpath, XmlNamespaces.Manager);
 			foreach (XmlElement library in libraries)
 			{
 				string libraryName = library.GetAttribute("ref");
-				input.AddViewLibraryReference(libraryName);
+				model.AddViewLibraryReference(libraryName);
 				library.ParentNode.RemoveChild(library);
 			}
 
-			return input;
+			return model;
 		}
 
 		/// <inheritdoc/>

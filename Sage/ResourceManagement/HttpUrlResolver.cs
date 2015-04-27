@@ -40,11 +40,11 @@
 			var request = WebRequest.Create(uri);
 			request.Timeout = timeout;
 
-			if (!string.IsNullOrWhiteSpace(this.accept))
-				request.Headers.Add(HttpRequestHeader.AcceptEncoding, this.accept);
+			if (!string.IsNullOrWhiteSpace(accept))
+				request.Headers.Add(HttpRequestHeader.AcceptEncoding, accept);
 
-			if (!string.IsNullOrWhiteSpace(this.acceptLanguage))
-				request.Headers.Add(HttpRequestHeader.AcceptLanguage, this.acceptLanguage);
+			if (!string.IsNullOrWhiteSpace(acceptLanguage))
+				request.Headers.Add(HttpRequestHeader.AcceptLanguage, acceptLanguage);
 
 			var result = new EntityResult();
 			try

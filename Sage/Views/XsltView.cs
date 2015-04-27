@@ -30,16 +30,19 @@ namespace Sage.Views
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(XsltView).FullName);
 		private readonly XsltTransform processor;
+		private readonly ViewInfo viewInfo;
+		private const string HtmlGroup = "xhtml";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XsltView"/> class.
 		/// </summary>
-		/// <param name="processor">The processor.</param>
-		public XsltView(XsltTransform processor)
+		/// <param name="viewInfo">Object that provides context information required for this view.</param>
+		public XsltView(ViewInfo viewInfo)
 		{
-			Contract.Requires<ArgumentNullException>(processor != null);
+			Contract.Requires<ArgumentNullException>(viewInfo != null);
 
-			this.processor = processor;
+			this.viewInfo = viewInfo;
+			processor = viewInfo.Processor;
 		}
 
 		/// <summary>
@@ -51,7 +54,26 @@ namespace Sage.Views
 		public virtual void Render(ViewContext viewContext, TextWriter textWriter)
 		{
 			var startTime = DateTime.Now.Ticks;
-			this.Transform(viewContext, textWriter, this.processor);
+
+			var context = viewInfo.Context;
+			var cache = context.ViewCache;
+			var caching = context.ProjectConfiguration.ViewCaching;
+			var localName = context.LocalPath;
+
+			if (caching.Enabled)
+			{
+				var result = new StringWriter();
+				this.Transform(viewContext, result, processor);
+
+				var time = DateTime.Now;
+				cache.Save(localName, result.ToString(), HtmlGroup);
+				log.DebugFormat("Saved cached content to {0} in {1}ms", localName, (DateTime.Now - time).Milliseconds);
+				textWriter.Write(result.ToString());
+			}
+			else
+			{
+				this.Transform(viewContext, textWriter, processor);
+			}
 
 			var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
 			log.DebugFormat("Completed rendering view in {0}ms", elapsed.Milliseconds);
@@ -68,7 +90,7 @@ namespace Sage.Views
 			Contract.Requires<ArgumentException>(viewContext.Controller is SageController);
 			Contract.Requires<ArgumentNullException>(textWriter != null);
 
-			this.Transform(viewContext, textWriter, this.processor);
+			this.Transform(viewContext, textWriter, processor);
 		}
 
 		/// <summary>

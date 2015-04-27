@@ -70,7 +70,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The <see cref="WebResponse"/> resulting from issuing a request to <paramref name="url"/>.</returns>
 		public static WebResponse GetHttpResponse(string url)
 		{
-			return GetHttpResponse(url, null, null);
+			return ResourceManager.GetHttpResponse(url, null, null);
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace Sage.ResourceManagement
 		/// <returns>The contents of the remote file from the specified <paramref name="url"/></returns>
 		public static string GetRemoteTextFile(string url)
 		{
-			WebResponse response = GetHttpResponse(url, null, null);
+			WebResponse response = ResourceManager.GetHttpResponse(url, null, null);
 			StreamReader reader = new StreamReader(response.GetResponseStream());
 			string responseText = reader.ReadToEnd();
 			reader.Close();
@@ -116,7 +116,7 @@ namespace Sage.ResourceManagement
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
-			return LoadXmlDocument(path, null);
+			return ResourceManager.LoadXmlDocument(path, null);
 		}
 
 		/// <summary>
@@ -144,22 +144,25 @@ namespace Sage.ResourceManagement
 			{
 				try
 				{
-					result = LoadGlobalizedDocument(path, context);
+					result = ResourceManager.LoadGlobalizedDocument(path, context);
 				}
 				catch (InternationalizationError err)
 				{
 					log.ErrorFormat("Failed to internationalize '{0}': {1}", path, err.Message);
-					result = LoadSourceDocument(path, context);
+					result = ResourceManager.LoadSourceDocument(path, context);
 				}
 
 				result.ReplaceChild(context.ProcessNode(result), result.DocumentElement);
 			}
 			else
 			{
-				result = LoadSourceDocument(path, context);
+				result = ResourceManager.LoadSourceDocument(path, context);
 			}
 
-			log.DebugFormat("Loaded '{0}' to sage:data in {1}ms", path, Math.Round((DateTime.Now - before).TotalMilliseconds));
+			var elapsed = (DateTime.Now - before).Milliseconds;
+			if (elapsed > 0)
+				log.DebugFormat("Loaded '{0}' to sage:data in {1}ms", path, elapsed);
+
 			return result;
 		}
 
@@ -175,9 +178,9 @@ namespace Sage.ResourceManagement
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
-			CacheableXmlDocument result = LoadXmlDocument(path, context);
+			CacheableXmlDocument result = ResourceManager.LoadXmlDocument(path, context);
 			if (schemaPath != null)
-				ValidateDocument(result, schemaPath);
+				ResourceManager.ValidateDocument(result, schemaPath);
 
 			return result;
 		}
@@ -246,7 +249,7 @@ namespace Sage.ResourceManagement
 			document.PreserveWhitespace = true;
 			document.LoadXml(element.OuterXml);
 
-			return ValidateDocument(document, schemaPath);
+			return ResourceManager.ValidateDocument(document, schemaPath);
 		}
 
 		/// <summary>
@@ -258,7 +261,7 @@ namespace Sage.ResourceManagement
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(path));
 
-			return LoadXmlDocument(path, context);
+			return ResourceManager.LoadXmlDocument(path, context);
 		}
 
 		/// <summary>
@@ -281,9 +284,7 @@ namespace Sage.ResourceManagement
 			{
 				log.ErrorFormat(
 					"The requested phrase '{0}' could not be retrieved because the current category '{1}' has no dictionary in the current locale '{2}'.",
-					phraseId,
-					context.Category,
-					context.Locale);
+					phraseId, context.Category, context.Locale);
 
 				return string.Format(MissingPhrasePlaceholder, phraseId);
 			}
@@ -294,9 +295,7 @@ namespace Sage.ResourceManagement
 			{
 				log.ErrorFormat(
 					"The requested phrase '{0}' could not be retrieved because the dictionary for category '{1}' and locale '{2}' has not such phrase defined.",
-					phraseId,
-					context.Category,
-					context.Locale);
+					phraseId, context.Category, context.Locale);
 
 				return string.Format(MissingPhrasePlaceholder, phraseId);
 			}
