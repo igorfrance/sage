@@ -82,8 +82,8 @@ namespace Sage.Tools.Utilities
 
 		public void Run()
 		{
-			var sourcePath = this.arguments["source"];
-			var targetPath = this.arguments["target"];
+			var sourcePath = arguments["source"];
+			var targetPath = arguments["target"];
 
 			if (sourcePath != null)
 				sourcePath = sourcePath.Trim();
@@ -142,7 +142,7 @@ namespace Sage.Tools.Utilities
 
 			sourcePath = new DirectoryInfo(sourcePath).FullName;
 
-			XmlDocument configurationDocument = CreateExtensionConfigurationDocument(extensionName);
+			XmlDocument configurationDocument = ExtensionBuilder.CreateExtensionConfigurationDocument(extensionName);
 			XmlElement extensionRoot = configurationDocument.DocumentElement;
 
 			ProjectConfiguration config = ProjectConfiguration.Create(configSourcePath);
@@ -207,15 +207,15 @@ namespace Sage.Tools.Utilities
 					configurationDocument.CreateElement("p:linking", XmlNamespaces.ProjectConfigurationNamespace);
 
 				// libraries, modules, links, metaviews, routes
-				CopyConfiguration(config.Package.Links, "p:link", "p:link", linkingElement, extensionRoot);
-				CopyConfiguration(config.Package.Formats, "p:formats", "p:format", linkingElement, extensionRoot);
+				ExtensionBuilder.CopyConfiguration(config.Package.Links, "p:link", "p:link", linkingElement, extensionRoot);
+				ExtensionBuilder.CopyConfiguration(config.Package.Formats, "p:formats", "p:format", linkingElement, extensionRoot);
 				if (linkingElement.SelectNodes("*").Count != 0)
 					extensionRoot.AppendElement(linkingElement);
 
-				CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:metaView", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
-				CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
+				ExtensionBuilder.CopyConfiguration(config.Package.MetaViews, "p:metaViews", "p:metaView", configRoot, extensionRoot);
+				ExtensionBuilder.CopyConfiguration(config.Package.Routes, "p:routing", "p:route", configRoot, extensionRoot);
+				ExtensionBuilder.CopyConfiguration(config.Package.Libraries, "p:libraries", "p:library", configRoot, extensionRoot);
+				ExtensionBuilder.CopyConfiguration(config.Package.Modules, "p:modules", "p:module", configRoot, extensionRoot);
 
 				configurationDocument.Save(configTargetPath);
 

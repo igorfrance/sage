@@ -102,8 +102,8 @@ namespace Sage.Tools.Utilities
 			{
 				HttpContextMock httpContext = new HttpContextMock("sage");
 
-				this.context = new SageContext(httpContext, arguments["category"], this.MapPath);
-				this.categoryPath = context.Path.GetPhysicalCategoryPath(arguments["category"]);
+				context = new SageContext(httpContext, arguments["category"], this.MapPath);
+				categoryPath = context.Path.GetPhysicalCategoryPath(arguments["category"]);
 
 				return true;
 			}
@@ -126,7 +126,7 @@ namespace Sage.Tools.Utilities
 		internal void GlobalizeResources()
 		{
 			log.InfoFormat("Globalizing resources for category '{0}' in directory '{1}'", 
-				arguments["category"], this.categoryPath);
+				arguments["category"], categoryPath);
 
 			DateTime started = DateTime.Now;
 			XmlDocument summaryDoc = new XmlDocument();
@@ -155,7 +155,7 @@ namespace Sage.Tools.Utilities
 			XmlElement resourcesElement = categorySummary.AppendElement(summaryDoc.CreateElement("resources"));
 			resourcesElement.SetAttribute("path", arguments["targetPath"]);
 
-			if (Directory.Exists(this.categoryPath))
+			if (Directory.Exists(categoryPath))
 			{
 				var files = this.GetFiles();
 				if (files.Count() == 0)
@@ -164,7 +164,7 @@ namespace Sage.Tools.Utilities
 				}
 				else
 				{
-					IEnumerable<XmlResource> resources = GetGlobalizableResources();
+					IEnumerable<XmlResource> resources = this.GetGlobalizableResources();
 					foreach (XmlResource resource in resources)
 					{
 						log.InfoFormat("Processing {0}", resource.Name.Signature);
@@ -177,7 +177,7 @@ namespace Sage.Tools.Utilities
 			else
 			{
 				log.DebugFormat("The target directory '{0}' for category {1} doesn't exist.",
-					this.categoryPath, arguments["category"]);
+					categoryPath, arguments["category"]);
 			}
 
 			DateTime completed = DateTime.Now;
@@ -185,7 +185,7 @@ namespace Sage.Tools.Utilities
 			internationalization.SetAttribute("duration", string.Format("{0}.{1:D3}s", elapsed.Seconds, elapsed.Milliseconds));
 
 			if (!string.IsNullOrWhiteSpace(arguments["reportpath"]))
-				SummarizeOverview(summaryDoc, arguments["reportpath"]);
+				this.SummarizeOverview(summaryDoc, arguments["reportpath"]);
 		}
 
 		internal List<string> GetFiles()
@@ -193,7 +193,7 @@ namespace Sage.Tools.Utilities
 			string globDirName = context.ProjectConfiguration.PathTemplates.GlobalizedDirectory.Replace("/", string.Empty).Replace("\\", string.Empty);
 			string[] skipDirs = new[] { "dictionary", globDirName };
 			
-			var files = new List<string>(Directory.GetFiles(this.categoryPath, "*.xml", SearchOption.AllDirectories))
+			var files = new List<string>(Directory.GetFiles(categoryPath, "*.xml", SearchOption.AllDirectories))
 				.Where(f => !f.ContainsAnyOf(skipDirs));
 
 			return files.ToList();
@@ -201,10 +201,10 @@ namespace Sage.Tools.Utilities
 
 		internal void MergeAssets()
 		{
-			log.InfoFormat("Merging assets within {0}...", this.categoryPath);
+			log.InfoFormat("Merging assets within {0}...", categoryPath);
 
 			string searchName = Path.GetFileName(context.ProjectConfiguration.PathTemplates.GlobalizedDirectory.TrimEnd('/', '\\'));
-			string[] directories = Directory.GetDirectories(this.categoryPath, searchName, SearchOption.AllDirectories);
+			string[] directories = Directory.GetDirectories(categoryPath, searchName, SearchOption.AllDirectories);
 			foreach (string folder in directories)
 			{
 				string targetDir = Path.GetDirectoryName(folder);
@@ -322,14 +322,14 @@ namespace Sage.Tools.Utilities
 			string globDirName = context.ProjectConfiguration.PathTemplates.GlobalizedDirectory.Replace("/", string.Empty).Replace("\\", string.Empty);
 			string[] skipDirs = new[] { "dictionary", globDirName };
 			
-			var files = new List<string>(Directory.GetFiles(this.categoryPath, "*.xml", SearchOption.AllDirectories))
+			var files = new List<string>(Directory.GetFiles(categoryPath, "*.xml", SearchOption.AllDirectories))
 				.Where(f => !f.ContainsAnyOf(skipDirs));
 
 			List<XmlResource> result = new List<XmlResource>();
 			foreach (string filePath in files)
 			{
 				XmlResource resource = new XmlResource(filePath, context);
-				XmlDocument sourceDoc = resource.LoadSourceDocument(this.context.Locale);
+				XmlDocument sourceDoc = resource.LoadSourceDocument(context.Locale);
 				if (resource.IsGlobalizable(sourceDoc) && result.Count(r => r.Name.Signature == resource.Name.Signature) == 0)
 					result.Add(resource);
 			}

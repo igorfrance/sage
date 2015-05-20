@@ -13,6 +13,10 @@
 	using log4net;
 	using Sage.Configuration;
 
+	/// <summary>
+	/// Scans the specified directory for sage extension projects,
+	/// then builds and installs them as extensions in any project that depend on them.
+	/// </summary>
 	internal class ExtensionRefresher : IUtility
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ExtensionRefresher).FullName);

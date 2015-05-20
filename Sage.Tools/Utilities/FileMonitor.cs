@@ -23,8 +23,8 @@ namespace Sage.Tools.Utilities
 
 	internal class FileMonitor : IUtility
 	{
-		private static readonly ConsoleColor foregroundColor = Console.ForegroundColor;
-		private static readonly ConsoleColor backgroundColor = Console.BackgroundColor;
+		private static readonly ConsoleColor DefaultForeground = Console.ForegroundColor;
+		private static readonly ConsoleColor DefaultBackground = Console.BackgroundColor;
 
 		private static int refreshTimeout = 50;
 
@@ -67,7 +67,7 @@ namespace Sage.Tools.Utilities
 			if (!string.IsNullOrEmpty(filePath))
 			{
 				if (!Path.IsPathRooted(filePath))
-					filePath = Path.Combine(Program.ApplicationPath, filePath);
+					filePath = Path.Combine(Environment.CurrentDirectory, filePath);
 
 				return true;
 			}
@@ -89,44 +89,44 @@ namespace Sage.Tools.Utilities
 
 		public void Run()
 		{
-			int loopCounter = 0;
-			bool keepLooping = true;
+			var loopCounter = 0;
+			var running = true;
 
-			while (keepLooping)
+			while (running)
 			{
 				try
 				{
 					if (Console.KeyAvailable)
 					{
-						ConsoleKeyInfo info = Console.ReadKey();
+						var info = Console.ReadKey();
 						if (info.Key == ConsoleKey.Spacebar)
 							break;
 
 						if (info.Key == ConsoleKey.C)
 						{
 							Console.Clear();
-							ShowInstructions();
+							FileMonitor.ShowInstructions();
 						}
 					}
 
-					long fileLength = new FileInfo(filePath).Length;
+					var fileLength = new FileInfo(filePath).Length;
 					if (fileLength != lastLength || File.GetLastWriteTime(filePath) > lastChecked)
 					{
-						ShowNewLines();
+						FileMonitor.ShowNewLines();
 						loopCounter = 0;
 					}
 
 					if (++loopCounter == 4)
-						ShowInstructions();
+						FileMonitor.ShowInstructions();
 				}
 				catch (Exception e)
 				{
 					Console.ForegroundColor = ConsoleColor.White;
 					Console.BackgroundColor = ConsoleColor.DarkRed;
 					Console.WriteLine("EXIT: " + e.Message);
-					Console.ForegroundColor = foregroundColor;
-					Console.BackgroundColor = backgroundColor;
-					keepLooping = false;
+					Console.ForegroundColor = DefaultForeground;
+					Console.BackgroundColor = DefaultBackground;
+					running = false;
 				}
 
 				Thread.Sleep(refreshTimeout);
@@ -152,8 +152,8 @@ namespace Sage.Tools.Utilities
 			for (int i = lastIndex; i < lines.Length; i++, lastIndex++)
 			{
 				var line = new Line(lines[i]);
-				Console.ForegroundColor = line.Color ?? foregroundColor;
-				Console.BackgroundColor = line.BgColor ?? backgroundColor;
+				Console.ForegroundColor = line.Color ?? DefaultForeground;
+				Console.BackgroundColor = line.BgColor ?? DefaultBackground;
 				Console.WriteLine(line.Text);
 			}
 
@@ -169,8 +169,8 @@ namespace Sage.Tools.Utilities
 			Console.WriteLine();
 			Console.Write("Press space to terminate, C to clear");
 
-			Console.ForegroundColor = foregroundColor;
-			Console.BackgroundColor = backgroundColor;
+			Console.ForegroundColor = DefaultForeground;
+			Console.BackgroundColor = DefaultBackground;
 
 			Console.WriteLine();
 			Console.WriteLine();

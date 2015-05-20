@@ -182,6 +182,7 @@ namespace Sage.Controllers
 				log.FatalFormat("The specified view name '{0}' doesn't exist.", viewName);
 				return this.PageNotFound();
 			}
+
 			var cache = this.Context.ViewCache;
 			var caching = this.Context.ProjectConfiguration.ViewCaching;
 			var cachingEnabled = !view.IsNoCacheView && !this.Context.IsNoCacheRequest && caching.Enabled;

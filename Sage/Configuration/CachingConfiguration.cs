@@ -24,6 +24,7 @@
 			this.Directory = configElement.GetString("p:directory", XmlNamespaces.Manager);
 
 			var groups = configElement.SelectNodes("p:groups/p:group", XmlNamespaces.Manager);
+			this.Groups = new Dictionary<string, Group>();
 			foreach (XmlElement node in groups)
 			{
 				var group = new Group(node);

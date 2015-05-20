@@ -66,7 +66,7 @@ namespace Sage.Tools
 		internal static int Main(string[] arguments)
 		{
 			if (arguments.Length == 0)
-				return ShowUsage();
+				return Program.ShowUsage();
 
 			string commandName = arguments[0];
 			if (commandName == "help")
@@ -82,7 +82,7 @@ namespace Sage.Tools
 			if (commandName == "help" && arguments.Length > 1)
 			{
 				string programName = arguments[1];
-				return ShowUsage(programName);
+				return Program.ShowUsage(programName);
 			}
 
 			if (utilities.ContainsKey(commandName))
@@ -119,7 +119,7 @@ namespace Sage.Tools
 				return 1;
 			}
 
-			return ShowUsage();
+			return Program.ShowUsage();
 		}
 
 		internal static string MapPath(string path)
@@ -128,7 +128,7 @@ namespace Sage.Tools
 				path = "~/";
 
 			string result = path.Replace(
-				"~", ApplicationPath).Replace(
+				"~", Environment.CurrentDirectory).Replace(
 				"//", "/").Replace(
 				"/", "\\");
 
@@ -137,7 +137,7 @@ namespace Sage.Tools
 
 		internal static HttpContextBase CreateHttpContext(string url)
 		{
-			return CreateHttpContext(url, "default.aspx");
+			return Program.CreateHttpContext(url, "default.aspx");
 		}
 
 		internal static HttpContextBase CreateHttpContext(string url, string physicalPath)

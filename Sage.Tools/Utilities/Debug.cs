@@ -33,7 +33,7 @@
 
 		public void Run()
 		{
-			ShowInstructions();
+			Debug.ShowInstructions();
 			while (true)
 			{
 				if (Console.KeyAvailable)
@@ -43,7 +43,7 @@
 						break;
 				}
 
-				Thread.Sleep(TimeSpan.FromMilliseconds(Debug.TimerMilliseconds));
+				Thread.Sleep(TimeSpan.FromMilliseconds(TimerMilliseconds));
 			}
 		}
 

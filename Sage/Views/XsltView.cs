@@ -59,8 +59,9 @@ namespace Sage.Views
 			var cache = context.ViewCache;
 			var caching = context.ProjectConfiguration.ViewCaching;
 			var localName = context.LocalPath;
+			var cachingEnabled = !viewInfo.IsNoCacheView && !context.IsNoCacheRequest && caching.Enabled;
 
-			if (caching.Enabled)
+			if (cachingEnabled)
 			{
 				var result = new StringWriter();
 				this.Transform(viewContext, result, processor);
