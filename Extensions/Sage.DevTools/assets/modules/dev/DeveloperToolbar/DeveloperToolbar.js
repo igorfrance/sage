@@ -47,7 +47,7 @@ sage.dev.Toolbar = new function Toolbar()
 			.on("mouseenter", onToolbarMouseOver)
 			.on("mouseleave", onToolbarMouseOut);
 
-		if (atom.cookie.get("devtools") != "off")
+		if (atom.cookie.get("devtools") == "on")
 			$toolbar.show();
 
 		jQuery(document).bind("keydown", onDocumentKeyDown);
