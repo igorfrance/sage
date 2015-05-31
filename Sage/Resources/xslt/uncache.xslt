@@ -36,4 +36,6 @@
 		<xsl:value-of select="."/>
 	</xsl:template>
 
+	<xsl:template match="sage:request"/>
+
 </xsl:stylesheet>
