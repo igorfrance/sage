@@ -127,7 +127,10 @@ namespace Sage.ResourceManagement
 
 		private string GetResourceName(string uri)
 		{
-			return uri.Replace(this.GetResourcePrefix(), string.Empty).TrimEnd('/', '\\');
+			return uri
+				.Replace(this.GetResourcePrefix(), string.Empty)
+				.Replace("/~", "~")
+				.TrimEnd('/', '\\');
 		}
 
 		private string GetResourcePrefix()

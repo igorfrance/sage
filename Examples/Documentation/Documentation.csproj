@@ -98,11 +98,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\Kelp\Kelp\Kelp.csproj">
+    <ProjectReference Include="..\..\Kelp\Kelp\Kelp.csproj">
       <Project>{aa487e40-4f39-46bf-a8fd-e15a146f32ba}</Project>
       <Name>Kelp</Name>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\Sage\Sage.csproj">
+    <ProjectReference Include="..\..\Sage\Sage.csproj">
       <Project>{e647ebd1-64cf-48eb-b20d-0133c24899f6}</Project>
       <Name>Sage</Name>
     </ProjectReference>

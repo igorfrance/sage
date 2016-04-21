@@ -5,7 +5,7 @@
 	xmlns:sage="http://www.cycle99.com/schemas/sage/sage.xsd"
 	xmlns:tpl="http://www.cycle99.com/schemas/sage/extensions/templating.xsd">
 
-	<xsl:variable name="templates" select="document('sageres:///assets/configuration/templates/global.html')/tpl:dictionary"/>
+	<xsl:variable name="templates" select="document('sageres:///~/assets/configuration/templates/global.html')/tpl:dictionary"/>
 
 	<xsl:template match="*[@tpl:name]">
 		<xsl:variable name="groupName" select="substring-before(@tpl:name, '.')"/>
