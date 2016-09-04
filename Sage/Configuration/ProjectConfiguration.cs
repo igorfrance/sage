@@ -795,6 +795,7 @@ namespace Sage.Configuration
 				}
 
 				ResourceLibraryInfo library = extensionConfig.ResourceLibraries[name];
+				library.Resources.Each(r => r.Extension = extensionName);
 				library.Extension = extensionName;
 				this.ResourceLibraries.Add(name, library);
 			}
@@ -834,6 +835,7 @@ namespace Sage.Configuration
 				}
 
 				ModuleConfiguration module = extensionConfig.Modules[name];
+				module.Resources.Each(r => r.Extension = extensionName);
 				module.Extension = extensionName;
 				this.Modules.Add(name, module);
 			}

@@ -361,7 +361,7 @@ namespace Sage.Controllers
 						if (bodyResources.Count != 0)
 						{
 							XmlNode bodyNode = resourceRoot.AppendElement("sage:body", XmlNamespaces.SageNamespace);
-							foreach (Resource resource in bodyResources)
+							foreach (Resource resource in bodyResources.OrderBy(r => r.Extension))
 							{
 								var time = DateTime.Now;
 								bodyNode.AppendChild(resource.ToXml(result, this.Context));
