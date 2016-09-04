@@ -100,7 +100,7 @@ namespace Sage.Controllers
 			var pathParts = childPath.TrimStart('/').Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 			if (pathParts.Length >= 1)
 			{
-				name = pathParts[0];
+				this.name = pathParts[0];
 			}
 
 			if (pathParts.Length >= 2)
@@ -111,7 +111,22 @@ namespace Sage.Controllers
 					action = string.Join("/", action, DefaultAction);
 			}
 
-			genericViewInfo = this.GetViewInfo(action);
+			this.genericViewInfo = this.GetViewInfo(action);
+			if (!this.genericViewInfo.Exists && pathParts.Length == 1)
+			{
+				// try using home/<controller> path to see if that works
+				action = this.name;
+				this.name = DefaultController;
+				var viewInfo2 = this.GetViewInfo(action);
+				if (viewInfo2.Exists)
+				{
+					this.genericViewInfo = viewInfo2;
+				}
+				else
+				{
+					this.name = action;
+				}
+			}
 		}
 	}
 }
