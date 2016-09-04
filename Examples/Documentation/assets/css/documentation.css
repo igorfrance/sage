@@ -64,11 +64,11 @@ h1 + .breadcrumb
 h2
 	{ color: #82879f; font-size: 150%; font-weight: normal; margin-bottom: 10px; text-shadow: 1px 1px 3px #919191; }
 h3
-	{ clear: both; color: #95a2b0; border-bottom: 1px solid #b1bac5; font-size: 130%; font-weight: normal; }
+	{ clear: both; color: #000; border-bottom: 1px solid #b1bac5; font-size: 110%; font-weight: bold; }
 h5
-	 { font-size: 120%; font-weight: normal; color: #666; overflow: hidden; }
+	{ font-size: 120%; font-weight: normal; color: #000; overflow: hidden; }
 h6
-	{ font-size: 85%; font-weight: bold; margin: 0; overflow: hidden; color: #3E3E3E; }
+	{ font-size: 85%; font-weight: bold; margin: 0; overflow: hidden; color: #000; }
 
 h2.section
 	{ clear: both; font-weight: normal; text-align: right; font-style: italic; color: #0080c0;
@@ -543,8 +543,8 @@ section.title > article
 section.topic
 	{	margin-bottom: 50px; }
 section.topic > header
-	{ margin: 0 0 15px 0; color: #95a2b0; border-bottom: 1px solid #b1bac5;
-		font-size: 130%; font-weight: normal; }
+	{ margin: 0 0 15px 0; color: #000; border-bottom: 1px solid #b1bac5;
+		font-size: 110%; font-weight: bold; }
 section.topic > article
 	{ display: block; }
 section.topic > article > summary

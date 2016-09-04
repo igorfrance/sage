@@ -72,7 +72,6 @@
 		<xsl:variable name="currentLink" select="$navigation//xhtml:a[@href=$currentHref][1]"/>
 		<xsl:variable name="children" select="$currentLink/parent::node()/xhtml:ul/xhtml:li/xhtml:a"/>
 
-		CURRENT: <xsl:value-of select="$currentHref"/>
 		<xsl:if test="count($children) != 0">
 			<section class="related children">
 				<header>
