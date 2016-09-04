@@ -170,9 +170,18 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public virtual string GetResolvedWebPath(SageContext context)
 		{
+			var uri = new Uri(this.Path, UriKind.RelativeOrAbsolute);
+			if (uri.IsAbsoluteUri)
+				return this.Path;
+
 			string physicalPath = this.GetResolvedPhysicalPath(context);
 			return context.Path.GetRelativeWebPath(physicalPath, true);
 		}
+
+		/// <summary>
+		/// Optional name of extension that defines this library.
+		/// </summary>
+		public string Extension { get; internal set; }
 
 		/// <summary>
 		/// Determines whether this resource is valid for the specified user agent ID.
