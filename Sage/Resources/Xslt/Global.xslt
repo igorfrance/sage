@@ -63,6 +63,10 @@
 					<xsl:value-of select="' '"/>
 					<xsl:value-of select="@class"/>
 				</xsl:if>
+				<xsl:variable name="classes">
+					<xsl:apply-templates select="." mode="html-classes"/>
+				</xsl:variable>
+				<xsl:value-of select="$classes"/>
 			</xsl:attribute>
 			<xsl:attribute name="lang">
 				<xsl:value-of select="$request/@language"/>
@@ -75,6 +79,8 @@
 		</html>
 	</xsl:template>
 
+	<xsl:template match="xhtml:html" mode="html-classes"/>
+	
 	<xsl:template match="xhtml:head">
 		<xsl:variable name="styles" select="$response/sage:resources/sage:head/xhtml:link | xhtml:link | xhtml:style"/>
 		<xsl:variable name="scripts" select="$response/sage:resources/sage:head/xhtml:script | xhtml:script"/>
@@ -94,11 +100,22 @@
 		<body>
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates select="." mode="hook-after-body-start"/>
-			<xsl:apply-templates select="node()"/>
+			<xsl:apply-templates select="node()" mode="body-node"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:link"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:script"/>
+			<xsl:apply-templates select="xhtml:script"/>
 			<xsl:apply-templates select="." mode="hook-before-body-end"/>
 		</body>
+	</xsl:template>
+	
+	<xsl:template match="xhtml:script" mode="body-node"/>
+
+	<xsl:template match="text()" mode="body-node">
+		<xsl:value-of select="."/>
+	</xsl:template>
+
+	<xsl:template match="*" mode="body-node">
+		<xsl:apply-templates select="."/>
 	</xsl:template>
 
 	<xsl:template match="xhtml:script[starts-with(@src, 'kelp://')]">
