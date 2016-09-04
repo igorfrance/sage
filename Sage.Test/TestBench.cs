@@ -65,4 +65,10 @@ namespace Sage.Test
 			log.DebugFormat("Mime type is: " + mimeType);
 		};
 	}
+
+	[Tags(Categories.TestBench)]
+	public class When_source_code_changes
+	{
+		private It Run_this_test_to_rebuild = () => System.Diagnostics.Debug.WriteLine("Rebuilt");
+	}
 }
