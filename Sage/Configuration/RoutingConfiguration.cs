@@ -29,6 +29,19 @@ namespace Sage.Configuration
 	public class RoutingConfiguration : Dictionary<string, RouteInfo>, IXmlConvertible
 	{
 		/// <summary>
+		/// The name of the controller to use if <see cref="DefaultController"/> was not set for this configuration object.
+		/// </summary>
+		public const string SystemDefaultController = "GenericController";
+
+		/// <summary>
+		/// The name of the action to use if <see cref="DefaultAction"/> was not set for this configuration object.
+		/// </summary>
+		public const string SystemDefaultAction = "Action";
+
+		private string defaultController;
+		private string defaultAction;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="RoutingConfiguration"/> class.
 		/// </summary>
 		public RoutingConfiguration()
@@ -44,7 +57,39 @@ namespace Sage.Configuration
 		/// <summary>
 		/// Gets the default controller namespace for routes that don't define their namespace explicitly.
 		/// </summary>
-		public string DefaultNamespace { get; private set; }
+		public string DefaultNamespace { get; set; }
+
+		/// <summary>
+		/// Gets the name of the controller to which to route all views that don't have a specific controller defined.
+		/// </summary>
+		public string DefaultController
+		{
+			get
+			{
+				return defaultController ?? SystemDefaultController;
+			}
+
+			set
+			{
+				this.defaultController = !string.IsNullOrWhiteSpace(value) ? value : null;
+			}
+		}
+
+		/// <summary>
+		/// Gets the name of the view to which to route any views that don't have a specific controller defined.
+		/// </summary>
+		public string DefaultAction
+		{
+			get
+			{
+				return defaultAction ?? SystemDefaultAction;
+			}
+
+			set
+			{
+				this.defaultAction = !string.IsNullOrWhiteSpace(value) ? value : null;
+			}
+		}
 
 		/// <inheritdoc/>
 		public void Parse(XmlElement configElement)
@@ -53,6 +98,9 @@ namespace Sage.Configuration
 				throw new ArgumentNullException("configElement");
 
 			this.DefaultNamespace = configElement.GetAttribute("defaultNamespace");
+			this.DefaultController = configElement.GetAttribute("defaultController");
+			this.DefaultAction = configElement.GetAttribute("defaultAction");
+
 			foreach (XmlElement routeNode in configElement.SelectNodes("p:route", XmlNamespaces.Manager))
 			{
 				RouteInfo route = new RouteInfo(routeNode);
