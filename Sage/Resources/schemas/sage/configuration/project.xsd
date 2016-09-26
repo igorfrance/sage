@@ -121,14 +121,10 @@
 					<xs:sequence>
 						<xs:element name="route" type="route" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:attribute name="defaultNamespace" use="optional">
-						<xs:simpleType>
-							<xs:restriction base="xs:string">
-								<xs:pattern value=".*[\S]+.*"/>
-							</xs:restriction>
-						</xs:simpleType>
-					</xs:attribute>
-				</xs:complexType>
+					<xs:attribute name="defaultNamespace" use="optional" type="nonEmptyString"/>
+					<xs:attribute name="defaultController" use="optional" type="nonEmptyString"/>
+					<xs:attribute name="defaultAction" use="optional" type="nonEmptyString"/>
+				</xs:complexType>	
 				<xs:unique name="unique-route-name">
 					<xs:selector xpath="p:route"/>
 					<xs:field xpath="@name"/>

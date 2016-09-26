@@ -346,11 +346,15 @@ namespace Sage
 			Project.AssembliesUpdated += (sender, args) => Project.RegisterRoutes();
 			Project.RegisterRoutes();
 
-			log.Debug("Manually registering route '*' to GenericController.Action");
+			var controller = Project.Configuration.Routing.DefaultController;
+			var action = Project.Configuration.Routing.DefaultAction;
+			var routeName = string.Format("{0}.{1}", controller, action);
+
+			log.DebugFormat("Manually registering route '*' to {0}", routeName);
 			RouteTable.Routes.MapRouteLowercase(
-				"GenericController",
+				routeName,
 				"{*path}",
-				new Dictionary<string, object> { { "controller", "Generic" }, { "action", "Action" } });
+				new Dictionary<string, object> { { "controller", controller.Replace("Controller", string.Empty) }, { "action", action } });
 
 			projectIsReady = true;
 		}
