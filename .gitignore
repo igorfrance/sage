@@ -27,3 +27,4 @@ _target
 /temp
 /sage.iml
 /.nuget/packages
+/Examples/Documentation_Precompiled
