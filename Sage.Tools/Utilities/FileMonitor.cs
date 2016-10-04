@@ -66,9 +66,7 @@ namespace Sage.Tools.Utilities
 
 			if (!string.IsNullOrEmpty(filePath))
 			{
-				if (!Path.IsPathRooted(filePath))
-					filePath = Path.Combine(Environment.CurrentDirectory, filePath);
-
+				filePath = Program.MapPath(filePath);
 				return true;
 			}
 

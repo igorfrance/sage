@@ -167,19 +167,19 @@ namespace Sage.Tools.Utilities
 			string targetDir = Path.GetDirectoryName(extensionPath);
 
 			Directory.CreateDirectory(targetDir);
-			SageContext context = Program.CreateSageContext("/", path =>
-			{
-				if (path == "/")
-					path = "~/";
+			SageContext context = Program.CreateSageContext("/",
+				config, path =>
+					{
+						if (path == "/")
+							path = "~/";
 
-				string result = path
-					.Replace("~", sourcePath)
-					.Replace("//", "/")
-					.Replace("/", "\\");
+						string result = path
+							.Replace("~", sourcePath)
+							.Replace("//", "/")
+							.Replace("/", "\\");
 
-				return new FileInfo(result).FullName;
-			},
-				config);
+						return new FileInfo(result).FullName;
+					});
 
 			using (ZipOutputStream zipfile = new ZipOutputStream(File.Create(extensionPath)))
 			{

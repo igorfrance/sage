@@ -323,7 +323,27 @@ namespace Sage.Modules
 		}
 
 		[XmlProvider("modules.xslt")]
-		internal static CacheableXmlDocument CombineModuleXslt(SageContext context, string resourceUri)
+		internal static CacheableXmlDocument GetModulesDocumentXslt(SageContext context, string resourceUri = null)
+		{
+			var moduleStylesheet = context.ProjectConfiguration.PathTemplates.ModuleStylesheet;
+
+			if (!string.IsNullOrWhiteSpace(moduleStylesheet))
+			{
+				var expandedPath = context.Path.Resolve(moduleStylesheet);
+				if (!File.Exists(expandedPath))
+				{
+					log.WarnFormat("The specified modules stylesheet '{0}' could not be found", moduleStylesheet);
+				}
+				else
+				{
+					return context.Resources.LoadXml(expandedPath);
+				}
+			}
+
+			return ModuleConfiguration.CombineModuleXslt(context);
+		}
+
+		internal static CacheableXmlDocument CombineModuleXslt(SageContext context)
 		{
 			CacheableXmlDocument resultDoc = new CacheableXmlDocument();
 			resultDoc.LoadXml(DefaultXslt);

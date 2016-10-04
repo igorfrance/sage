@@ -24,6 +24,7 @@
 						<xs:element name="Dictionary" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="SiteMap" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ModuleStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="CacheDirectory" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="DefaultCategoryStylesheet" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>
 						<xs:element name="CategoryConfiguration" type="textelement.notempty" minOccurs="0" maxOccurs="1"/>

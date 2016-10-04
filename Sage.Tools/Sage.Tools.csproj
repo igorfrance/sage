@@ -188,6 +188,7 @@
     <Compile Include="Utilities\ExtensionInstaller.cs" />
     <Compile Include="Utilities\Debug.cs" />
     <Compile Include="Utilities\ExtensionRefresher.cs" />
+    <Compile Include="Utilities\XsltCompiler.cs" />
     <Compile Include="Utilities\FileMonitor.cs" />
     <Compile Include="Utilities\IUtility.cs" />
     <Compile Include="Utilities\ExtensionBuilder.cs" />
