@@ -120,19 +120,19 @@
 				if (visitedProjects.Contains(projectInfo.Name))
 					return;
 
-				SageContext context = Program.CreateSageContext("/", path =>
-				{
-					if (path == "/")
-						path = "~/";
+				SageContext context = Program.CreateSageContext("/",
+				projectInfo.Config, path =>
+						{
+							if (path == "/")
+								path = "~/";
 
-					string result = path
-						.Replace("~", projectInfo.Path)
-						.Replace("//", "/")
-						.Replace("/", "\\");
+							string result = path
+								.Replace("~", projectInfo.Path)
+								.Replace("//", "/")
+								.Replace("/", "\\");
 
-					return new FileInfo(result).FullName;
-				},
-				projectInfo.Config);
+							return new FileInfo(result).FullName;
+						});
 
 				foreach (string extensionName in projectInfo.Dependencies)
 				{

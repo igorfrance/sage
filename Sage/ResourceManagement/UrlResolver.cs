@@ -172,7 +172,7 @@ namespace Sage.ResourceManagement
 			UrlResolver.DiscoverUrlResolvers();
 		}
 
-		private IUrlResolver GetResolver(string scheme)
+		internal IUrlResolver GetResolver(string scheme)
 		{
 			if (instanceResolvers.ContainsKey(scheme))
 				return instanceResolvers[scheme];

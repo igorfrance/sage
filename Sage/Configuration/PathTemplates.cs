@@ -21,6 +21,8 @@ namespace Sage.Configuration
 
 	using Kelp.Extensions;
 
+	using Sage.Modules;
+
 	/// <summary>
 	/// Provides path templates for various system-required files.
 	/// </summary>
@@ -106,6 +108,17 @@ namespace Sage.Configuration
 		public string DefaultStylesheet { get; private set; }
 
 		/// <summary>
+		/// Gets the path template to the XSLT style sheet that contains all modules xslt templates.
+		/// </summary>
+		/// <remarks>
+		/// If this path is defined, it will be used as the xml content for <see cref="ModuleConfiguration.GetModulesDocumentXslt"/>,
+		/// rather than having it invoke <see cref="ModuleConfiguration.CombineModuleXslt"/> as it would do otherwise. This provides
+		/// a way to use a pre-generated stylesheet that can be deployed without having the full module source structure on the deploy
+		/// location.
+		/// </remarks>
+		public string ModuleStylesheet { get; private set; }
+
+		/// <summary>
 		/// Gets the directory in which the globalized resources are saved.
 		/// </summary>
 		public string GlobalizedDirectory { get; private set; }
@@ -150,6 +163,10 @@ namespace Sage.Configuration
 			testNode = configElement.SelectSingleNode("p:DefaultStylesheet", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
 				this.DefaultStylesheet = testValue;
+
+			testNode = configElement.SelectSingleNode("p:ModuleStylesheet", nm);
+			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))
+				this.ModuleStylesheet = testValue;
 
 			testNode = configElement.SelectSingleNode("p:Dictionary", nm);
 			if (testNode != null && !string.IsNullOrEmpty(testValue = testNode.InnerText))

@@ -145,7 +145,12 @@ namespace Sage.Tools
 			return new HttpContextMock(url, physicalPath, null, null, Program.MapPath);
 		}
 
-		internal static SageContext CreateSageContext(string url, Func<string, string> pathMapper, ProjectConfiguration config)
+		internal static SageContext CreateSageContext(string url, ProjectConfiguration config)
+		{
+			return Program.CreateSageContext(url, config, Program.MapPath);
+		}
+
+		internal static SageContext CreateSageContext(string url, ProjectConfiguration config, Func<string, string> pathMapper)
 		{
 			HttpContextBase httpContext =
 				Program.CreateHttpContext(url, "default.aspx");
