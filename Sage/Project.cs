@@ -426,6 +426,10 @@ namespace Sage
 						.Where(name => extensionManager.Count(ex => ex.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) == 0)
 						.ToList();
 
+					var extraDependencies = extensionManager
+						.Where(extension => projectConfig.Dependencies.Count(name => name.Equals(extension.Name, StringComparison.InvariantCultureIgnoreCase)) == 0)
+						.ToList();
+
 					if (missingDependencies.Count != 0)
 					{
 						string errorMessage = 
@@ -438,8 +442,14 @@ namespace Sage
 							.Add("Dependencies", missingDependencies.ToDictionary(name => name));
 					}
 
-					foreach (var extension in extensionManager)
+					if (extraDependencies.Count != 0)
 					{
+						log.WarnFormat("There are additional, unreferenced extensions in the extensions directory: {0}", string.Join(",", extraDependencies));
+					}
+
+					foreach (var name in projectConfig.Dependencies)
+					{
+						var extension = extensionManager.First(ex => ex.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 						installOrder.Add(extension.Config.Id);
 						Project.RelevantAssemblies.AddRange(extension.Assemblies);
 
