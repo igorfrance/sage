@@ -47,8 +47,6 @@ namespace Sage.Controllers
 		internal const string DefaultController = "home";
 		internal const string DefaultAction = "index";
 
-		private const string HtmlGroup = "xhtml";
-
 		private static readonly ILog log = LogManager.GetLogger(typeof(SageController).FullName);
 		private static readonly List<ViewXmlFilter> xmlFilters = new List<ViewXmlFilter>();
 
@@ -170,45 +168,56 @@ namespace Sage.Controllers
 		/// Processes the view configuration associated with the specified <paramref name="viewName"/>, 
 		/// and returns an <see cref="ActionResult"/>.
 		/// </summary>
-		/// <param name="viewName">The of the view that should be rendered to response.</param>
+		/// <param name="viewName">The name of the view that should be rendered to response.</param>
 		/// <returns>The action result.</returns>
 		public ActionResult SageView(string viewName)
 		{
-			log.DebugFormat("Running view '{0}' on controller '{1}'.", viewName, this.Name);
-			ViewInfo view = new ViewInfo(this, viewName);
+			ViewInfo viewInfo = new ViewInfo(this, viewName);
+			return this.SageView(viewInfo);
+		}
 
-			if (!view.Exists)
+		/// <summary>
+		/// Processes the view descibed with the specified <paramref name="viewInfo"/>, 
+		/// and returns an <see cref="ActionResult"/>.
+		/// </summary>
+		/// <param name="viewInfo">The object that contains information about the view.</param>
+		/// <returns>The action result.</returns>
+		public ActionResult SageView(ViewInfo viewInfo)
+		{
+			log.DebugFormat("Running view '{0}' on controller '{1}'.", viewInfo.Action, this.Name);
+
+			if (!viewInfo.Exists)
 			{
-				log.FatalFormat("The specified view name '{0}' doesn't exist.", viewName);
+				log.FatalFormat("The specified view name '{0}' doesn't exist.", viewInfo);
 				return this.PageNotFound();
 			}
 
 			var cache = this.Context.ViewCache;
 			var caching = this.Context.ProjectConfiguration.ViewCaching;
-			var cachingEnabled = !view.IsNoCacheView && !this.Context.IsNoCacheRequest && caching.Enabled;
+			var checkCache = !viewInfo.IsNoCacheView && !this.Context.IsNoCacheRequest && caching.Enabled;
 			var localName = this.Context.LocalPath;
-			var isCached = false;
 
-			if (cachingEnabled)
+			if (checkCache)
 			{
-				var cacheDate = cache.GetLastModified(localName, HtmlGroup);
-				isCached = cacheDate != null && cacheDate.Value > view.LastModified;
-			}
+				var cacheDate = cache.GetLastModified(localName, ViewCache.HtmlGroup);
+				var isCached = cacheDate != null && cacheDate.Value > viewInfo.LastModified;
 
-			if (isCached)
-			{
-				var time = DateTime.Now;
-				var cachedContent = cache.Get(localName, HtmlGroup);
-				log.DebugFormat("View {0} loaded from cache in {1}ms", localName, (DateTime.Now - time).Milliseconds);
-				return new ContentResult
+				if (isCached)
 				{
-					Content = cachedContent,
-					ContentType = "text/html",
-					ContentEncoding = Encoding.UTF8
-				};
+					var time = DateTime.Now;
+					var cachedContent = cache.Get(localName, ViewCache.HtmlGroup);
+					log.DebugFormat("View {0} loaded from cache in {1}ms", localName, (DateTime.Now - time).Milliseconds);
+					return new ContentResult
+					{
+						Content = cachedContent,
+						ContentType = "text/html",
+						ContentEncoding = Encoding.UTF8
+					};
+				}
+
 			}
 
-			ViewModel model = this.GetViewModel(view);
+			ViewModel model = this.GetViewModel(viewInfo);
 			return this.View(model.Action, model);
 		}
 

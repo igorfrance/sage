@@ -7,6 +7,10 @@
 	
 	<xsl:variable name="request" select="//sage:request"/>
 
+	<xsl:output method="xml" version="1.0" standalone="yes" omit-xml-declaration="yes"
+		encoding="utf-8" media-type="text/xml" indent="no"
+		doctype-system="about:legacy-compat"/>
+	
 	<xsl:template match="@data-thread">
 		<xsl:attribute name="data-thread">
 			<xsl:value-of select="$request/@thread"/>

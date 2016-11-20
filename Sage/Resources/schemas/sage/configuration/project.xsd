@@ -125,7 +125,7 @@
 					<xs:attribute name="defaultNamespace" use="optional" type="nonEmptyString"/>
 					<xs:attribute name="defaultController" use="optional" type="nonEmptyString"/>
 					<xs:attribute name="defaultAction" use="optional" type="nonEmptyString"/>
-				</xs:complexType>	
+				</xs:complexType>
 				<xs:unique name="unique-route-name">
 					<xs:selector xpath="p:route"/>
 					<xs:field xpath="@name"/>
@@ -176,7 +176,7 @@
 		<xs:attribute name="sharedCategory" use="optional" type="nonEmptyString"/>
 	</xs:complexType>
 
-	
+
 	<xs:complexType name="viewcaching">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="directory" minOccurs="1" maxOccurs="1">
@@ -215,10 +215,15 @@
 		</xs:choice>
 		<xs:attribute name="enabled" use="required" type="xs:boolean"/>
 	</xs:complexType>
-	
+
+	<xs:attributeGroup name="filterAttributes">
+		<xs:attribute name="enabled" type="xs:boolean" default="true" use="optional"/>
+	</xs:attributeGroup>
+
 	<xs:complexType name="transformfilter" mixed="true">
+		<xs:attributeGroup ref="filterAttributes"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="replacefilter">
 		<xs:sequence>
 			<xs:element name="from" minOccurs="1" maxOccurs="1">
@@ -228,8 +233,9 @@
 				<xs:complexType mixed="true"/>
 			</xs:element>
 		</xs:sequence>
+		<xs:attributeGroup ref="filterAttributes"/>
 	</xs:complexType>
-	
+
 	<xs:complexType name="package">
 		<xs:choice minOccurs="0" maxOccurs="7">
 			<xs:element name="dependencies" type="packagegroup" minOccurs="0" maxOccurs="1"/>

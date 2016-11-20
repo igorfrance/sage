@@ -31,7 +31,6 @@ namespace Sage.Views
 		private static readonly ILog log = LogManager.GetLogger(typeof(XsltView).FullName);
 		private readonly XsltTransform processor;
 		private readonly ViewInfo viewInfo;
-		private const string HtmlGroup = "xhtml";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XsltView"/> class.
@@ -59,25 +58,23 @@ namespace Sage.Views
 			var cache = context.ViewCache;
 			var caching = context.ProjectConfiguration.ViewCaching;
 			var localName = context.LocalPath;
-			var cachingEnabled = !viewInfo.IsNoCacheView && !context.IsNoCacheRequest && caching.Enabled;
 
-			if (cachingEnabled)
-			{
-				var result = new StringWriter();
-				this.Transform(viewContext, result, processor);
-
-				var time = DateTime.Now;
-				cache.Save(localName, result.ToString(), HtmlGroup);
-				log.DebugFormat("Saved cached content to {0} in {1}ms", localName, (DateTime.Now - time).Milliseconds);
-				textWriter.Write(result.ToString());
-			}
-			else
+			if (!caching.Enabled)
 			{
 				this.Transform(viewContext, textWriter, processor);
+				var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
+				log.DebugFormat("Completed rendering view to writer in {0}ms", elapsed.Milliseconds);
+
+				return;
 			}
 
-			var elapsed = new TimeSpan(DateTime.Now.Ticks - startTime);
-			log.DebugFormat("Completed rendering view in {0}ms", elapsed.Milliseconds);
+			var result = new StringWriter();
+			this.Transform(viewContext, result, processor);
+
+			var time = DateTime.Now;
+			cache.Save(localName, result.ToString(), ViewCache.HtmlGroup);
+			log.DebugFormat("Saved cached content to {0} in {1}ms", localName, (DateTime.Now - time).Milliseconds);
+			textWriter.Write(cache.Get(localName, ViewCache.HtmlGroup));
 		}
 
 		/// <summary>

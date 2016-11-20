@@ -66,8 +66,7 @@ namespace Sage.Controllers
 			if (genericViewInfo.Exists)
 			{
 				log.DebugFormat("Generic view {0}/{1}", this.Name, genericViewInfo.Action);
-				ViewModel result = this.GetViewModel(genericViewInfo);
-				return this.View(genericViewInfo.Action, result);
+				return this.SageView(genericViewInfo);
 			}
 
 			return this.PageNotFound(genericViewInfo.Action);

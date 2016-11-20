@@ -33,6 +33,12 @@ namespace Sage.Views
 		private readonly CachingConfiguration config;
 
 		/// <summary>
+		/// The name of the html cache group
+		/// </summary>
+		public const string HtmlGroup = "xhtml";
+
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewCache"/> class.
 		/// </summary>
 		/// <param name="context">The current context.</param>

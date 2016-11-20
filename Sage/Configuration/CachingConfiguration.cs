@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Xml;
 	using Kelp.Extensions;
@@ -79,7 +80,7 @@
 
 			private string ApplyGroup(string content, List<Filter> filters, SageContext context)
 			{
-				foreach (var group in filters)
+				foreach (var group in filters.Where(f => f.Enabled))
 					content = group.Apply(content, context);
 
 				return content;
@@ -88,6 +89,19 @@
 
 		public abstract class Filter
 		{
+			private bool enabled = true;
+
+			protected Filter(XmlElement configElement)
+			{
+				this.Enabled = !configElement.GetAttribute("enabled").EqualsAnyOf("no", "false", "0");
+			}
+
+			public bool Enabled
+			{
+				get { return enabled; }
+				set { enabled = value; }
+			}
+
 			public abstract string Apply(string content, SageContext context);
 
 			public static Filter Create(XmlElement filterElement)
@@ -112,6 +126,7 @@
 			private readonly string replacement;
 
 			public ReplaceFilter(XmlElement filterElement)
+				: base(filterElement)
 			{
 				expression = new Regex(filterElement.GetString("p:from", XmlNamespaces.Manager));
 				replacement = filterElement.GetString("p:to", XmlNamespaces.Manager);
@@ -129,6 +144,7 @@
 			private XsltTransform transform;
 
 			public TransformFilter(XmlElement filterElement)
+				: base(filterElement)
 			{
 				path = filterElement.InnerText;
 			}
