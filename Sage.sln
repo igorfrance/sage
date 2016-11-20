@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kelp", "Kelp\Kelp\Kelp.csproj", "{AA487E40-4F39-46BF-A8FD-E15A146F32BA}"
 EndProject
@@ -132,7 +132,6 @@ Global
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0B9FE1E-9761-4C36-B3C2-5A32CC29FCB9}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -142,7 +141,6 @@ Global
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09F4EE52-19ED-4C54-A6E4-6E1645F0C88B}.Release|Any CPU.Build.0 = Release|Any CPU
