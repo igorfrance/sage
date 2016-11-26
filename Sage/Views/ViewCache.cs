@@ -75,7 +75,8 @@ namespace Sage.Views
 		/// <param name="viewPath">The view path.</param>
 		/// <param name="groupName">Optional name of the cache group that the <paramref name="viewPath"/> belongs to.</param>
 		/// <param name="content">The content.</param>
-		public void Save(string viewPath, string content, string groupName = null)
+		/// <returns><c>true</c> if save was successful, <c>false</c> otherwise</returns>
+		public bool Save(string viewPath, string content, string groupName = null)
 		{
 			var cachePath = this.GetCachePath(viewPath, groupName);
 			var group = groupName != null && config.Groups.ContainsKey(groupName) ? config.Groups[groupName] : null;
@@ -85,10 +86,12 @@ namespace Sage.Views
 					content = group.ApplySaveFilters(content, context);
 
 				File.WriteAllText(cachePath, content, Encoding.UTF8);
+				return true;
 			}
 			catch (Exception ex)
 			{
 				log.ErrorFormat("Failed caching '{0}' to '{1}': {2}", viewPath, cachePath, ex.Message);
+				return false;
 			}
 		}
 

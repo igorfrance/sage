@@ -72,9 +72,18 @@ namespace Sage.Views
 			this.Transform(viewContext, result, processor);
 
 			var time = DateTime.Now;
-			cache.Save(localName, result.ToString(), ViewCache.HtmlGroup);
-			log.DebugFormat("Saved cached content to {0} in {1}ms", localName, (DateTime.Now - time).Milliseconds);
-			textWriter.Write(cache.Get(localName, ViewCache.HtmlGroup));
+			var content = result.ToString();
+			var saved = cache.Save(localName, content, ViewCache.HtmlGroup);
+
+			if (saved)
+			{
+				log.DebugFormat("Saved cached content to {0} in {1}ms", localName, (DateTime.Now - time).Milliseconds);
+				textWriter.Write(cache.Get(localName, ViewCache.HtmlGroup));
+			}
+			else
+			{
+				textWriter.Write(content);
+			}
 		}
 
 		/// <summary>
