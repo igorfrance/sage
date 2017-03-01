@@ -58,11 +58,21 @@ namespace Sage.Extensibility
 	public delegate XmlDocument ViewXmlFilter(SageController controller, ViewContext viewContext, XmlDocument viewXml);
 
 	/// <summary>
-	/// Defines the signature of a method that can be used to process a function-like expression in text.
+	/// Defines the signature of a method that can be used to process a function-like expression in text, using the
+	/// current context.
 	/// </summary>
 	/// <param name="context">The <see cref="SageContext"/> in which the method is executing.</param>
 	/// <param name="arguments">The array of function arguments.</param>
 	/// <returns>The result of evaluating this function.</returns>
-	/// <seealso cref="TextFunctionAttribute"/>
-	public delegate string TextFunction(SageContext context, params string[] arguments);
+	/// <seealso cref="ContextFunctionAttribute"/>
+	public delegate string ContextFunction(SageContext context, params string[] arguments);
+
+	/// <summary>
+	/// Defines the signature of a method that can be used to process a function-like expression in text for functions
+	/// with arbitrary signatures.
+	/// </summary>
+	/// <param name="arguments">The array of function arguments.</param>
+	/// <returns>The result of evaluating this function.</returns>
+	/// <seealso cref="ContextFunctionAttribute"/>
+	public delegate string TextFunction(params string[] arguments);
 }

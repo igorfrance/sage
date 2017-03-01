@@ -29,15 +29,9 @@ namespace Sage.Tools.Utilities
 		private string output;
 		private string configPath;
 
-		private const string MODULES_XSLT = "MODULES_XSLT";
+		private const string ModulesXslt = "MODULES_XSLT";
 
-		public string CommandName
-		{
-			get
-			{
-				return "xmldoc";
-			}
-		}
+		public string CommandName => "xmldoc";
 
 		public bool ParseArguments(string[] args)
 		{
@@ -69,7 +63,7 @@ namespace Sage.Tools.Utilities
 			configPath = Program.MapPath(configPath);
 			output = Program.MapPath(output);
 
-			if (input != MODULES_XSLT)
+			if (input != ModulesXslt)
 				input = Program.MapPath(input);
 
 			if (!File.Exists(configPath))
@@ -78,7 +72,7 @@ namespace Sage.Tools.Utilities
 				return false;
 			}
 
-			if (input != MODULES_XSLT && !File.Exists(input))
+			if (input != ModulesXslt && !File.Exists(input))
 			{
 				Console.WriteLine("The path {0} is not a valid xslt stylesheet path", input);
 				return false;
@@ -112,7 +106,7 @@ namespace Sage.Tools.Utilities
 
 			XmlDocument resultXml;
 
-			if (input == MODULES_XSLT)
+			if (input == ModulesXslt)
 			{
 				Console.WriteLine("Combining the module XSLT...");
 				resultXml = ModuleConfiguration.CombineModuleXslt(context);
@@ -128,3 +122,4 @@ namespace Sage.Tools.Utilities
 		}
 	}
 }
+

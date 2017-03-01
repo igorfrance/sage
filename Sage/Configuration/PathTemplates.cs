@@ -35,7 +35,7 @@ namespace Sage.Configuration
 		{
 			// initialize with default values.
 			this.View = "{assetpath}/views/";
-			this.Module = "{assetpath}/lib/modules/";
+			this.Module = "{assetpath}/modules/";
 			this.Extension = "{assetpath}/extensions/";
 			this.CategoryConfiguration = "{assetpath}/configuration/Category.config";
 			this.DefaultStylesheet = "{assetpath}/views/xslt/default.xsl";

@@ -89,20 +89,23 @@ namespace Sage.Extensibility
 					result = node.OwnerDocument.CreateElement(node.Name, node.NamespaceURI);
 
 					XmlNodeList attributes = node.SelectNodes("@*");
-					XmlNodeList children = node.SelectNodes("node()");
-
 					foreach (XmlAttribute attribute in attributes)
 					{
-						XmlNode processed = NodeEvaluator.GetNodeHandler(attribute)(context, attribute);
+						NodeHandler handler = NodeEvaluator.GetNodeHandler(attribute);
+						XmlNode processed = handler(context, attribute);
 						if (processed != null)
 							result.Attributes.Append((XmlAttribute) processed);
 					}
 
+					XmlNodeList children = node.SelectNodes("node()");
 					foreach (XmlNode child in children)
 					{
-						XmlNode processed = NodeEvaluator.GetNodeHandler(child)(context, child);
+						NodeHandler handler = NodeEvaluator.GetNodeHandler(child);
+						XmlNode processed = handler(context, child);
 						if (processed != null)
+						{
 							result.AppendChild(processed);
+						}
 					}
 
 					break;

@@ -364,19 +364,19 @@ namespace Sage.Modules
 
 		[NodeHandler(XmlNodeType.Element, "head", XmlNamespaces.XHtmlNamespace)]
 		[NodeHandler(XmlNodeType.Element, "body", XmlNamespaces.XHtmlNamespace)]
-		internal static XmlNode ProcessHtmlElement(SageContext context, XmlNode htmlNode)
+		internal static XmlNode ProcessHtmlElement(SageContext context, XmlNode node)
 		{
-			Contract.Requires<ArgumentNullException>(htmlNode != null);
+			Contract.Requires<ArgumentNullException>(node != null);
 
-			if (htmlNode.SelectSingleNode("ancestor::xhtml:body", XmlNamespaces.Manager) != null)
-				return htmlNode;
+			if (node.SelectSingleNode("ancestor::xhtml:body", XmlNamespaces.Manager) != null)
+				return node;
 
-			ModuleAutoLocation location = htmlNode.LocalName == "head" ? ModuleAutoLocation.Head : ModuleAutoLocation.Body;
+			ModuleAutoLocation location = node.LocalName == "head" ? ModuleAutoLocation.Head : ModuleAutoLocation.Body;
 
 			IEnumerable<ModuleConfiguration> autoModules =
 				context.ProjectConfiguration.Modules.Values.Where(m => m.AutoLocation == location);
 
-			XmlNode resultNode = context.ProcessNode(htmlNode);
+			XmlNode resultNode = context.ProcessNode(node);
 			foreach (ModuleConfiguration module in autoModules)
 			{
 				XmlElement appended = resultNode.AppendElement("mod:" + module.TagNames[0], XmlNamespaces.ModulesNamespace);

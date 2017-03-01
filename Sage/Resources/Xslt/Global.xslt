@@ -80,7 +80,7 @@
 	</xsl:template>
 
 	<xsl:template match="xhtml:html" mode="html-classes"/>
-	
+
 	<xsl:template match="xhtml:head">
 		<xsl:variable name="styles" select="$response/sage:resources/sage:head/xhtml:link | xhtml:link | xhtml:style"/>
 		<xsl:variable name="scripts" select="$response/sage:resources/sage:head/xhtml:script | xhtml:script"/>
@@ -103,12 +103,9 @@
 			<xsl:apply-templates select="node()" mode="body-node"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:link"/>
 			<xsl:apply-templates select="$response/sage:resources/sage:body/xhtml:script"/>
-			<xsl:apply-templates select="xhtml:script"/>
 			<xsl:apply-templates select="." mode="hook-before-body-end"/>
 		</body>
 	</xsl:template>
-	
-	<xsl:template match="xhtml:script" mode="body-node"/>
 
 	<xsl:template match="text()" mode="body-node">
 		<xsl:value-of select="."/>
@@ -122,7 +119,9 @@
 		<xsl:for-each select="document(@src)/*/kelp:resource">
 			<xsl:choose>
 				<xsl:when test="@exists = 'false'">
-					<xsl:comment> File not found: <xsl:value-of select="@path"/> </xsl:comment>
+					<xsl:comment>
+						File not found: <xsl:value-of select="@path"/>
+					</xsl:comment>
 				</xsl:when>
 				<xsl:otherwise>
 					<script type="text/javascript" src="{@src}"></script>
@@ -152,7 +151,7 @@
 			<xsl:apply-templates select="node()"/>
 		</a>
 	</xsl:template>
-	
+
 	<xsl:template match="sage:resources">
 		<xsl:apply-templates select="node()"/>
 	</xsl:template>
@@ -235,19 +234,19 @@
 	</xsl:template>
 
 	<xsl:template match="*" mode="hook-after-head-start"/>
-	
+
 	<xsl:template match="*" mode="hook-before-head-end"/>
-	
+
 	<xsl:template match="*" mode="hook-after-body-start"/>
-	
+
 	<xsl:template match="*" mode="hook-before-body-end">
 		<xsl:apply-templates select="." mode="execute-libraries"/>
 	</xsl:template>
-	
+
 	<xsl:template match="*" mode="execute-libraries"/>
-	
+
 	<xsl:template match="*" mode="global-metatags"/>
-	
+
 	<xsl:template match="*" mode="html-attributes"/>
 
 </xsl:stylesheet>

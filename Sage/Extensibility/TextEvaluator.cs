@@ -35,7 +35,7 @@ namespace Sage.Extensibility
 		private const string Undefined = "undefined";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TextEvaluator).FullName);
-		private static readonly Dictionary<string, TextFunction> functions = new Dictionary<string, TextFunction>();
+		private static readonly Dictionary<string, ContextFunction> functions = new Dictionary<string, ContextFunction>();
 		private static readonly Dictionary<string, TextVariable> variables = new Dictionary<string, TextVariable>();
 
 		private static readonly Regex dynamicExpression = new Regex(@"(\\)?\$({([^{}]+)})", RegexOptions.Compiled);
@@ -129,7 +129,7 @@ namespace Sage.Extensibility
 		/// </summary>
 		/// <param name="name">Name of the function.</param>
 		/// <param name="handler">The function that provides the result value.</param>
-		public static void RegisterFunction(string name, TextFunction handler)
+		public static void RegisterFunction(string name, ContextFunction handler)
 		{
 			Contract.Requires<ArgumentNullException>(!string.IsNullOrWhiteSpace(name));
 			Contract.Requires<ArgumentNullException>(handler != null);
@@ -302,9 +302,9 @@ namespace Sage.Extensibility
 				{
 					foreach (MethodInfo methodInfo in type.GetMethods(BindingFlags))
 					{
-						foreach (TextFunctionAttribute attrib in methodInfo.GetCustomAttributes(typeof(TextFunctionAttribute), false))
+						foreach (ContextFunctionAttribute attrib in methodInfo.GetCustomAttributes(typeof(ContextFunctionAttribute), false))
 						{
-							TextFunction functionHandler = (TextFunction) Delegate.CreateDelegate(typeof(TextFunction), methodInfo);
+							ContextFunction functionHandler = (ContextFunction) Delegate.CreateDelegate(typeof(ContextFunction), methodInfo);
 							TextEvaluator.RegisterFunction(attrib.Name, functionHandler);
 						}
 

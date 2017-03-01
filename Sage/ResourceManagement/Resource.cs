@@ -32,7 +32,7 @@ namespace Sage.ResourceManagement
 	/// </summary>
 	public class Resource : IXmlConvertible
 	{
-		private CodeFile codeFile;
+		private object sourceFile;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Resource"/> class, using the specified <paramref name="configElement"/>.
@@ -45,6 +45,12 @@ namespace Sage.ResourceManagement
 
 			this.ProjectId = projectId;
 			this.Parse(configElement);
+		}
+
+		public Resource(string name, XmlDocument document)
+		{
+			this.Name = name;
+			this.sourceFile = document;
 		}
 
 		/// <summary>
@@ -170,6 +176,9 @@ namespace Sage.ResourceManagement
 		/// </returns>
 		public virtual string GetResolvedWebPath(SageContext context)
 		{
+			if (string.IsNullOrWhiteSpace(this.Path))
+				return null;
+
 			var uri = new Uri(this.Path, UriKind.RelativeOrAbsolute);
 			if (uri.IsAbsoluteUri)
 				return this.Path;
@@ -264,24 +273,27 @@ namespace Sage.ResourceManagement
 			XmlDocumentFragment result = ownerDocument.CreateDocumentFragment();
 			List<string> webPaths = new List<string>();
 
-			if (this.Unmerge)
+			if (!string.IsNullOrWhiteSpace(this.Path))
 			{
-				if (codeFile == null)
+				if (this.Unmerge)
 				{
-					codeFile = CodeFile.Create(
-						this.GetResolvedPhysicalPath(context),
-						this.GetResolvedWebPath(context));
-				}
+					if (sourceFile == null)
+					{
+						sourceFile = CodeFile.Create(
+							this.GetResolvedPhysicalPath(context),
+							this.GetResolvedWebPath(context));
+					}
 
-				foreach (string dependency in codeFile.Dependencies)
-				{
-					string webPath = context.Path.GetRelativeWebPath(dependency, true);
-					webPaths.Add(webPath);
+					foreach (string dependency in ((CodeFile) sourceFile).Dependencies)
+					{
+						string webPath = context.Path.GetRelativeWebPath(dependency, true);
+						webPaths.Add(webPath);
+					}
 				}
-			}
-			else
-			{
-				webPaths.Add(this.GetResolvedWebPath(context));
+				else
+				{
+					webPaths.Add(this.GetResolvedWebPath(context));
+				}
 			}
 
 			if (this.Type == ResourceType.CSS)
@@ -314,9 +326,13 @@ namespace Sage.ResourceManagement
 			}
 			else
 			{
-				string documentPath = context.Path.Resolve(this.Path);
-				XmlDocument document = context.Resources.LoadXml(documentPath);
-				XmlElement importedElement = (XmlElement) ownerDocument.ImportNode(document.DocumentElement, true);
+				if (sourceFile == null)
+				{
+					string documentPath = context.Path.Resolve(this.Path);
+					sourceFile = context.Resources.LoadXml(documentPath);
+				}
+
+				XmlElement importedElement = (XmlElement) ownerDocument.ImportNode(((XmlDocument) sourceFile).DocumentElement, true);
 				if (!string.IsNullOrWhiteSpace(this.Name))
 				{
 					var nameAttribute = ownerDocument.CreateAttribute("sage", "name", XmlNamespaces.SageNamespace);

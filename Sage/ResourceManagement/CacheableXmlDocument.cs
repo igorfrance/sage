@@ -244,11 +244,32 @@ namespace Sage.ResourceManagement
 					if (includedNode != null)
 					{
 						elementParent.ReplaceChild(elementDocument.ImportNode(includedNode, true), includingElement);
+
+						/* Due to a strange issue that can be described as this:
+						 *
+						 *      including two text documents one after another in the same parent element
+						 *      produces a result as expected. issuing an xpath query to that parent element
+						 *      in the form of SelectNodes("node()") returns a single text node with the text
+						 *      length and content of just the first included document.
+						 *      
+						 *  I have decided to consider this an extreme edge case exposing a problem with the
+						 *  way internal MS code treats text content, and apply the following:
+						 *      
+						 *      Since the InnerText property returns the correct content, let's overwrite the
+						 *      whole InnerText with itself, this resets text and ensures SelectNodes("node()")
+						 *      returns the whole text.
+						 */
+
+						XmlNodeList children = elementParent.SelectNodes("node()");
+						if (children.Count == 1 && children[0].NodeType == XmlNodeType.Text)
+						{
+							elementParent.InnerText = elementParent.InnerText;
+						}
 					}
 					else
 					{
 						var includeId = this.GetIncludeId(includingElement);
-						var errorMessage = string.Format("NOT FOUND: {0}", includeId);
+						var errorMessage = $"NOT FOUND: {includeId}";
 						log.ErrorFormat(errorMessage);
 
 						if (debugMode)

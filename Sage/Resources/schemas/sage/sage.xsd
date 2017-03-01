@@ -18,6 +18,12 @@
 
 	<xs:attribute name="url"/>
 
+	<xs:element name="call-template">
+		<xs:complexType>
+			<xs:attribute name="name" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="include">
 		<xs:complexType>
 			<xs:choice>

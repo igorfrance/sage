@@ -22,7 +22,7 @@ namespace Sage.Extensibility
 	/// function-like expressions in strings; <code>function(arguments);</code>.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-	public class TextFunctionAttribute : Attribute
+	public class ContextFunctionAttribute : Attribute
 	{
 		/// <summary>
 		/// Specifies the name of this function; <code>name();</code>

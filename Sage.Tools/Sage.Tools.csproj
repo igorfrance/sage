@@ -102,7 +102,7 @@
     <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
     <CodeContractsDisjunctiveRequires>False</CodeContractsDisjunctiveRequires>
     <NoWarn>1587</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>..\Kelp\Kelp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

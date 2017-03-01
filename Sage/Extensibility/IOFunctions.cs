@@ -15,7 +15,7 @@
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(IOFunctions).FullName);
 
-		[TextFunction(Name = "io:read")]
+		[ContextFunction(Name = "io:read")]
 		internal static string ReadFile(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length == 0)

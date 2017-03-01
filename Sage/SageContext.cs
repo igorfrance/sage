@@ -734,6 +734,18 @@ namespace Sage
 					}
 				}
 			}
+			
+			if (this.Data.Count != 0)
+			{
+				XmlElement dataElem = resultElement.AppendElement("sage:data", XmlNamespaces.SageNamespace);
+
+				foreach (string key in this.Data.Keys)
+				{
+					XmlElement itemElem = dataElem.AppendElement("sage:item", XmlNamespaces.SageNamespace);
+					itemElem.SetAttribute("name", QueryString.ValidName(key));
+					itemElem.InnerText = this.Data[key];
+				}
+			}
 
 			XmlElement dateNode = resultElement.AppendElement("sage:dateTime", XmlNamespaces.SageNamespace);
 			dateNode.SetAttribute("date", DateTime.Now.ToString("dd-MM-yyyy"));
@@ -978,7 +990,7 @@ namespace Sage
 			return variable;
 		}
 
-		[TextFunction(Name = "ctx:query")]
+		[ContextFunction(Name = "ctx:query")]
 		internal static string GetQueryParam(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length == 0)
@@ -987,7 +999,7 @@ namespace Sage
 			return context.Query[arguments[0]];
 		}
 
-		[TextFunction(Name = "ctx:form")]
+		[ContextFunction(Name = "ctx:form")]
 		internal static string GetFormParam(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length == 0)
@@ -996,7 +1008,7 @@ namespace Sage
 			return context.Request.Form[arguments[0]];
 		}
 
-		[TextFunction(Name = "ctx:session")]
+		[ContextFunction(Name = "ctx:session")]
 		internal static string GetSessionParam(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length == 0)
@@ -1005,7 +1017,7 @@ namespace Sage
 			return context.Session[arguments[0]] as string;
 		}
 
-		[TextFunction(Name = "ctx:request")]
+		[ContextFunction(Name = "ctx:request")]
 		internal static string GetRequestParam(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length == 0)
@@ -1014,7 +1026,7 @@ namespace Sage
 			return context.Request[arguments[0]];
 		}
 
-		[TextFunction(Name = "ctx:data")]
+		[ContextFunction(Name = "ctx:data")]
 		internal static string GetDataParam(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length == 0)
@@ -1023,7 +1035,7 @@ namespace Sage
 			return context.Data[arguments[0]];
 		}
 
-		[TextFunction(Name = "ctx:iif")]
+		[ContextFunction(Name = "ctx:iif")]
 		internal static string IIf(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length < 3)
@@ -1036,7 +1048,81 @@ namespace Sage
 			return !string.IsNullOrWhiteSpace(condition) ? result1 : result2;
 		}
 
-		[TextFunction(Name = "ctx:isnull")]
+		[ContextFunction(Name = "ctx:if_eq")]
+		internal static string IfEq(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			return arguments[0] == arguments[1] ? arguments[2] : string.Empty;
+		}
+
+		[ContextFunction(Name = "ctx:if_ne")]
+		internal static string IfNe(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			return arguments[0] != arguments[1] ? arguments[2] : string.Empty;
+		}
+
+		[ContextFunction(Name = "ctx:if_gt")]
+		internal static string IfGt(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			decimal d1, d2;
+
+			if (decimal.TryParse(arguments[0], out d1) && decimal.TryParse(arguments[1], out d2))
+				return d1 > d2 ? arguments[2] : String.Empty;
+
+			return string.Empty;
+		}
+
+		[ContextFunction(Name = "ctx:if_gte")]
+		internal static string IfGte(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			decimal d1, d2;
+
+			if (decimal.TryParse(arguments[0], out d1) && decimal.TryParse(arguments[1], out d2))
+				return d1 >= d2 ? arguments[2] : String.Empty;
+
+			return string.Empty;
+		}
+
+		[ContextFunction(Name = "ctx:if_lt")]
+		internal static string IfLt(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			decimal d1, d2;
+
+			if (decimal.TryParse(arguments[0], out d1) && decimal.TryParse(arguments[1], out d2))
+				return d1 < d2 ? arguments[2] : String.Empty;
+
+			return string.Empty;
+		}
+
+		[ContextFunction(Name = "ctx:if_lte")]
+		internal static string IfLte(SageContext context, params string[] arguments)
+		{
+			if (arguments.Length < 3)
+				return string.Empty;
+
+			decimal d1, d2;
+
+			if (decimal.TryParse(arguments[0], out d1) && decimal.TryParse(arguments[1], out d2))
+				return d1 <= d2 ? arguments[2] : String.Empty;
+
+			return string.Empty;
+		}
+
+		[ContextFunction(Name = "ctx:isnull")]
 		internal static string IsNull(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length < 2)
@@ -1048,7 +1134,7 @@ namespace Sage
 			return !string.IsNullOrWhiteSpace(result1) ? result1 : result2;
 		}
 
-		[TextFunction(Name = "intl:variable")]
+		[ContextFunction(Name = "intl:variable")]
 		internal static string GetVariable(SageContext context, params string[] arguments)
 		{
 			if (arguments.Length < 1)

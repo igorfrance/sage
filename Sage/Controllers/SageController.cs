@@ -29,8 +29,10 @@ namespace Sage.Controllers
 
 	using Kelp;
 	using Kelp.Extensions;
+	using Kelp.ResourceHandling;
 
 	using log4net;
+	using ResourceLocation=Sage.ResourceLocation;
 	using Sage.Extensibility;
 	using Sage.Modules;
 	using Sage.ResourceManagement;
@@ -53,6 +55,12 @@ namespace Sage.Controllers
 		private readonly ControllerMessages messages = new ControllerMessages();
 		private readonly IModuleFactory moduleFactory = new SageModuleFactory();
 		private readonly Dictionary<string, ViewInfo> viewInfos = new Dictionary<string, ViewInfo>();
+		private readonly Dictionary<ResourceLocation, List<Resource>> resources = new Dictionary<ResourceLocation, List<Resource>>
+		{
+			{ ResourceLocation.Head, new List<Resource>() },
+			{ ResourceLocation.Data, new List<Resource>() },
+			{ ResourceLocation.Body, new List<Resource>() }
+		};
 
 		private readonly string typeName;
 
@@ -311,7 +319,7 @@ namespace Sage.Controllers
 
 			try
 			{
-				if (model != null && model.ConfigNode != null)
+				if (model?.ConfigNode != null)
 				{
 					//// make sure resources are ordered properly:
 					////  1. by resource type (icon, style, script)
@@ -337,9 +345,12 @@ namespace Sage.Controllers
 					{
 						XmlElement resourceRoot = responseNode.AppendElement("sage:resources", XmlNamespaces.SageNamespace);
 
-						List<Resource> headResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Head).ToList();
-						List<Resource> bodyResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Body).ToList();
-						List<Resource> dataResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Data).ToList();
+						List<Resource> headResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Head)
+							.Union(this.resources[ResourceLocation.Head]).ToList();
+						List<Resource> bodyResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Body)
+							.Union(this.resources[ResourceLocation.Body]).ToList();
+						List<Resource> dataResources = inputResources.Where(r => r.Location == Sage.ResourceLocation.Data)
+							.Union(this.resources[ResourceLocation.Data]).ToList();
 
 						if (dataResources.Count != 0)
 						{
@@ -508,6 +519,16 @@ namespace Sage.Controllers
 			}
 
 			return viewXml;
+		}
+
+		protected void AddDocumentResource(string name, XmlDocument document)
+		{
+			this.AddResource(ResourceLocation.Data, new Resource(name, document));
+		}
+
+		protected void AddResource(ResourceLocation location, Resource resource)
+		{
+			this.resources[location].Add(resource);
 		}
 
 		/// <summary>

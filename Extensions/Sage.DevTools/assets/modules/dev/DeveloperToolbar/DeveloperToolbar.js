@@ -1,6 +1,7 @@
-﻿atom.type.registerNamespace("sage.dev");
+﻿window.sage = window.sage || {};
+window.sage.dev = window.sage.dev || {};
 
-sage.dev.Toolbar = new function Toolbar()
+sage.dev.Toolbar = (function Toolbar()
 {
 	var jQuery = window.jQuery;
 	var $toolbar, $icon, $text, $time, $commands, $frame, $iframe;
@@ -9,7 +10,6 @@ sage.dev.Toolbar = new function Toolbar()
 	var status = { log: [], errors: 0, warnings: 0, clientTime: 0, serverTime: 0 };
 
 	var tooltip;
-	var self = this;
 	var logFrameLoaded = false;
 	var logUrl = "{basehref}dev/log/{thread}/?view={view}";
 	var inspectUrl = "{basehref}dev/inspect/?devtools=0#sage:vi=url%3D{url}%26inspector%3Dlog";
@@ -18,7 +18,8 @@ sage.dev.Toolbar = new function Toolbar()
 
 	function setup()
 	{
-		if (top.window != window || atom.url.getQueryParam("devtools") == "0")
+		var one = window.one || {};
+		if (top.window != window || String(location.href).match(new RegExp("[?&]devtools=0")))
 			return;
 
 		$toolbar = jQuery("#developer-toolbar");
@@ -30,7 +31,7 @@ sage.dev.Toolbar = new function Toolbar()
 			.append("<div id='developer-frame'><iframe frameborder='no'></iframe><div class='close' title='Close'></div></div>")
 			.find("#developer-frame");
 
-		tooltip = atom.controls.get($icon[0]);
+		tooltip = one.controls ? one.controls.get($icon[0]) : null;
 
 		$iframe = $frame.find("iframe");
 
@@ -47,14 +48,14 @@ sage.dev.Toolbar = new function Toolbar()
 			.on("mouseenter", onToolbarMouseOver)
 			.on("mouseleave", onToolbarMouseOut);
 
-		if (atom.cookie.get("devtools") == "on")
+		if (getCookie("devtools") == "on")
 			$toolbar.show();
 
 		jQuery(document).bind("keydown", onDocumentKeyDown);
 
 		loadLogData();
 
-		atom.log.info("Developer console is ready, press CTRL-ALT-D to toggle it.");
+		console.log("Developer console is ready, press CTRL-ALT-D to toggle it.");
 	}
 
 	function setStatusClass(status)
@@ -73,7 +74,7 @@ sage.dev.Toolbar = new function Toolbar()
 		if (status.log.length)
 			return "ok";
 
-		return atom.string.EMPTY;
+		return "";
 	}
 
 	function updateToolbar()
@@ -83,19 +84,14 @@ sage.dev.Toolbar = new function Toolbar()
 		if (status.errors)
 		{
 			statusClass = "error";
-			statusText = atom.string.format("{0} {1}.", status.errors, status.errors == 1 ? "error" : "errors");
-			errorText = Enumerable.from(status.log)
-				.where("$.severity == 'ERROR'")
-				.select("\"<div class='error'>\" + $.message + \"</div>\"")
-				.toArray()
-					.join(atom.string.EMPTY);
+			statusText = status.errors + " " + status.errors == 1 ? "error" : "errors";
+			errorText = getLogMessages("ERROR");;
 		}
 		else if (status.warnings)
 		{
 			statusClass = "warning";
-			statusText = atom.string.format("{0} {1}.", status.warnings, status.warnings == 1 ? "warning" : "warnings");
-			errorText = Enumerable.from(status.log)
-				.where("$.severity == 'WARN'").select("\"<div class='error'>\" + $.message + \"</div>\"").toArray().join(atom.string.EMPTY);
+			statusText = status.warnings + " " + status.warnings == 1 ? "warning" : "warnings";
+			errorText = getLogMessages("WARN");;
 		}
 		else if (status.log.length)
 		{
@@ -127,13 +123,28 @@ sage.dev.Toolbar = new function Toolbar()
 		{
 			$time
 				.find("label")
-				.text("{0}ms / {1}ms".format(status.serverTime, status.clientTime));
+				.text(status.serverTime + "ms / " + status.clientTime + "ms");
 			$time
-				.attr("title", "Server-side request: {0}ms, Client-side initialization: {1}ms".format(status.serverTime, status.clientTime));
+				.attr("title",
+					"Server-side request: " + status.serverTime + "ms, " +
+					"Client-side initialization: " + status.clientTime + "ms");
 		}
 
 		setStatusClass(statusClass);
 		$toolbar.find(".content");
+	}
+
+	function getLogMessages(severity)
+	{
+		var text = [];
+		for (var i = 0; i < status.log.length; i++)
+		{
+			var $ = status.log[i];
+			if ($.severity == severity)
+				text.push("<div class='" + severity.toLowerCase() + "'>" + $.message + "</div>");
+		}
+
+		return text.join("");
 	}
 
 	function expandToolbar()
@@ -205,7 +216,7 @@ sage.dev.Toolbar = new function Toolbar()
 		setStatusClass("loading");
 		jQuery.ajax({ url: expandUrl(logUrl, { view: "xml" }), success: function onLogDataLoaded(response) /**/
 		{
-			var rows = atom.xml.select("//mod:log/mod:line", atom.xml.document(response), namespaces);
+			var rows = selectNodes("//mod:log/mod:line", response, namespaces);
 			var entry = null;
 			for (var i = 0; i < rows.length; i++)
 			{
@@ -232,6 +243,34 @@ sage.dev.Toolbar = new function Toolbar()
 			updateToolbar();
 		}});
 	}
+
+	function selectNodes(xpath, subject, namespaces)
+	{
+		if (arguments.length == 2 && (typeof arguments[1].nodeType) != "number")
+		{
+			xpath = arguments[0];
+			namespaces = arguments[1];
+		}
+
+		if (!subject || (typeof arguments[1].nodeType) != "number")
+			subject = document;
+
+		var ownerDocument = subject.nodeType == 9 ? subject : subject.ownerDocument;
+		var nsResolver = namespaces
+			? function (prefix) { return namespaces[prefix]; }
+			: null;
+
+		var result = ownerDocument.evaluate(xpath, subject, nsResolver, 5, null);
+		var node = result.iterateNext();
+		var nodeList = [];
+		while (node)
+		{
+			nodeList.push(node);
+			node = result.iterateNext();
+		}
+		return nodeList;
+	}
+
 
 	function expandUrl(template, extraParams)
 	{
@@ -276,15 +315,60 @@ sage.dev.Toolbar = new function Toolbar()
 
 	function openMetaView(viewName)
 	{
-		var url = atom.url();
-		url.setQueryParam("view", viewName);
+		var query = parseQuery(location.search.substring(1));
+		query.view = viewName;
 
-		var p = window.open(url.toString(), viewName);
+		var url = location.origin + location.pathname + "?" + query;
+		var p = window.open(url, viewName);
 		if (p)
 			p.focus();
 		else
-			atom.log.warn("Could not open '{0}' in a new window. Is there a popup blocker running?", url);
+			console.warn("Could not open '{0}' in a new window. Is there a popup blocker running?", url);
 	}
+
+	function parseQuery(queryString, options)
+	{
+		if (!queryString)
+			return {};
+
+		queryString = String(queryString).replace(/^\s*(.*)\s*$/, "$1");
+
+		if (queryString.length == 0)
+			return {};
+
+		options = options || {};
+		var opt = {
+			separator: options.separator || "&",
+			equals: options.equals || "="
+		};
+
+		var param = String(queryString).split(opt.separator);
+		var query = {};
+		for (var i = 0; i < param.length; i++)
+		{
+			if (param[i].length == 0)
+				continue;
+
+			var pair = param[i].split(opt.equals);
+			var key = pair[0];
+			var itemValue = pair[1] || $string.EMPTY;
+
+			if (query[key] != null)
+			{
+				if (!query[key].push && !query[key].pop)
+					query[key] = [query[key]];
+
+				query[key].push(itemValue);
+			}
+			else
+			{
+				query[key] = itemValue;
+			}
+		}
+
+		return query;
+	}
+
 
 	function onMetaViewCommandClick(e)
 	{
@@ -342,29 +426,68 @@ sage.dev.Toolbar = new function Toolbar()
 	{
 		if (e.ctrlKey && e.altKey && e.keyCode == 68) // CTRL+ALT+D
 		{
-			self.toggle();
+			toggle();
 		}
 	}
 
-	this.show = function DeveloperToolbar$show()
+	function show()
 	{
 		$toolbar.show();
-		atom.cookie.set("devtools", "on");
-	};
+		setCookie("devtools", "on");
+	}
 
-	this.hide = function DeveloperToolbar$hide()
+	function hide()
 	{
 		$toolbar.hide();
-		atom.cookie.set("devtools", "off");
-	};
+		setCookie("devtools", "off");
+	}
 
-	this.toggle = function DeveloperToolbar$toggle()
+	function setCookie(name, value)
+	{
+		document.cookie = name + "=" + encodeURIComponent(value);
+		return getCookie(name);
+	}
+
+	function getCookie(name)
+	{
+		var cookies = document.cookie.split("; ");
+		for (var i = 0; i < cookies.length; i++)
+		{
+			var cookieName  = cookies[i].substring(0, cookies[i].indexOf("="));
+			var cookieValue = cookies[i].substring(cookies[i].indexOf("=") + 1, cookies[i].length);
+			if (cookieName == name)
+			{
+				if (cookieValue.indexOf("&") != -1)
+				{
+					var pairs  = cookieValue.split("&");
+					var cookie = {};
+					for (var j = 0; j < pairs.length; j++)
+					{
+						var arrTemp = pairs[j].split("=");
+						cookie[arrTemp[0]] = arrTemp[1];
+					}
+					return cookie;
+				}
+				else
+					return decodeURIComponent(cookieValue);
+			}
+		}
+		return null;
+	}
+
+	function toggle()
 	{
 		if ($toolbar.is(":visible"))
-			this.hide();
+			hide();
 		else
-			this.show();
-	};
+			show();
+	}
 
-	$(window).load(setup);
-};
+	window.addEventListener("load", setup);
+
+	return {
+		show: show,
+		hide: hide,
+		toggle: toggle
+	}
+})();

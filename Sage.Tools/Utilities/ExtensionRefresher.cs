@@ -85,10 +85,12 @@
 			foreach (var projectFile in projectFiles)
 			{
 				var fileInfo = new FileInfo(projectFile);
+				log.DebugFormat("Creating project configuration using '{0}'", fileInfo.FullName);
+
 				var projectConfig = ProjectConfiguration.Create(fileInfo.FullName);
 
 				// skip extension projects
-				if (projectConfig.Name == "$projectname$")
+				if (projectConfig.Name != null && projectConfig.Name.Contains("projectname$"))
 					continue;
 
 				var projectName = projectConfig.Name ??
@@ -100,7 +102,7 @@
 				{
 					var targetPath = Path.Combine(temporaryDir, projectName + ".zip");
 					builder.BuildExtension(projectPath, targetPath);
-					extensions.Add(projectName, targetPath);
+					extensions[projectName] = targetPath;
 				}
 
 				projects.Add(projectName, new ProjectInfo 

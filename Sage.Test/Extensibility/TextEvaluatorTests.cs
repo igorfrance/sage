@@ -61,7 +61,7 @@ namespace Sage.Test.Extensibility
 			context = Mother.CreateSageContext("/");
 			text = new TextEvaluator(context);
 
-			TextEvaluator.RegisterFunction("str:join", Join);
+			TextEvaluator.RegisterFunction("str:join", Join); 
 			TextEvaluator.RegisterFunction("str:concat", Concatenate);
 			TextEvaluator.RegisterFunction("str:upper", ToUpper);
 			TextEvaluator.RegisterFunction("str:lower", ToLower);

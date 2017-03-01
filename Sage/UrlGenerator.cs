@@ -317,8 +317,8 @@ namespace Sage
 			return node;
 		}
 
-		[TextFunction(Name = "url:project")]
-		[TextFunction(Name = "url:application")]
+		[ContextFunction(Name = "url:project")]
+		[ContextFunction(Name = "url:application")]
 		internal static string GetProjectLinkFunction(SageContext context, params string[] arguments)
 		{
 			var linkArguments = new LinkArguments(arguments, false, "encode", "absolute", "pretty");
@@ -332,7 +332,7 @@ namespace Sage
 			return result + (result.EndsWith("/") ? string.Empty : "/");
 		}
 
-		[TextFunction(Name = "url:link")]
+		[ContextFunction(Name = "url:link")]
 		internal static string GetLinkFunction(SageContext context, params string[] arguments)
 		{
 			var linkArguments = new LinkArguments(arguments, true, "encode", "absolute");
@@ -345,7 +345,7 @@ namespace Sage
 			return result;
 		}
 
-		[TextFunction(Name = "url:self")]
+		[ContextFunction(Name = "url:self")]
 		internal static string GetSelfFunction(SageContext context, params string[] arguments)
 		{
 			var linkArguments = new LinkArguments(arguments, false, "encode", "absolute");
