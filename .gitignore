@@ -28,3 +28,4 @@ _target
 /sage.iml
 /.nuget/packages
 /Examples/Documentation_Precompiled
+.vs
