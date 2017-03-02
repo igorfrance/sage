@@ -11,6 +11,7 @@
 	<property name="sageTestPath" value="sage.test/bin/${buildConfiguration}"/>
 	<property name="extensionBuilder" value="sage.tools/bin/${buildConfiguration}/sage.tools.exe"/>
 	<property name="exampleSitePath" value="examples/documentation"/>
+	<property name="msbuildPath" value="C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" overwrite="false"/>
 
 	<property name="mspecPath" value="G:\cycle99\tools\mspec\mspec-clr4.exe" overwrite="false"/>
 
@@ -28,9 +29,10 @@
 
 	<target name="build-solution">
 
-		<msbuild project="${solutionFile}" verbosity="Normal">
-			<property name="Configuration" value="${buildConfiguration}"/>
-		</msbuild>
+		<exec program="${msbuildPath}">
+			<arg value="${solutionFile}" />
+			<arg value="/p:Configuration=${buildConfiguration}" />
+		</exec>
 
 		<copy todir="${outputPath}/kelp">
 			<fileset basedir="${kelpBuildPath}">
