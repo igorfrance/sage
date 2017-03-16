@@ -191,11 +191,11 @@ namespace Sage
 			//// This variable checks for that scenario, so that we can then initialize this instance
 			//// with less features.
 
-			bool requestAvailable = false;
+			this.RequestAvailable = false;
 			string queryString = string.Empty;
 			try
 			{
-				requestAvailable = httpContext.Request != null;
+				this.RequestAvailable = httpContext.Request != null;
 				queryString = httpContext.Request.Url.Query;
 			}
 			catch (HttpException ex)
@@ -205,6 +205,7 @@ namespace Sage
 					throw;
 			}
 
+			this.HttpContext = httpContext;
 			this.ProjectConfiguration = config ?? Sage.Project.Configuration;
 
 			this.pathMapper = pathMapper;
@@ -216,8 +217,6 @@ namespace Sage
 			this.Cache = new CacheWrapper(httpContext);
 			this.LmCache = new LastModifiedCache(this);
 			this.Data = new QueryString();
-
-			this.HttpContext = httpContext;
 
 			this.Locale = this.Query.GetString(LocaleVariableName, this.ProjectConfiguration.DefaultLocale);
 			this.Category = this.Query.GetString(CategoryVariableName);
@@ -236,7 +235,7 @@ namespace Sage
 			this.Path = new PathResolver(this);
 			this.Resources = new ResourceManager(this);
 
-			if (requestAvailable)
+			if (this.RequestAvailable)
 			{
 				bool isNoCacheRequest = httpContext.Request.Headers["Cache-Control"] == "no-cache";
 
@@ -480,6 +479,8 @@ namespace Sage
 				return this.HttpContext.Request;
 			}
 		}
+
+		public bool RequestAvailable { get; private set; }
 
 		/// <summary>
 		/// Gets <see cref="ResourceManager"/> to be used with the current context.
