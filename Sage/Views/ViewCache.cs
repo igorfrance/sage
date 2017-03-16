@@ -19,6 +19,8 @@ namespace Sage.Views
 	using System.IO;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Web.UI.WebControls;
+
 	using Kelp.Extensions;
 	using log4net;
 	using Sage.Configuration;
@@ -37,6 +39,7 @@ namespace Sage.Views
 		/// </summary>
 		public const string HtmlGroup = "xhtml";
 
+		private string cacheDirectory;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ViewCache"/> class.
@@ -45,17 +48,33 @@ namespace Sage.Views
 		public ViewCache(SageContext context)
 		{
 			this.context = context;
-			if (context.ProjectConfiguration != null)
-			{
-				config = context.ProjectConfiguration.ViewCaching;
-				this.Directory = context.MapPath(config.Directory);
-			}
+			this.config = context.ProjectConfiguration?.ViewCaching;
 		}
 
 		/// <summary>
 		/// Gets the physical path of the directory used as the cache store.
 		/// </summary>
-		public string Directory { get; private set; }
+		public string Directory
+		{
+			get
+			{
+				if (cacheDirectory == null)
+				{
+					var directory = this.config.Directory;
+					if (context.RequestAvailable)
+					{
+						var hostName = context.Request.Url.Host;
+						var appName = context.ApplicationPath;
+
+						directory = $"{this.config.Directory}/{hostName}/{appName}";
+					}
+
+					cacheDirectory = context.MapPath(directory);
+				}
+
+				return cacheDirectory;
+			}
+		}
 
 		/// <summary>
 		/// Determines whether the specified view path has been cached, and is still valid.
@@ -84,6 +103,10 @@ namespace Sage.Views
 			{
 				if (group != null)
 					content = group.ApplySaveFilters(content, context);
+
+				var directory = Path.GetDirectoryName(cachePath);
+				if (!System.IO.Directory.Exists(directory))
+					System.IO.Directory.CreateDirectory(directory);
 
 				File.WriteAllText(cachePath, content, Encoding.UTF8);
 				return true;
